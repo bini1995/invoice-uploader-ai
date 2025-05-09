@@ -1,0 +1,13 @@
+{
+    "watch": ["app.js", "routes", "controllers", "utils", "config"],
+    "ignore": [
+      "../frontend/*",
+      "node_modules",
+      "uploads",
+      ".env",
+      "package-lock.json",
+      "package.json"
+    ],
+    "ext": "js,json"
+  }
+  
