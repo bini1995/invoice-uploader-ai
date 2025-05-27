@@ -1,0 +1,5 @@
+invoice_number,date,amount,vendor
+INV-201,2025-05-01,149.0,Acme Corp
+INV-202,not-a-date,200.0,Globex Inc
+,,,
+INV-204,2025-05-03,abc,Foo Ltd
