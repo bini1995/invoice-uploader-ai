@@ -12,6 +12,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - See a clean display of parsed invoices
 - Get validation feedback for bad rows
 - AI-generated summaries of common CSV issues (via OpenAI)
+- Query invoices using natural language (via OpenAI)
 
 ## Setup Instructions
 
