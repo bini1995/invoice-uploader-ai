@@ -36,6 +36,7 @@ const [files, setFile] = useState([]);   // ✅ new
   const [vendorSummary, setVendorSummary] = useState('');
   const [vendorSuggestions, setVendorSuggestions] = useState({});
   const [suspicionFlags] = useState({});
+  const [duplicateFlags, setDuplicateFlags] = useState({});
   const [showArchived, setShowArchived] = useState(false);
   const [vendorList, setVendorList] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState('');
@@ -306,6 +307,19 @@ useEffect(() => {
         // Extract unique vendors from invoices
         const vendors = Array.from(new Set(data.map(inv => inv.vendor).filter(Boolean)));
         setVendorList(vendors);
+
+        // Detect duplicates by vendor+date+amount
+        const groups = {};
+        data.forEach(inv => {
+          const key = `${inv.vendor}|${new Date(inv.date).toISOString().slice(0,10)}|${inv.amount}`;
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(inv.id);
+        });
+        const dupMap = {};
+        Object.values(groups).forEach(list => {
+          if (list.length > 1) list.forEach(id => { dupMap[id] = true; });
+        });
+        setDuplicateFlags(dupMap);
 
       } catch (err) {
         console.error('Fetch error:', err);
@@ -1204,6 +1218,9 @@ useEffect(() => {
                           {inv.archived && (
                             <span className="text-gray-500 text-[10px] font-semibold">📦 Archived</span>
                           )}
+                          {duplicateFlags[inv.id] && (
+                            <span className="text-yellow-500 text-[10px] font-semibold">⚠️</span>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -1421,7 +1438,7 @@ useEffect(() => {
                     }`}
                   >
                   
-                      <div className="text-sm font-semibold">#{inv.invoice_number}</div>
+                      <div className="text-sm font-semibold">#{inv.invoice_number} {duplicateFlags[inv.id] && <span className="text-yellow-500">⚠️</span>}</div>
                       <div className="text-sm">💰 {inv.amount}</div>
                       <div className="text-sm">📅 {new Date(inv.date).toLocaleDateString()}</div>
                       <div className="text-sm">🏢 {inv.vendor}</div>
