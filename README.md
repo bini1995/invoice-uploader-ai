@@ -22,3 +22,12 @@ cd backend
 npm install
 cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
 npm start
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
