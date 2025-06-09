@@ -54,6 +54,7 @@ const [files, setFile] = useState([]);   // ✅ new
   });
 
   const [downloadingId, setDownloadingId] = useState(null);
+
   
   useEffect(() => {
     localStorage.setItem('viewMode', viewMode);
@@ -291,6 +292,10 @@ useEffect(() => {
     
         const data = await res.json();
         setInvoices(data);
+        // Extract unique vendors from invoices
+        const vendors = Array.from(new Set(data.map(inv => inv.vendor).filter(Boolean)));
+        setVendorList(vendors);
+
       } catch (err) {
         console.error('Fetch error:', err);
         setMessage('❌ Could not load invoices');
@@ -693,6 +698,30 @@ useEffect(() => {
     }
   };
 
+  const handleAddTag = async (invoiceId, tag) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${invoiceId}/tags`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ tag }),
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to add tag');
+      }
+  
+      setMessage('✅ Tag added successfully');
+      fetchInvoices(); // Refresh list
+    } catch (err) {
+      console.error(err);
+      setMessage('❌ Failed to add tag');
+    }
+  };
+  
+
   const handleExportArchived = async () => {
     try {
       const res = await fetch('http://localhost:3000/api/invoices/export-archived', {
@@ -722,7 +751,11 @@ useEffect(() => {
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0).toFixed(2);
 
+  const visibleInvoices = invoices.filter(inv => {
+    return selectedVendor === '' || inv.vendor === selectedVendor;
+  });
   
+
   
   if (!token) {
     return <Login onLogin={(tok) => {
@@ -984,6 +1017,25 @@ useEffect(() => {
 
                         </div>
                       </div>
+
+                      {vendorList.length > 0 && (
+                          <div className="mb-4">
+                            <label className="mr-2 font-medium">Filter by Vendor:</label>
+                            <select
+                              value={selectedVendor}
+                              onChange={(e) => setSelectedVendor(e.target.value)}
+                              className="border rounded p-1"
+                            >
+                              <option value="">All Vendors</option>
+                              {vendorList.map((vendor, idx) => (
+                                <option key={idx} value={vendor}>
+                                  {vendor}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
              
                       <div className="flex justify-end mb-2 space-x-4">
                         <button
@@ -1018,12 +1070,12 @@ useEffect(() => {
                 }
               />
               {col.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
-            </label>
-          ))}
-        </div>
-Invoice Totals by Vendor
-                </h2>
-                  {showChart && (
+                    </label>
+                  ))}
+                </div>
+                  Invoice Totals by Vendor
+                        </h2>
+                          {showChart && (
                       <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={chartData}>
@@ -1093,8 +1145,9 @@ Invoice Totals by Vendor
                   <td colSpan="7" className="text-center py-10 text-gray-500 italic">
                     💤 No invoices to display. Try uploading one or adjusting your filters.
                   </td>
-                </tr>
+                </tr>                  
               ) : (
+                
                 sortedInvoices.map((inv) => (
                   <tr
                           key={inv.id}
@@ -1244,6 +1297,13 @@ Invoice Totals by Vendor
                             </>
                           )}
 
+                        <button
+                            onClick={() => handleDownloadPDF(inv.id)}
+                            className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs w-full"
+                          >
+                            Download PDF
+                          </button>
+
                       {inv.archived && (
                         <button
                           onClick={() => handleUnarchive(inv.id)}
@@ -1303,19 +1363,21 @@ Invoice Totals by Vendor
                           🚩 {suspicionFlags[inv.id]}
                         </div>
                       )}
-                      <input
+                     <input
                         type="text"
-                        placeholder="Add tags (comma-separated)"
-                        onBlur={(e) => {
-                          const tags = e.target.value
-                            .split(',')
-                            .map(tag => tag.trim())
-                            .filter(tag => tag.length > 0);
-                          handleManualTagUpdate(inv.id, tags);
-                        }}
-                        className="text-xs border px-2 py-1 mt-1 w-full rounded"
-                        defaultValue={inv.tags?.join(', ')}
+                        value={tagInputs[inv.id] || ''}
+                        onChange={(e) =>
+                          setTagInputs((prev) => ({ ...prev, [inv.id]: e.target.value }))
+                        }
+                        placeholder="Add tag"
+                        className="text-xs p-1 border rounded w-full"
                       />
+                      <button
+                        onClick={() => handleAddTag(inv.id, tagInputs[inv.id])}
+                        className="bg-green-600 text-white px-2 py-1 mt-1 rounded hover:bg-green-700 text-xs w-full"
+                      >
+                        Add Tag
+                      </button>
                     </td>
                   </tr>
                 ))
