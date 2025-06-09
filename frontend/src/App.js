@@ -3,6 +3,8 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
 } from 'recharts';
 import Login from './Login';
+import Spinner from './components/Spinner';
+import Toast from './components/Toast';
 
 
 
@@ -54,6 +56,15 @@ const [files, setFile] = useState([]);   // ✅ new
   });
 
   const [downloadingId, setDownloadingId] = useState(null);
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (text, type = 'success') => {
+    const id = Date.now();
+    setToasts((t) => [...t, { id, text, type }]);
+    setTimeout(() => {
+      setToasts((t) => t.filter((toast) => toast.id !== id));
+    }, 3000);
+  };
 
   
   useEffect(() => {
@@ -139,7 +150,7 @@ const [files, setFile] = useState([]);   // ✅ new
   
       const data = await res.json();
       if (res.ok) {
-        alert(data.message);
+        addToast(data.message);
         fetchInvoices(); // ✅ Refresh invoice list
   
         // ✅ ✅ Add this to show a green checkmark after update
@@ -156,11 +167,11 @@ const [files, setFile] = useState([]);   // ✅ new
           });
         }, 3000); // ✅ Hide checkmark after 3 seconds
       } else {
-        alert('❌ Failed to update invoice');
+        addToast('❌ Failed to update invoice', 'error');
       }
     } catch (err) {
       console.error('Inline update error:', err);
-      alert('⚠️ Something went wrong.');
+      addToast('⚠️ Something went wrong.', 'error');
     }
     finally {
       setUpdatingField(null); // 👈 done updating
@@ -203,7 +214,7 @@ useEffect(() => {
   };
 
   const handleUpload = async () => {
-    if (!files.length) return alert('Please select one or more files');
+    if (!files.length) return addToast('Please select one or more files', 'error');
   
     setLoading(true);
   
@@ -260,7 +271,7 @@ useEffect(() => {
       }
     }
 
-    alert('📧 Email sent with summary and invoice list!');
+    addToast('📧 Email sent with summary and invoice list!');
   
     const updated = await fetch('http://localhost:3000/api/invoices');
     const updatedData = await updated.json();
@@ -386,14 +397,14 @@ useEffect(() => {
       
 
       const data = await res.json();
-      alert(data.message);
+      addToast(data.message);
 
       const updated = await fetch('http://localhost:3000/api/invoices');
       const updatedData = await updated.json();
       setInvoices(updatedData);
     } catch (err) {
       console.error('Delete error:', err);
-      alert('Failed to delete invoice.');
+      addToast('Failed to delete invoice.', 'error');
     }
   };
 
@@ -418,12 +429,15 @@ useEffect(() => {
         setToken(data.token);
         localStorage.setItem('token', data.token);
         setLoginError('');
+        addToast('Logged in!');
       } else {
         setLoginError('Invalid credentials');
+        addToast('Invalid credentials', 'error');
       }
     } catch (err) {
       console.error('Login error:', err);
       setLoginError('Login failed');
+      addToast('Login failed', 'error');
     }
   };
   
@@ -440,7 +454,7 @@ useEffect(() => {
       });
   
       const data = await res.json();
-      alert(data.message);
+      addToast(data.message);
   
       // Refresh the invoice list
       const updated = await fetch('http://localhost:3000/api/invoices');
@@ -448,7 +462,7 @@ useEffect(() => {
       setInvoices(updatedData);
     } catch (err) {
       console.error('Clear all failed:', err);
-      alert('❌ Failed to clear invoices.');
+      addToast('❌ Failed to clear invoices.', 'error');
     }
   };
 
@@ -461,7 +475,7 @@ useEffect(() => {
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
-    alert('📋 Copied to clipboard!');
+    addToast('📋 Copied to clipboard!');
   };
   
   
@@ -513,13 +527,13 @@ useEffect(() => {
       const data = await res.json();
   
       if (res.ok && data.insights) {
-        alert(`🚩 Suspicion Insight: ${data.insights}`);
+        addToast(`🚩 Suspicion Insight: ${data.insights}`);
       } else {
-        alert(`🚩 ${data.message || 'No insights returned.'}`);
+        addToast(`🚩 ${data.message || 'No insights returned.'}`);
       }
     } catch (err) {
       console.error('🚩 Flagging failed:', err);
-      alert('🚩 ⚠️ Failed to flag invoice.');
+      addToast('🚩 ⚠️ Failed to flag invoice.', 'error');
     }
   };
   
@@ -536,7 +550,7 @@ useEffect(() => {
       });
   
       const data = await res.json();
-      alert(`📦 ${data.message}`);
+      addToast(`📦 ${data.message}`);
   
       // Refresh invoice list
       const updated = await fetch('http://localhost:3000/api/invoices');
@@ -544,7 +558,7 @@ useEffect(() => {
       setInvoices(updatedData);
     } catch (err) {
       console.error('Archive error:', err);
-      alert('⚠️ Failed to archive invoice.');
+      addToast('⚠️ Failed to archive invoice.', 'error');
     }
   };
   
@@ -558,7 +572,7 @@ useEffect(() => {
       });
   
       const data = await res.json();
-      alert(`✅ ${data.message}`);
+      addToast(`✅ ${data.message}`);
   
       // Refresh only if still viewing archived invoices
       if (showArchived) {
@@ -566,7 +580,7 @@ useEffect(() => {
       }
     } catch (err) {
       console.error('Unarchive error:', err);
-      alert('❌ Failed to unarchive invoice');
+      addToast('❌ Failed to unarchive invoice', 'error');
     }
   };
 
@@ -583,14 +597,14 @@ useEffect(() => {
   
       const data = await res.json();
       if (res.ok) {
-        alert(data.message);
+        addToast(data.message);
         fetchInvoices(); // already declared in your file
       } else {
-        alert('Failed to update payment status');
+        addToast('Failed to update payment status', 'error');
       }
     } catch (err) {
       console.error('Error updating paid status:', err);
-      alert('Something went wrong.');
+      addToast('Something went wrong.', 'error');
     }
   };
 
@@ -616,13 +630,13 @@ useEffect(() => {
       });
   
       const data = await res.json();
-      alert(data.message);
+      addToast(data.message);
       fetchInvoices(); // refresh data
       setEditingField(null);
       setEditValue('');
     } catch (err) {
       console.error('Edit failed:', err);
-      alert('Failed to update invoice.');
+      addToast('Failed to update invoice.', 'error');
     }
   };
 
@@ -644,11 +658,11 @@ useEffect(() => {
           [invoice.id]: data.tags,
         }));
       } else {
-        alert('⚠️ No tags returned');
+        addToast('⚠️ No tags returned', 'error');
       }
     } catch (err) {
       console.error('Tag suggestion failed:', err);
-      alert('⚠️ Failed to get tag suggestions');
+      addToast('⚠️ Failed to get tag suggestions', 'error');
     }
   };
   
@@ -665,14 +679,14 @@ useEffect(() => {
   
       const data = await res.json();
       if (res.ok) {
-        alert(data.message);
+        addToast(data.message);
         fetchInvoices();
       } else {
-        alert('❌ Failed to update tags');
+        addToast('❌ Failed to update tags', 'error');
       }
     } catch (err) {
       console.error('Tag update error:', err);
-      alert('⚠️ Something went wrong.');
+      addToast('⚠️ Something went wrong.', 'error');
     }
   };
   
@@ -692,7 +706,7 @@ useEffect(() => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('PDF download failed:', err);
-      alert('⚠️ Failed to download invoice PDF');
+      addToast('⚠️ Failed to download invoice PDF', 'error');
     } finally {
       setDownloadingId(null);
     }
@@ -712,12 +726,12 @@ useEffect(() => {
       if (!res.ok) {
         throw new Error('Failed to add tag');
       }
-  
-      setMessage('✅ Tag added successfully');
+
+      addToast('✅ Tag added successfully');
       fetchInvoices(); // Refresh list
     } catch (err) {
       console.error(err);
-      setMessage('❌ Failed to add tag');
+      addToast('❌ Failed to add tag', 'error');
     }
   };
   
@@ -739,7 +753,7 @@ useEffect(() => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Export archived failed:', err);
-      alert('❌ Failed to export archived invoices');
+      addToast('❌ Failed to export archived invoices', 'error');
     }
   };
   
@@ -761,7 +775,7 @@ useEffect(() => {
     return <Login onLogin={(tok) => {
       localStorage.setItem('token', tok);
       setToken(tok);
-    }} />;
+    }} addToast={addToast} />;
   }
 
 
@@ -799,6 +813,16 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      <div className="fixed top-4 right-4 space-y-2 z-50">
+        {toasts.map((t) => (
+          <Toast key={t.id} message={t.text} type={t.type} />
+        ))}
+      </div>
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-40">
+          <Spinner />
+        </div>
+      )}
       <header className="bg-blue-700 text-white shadow p-4 mb-6">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">📄 Invoice Uploader AI</h1>
