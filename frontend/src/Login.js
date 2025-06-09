@@ -1,7 +1,7 @@
 // src/Login.js
 import React, { useState } from 'react';
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, addToast }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,12 +18,15 @@ export default function Login({ onLogin }) {
 
       if (res.ok) {
         onLogin(data.token);
+        addToast('Logged in!');
       } else {
         setError(data.message || 'Login failed');
+        addToast(data.message || 'Login failed', 'error');
       }
     } catch (err) {
       console.error('Login error:', err);
       setError('Something went wrong.');
+      addToast('Something went wrong.', 'error');
     }
   };
 
