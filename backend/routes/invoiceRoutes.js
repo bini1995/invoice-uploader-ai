@@ -49,7 +49,7 @@ const {
 
 
 const { summarizeUploadErrors } = require('../controllers/aiController');
-const { invoiceQualityScore, assistantQuery, paymentRiskScore, nlChartQuery } = require('../controllers/aiController');
+const { invoiceQualityScore, assistantQuery, paymentRiskScore, nlChartQuery, suggestTagColors } = require('../controllers/aiController');
 const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
@@ -118,6 +118,7 @@ router.post('/bulk/auto-categorize', authMiddleware, bulkAutoCategorize);
 router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);
 router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRetentionPolicy);
 router.post('/suggest-tags', authMiddleware, suggestTags);
+router.post('/suggest-tag-colors', authMiddleware, suggestTagColors);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
 router.get('/logs/export', authMiddleware, authorizeRoles('admin'), exportComplianceReport);
