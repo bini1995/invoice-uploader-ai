@@ -77,6 +77,9 @@ const [files, setFile] = useState([]);   // ✅ new
   const [updatedFields, setUpdatedFields] = useState({});
   const [updatingField, setUpdatingField] = useState(null);
   const [tagSuggestions, setTagSuggestions] = useState({});
+  const [qualityScores, setQualityScores] = useState({});
+  const [chatQuestion, setChatQuestion] = useState('');
+  const [chatAnswer, setChatAnswer] = useState('');
   const [commentInputs, setCommentInputs] = useState({});
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
@@ -600,6 +603,26 @@ useEffect(() => {
       console.error('Export all failed:', err);
     }
   };
+
+  const handleAssistantQuery = async () => {
+    if (!chatQuestion.trim()) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ question: chatQuestion }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setChatAnswer(data.answer);
+      } else {
+        setChatAnswer(data.message || 'Error');
+      }
+    } catch (err) {
+      console.error('Assistant query failed:', err);
+      setChatAnswer('Failed to get answer.');
+    }
+  };
   
 
   const handleDelete = (id) => {
@@ -770,6 +793,25 @@ useEffect(() => {
     } catch (err) {
       console.error('🚩 Flagging failed:', err);
       addToast('🚩 ⚠️ Failed to flag invoice.', 'error');
+    }
+  };
+
+  const handleQualityScore = async (invoice) => {
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/quality-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ invoice }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setQualityScores((p) => ({ ...p, [invoice.id]: data }));
+      } else {
+        setQualityScores((p) => ({ ...p, [invoice.id]: { score: 'N/A', tips: data.message } }));
+      }
+    } catch (err) {
+      console.error('Quality score error:', err);
+      setQualityScores((p) => ({ ...p, [invoice.id]: { score: 'N/A', tips: 'Failed to score.' } }));
     }
   };
   
@@ -1423,6 +1465,26 @@ useEffect(() => {
                           </button>
 
                         </div>
+                        <div className="flex flex-wrap space-x-2 mt-2 w-full">
+                          <input
+                            type="text"
+                            value={chatQuestion}
+                            onChange={(e) => setChatQuestion(e.target.value)}
+                            placeholder="Ask AI about invoices..."
+                            className="border rounded p-1 flex-1 text-sm"
+                          />
+                          <button
+                            onClick={handleAssistantQuery}
+                            className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                          >
+                            Ask
+                          </button>
+                        </div>
+                        {chatAnswer && (
+                          <div className="mt-2 p-2 bg-gray-100 border rounded text-sm whitespace-pre-wrap w-full">
+                            {chatAnswer}
+                          </div>
+                        )}
                       </div>
 
                       {vendorList.length > 0 && (
@@ -1638,6 +1700,7 @@ useEffect(() => {
                     <th className="border px-4 py-2">Assignee</th>
                     <th className="border px-4 py-2">Status</th>
                     <th className="border px-4 py-2">Updated At</th>
+                    <th className="border px-4 py-2">Quality</th>
                     <th className="border px-4 py-2">Actions</th>
                     
                   </tr>
@@ -1802,6 +1865,15 @@ useEffect(() => {
                     <td className="border px-4 py-2">{inv.approval_status || 'Pending'}</td>
                     <td className="border px-4 py-2">
                       {inv.updated_at ? new Date(inv.updated_at).toLocaleString() : '—'}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      <button
+                        onClick={() => handleQualityScore(inv)}
+                        className="bg-teal-600 text-white px-2 py-1 rounded hover:bg-teal-700 text-xs w-full"
+                        title={qualityScores[inv.id]?.tips || ''}
+                      >
+                        {qualityScores[inv.id] ? `💯 ${qualityScores[inv.id].score}` : 'Score'}
+                      </button>
                     </td>
                     <td className="border px-4 py-2 space-y-1 flex flex-col items-center">
                     {!inv.archived && (
