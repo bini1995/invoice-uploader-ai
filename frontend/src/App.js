@@ -6,6 +6,8 @@ import Login from './Login';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 
+const teamMembers = ['Alice', 'Bob', 'Charlie'];
+
 
 
 function App() {
@@ -16,6 +18,7 @@ function App() {
   amount: true,
   vendor: true,
   created_at: true,
+  assignee: true,
   tags: true,
   actions: true,
   updated_at: true
@@ -40,7 +43,9 @@ const [files, setFile] = useState([]);   // ✅ new
   const [duplicateFlags, setDuplicateFlags] = useState({});
   const [showArchived, setShowArchived] = useState(false);
   const [vendorList, setVendorList] = useState([]);
+  const [assigneeList, setAssigneeList] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState('');
+  const [selectedAssignee, setSelectedAssignee] = useState('');
   const [recentInvoices, setRecentInvoices] = useState([]);
   const [selectedInvoices, setSelectedInvoices] = useState([]);
   const [showChart, setShowChart] = useState(false);
@@ -80,6 +85,7 @@ const [files, setFile] = useState([]);   // ✅ new
     inv.vendor.toLowerCase().includes(searchTerm.toLowerCase())
   )
   .filter((inv) => !selectedVendor || inv.vendor === selectedVendor)
+  .filter((inv) => !selectedAssignee || inv.assignee === selectedAssignee)
   .filter((inv) => {
     const amount = parseFloat(inv.amount);
     const min = parseFloat(minAmount);
@@ -153,7 +159,7 @@ const [files, setFile] = useState([]);   // ✅ new
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
-        const updatedList = await fetchInvoices(); // refresh and get new data
+        const updatedList = await fetchInvoices(showArchived, selectedAssignee); // refresh and get new data
 
         if (field === 'vendor') {
           const updatedInv = updatedList?.find((inv) => inv.id === id);
@@ -184,6 +190,29 @@ const [files, setFile] = useState([]);   // ✅ new
       setUpdatingField(null); // 👈 done updating
     }
   };
+
+  const handleAssign = async (id, assignee) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/assign`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ assignee }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast(data.message);
+        setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, assignee } : inv)));
+      } else {
+        addToast('❌ Failed to assign invoice', 'error');
+      }
+    } catch (err) {
+      console.error('Assign error:', err);
+      addToast('⚠️ Failed to assign invoice', 'error');
+    }
+  };
   
   
 
@@ -204,8 +233,8 @@ const [files, setFile] = useState([]);   // ✅ new
   const itemsPerPage = 10;
 
 useEffect(() => {
-  fetchInvoices(showArchived);
-}, [showArchived]);
+  fetchInvoices(showArchived, selectedAssignee);
+}, [showArchived, selectedAssignee]);
 
   
 
@@ -302,11 +331,13 @@ useEffect(() => {
     setLoading(false);
   };
   
-    const fetchInvoices = async (includeArchived = false) => {
+    const fetchInvoices = async (includeArchived = false, assigneeFilter = '') => {
       try {
-        const url = includeArchived
-          ? 'http://localhost:3000/api/invoices?includeArchived=true'
-          : 'http://localhost:3000/api/invoices';
+        const params = [];
+        if (includeArchived) params.push('includeArchived=true');
+        if (assigneeFilter) params.push(`assignee=${encodeURIComponent(assigneeFilter)}`);
+        const query = params.length ? `?${params.join('&')}` : '';
+        const url = `http://localhost:3000/api/invoices${query}`;
     
         const res = await fetch(url, {
           headers: {
@@ -316,9 +347,11 @@ useEffect(() => {
     
         const data = await res.json();
         setInvoices(data);
-        // Extract unique vendors from invoices
+        // Extract unique vendors and assignees from invoices
         const vendors = Array.from(new Set(data.map(inv => inv.vendor).filter(Boolean)));
         setVendorList(vendors);
+        const assignees = Array.from(new Set(data.map(inv => inv.assignee).filter(Boolean)));
+        setAssigneeList(Array.from(new Set([...teamMembers, ...assignees])));
 
         // Detect duplicates by vendor+date+amount
         const groups = {};
@@ -642,7 +675,7 @@ useEffect(() => {
   
       // Refresh only if still viewing archived invoices
       if (showArchived) {
-        fetchInvoices();
+        fetchInvoices(showArchived, selectedAssignee);
       }
     } catch (err) {
       console.error('Unarchive error:', err);
@@ -664,7 +697,7 @@ useEffect(() => {
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
-        fetchInvoices(); // already declared in your file
+        fetchInvoices(showArchived, selectedAssignee); // already declared in your file
       } else {
         addToast('Failed to update payment status', 'error');
       }
@@ -697,7 +730,7 @@ useEffect(() => {
   
       const data = await res.json();
       addToast(data.message);
-      fetchInvoices(); // refresh data
+      fetchInvoices(showArchived, selectedAssignee); // refresh data
       setEditingField(null);
       setEditValue('');
     } catch (err) {
@@ -746,7 +779,7 @@ useEffect(() => {
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
-        fetchInvoices();
+        fetchInvoices(showArchived, selectedAssignee);
       } else {
         addToast('❌ Failed to update tags', 'error');
       }
@@ -794,7 +827,7 @@ useEffect(() => {
       }
 
       addToast('✅ Tag added successfully');
-      fetchInvoices(); // Refresh list
+      fetchInvoices(showArchived, selectedAssignee); // Refresh list
     } catch (err) {
       console.error(err);
       addToast('❌ Failed to add tag', 'error');
@@ -959,6 +992,19 @@ useEffect(() => {
                           {vendorList.map((vendor, idx) => (
                             <option key={idx} value={vendor}>
                               {vendor}
+                            </option>
+                          ))}
+                        </select>
+
+                        <select
+                          value={selectedAssignee}
+                          onChange={(e) => setSelectedAssignee(e.target.value)}
+                          className="border border-gray-300 rounded px-3 py-2 text-sm"
+                        >
+                          <option value="">All Assignees</option>
+                          {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
+                            <option key={idx} value={person}>
+                              {person}
                             </option>
                           ))}
                         </select>
@@ -1269,9 +1315,9 @@ useEffect(() => {
                       )}
                     </th>
                     <th className="border px-4 py-2">Created At</th>
-                    <th className="border px-4 py-2">Tags</th>
-                    <th className="border px-4 py-2">Actions</th>
+                    <th className="border px-4 py-2">Assignee</th>
                     <th className="border px-4 py-2">Updated At</th>
+                    <th className="border px-4 py-2">Actions</th>
                     
                   </tr>
                 </thead>
@@ -1415,6 +1461,18 @@ useEffect(() => {
                     </td>
                     <td className="border px-4 py-2">
                       {inv.created_at ? new Date(inv.created_at).toLocaleString() : '—'}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <select
+                        value={inv.assignee || ''}
+                        onChange={(e) => handleAssign(inv.id, e.target.value)}
+                        className="border rounded px-1 text-sm"
+                      >
+                        <option value="">Unassigned</option>
+                        {teamMembers.map((m) => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="border px-4 py-2">
                       {inv.updated_at ? new Date(inv.updated_at).toLocaleString() : '—'}

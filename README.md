@@ -25,6 +25,14 @@ cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
 npm start
 ```
 
+### Database Update
+
+Add an `assignee` column for storing invoice assignments:
+
+```sql
+ALTER TABLE invoices ADD COLUMN assignee TEXT;
+```
+
 ### Frontend
 
 ```bash

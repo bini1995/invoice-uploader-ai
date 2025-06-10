@@ -55,9 +55,9 @@ exports.uploadInvoiceCSV = async (req, res) => {
 
     for (const inv of validRows) {
       await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor)
-         VALUES ($1, $2, $3, $4)`,
-        [inv.invoice_number, inv.date, inv.amount, inv.vendor]
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [inv.invoice_number, inv.date, inv.amount, inv.vendor, null]
       );
     }
 
@@ -79,11 +79,20 @@ exports.getAllInvoices = async (req, res) => {
   const client = await pool.connect();
   try {
     const includeArchived = req.query.includeArchived === 'true';
-    const query = includeArchived
-      ? 'SELECT * FROM invoices ORDER BY id DESC'
-      : 'SELECT * FROM invoices WHERE archived = false ORDER BY id DESC';
+    const assignee = req.query.assignee;
+    const conditions = [];
+    const params = [];
+    if (!includeArchived) {
+      conditions.push('archived = false');
+    }
+    if (assignee) {
+      params.push(assignee);
+      conditions.push(`assignee = $${params.length}`);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const query = `SELECT * FROM invoices ${where} ORDER BY id DESC`;
 
-    const result = await client.query(query);
+    const result = await client.query(query, params);
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching invoices:', error);
@@ -320,6 +329,18 @@ exports.markInvoicePaid = async (req, res) => {
   } catch (err) {
     console.error('Mark paid error:', err);
     res.status(500).json({ message: 'Failed to update invoice.' });
+  }
+};
+
+exports.assignInvoice = async (req, res) => {
+  const { id } = req.params;
+  const { assignee } = req.body;
+  try {
+    await pool.query('UPDATE invoices SET assignee = $1 WHERE id = $2', [assignee, id]);
+    res.json({ message: `Invoice assigned to ${assignee || 'nobody'}.` });
+  } catch (err) {
+    console.error('Assign error:', err);
+    res.status(500).json({ message: 'Failed to assign invoice.' });
   }
 };
 
@@ -663,6 +684,7 @@ module.exports = {
   archiveInvoice,
   unarchiveInvoice,
   markInvoicePaid,
+  assignInvoice,
   handleSuggestion,
   summarizeErrors,
   getMonthlyInsights,

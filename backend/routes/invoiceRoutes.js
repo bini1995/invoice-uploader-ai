@@ -33,6 +33,7 @@ const { handleSuggestion } = require('../controllers/invoiceController');
 const { suggestTags } = require('../controllers/invoiceController');
 const { updateInvoiceTags } = require('../controllers/invoiceController');
 const { generateInvoicePDF } = require('../controllers/invoiceController');
+const { assignInvoice } = require('../controllers/invoiceController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
@@ -57,6 +58,7 @@ router.patch('/:id/archive', authMiddleware, archiveInvoice);
 router.post('/:id/unarchive', authMiddleware, unarchiveInvoice);
 router.post('/suggest-vendor', authMiddleware, handleSuggestion);
 router.patch('/:id/update', authMiddleware, updateInvoiceField);
+router.patch('/:id/assign', authMiddleware, assignInvoice);
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 
