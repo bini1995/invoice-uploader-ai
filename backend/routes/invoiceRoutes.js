@@ -65,6 +65,7 @@ const { setBudget, getBudgets, checkBudgetWarnings } = require('../controllers/b
 const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns } = require('../controllers/fraudController');
 const { vendorReply } = require('../controllers/vendorReplyController');
+const { paymentRequest } = require('../controllers/paymentRequestController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
@@ -127,6 +128,7 @@ router.get('/:id/check-recurring', authMiddleware, checkRecurringInvoice);
 
 // ✅ GET PDF download
 router.get('/:id/pdf', authMiddleware, generateInvoicePDF);
+router.get('/:id/payment-request', authMiddleware, paymentRequest);
 
 
 
