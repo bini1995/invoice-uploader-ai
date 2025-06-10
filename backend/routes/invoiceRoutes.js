@@ -41,6 +41,9 @@ const {
   exportPDFBundle,
   updatePrivateNotes,
   updateRetentionPolicy,
+  explainFlaggedInvoice,
+  bulkAutoCategorize,
+  getVendorBio,
 } = require('../controllers/invoiceController');
 
 
@@ -85,8 +88,10 @@ router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/spending-by-tag', authMiddleware, getSpendingByTag);
 router.get('/recurring/insights', authMiddleware, getRecurringInsights);
 router.get('/vendor-profile/:vendor', authMiddleware, getVendorProfile);
+router.get('/vendor-bio/:vendor', authMiddleware, getVendorBio);
 router.get('/dashboard/pdf', authMiddleware, exportDashboardPDF);
 router.post('/flag-suspicious', authMiddleware, flagSuspiciousInvoice);
+router.get('/:id/flag-explanation', authMiddleware, explainFlaggedInvoice);
 router.patch('/:id/archive', authMiddleware, archiveInvoice);
 router.post('/:id/unarchive', authMiddleware, unarchiveInvoice);
 router.post('/suggest-vendor', authMiddleware, handleSuggestion);
@@ -100,6 +105,7 @@ router.patch('/bulk/assign', authMiddleware, authorizeRoles('admin'), bulkAssign
 router.patch('/bulk/approve', authMiddleware, authorizeRoles('approver','admin'), bulkApproveInvoices);
 router.patch('/bulk/reject', authMiddleware, authorizeRoles('approver','admin'), bulkRejectInvoices);
 router.post('/bulk/pdf', authMiddleware, exportPDFBundle);
+router.post('/bulk/auto-categorize', authMiddleware, bulkAutoCategorize);
 router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);
 router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRetentionPolicy);
 router.post('/suggest-tags', authMiddleware, suggestTags);
