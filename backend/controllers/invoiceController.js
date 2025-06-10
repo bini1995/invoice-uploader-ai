@@ -566,6 +566,68 @@ const generateInvoicePDF = (req, res) => {
   }
 };
 
+exports.getMonthlyInsights = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const now = new Date();
+    const startCurrent = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startNext = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const startPrev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    const currentRes = await client.query(
+      `SELECT vendor, SUM(amount) AS total
+       FROM invoices
+       WHERE date >= $1 AND date < $2
+       GROUP BY vendor`,
+      [startCurrent, startNext]
+    );
+
+    const prevRes = await client.query(
+      `SELECT vendor, SUM(amount) AS total
+       FROM invoices
+       WHERE date >= $1 AND date < $2
+       GROUP BY vendor`,
+      [startPrev, startCurrent]
+    );
+
+    const prevMap = {};
+    prevRes.rows.forEach(r => {
+      prevMap[r.vendor] = parseFloat(r.total);
+    });
+
+    const vendorTotals = currentRes.rows.map(r => {
+      const prev = prevMap[r.vendor] || 0;
+      const change = prev === 0 ? (parseFloat(r.total) > 0 ? 100 : 0) : ((parseFloat(r.total) - prev) / prev) * 100;
+      return {
+        vendor: r.vendor,
+        total: parseFloat(r.total),
+        percentChange: parseFloat(change.toFixed(2)),
+      };
+    });
+
+    const formatted = vendorTotals
+      .map(v => `${v.vendor}: $${v.total.toFixed(2)} (${v.percentChange > 0 ? '+' : ''}${v.percentChange.toFixed(1)}%)`)
+      .join('\n');
+
+    const prompt = `Provide a short summary of this month's spending compared to last month:\n\n${formatted}`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.5,
+    });
+
+    const summary = completion.choices[0].message.content;
+
+    res.json({ vendorTotals, summary });
+  } catch (err) {
+    console.error('Monthly insights error:', err);
+    res.status(500).json({ message: 'Failed to generate monthly insights' });
+  } finally {
+    client.release();
+  }
+};
+
 
 
 module.exports = {
@@ -588,5 +650,6 @@ module.exports = {
   markInvoicePaid,
   handleSuggestion,
   summarizeErrors,
+  getMonthlyInsights,
 };
 
