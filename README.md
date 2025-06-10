@@ -35,6 +35,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
 - Real-time "Ops Mode" dashboard with a live feed of invoice activity
 - Multi-tenant support so agencies can switch between different client accounts
+- Polite vendor notification emails for flagged or rejected invoices
 
 ## Setup Instructions
 
@@ -119,6 +120,42 @@ job deletes invoices once their `delete_at` date passes.
 - `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
 - `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor
 - `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
+- `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
+
+### Vendor Reply Drafts
+
+Request a draft:
+
+```bash
+POST /api/invoices/42/vendor-reply
+{
+  "status": "flagged",
+  "reason": "Incorrect PO number"
+}
+```
+
+Example response:
+
+```json
+{ "draft": "Dear Vendor, ..." }
+```
+
+Send after manual edits:
+
+```bash
+POST /api/invoices/42/vendor-reply
+{
+  "status": "flagged",
+  "manualEdit": "Hi team, please resend with the right PO",
+  "email": "billing@acme.com"
+}
+```
+
+Response:
+
+```json
+{ "message": "Email sent successfully." }
+```
 
 ### Frontend
 
