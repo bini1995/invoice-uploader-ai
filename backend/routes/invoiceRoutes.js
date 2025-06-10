@@ -7,7 +7,7 @@ const { exportFilteredInvoices, exportAllInvoices } = require('../controllers/in
 const { login, authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 const {
-  uploadInvoiceCSV,
+  uploadInvoice,
   getAllInvoices,
   clearAllInvoices,
   deleteInvoiceById,
@@ -46,7 +46,7 @@ router.get('/:id/pdf', generateInvoicePDF);
 router.post('/:id/mark-paid', authMiddleware, markInvoicePaid);
 router.post('/suggest-vendor', suggestVendor);
 router.post('/send-email', sendSummaryEmail);
-router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoiceCSV);
+router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoice);
 router.get('/', getAllInvoices);
 router.delete('/clear', authMiddleware, authorizeRoles('admin'), clearAllInvoices);
 router.delete('/:id', authMiddleware, authorizeRoles('admin'), deleteInvoiceById);
