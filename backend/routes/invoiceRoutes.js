@@ -19,6 +19,7 @@ const {
   exportArchivedInvoicesCSV,
   getMonthlyInsights,
   getCashFlow,
+  getTopVendors,
 } = require('../controllers/invoiceController');
 
 
@@ -56,6 +57,7 @@ router.get('/export-all', authMiddleware, exportAllInvoices);
 router.post('/summarize-vendor-data', summarizeVendorData);
 router.get('/monthly-insights', authMiddleware, getMonthlyInsights);
 router.get('/cash-flow', authMiddleware, getCashFlow);
+router.get('/top-vendors', authMiddleware, getTopVendors);
 router.post('/flag-suspicious', authMiddleware, flagSuspiciousInvoice);
 router.patch('/:id/archive', authMiddleware, archiveInvoice);
 router.post('/:id/unarchive', authMiddleware, unarchiveInvoice);
