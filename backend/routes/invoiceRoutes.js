@@ -61,7 +61,7 @@ const { handleSuggestion } = require('../controllers/invoiceController');
 const { suggestTags } = require('../controllers/invoiceController');
 const { updateInvoiceTags } = require('../controllers/invoiceController');
 const { generateInvoicePDF } = require('../controllers/invoiceController');
-const { getActivityLogs, getInvoiceTimeline } = require('../controllers/activityController');
+const { getActivityLogs, getInvoiceTimeline, exportComplianceReport } = require('../controllers/activityController');
 const { setBudget, getBudgets, checkBudgetWarnings } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns } = require('../controllers/fraudController');
@@ -120,6 +120,7 @@ router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRe
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
+router.get('/logs/export', authMiddleware, authorizeRoles('admin'), exportComplianceReport);
 router.get('/:id/timeline', authMiddleware, getInvoiceTimeline);
 router.post('/budgets', authMiddleware, authorizeRoles('admin'), setBudget);
 router.get('/budgets', authMiddleware, authorizeRoles('admin'), getBudgets);
