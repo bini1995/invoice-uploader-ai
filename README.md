@@ -17,6 +17,8 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Conversational assistant to analyze spending
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
+- Recurring invoice detection with notifications
+- Smart auto-fill suggestions for vendor tags and payment terms
 
 ## Setup Instructions
 
@@ -43,6 +45,7 @@ ALTER TABLE invoices ADD COLUMN flagged BOOLEAN DEFAULT FALSE;
 ALTER TABLE invoices ADD COLUMN flag_reason TEXT;
 ALTER TABLE invoices ADD COLUMN approval_chain JSONB DEFAULT '["Manager","Finance","CFO"]';
 ALTER TABLE invoices ADD COLUMN current_step INTEGER DEFAULT 0;
+ALTER TABLE invoices ADD COLUMN payment_terms TEXT;
 ```
 
 Create an `activity_logs` table for the audit trail:

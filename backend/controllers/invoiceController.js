@@ -13,6 +13,13 @@ const vendorTagMap = {
   staples: ['Office Supplies'],
   notion: ['SaaS'],
   figma: ['SaaS'],
+  aws: ['Cloud'],
+  zoom: ['SaaS'],
+};
+
+const vendorPaymentMap = {
+  aws: 'Net 15',
+  zoom: 'Net 30',
 };
 
 
@@ -944,6 +951,84 @@ exports.autoArchiveOldInvoices = async () => {
   }
 };
 
+exports.checkRecurringInvoice = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query(
+      'SELECT vendor, amount, date FROM invoices WHERE id = $1',
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+    const { vendor, amount, date } = rows[0];
+    const result = await pool.query(
+      `SELECT COUNT(*) FROM invoices
+       WHERE vendor = $1 AND amount = $2 AND id <> $3
+         AND date >= $4::date - INTERVAL '90 days'`,
+      [vendor, amount, id, date]
+    );
+    const count = parseInt(result.rows[0].count, 10);
+    res.json({ recurring: count > 0, count });
+  } catch (err) {
+    console.error('Recurring check error:', err);
+    res.status(500).json({ message: 'Failed to check recurring status' });
+  }
+};
+
+exports.getRecurringInsights = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT vendor, amount, COUNT(*) AS occurrences
+      FROM invoices
+      GROUP BY vendor, amount
+      HAVING COUNT(*) > 1
+      ORDER BY occurrences DESC
+    `);
+    res.json({ recurring: result.rows });
+  } catch (err) {
+    console.error('Recurring insights error:', err);
+    res.status(500).json({ message: 'Failed to fetch recurring insights' });
+  }
+};
+
+exports.getVendorProfile = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT tags, payment_terms FROM invoices WHERE LOWER(vendor) = LOWER($1)',
+      [vendor]
+    );
+    if (result.rows.length === 0) {
+      const payment = vendorPaymentMap[vendor.toLowerCase()];
+      const tags = vendorTagMap[vendor.toLowerCase()];
+      return res.json({ vendor, tags, payment_terms: payment });
+    }
+    const tagCounts = {};
+    const termCounts = {};
+    result.rows.forEach((r) => {
+      if (Array.isArray(r.tags)) {
+        r.tags.forEach((t) => {
+          const key = t.toLowerCase();
+          tagCounts[key] = (tagCounts[key] || 0) + 1;
+        });
+      }
+      if (r.payment_terms) {
+        termCounts[r.payment_terms] = (termCounts[r.payment_terms] || 0) + 1;
+      }
+    });
+    const suggestedTags = Object.entries(tagCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map((e) => e[0]);
+    const suggestedTerm = Object.entries(termCounts).sort((a, b) => b[1] - a[1])[0]?.[0];
+    res.json({ vendor, tags: suggestedTags, payment_terms: suggestedTerm });
+  } catch (err) {
+    console.error('Vendor profile error:', err);
+    res.status(500).json({ message: 'Failed to fetch vendor profile' });
+  }
+};
+
 
 
 module.exports = {
@@ -975,6 +1060,9 @@ module.exports = {
   getTopVendors,
   getSpendingByTag,
   exportDashboardPDF,
+  checkRecurringInvoice,
+  getRecurringInsights,
+  getVendorProfile,
   autoArchiveOldInvoices,
 };
 

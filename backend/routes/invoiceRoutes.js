@@ -22,6 +22,9 @@ const {
   getTopVendors,
   getSpendingByTag,
   exportDashboardPDF,
+  checkRecurringInvoice,
+  getRecurringInsights,
+  getVendorProfile,
 } = require('../controllers/invoiceController');
 
 
@@ -65,6 +68,8 @@ router.get('/monthly-insights', authMiddleware, getMonthlyInsights);
 router.get('/cash-flow', authMiddleware, getCashFlow);
 router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/spending-by-tag', authMiddleware, getSpendingByTag);
+router.get('/recurring/insights', authMiddleware, getRecurringInsights);
+router.get('/vendor-profile/:vendor', authMiddleware, getVendorProfile);
 router.get('/dashboard/pdf', authMiddleware, exportDashboardPDF);
 router.post('/flag-suspicious', authMiddleware, flagSuspiciousInvoice);
 router.patch('/:id/archive', authMiddleware, archiveInvoice);
@@ -78,6 +83,7 @@ router.post('/:id/comments', authMiddleware, authorizeRoles('approver','admin'),
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
+router.get('/:id/check-recurring', authMiddleware, checkRecurringInvoice);
 
 
 // ✅ GET PDF download
