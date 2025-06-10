@@ -45,6 +45,7 @@ const {
   bulkAutoCategorize,
   getVendorBio,
   getVendorScorecards,
+  getRelationshipGraph,
 } = require('../controllers/invoiceController');
 
 
@@ -130,6 +131,7 @@ router.get('/anomalies', authMiddleware, getAnomalies);
 router.get('/fraud/patterns', authMiddleware, authorizeRoles('admin'), detectPatterns);
 router.get('/:id/check-recurring', authMiddleware, checkRecurringInvoice);
 router.get('/vendor-scorecards', authMiddleware, getVendorScorecards);
+router.get('/graph', authMiddleware, getRelationshipGraph);
 
 
 // ✅ GET PDF download

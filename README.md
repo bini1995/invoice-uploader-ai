@@ -24,6 +24,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Fraud pattern detection for suspicious vendor activity
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications
+- Linked invoice relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
 - Private notes on invoices
 - Shared comment threads for team discussion
@@ -150,6 +151,7 @@ apply custom approval rules:
 - `POST /api/feedback` – submit a rating for an AI-generated result
 - `GET /api/feedback` – view average ratings by endpoint
 - `GET /api/invoices/vendor-scorecards` – view vendor responsiveness and payment metrics
+- `GET /api/invoices/graph` – network graph data linking vendors and duplicate invoices
 
 ### Vendor Reply Drafts
 
