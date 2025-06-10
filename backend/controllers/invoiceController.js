@@ -720,14 +720,11 @@ exports.suggestTags = async (req, res) => {
       }
     }
 
-    const prompt = `
-      You are an intelligent finance assistant. Based on the following invoice details:
+    const prompt = `You are an intelligent finance assistant. Based on the following invoice details:
       - Vendor: ${invoice.vendor}
       - Amount: ${invoice.amount}
       - Description: ${invoice.description || 'None'}
-
-      Suggest 1–3 relevant tags or categories (e.g., 'Marketing', 'Office Supplies', 'Travel', etc.).
-    `;
+      Suggest 1–3 relevant tags or categories and briefly explain why. Return a JSON object with \"tags\" (array), \"reason\" and \"confidence\" (0-1).`;
 
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
@@ -746,8 +743,14 @@ exports.suggestTags = async (req, res) => {
       }
     );
 
-    const tags = response.data.choices[0]?.message?.content?.trim();
-    res.json({ tags });
+    const raw = response.data.choices[0]?.message?.content?.trim();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      data = { tags: raw };
+    }
+    res.json({ tags: data.tags, reason: data.reason, confidence: data.confidence });
   } catch (err) {
     console.error('Tag suggestion error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to generate tag suggestions' });
@@ -1248,7 +1251,7 @@ exports.explainFlaggedInvoice = async (req, res) => {
     }
     const avgRes = await pool.query('SELECT AVG(amount) AS avg FROM invoices WHERE vendor = $1 AND id <> $2', [invoice.vendor, id]);
     const avg = parseFloat(avgRes.rows[0].avg) || 0;
-    const prompt = `You are a fraud detection assistant. Explain in one short paragraph why this invoice might be flagged.\nInvoice amount: $${invoice.amount}. Average historical amount for vendor ${invoice.vendor} is $${avg.toFixed(2)}. Flag reason: ${invoice.flag_reason || 'None'}.`;
+    const prompt = `You are a fraud detection assistant. Explain in one short paragraph why this invoice might be flagged. Invoice amount: $${invoice.amount}. Average historical amount for vendor ${invoice.vendor} is $${avg.toFixed(2)}. Flag reason: ${invoice.flag_reason || 'None'}. Return a JSON object with \"explanation\" and a \"confidence\" score between 0 and 1.`;
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
@@ -1267,8 +1270,14 @@ exports.explainFlaggedInvoice = async (req, res) => {
         },
       }
     );
-    const explanation = response.data.choices?.[0]?.message?.content?.trim();
-    res.json({ explanation });
+    const raw = response.data.choices?.[0]?.message?.content?.trim();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      data = { explanation: raw };
+    }
+    res.json({ explanation: data.explanation, confidence: data.confidence });
   } catch (err) {
     console.error('Flag explanation error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to generate flag explanation' });

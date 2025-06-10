@@ -63,6 +63,7 @@ const { generateInvoicePDF } = require('../controllers/invoiceController');
 const { getActivityLogs, getInvoiceTimeline } = require('../controllers/activityController');
 const { setBudget, getBudgets, checkBudgetWarnings } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
+const { detectPatterns } = require('../controllers/fraudController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
@@ -118,6 +119,7 @@ router.post('/budgets', authMiddleware, authorizeRoles('admin'), setBudget);
 router.get('/budgets', authMiddleware, authorizeRoles('admin'), getBudgets);
 router.get('/budgets/warnings', authMiddleware, checkBudgetWarnings);
 router.get('/anomalies', authMiddleware, getAnomalies);
+router.get('/fraud/patterns', authMiddleware, authorizeRoles('admin'), detectPatterns);
 router.get('/:id/check-recurring', authMiddleware, checkRecurringInvoice);
 
 
