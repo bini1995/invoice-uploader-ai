@@ -14,6 +14,7 @@ import Login from './Login';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
+import NotificationBell from './components/NotificationBell';
 
 const teamMembers = ['Alice', 'Bob', 'Charlie'];
 
@@ -84,6 +85,8 @@ const [files, setFile] = useState([]);   // ✅ new
 
   const [downloadingId, setDownloadingId] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
 
   const addToast = (
     text,
@@ -106,10 +109,29 @@ const [files, setFile] = useState([]);   // ✅ new
     return () => clearTimeout(timeout);
   };
 
+  const addNotification = (text) => {
+    const n = { id: Date.now(), text, read: false };
+    setNotifications((prev) => [n, ...prev]);
+  };
+
+  const markNotificationsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
   
   useEffect(() => {
     localStorage.setItem('viewMode', viewMode);
   }, [viewMode]);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     if (showChart && token) {
@@ -248,6 +270,7 @@ const [files, setFile] = useState([]);   // ✅ new
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
+        addNotification(`New invoice assigned to ${assignee}`);
         setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, assignee } : inv)));
       } else {
         addToast('❌ Failed to assign invoice', 'error');
@@ -869,6 +892,7 @@ useEffect(() => {
           ...prev,
           [invoice.id]: data.tags,
         }));
+        addNotification('Auto-tagging complete.');
       } else {
         addToast('⚠️ No tags returned', 'error');
       }
@@ -1054,8 +1078,8 @@ useEffect(() => {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-900 dark:text-gray-100">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-md w-full max-w-sm">
           <h2 className="text-xl font-bold mb-4">Login</h2>
           {loginError && <p className="text-red-600 mb-2">{loginError}</p>}
           <input
@@ -1085,7 +1109,7 @@ useEffect(() => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="fixed top-4 right-4 space-y-2 z-50">
         {toasts.map((t) => (
           <Toast
@@ -1102,25 +1126,34 @@ useEffect(() => {
           <Spinner />
         </div>
       )}
-      <header className="bg-blue-700 text-white shadow p-4 mb-6">
+      <header className="bg-blue-700 dark:bg-blue-900 text-white shadow p-4 mb-6">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">📄 Invoice Uploader AI</h1>
-          {token && (
-            <div className="flex items-center space-x-4">
-              <span className="text-sm">by Bini</span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-              >
-                Logout
-              </button>
-            </div>
-          )}
+          <div className="flex items-center space-x-4">
+            <NotificationBell notifications={notifications} onOpen={markNotificationsRead} />
+            <button
+              onClick={() => setDarkMode((d) => !d)}
+              className="text-xl focus:outline-none"
+            >
+              {darkMode ? '☀️' : '🌙'}
+            </button>
+            {token && (
+              <>
+                <span className="text-sm">by Bini</span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </header>
   
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-semibold mb-4 text-gray-800">Invoice Uploader</h1>
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+        <h1 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
   
         {token ? (
           <>
@@ -2006,7 +2039,7 @@ useEffect(() => {
             </div>
           </>
         ) : (
-          <div className="text-center text-gray-600 mt-8">
+          <div className="text-center text-gray-600 dark:text-gray-300 mt-8">
             🔒 Please log in to access invoice management tools.
           </div>
         )}
