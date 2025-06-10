@@ -13,6 +13,7 @@ import {
 import Login from './Login';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
+import Skeleton from './components/Skeleton';
 
 const teamMembers = ['Alice', 'Bob', 'Charlie'];
 
@@ -40,6 +41,7 @@ const [files, setFile] = useState([]);   // ✅ new
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadingInvoices, setLoadingInvoices] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -106,9 +108,13 @@ const [files, setFile] = useState([]);   // ✅ new
 
 
   const filteredInvoices = invoices
-  .filter((inv) =>
-    inv.vendor.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  .filter((inv) => {
+    const term = searchTerm.toLowerCase();
+    const vendorMatch = inv.vendor?.toLowerCase().includes(term);
+    const tagMatch = inv.tags?.some((t) => t.toLowerCase().includes(term));
+    const descMatch = inv.description?.toLowerCase().includes(term);
+    return vendorMatch || tagMatch || descMatch;
+  })
   .filter((inv) => !selectedVendor || inv.vendor === selectedVendor)
   .filter((inv) => !selectedAssignee || inv.assignee === selectedAssignee)
   .filter((inv) => {
@@ -295,6 +301,7 @@ useEffect(() => {
         const data = await res.json();
   
         setMessage((prev) => prev + `\n✅ ${data.inserted} invoice(s) uploaded from ${file.name}`);
+        addToast(`✅ Uploaded ${data.inserted} invoice(s) from ${file.name}`);
         if (data.errors?.length) {
           setMessage((prev) => prev + `\n❌ ${data.errors.length} row(s) had issues in ${file.name}`);
           setErrors((prev) => [...prev, ...data.errors]);
@@ -358,6 +365,7 @@ useEffect(() => {
   
     const fetchInvoices = async (includeArchived = false, assigneeFilter = '') => {
       try {
+        setLoadingInvoices(true);
         const params = [];
         if (includeArchived) params.push('includeArchived=true');
         if (assigneeFilter) params.push(`assignee=${encodeURIComponent(assigneeFilter)}`);
@@ -391,10 +399,16 @@ useEffect(() => {
         });
         setDuplicateFlags(dupMap);
 
+        if (Object.keys(dupMap).length > 0) {
+          addToast('⚠️ Duplicate invoices detected', 'error');
+        }
+
         return data;
       } catch (err) {
         console.error('Fetch error:', err);
         setMessage('❌ Could not load invoices');
+      } finally {
+        setLoadingInvoices(false);
       }
     };
   
@@ -1097,10 +1111,10 @@ useEffect(() => {
 
                         <input
                           type="text"
-                          placeholder="🔍 Search invoices..."
+                          placeholder="🔍 Search tags, vendors, descriptions..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="border border-gray-300 rounded px-3 py-2 text-sm w-48"
+                          className="border border-gray-300 rounded px-3 py-2 text-sm w-60"
                         />
 
                         <label className="flex items-center space-x-2 text-sm">
@@ -1550,12 +1564,16 @@ useEffect(() => {
                 </thead>
 
               <tbody>
-              {sortedInvoices.length === 0 ? (
+              {loadingInvoices ? (
+                <tr>
+                  <td colSpan="7" className="py-6"><Skeleton rows={5} height="h-4" /></td>
+                </tr>
+              ) : sortedInvoices.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="text-center py-10 text-gray-500 italic">
                     💤 No invoices to display. Try uploading one or adjusting your filters.
                   </td>
-                </tr>                  
+                </tr>
               ) : (
                 
                 sortedInvoices.map((inv) => (
@@ -1827,7 +1845,11 @@ useEffect(() => {
                 ) : (
                   // 👇 step 2 goes here
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                  {sortedInvoices.map((inv) => (
+                  {loadingInvoices ? (
+                    Array.from({ length: 4 }).map((_, idx) => (
+                      <div key={idx} className="h-32 bg-gray-200 rounded animate-pulse" />
+                    ))
+                  ) : sortedInvoices.map((inv) => (
                     <div
                     key={inv.id}
                     className={`border rounded-lg p-4 shadow-sm flex flex-col space-y-2 ${
