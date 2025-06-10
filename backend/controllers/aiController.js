@@ -385,6 +385,78 @@ exports.nlChartQuery = async (req, res) => {
   }
 };
 
+// Suggest semantic colors for invoice tags
+exports.suggestTagColors = async (req, res) => {
+  try {
+    const { tags } = req.body;
+    if (!Array.isArray(tags)) {
+      return res.status(400).json({ message: 'Missing tags array.' });
+    }
+
+    const baseMap = {
+      flagged: '#dc2626',
+      reimbursed: '#16a34a',
+      paid: '#16a34a',
+      archived: '#6b7280',
+      pending: '#facc15',
+    };
+
+    const colors = {};
+    const unknown = [];
+    tags.forEach((t) => {
+      const key = t.toLowerCase();
+      if (baseMap[key]) {
+        colors[t] = baseMap[key];
+      } else {
+        unknown.push(t);
+      }
+    });
+
+    if (unknown.length) {
+      const prompt = `Assign an intuitive hex color code for each of these invoice tags: ${unknown.join(
+        ', '
+      )}. Respond with a JSON object where the keys are the tag names and the values are colors.`;
+      const aiRes = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'openai/gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content: 'You select distinct and meaningful colors for invoice tags.',
+            },
+            { role: 'user', content: prompt },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+            'X-Title': 'invoice-uploader-ai',
+          },
+        }
+      );
+
+      const raw = aiRes.data.choices?.[0]?.message?.content?.trim();
+      let data = {};
+      try {
+        data = JSON.parse(raw);
+      } catch (e) {
+        console.error('Color JSON parse error:', e.message);
+      }
+      Object.entries(data || {}).forEach(([tag, color]) => {
+        colors[tag] = color;
+      });
+    }
+
+    res.json({ colors });
+  } catch (error) {
+    console.error('Tag color suggestion error:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to suggest tag colors.' });
+  }
+};
+
 // --- Feedback Handling ---
 exports.logFeedback = async (endpoint, rating) => {
   try {

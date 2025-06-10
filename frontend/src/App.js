@@ -88,6 +88,7 @@ const searchInputRef = useRef();
   const [updatedFields, setUpdatedFields] = useState({});
   const [updatingField, setUpdatingField] = useState(null);
   const [tagSuggestions, setTagSuggestions] = useState({});
+  const [tagColors, setTagColors] = useState({});
   const [qualityScores, setQualityScores] = useState({});
   const [riskScores, setRiskScores] = useState({});
   const [chartQuestion, setChartQuestion] = useState('');
@@ -548,6 +549,26 @@ useEffect(() => {
         setVendorList(vendors);
         const assignees = Array.from(new Set(data.map(inv => inv.assignee).filter(Boolean)));
         setAssigneeList(Array.from(new Set([...teamMembers, ...assignees])));
+
+        const uniqueTags = Array.from(new Set(data.flatMap(inv => inv.tags || [])));
+        if (uniqueTags.length) {
+          try {
+            const colorRes = await fetch('http://localhost:3000/api/invoices/suggest-tag-colors', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ tags: uniqueTags }),
+            });
+            const colorData = await colorRes.json();
+            if (colorRes.ok && colorData.colors) {
+              setTagColors(colorData.colors);
+            }
+          } catch (e) {
+            console.error('Tag color fetch failed:', e);
+          }
+        }
 
         // Detect duplicates by vendor+date+amount
         const groups = {};
@@ -2401,7 +2422,11 @@ useEffect(() => {
                       <div className="text-sm">🏢 {inv.vendor}</div>
                       <div className="flex flex-wrap gap-1 text-xs">
                         {inv.tags?.map((tag, i) => (
-                          <span key={i} className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">
+                          <span
+                            key={i}
+                            className="px-2 py-0.5 rounded text-white"
+                            style={{ backgroundColor: tagColors[tag] || '#6366f1' }}
+                          >
                             {tag}
                           </span>
                         ))}
