@@ -37,6 +37,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Real-time "Ops Mode" dashboard with a live feed of invoice activity
 - Multi-tenant support so agencies can switch between different client accounts
 - Polite vendor notification emails for flagged or rejected invoices
+- Scenario planning to test payment delays
 
 ## Setup Instructions
 
@@ -132,6 +133,7 @@ job deletes invoices once their `delete_at` date passes.
 - `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
 - `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor
 - `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
+- `POST /api/invoices/cash-flow/scenario` – recalculate cash flow under payment delay scenarios
 - `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
 - `GET /api/invoices/:id/payment-request` – download a JSON payload for a payment request form
 - `POST /api/feedback` – submit a rating for an AI-generated result

@@ -66,6 +66,7 @@ const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns } = require('../controllers/fraudController');
 const { vendorReply } = require('../controllers/vendorReplyController');
 const { paymentRequest } = require('../controllers/paymentRequestController');
+const { scenarioCashFlow } = require('../controllers/scenarioController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
@@ -89,6 +90,7 @@ router.get('/export-all', authMiddleware, exportAllInvoices);
 router.post('/summarize-vendor-data', summarizeVendorData);
 router.get('/monthly-insights', authMiddleware, getMonthlyInsights);
 router.get('/cash-flow', authMiddleware, getCashFlow);
+router.post('/cash-flow/scenario', authMiddleware, scenarioCashFlow);
 router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/spending-by-tag', authMiddleware, getSpendingByTag);
 router.get('/recurring/insights', authMiddleware, getRecurringInsights);
