@@ -6,6 +6,19 @@ const USERS = [
     id: 1,
     username: 'admin',
     passwordHash: bcrypt.hashSync('password123', 10),
+    role: 'admin',
+  },
+  {
+    id: 2,
+    username: 'viewer',
+    passwordHash: bcrypt.hashSync('viewerpass', 10),
+    role: 'viewer',
+  },
+  {
+    id: 3,
+    username: 'approver',
+    passwordHash: bcrypt.hashSync('approverpass', 10),
+    role: 'approver',
   },
 ];
 
@@ -17,8 +30,8 @@ exports.login = (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  const token = jwt.sign({ userId: user.id }, 'secretKey123', { expiresIn: '1h' });
-  res.json({ token });
+  const token = jwt.sign({ userId: user.id, role: user.role }, 'secretKey123', { expiresIn: '1h' });
+  res.json({ token, role: user.role });
 };
 
 exports.authMiddleware = (req, res, next) => {
@@ -36,4 +49,11 @@ exports.authMiddleware = (req, res, next) => {
   } catch (err) {
     res.status(401).json({ message: 'Invalid token' });
   }
+};
+
+exports.authorizeRoles = (...roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role)) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  next();
 };

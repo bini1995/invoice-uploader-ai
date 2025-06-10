@@ -17,7 +17,7 @@ export default function Login({ onLogin, addToast }) {
       const data = await res.json();
 
       if (res.ok) {
-        onLogin(data.token);
+        onLogin(data.token, data.role);
         addToast('Logged in!');
       } else {
         setError(data.message || 'Login failed');

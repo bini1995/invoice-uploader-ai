@@ -13,6 +13,8 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Get validation feedback for bad rows
 - AI-generated summaries of common CSV issues (via OpenAI)
 - Query invoices using natural language (via OpenAI)
+- Role-based access control (Admins, Approvers, Viewers)
+- Activity log of invoice actions
 
 ## Setup Instructions
 
@@ -35,6 +37,18 @@ ALTER TABLE invoices ADD COLUMN approval_status TEXT DEFAULT 'Pending';
 ALTER TABLE invoices ADD COLUMN approval_history JSONB DEFAULT '[]';
 ALTER TABLE invoices ADD COLUMN comments JSONB DEFAULT '[]';
 ALTER TABLE invoices ADD COLUMN priority BOOLEAN DEFAULT FALSE;
+```
+
+Create an `activity_logs` table for the audit trail:
+
+```sql
+CREATE TABLE activity_logs (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  action TEXT NOT NULL,
+  invoice_id INTEGER,
+  created_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
 ### Auto-Archive Rule

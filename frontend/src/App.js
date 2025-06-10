@@ -46,6 +46,7 @@ const [files, setFile] = useState([]);   // ✅ new
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [role, setRole] = useState(localStorage.getItem('role') || '');
   const [loginError, setLoginError] = useState('');
   const [vendorSummary, setVendorSummary] = useState('');
   const [monthlyInsights, setMonthlyInsights] = useState(null);
@@ -1069,9 +1070,11 @@ useEffect(() => {
 
   
   if (!token) {
-    return <Login onLogin={(tok) => {
+    return <Login onLogin={(tok, userRole) => {
       localStorage.setItem('token', tok);
+      localStorage.setItem('role', userRole);
       setToken(tok);
+      setRole(userRole);
     }} addToast={addToast} />;
   }
 
@@ -1356,16 +1359,18 @@ useEffect(() => {
                      {/* Upload/Export Action Buttons */}
                       <div className="flex flex-wrap justify-between items-center mt-6 mb-2 gap-2">
                         <div className="flex flex-wrap space-x-2">
-                          <button
-                            onClick={handleUpload}
-                            disabled={!token}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center space-x-2 disabled:opacity-60"
-                          >
-                            {loading && (
-                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                            )}
-                            <span>{loading ? 'Uploading...' : 'Upload CSV'}</span>
-                          </button>
+                          {role === 'admin' && (
+                            <button
+                              onClick={handleUpload}
+                              disabled={!token}
+                              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center space-x-2 disabled:opacity-60"
+                            >
+                              {loading && (
+                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                              )}
+                              <span>{loading ? 'Uploading...' : 'Upload CSV'}</span>
+                            </button>
+                          )}
 
                           <button
                             onClick={handleVendorSummary}
@@ -1391,13 +1396,15 @@ useEffect(() => {
                             Export All as CSV
                           </button>
 
-                          <button
-                            onClick={handleClearAll}
-                            disabled={!token}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm disabled:opacity-60"
-                          >
-                            Clear All Invoices
-                          </button>
+                          {role === 'admin' && (
+                            <button
+                              onClick={handleClearAll}
+                              disabled={!token}
+                              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm disabled:opacity-60"
+                            >
+                              Clear All Invoices
+                            </button>
+                          )}
                           <button
                             onClick={handleResetFilters}
                             className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 text-sm"
@@ -1795,12 +1802,14 @@ useEffect(() => {
                     <td className="border px-4 py-2 space-y-1 flex flex-col items-center">
                     {!inv.archived && (
                             <>
-                              <button
-                                onClick={() => handleDelete(inv.id)}
-                                className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 text-xs w-full"
-                              >
-                                Delete
-                              </button>
+                              {role === 'admin' && (
+                                <button
+                                  onClick={() => handleDelete(inv.id)}
+                                  className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 text-xs w-full"
+                                >
+                                  Delete
+                                </button>
+                              )}
                               <button
                                 onClick={() => handleArchive(inv.id)}
                                 className="bg-gray-600 text-white px-2 py-1 rounded hover:bg-gray-700 text-xs w-full"
@@ -1891,18 +1900,22 @@ useEffect(() => {
                       >
                         Add Tag
                       </button>
-                      <button
-                        onClick={() => handleApprove(inv.id)}
-                        className="bg-green-500 text-white px-2 py-1 mt-1 rounded hover:bg-green-600 text-xs w-full"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(inv.id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs w-full"
-                      >
-                        Reject
-                      </button>
+                      {(role === 'approver' || role === 'admin') && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(inv.id)}
+                            className="bg-green-500 text-white px-2 py-1 mt-1 rounded hover:bg-green-600 text-xs w-full"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleReject(inv.id)}
+                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs w-full"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -1946,24 +1959,30 @@ useEffect(() => {
                           Archive
                         </button>
                       )}
-                      <button
-                        onClick={() => handleDelete(inv.id)}
-                        className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => handleApprove(inv.id)}
-                        className="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(inv.id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
-                      >
-                        Reject
-                      </button>
+                      {role === 'admin' && (
+                        <button
+                          onClick={() => handleDelete(inv.id)}
+                          className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+                      )}
+                      {(role === 'approver' || role === 'admin') && (
+                        <>
+                          <button
+                            onClick={() => handleApprove(inv.id)}
+                            className="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleReject(inv.id)}
+                            className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
                     </div>
 
                     <div className="text-xs mt-1">Status: {inv.approval_status || 'Pending'}</div>

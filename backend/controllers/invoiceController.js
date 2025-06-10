@@ -3,6 +3,7 @@ const pool = require('../config/db');
 const { parseCSV } = require('../utils/csvParser');
 const openai = require("../config/openai"); // ✅ re-use the config
 const axios = require('axios');
+const { logActivity } = require('../utils/activityLogger');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -62,6 +63,7 @@ exports.uploadInvoiceCSV = async (req, res) => {
     }
 
     fs.unlinkSync(req.file.path); // cleanup uploaded file
+    await logActivity(req.user?.userId, 'upload_invoice');
 
     res.json({
       message: 'Upload complete',
@@ -109,6 +111,7 @@ exports.getAllInvoices = async (req, res) => {
 exports.clearAllInvoices = async (req, res) => {
   try {
     await pool.query('DELETE FROM invoices');
+    await logActivity(req.user?.userId, 'clear_invoices');
     res.json({ message: 'All invoices deleted successfully.' });
   } catch (err) {
     console.error('Error deleting invoices:', err);
@@ -150,7 +153,7 @@ exports.deleteInvoiceById = async (req, res) => {
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Invoice not found' });
     }
-
+    await logActivity(req.user?.userId, 'delete_invoice', id);
     res.json({ message: 'Invoice deleted' });
   } catch (err) {
     console.error(err);
@@ -354,6 +357,7 @@ exports.approveInvoice = async (req, res) => {
       [id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
+    await logActivity(req.user?.userId, 'approve_invoice', id);
     res.json({ message: 'Invoice approved', invoice: result.rows[0] });
   } catch (err) {
     console.error('Approve error:', err);
@@ -371,6 +375,7 @@ exports.rejectInvoice = async (req, res) => {
       [id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
+    await logActivity(req.user?.userId, 'reject_invoice', id);
     res.json({ message: 'Invoice rejected', invoice: result.rows[0] });
   } catch (err) {
     console.error('Reject error:', err);
@@ -389,6 +394,7 @@ exports.addComment = async (req, res) => {
       [text, id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
+    await logActivity(req.user?.userId, 'add_comment', id);
     res.json({ message: 'Comment added', comments: result.rows[0].comments });
   } catch (err) {
     console.error('Add comment error:', err);
