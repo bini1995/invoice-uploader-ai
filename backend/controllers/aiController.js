@@ -384,3 +384,26 @@ exports.nlChartQuery = async (req, res) => {
     res.status(500).json({ message: 'Failed to process chart query.' });
   }
 };
+
+// --- Feedback Handling ---
+exports.logFeedback = async (endpoint, rating) => {
+  try {
+    await pool.query('INSERT INTO feedback (endpoint, rating) VALUES ($1,$2)', [endpoint, rating]);
+  } catch (err) {
+    console.error('Feedback log error:', err.message);
+  }
+};
+
+async function aggregateFeedback() {
+  try {
+    const result = await pool.query(
+      'SELECT endpoint, AVG(rating) AS avg_rating, COUNT(*) AS count FROM feedback GROUP BY endpoint'
+    );
+    console.log('Aggregated feedback:', result.rows);
+  } catch (err) {
+    console.error('Feedback aggregation error:', err.message);
+  }
+}
+
+// aggregate feedback once a day
+setInterval(aggregateFeedback, 24 * 60 * 60 * 1000);
