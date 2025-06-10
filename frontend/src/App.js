@@ -17,6 +17,7 @@ import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
 import NotificationBell from './components/NotificationBell';
+import GraphView from './components/GraphView';
 
 const teamMembers = ['Alice', 'Bob', 'Charlie'];
 
@@ -1880,12 +1881,20 @@ useEffect(() => {
                         >
                           {showChart ? 'Hide Chart' : 'Show Chart'}
                         </button>
-                        <button
+                        {viewMode !== 'graph' && (
+                          <button
                             onClick={() => setViewMode(viewMode === 'table' ? 'card' : 'table')}
                             className="text-sm text-blue-700 underline hover:text-blue-900"
                           >
                             {viewMode === 'table' ? '📇 Card View' : '📊 Table View'}
                           </button>
+                        )}
+                        <button
+                          onClick={() => setViewMode(viewMode === 'graph' ? 'table' : 'graph')}
+                          className="text-sm text-blue-700 underline hover:text-blue-900"
+                        >
+                          {viewMode === 'graph' ? '📊 Table View' : '🕸 Graph View'}
+                        </button>
 
                       </div>
 
@@ -2038,7 +2047,8 @@ useEffect(() => {
                 </div>
                 <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded border">
 
-                {viewMode === 'table' ? (
+                {viewMode !== 'graph' && (
+                  viewMode === 'table' ? (
               <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded border">      
               <table className="min-w-full bg-white border border-gray-300 text-sm">
               <thead className="bg-gray-200 text-gray-700 sticky top-0 z-10 shadow-sm">
@@ -2401,7 +2411,7 @@ useEffect(() => {
 
               </table>
               </div>
-                ) : (
+                ) : viewMode === 'card' ? (
                   // 👇 step 2 goes here
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                   {loadingInvoices ? (
@@ -2544,7 +2554,10 @@ useEffect(() => {
                 )}
               </div>
             </div>
-          </>
+          )}
+          {viewMode === 'graph' && (
+            <GraphView token={token} tenant={tenant} />
+          )}
         ) : (
           <div className="text-center text-gray-600 dark:text-gray-300 mt-8">
             🔒 Please log in to access invoice management tools.

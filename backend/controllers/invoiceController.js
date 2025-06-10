@@ -1421,6 +1421,64 @@ exports.getVendorScorecards = async (req, res) => {
   }
 };
 
+// Build a relationship graph of vendors and invoices
+exports.getRelationshipGraph = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, invoice_number, vendor, amount FROM invoices'
+    );
+
+    const nodes = [];
+    const links = [];
+    const vendorSet = new Set();
+
+    rows.forEach((inv) => {
+      if (!vendorSet.has(inv.vendor)) {
+        vendorSet.add(inv.vendor);
+        nodes.push({ id: `vendor-${inv.vendor}`, label: inv.vendor, type: 'vendor' });
+      }
+      nodes.push({ id: `inv-${inv.id}`, label: inv.invoice_number, type: 'invoice' });
+      links.push({ source: `vendor-${inv.vendor}`, target: `inv-${inv.id}`, type: 'vendor-invoice' });
+    });
+
+    const byNumber = {};
+    rows.forEach((inv) => {
+      byNumber[inv.invoice_number] = byNumber[inv.invoice_number] || [];
+      byNumber[inv.invoice_number].push(inv);
+    });
+    Object.values(byNumber).forEach((list) => {
+      if (list.length > 1) {
+        for (let i = 0; i < list.length; i++) {
+          for (let j = i + 1; j < list.length; j++) {
+            links.push({ source: `inv-${list[i].id}`, target: `inv-${list[j].id}`, type: 'duplicate' });
+          }
+        }
+      }
+    });
+
+    const byVendorAmount = {};
+    rows.forEach((inv) => {
+      const key = `${inv.vendor}_${inv.amount}`;
+      byVendorAmount[key] = byVendorAmount[key] || [];
+      byVendorAmount[key].push(inv);
+    });
+    Object.values(byVendorAmount).forEach((list) => {
+      if (list.length > 1) {
+        for (let i = 0; i < list.length; i++) {
+          for (let j = i + 1; j < list.length; j++) {
+            links.push({ source: `inv-${list[i].id}`, target: `inv-${list[j].id}`, type: 'recurring' });
+          }
+        }
+      }
+    });
+
+    res.json({ nodes, links });
+  } catch (err) {
+    console.error('Graph build error:', err);
+    res.status(500).json({ message: 'Failed to build graph' });
+  }
+};
+
 
 
 module.exports = {
@@ -1468,5 +1526,6 @@ module.exports = {
   bulkAutoCategorize,
   getVendorBio,
   getVendorScorecards,
+  getRelationshipGraph,
 };
 
