@@ -737,6 +737,56 @@ exports.getCashFlow = async (req, res) => {
   }
 };
 
+exports.getTopVendors = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    let { tag, startDate, endDate, minAmount, maxAmount } = req.query;
+
+    if (!startDate || !endDate) {
+      const now = new Date();
+      const quarter = Math.floor(now.getMonth() / 3);
+      const start = new Date(now.getFullYear(), quarter * 3, 1);
+      const end = new Date(now.getFullYear(), quarter * 3 + 3, 1);
+      startDate = startDate || start.toISOString();
+      endDate = endDate || end.toISOString();
+    }
+
+    const conditions = [];
+    const params = [];
+    if (startDate) {
+      params.push(startDate);
+      conditions.push(`date >= $${params.length}`);
+    }
+    if (endDate) {
+      params.push(endDate);
+      conditions.push(`date < $${params.length}`);
+    }
+    if (minAmount) {
+      params.push(minAmount);
+      conditions.push(`amount >= $${params.length}`);
+    }
+    if (maxAmount) {
+      params.push(maxAmount);
+      conditions.push(`amount <= $${params.length}`);
+    }
+    if (tag) {
+      params.push(tag);
+      conditions.push(`tags ? $${params.length}`);
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const query = `SELECT vendor, SUM(amount) AS total FROM invoices ${where} GROUP BY vendor ORDER BY total DESC LIMIT 5`;
+    const result = await client.query(query, params);
+    const rows = result.rows.map(r => ({ vendor: r.vendor, total: parseFloat(r.total) }));
+    res.json({ topVendors: rows });
+  } catch (err) {
+    console.error('Top vendors error:', err);
+    res.status(500).json({ message: 'Failed to fetch top vendors' });
+  } finally {
+    client.release();
+  }
+};
+
 
 
 module.exports = {
@@ -765,5 +815,6 @@ module.exports = {
   summarizeErrors,
   getMonthlyInsights,
   getCashFlow,
+  getTopVendors,
 };
 

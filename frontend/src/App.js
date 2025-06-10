@@ -59,6 +59,13 @@ const [files, setFile] = useState([]);   // ✅ new
   const [showChart, setShowChart] = useState(false);
   const [cashFlowData, setCashFlowData] = useState([]);
   const [cashFlowInterval, setCashFlowInterval] = useState('monthly');
+  const [topVendors, setTopVendors] = useState([]);
+  const [filterType, setFilterType] = useState('none');
+  const [filterTag, setFilterTag] = useState('');
+  const [filterStartDate, setFilterStartDate] = useState('');
+  const [filterEndDate, setFilterEndDate] = useState('');
+  const [filterMinAmount, setFilterMinAmount] = useState('');
+  const [filterMaxAmount, setFilterMaxAmount] = useState('');
   const [editingInvoiceId, setEditingInvoiceId] = useState(null);
   const [editingField, setEditingField] = useState(null); // format: { id, field }
   const [editValue, setEditValue] = useState('');
@@ -92,8 +99,9 @@ const [files, setFile] = useState([]);   // ✅ new
   useEffect(() => {
     if (showChart && token) {
       fetchCashFlowData(cashFlowInterval);
+      fetchTopVendors();
     }
-  }, [showChart, cashFlowInterval, token]);
+  }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
   
 
 
@@ -490,6 +498,33 @@ useEffect(() => {
     } catch (err) {
       console.error('Cash flow fetch error:', err);
       addToast('Failed to fetch cash flow', 'error');
+    }
+  };
+
+  const fetchTopVendors = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (filterType === 'tag' && filterTag) params.append('tag', filterTag);
+      if (filterType === 'date') {
+        if (filterStartDate) params.append('startDate', filterStartDate);
+        if (filterEndDate) params.append('endDate', filterEndDate);
+      }
+      if (filterType === 'amount') {
+        if (filterMinAmount) params.append('minAmount', filterMinAmount);
+        if (filterMaxAmount) params.append('maxAmount', filterMaxAmount);
+      }
+      const res = await fetch(`http://localhost:3000/api/invoices/top-vendors?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setTopVendors(data.topVendors || []);
+      } else {
+        addToast('Failed to fetch top vendors', 'error');
+      }
+    } catch (err) {
+      console.error('Top vendors fetch error:', err);
+      addToast('Failed to fetch top vendors', 'error');
     }
   };
   
@@ -1391,7 +1426,76 @@ useEffect(() => {
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
-                        </>
+
+                      <h3 className="text-lg font-medium mt-8 mb-2 text-gray-800">Top 5 Vendors This Quarter</h3>
+                      <div className="flex items-center my-2 space-x-2 text-sm">
+                        <label>Filter:</label>
+                        <select
+                          value={filterType}
+                          onChange={(e) => setFilterType(e.target.value)}
+                          className="border rounded p-1"
+                        >
+                          <option value="none">None</option>
+                          <option value="tag">Tag</option>
+                          <option value="date">Date Range</option>
+                          <option value="amount">Amount Range</option>
+                        </select>
+                        {filterType === 'tag' && (
+                          <input
+                            type="text"
+                            value={filterTag}
+                            onChange={(e) => setFilterTag(e.target.value)}
+                            placeholder="Tag"
+                            className="border rounded p-1"
+                          />
+                        )}
+                        {filterType === 'date' && (
+                          <>
+                            <input
+                              type="date"
+                              value={filterStartDate}
+                              onChange={(e) => setFilterStartDate(e.target.value)}
+                              className="border rounded p-1"
+                            />
+                            <input
+                              type="date"
+                              value={filterEndDate}
+                              onChange={(e) => setFilterEndDate(e.target.value)}
+                              className="border rounded p-1"
+                            />
+                          </>
+                        )}
+                        {filterType === 'amount' && (
+                          <>
+                            <input
+                              type="number"
+                              value={filterMinAmount}
+                              onChange={(e) => setFilterMinAmount(e.target.value)}
+                              placeholder="Min"
+                              className="border rounded p-1"
+                            />
+                            <input
+                              type="number"
+                              value={filterMaxAmount}
+                              onChange={(e) => setFilterMaxAmount(e.target.value)}
+                              placeholder="Max"
+                              className="border rounded p-1"
+                            />
+                          </>
+                        )}
+                      </div>
+                      <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={topVendors}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="vendor" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="total" fill="#6366F1" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      </>
                     )}
                 <div className="flex justify-between items-center mt-6 mb-2 text-sm text-gray-700">
                   <span>Total Invoices: <strong>{totalInvoices}</strong></span>
