@@ -66,6 +66,9 @@ const fileInputRef = useRef();
   const [showChart, setShowChart] = useState(false);
   const [cashFlowData, setCashFlowData] = useState([]);
   const [cashFlowInterval, setCashFlowInterval] = useState('monthly');
+  const [timeline, setTimeline] = useState([]);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [timelineInvoice, setTimelineInvoice] = useState(null);
   const [topVendors, setTopVendors] = useState([]);
   const [tagReport, setTagReport] = useState([]);
   const [filterType, setFilterType] = useState('none');
@@ -869,6 +872,21 @@ useEffect(() => {
     }
   };
 
+  const handleViewTimeline = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/timeline`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setTimelineInvoice(id);
+      setTimeline(data);
+      setShowTimeline(true);
+    } catch (err) {
+      console.error('Timeline fetch failed:', err);
+      addToast('Failed to load timeline', 'error');
+    }
+  };
+
   const handleQualityScore = async (invoice) => {
     try {
       const res = await fetch('http://localhost:3000/api/invoices/quality-score', {
@@ -1246,6 +1264,19 @@ useEffect(() => {
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-40">
           <Spinner />
+        </div>
+      )}
+      {showTimeline && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded w-96">
+            <h2 className="text-lg font-bold mb-2">Timeline for #{timelineInvoice}</h2>
+            <ul className="text-sm max-h-60 overflow-y-auto">
+              {timeline.map((t, i) => (
+                <li key={i}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
+              ))}
+            </ul>
+            <button onClick={() => setShowTimeline(false)} className="mt-2 bg-blue-600 text-white px-3 py-1 rounded">Close</button>
+          </div>
         </div>
       )}
       <header className="bg-blue-700 dark:bg-blue-900 text-white shadow p-4 mb-6">
@@ -2048,6 +2079,12 @@ useEffect(() => {
                         className="bg-yellow-600 text-white px-2 py-1 rounded hover:bg-yellow-700 text-xs w-full"
                       >
                         Flag
+                      </button>
+                      <button
+                        onClick={() => handleViewTimeline(inv.id)}
+                        className="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 text-xs w-full"
+                      >
+                        Timeline
                       </button>
                       <button
                         onClick={() => handleDownloadPDF(inv.id)}

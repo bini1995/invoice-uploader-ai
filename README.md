@@ -17,6 +17,10 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Conversational assistant to analyze spending
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
+- Auto-routing invoices by vendor or tag
+- Budget threshold warnings
+- Anomaly detection dashboard
+- Timeline view of invoice changes
 - Recurring invoice detection with notifications
 - Smart auto-fill suggestions for vendor tags and payment terms
 
@@ -60,10 +64,30 @@ CREATE TABLE activity_logs (
 );
 ```
 
+Create a `budgets` table for spending limits:
+
+```sql
+CREATE TABLE budgets (
+  id SERIAL PRIMARY KEY,
+  vendor TEXT,
+  tag TEXT,
+  period TEXT NOT NULL, -- 'monthly' or 'quarterly'
+  amount NUMERIC NOT NULL,
+  UNIQUE(vendor, tag, period)
+);
+```
+
 ### Auto-Archive Rule
 
 The backend automatically archives invoices older than 90 days
 unless they are marked as `priority`.
+
+### New Endpoints
+
+- `POST /api/invoices/budgets` – create/update a monthly or quarterly budget by vendor or tag
+- `GET /api/invoices/budgets/warnings` – check if spending has exceeded 90% of a budget
+- `GET /api/invoices/anomalies` – list vendors with unusual spending spikes
+- `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
 
 ### Frontend
 
