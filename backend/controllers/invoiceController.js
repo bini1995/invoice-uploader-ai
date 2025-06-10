@@ -7,6 +7,7 @@ const openai = require("../config/openai"); // ✅ re-use the config
 const axios = require('axios');
 const { applyRules } = require('../utils/rulesEngine');
 const { logActivity } = require('../utils/activityLogger');
+const PDFDocument = require('pdfkit');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -466,6 +467,19 @@ exports.addComment = async (req, res) => {
   }
 };
 
+exports.updatePrivateNotes = async (req, res) => {
+  const { id } = req.params;
+  const { notes } = req.body;
+  try {
+    await pool.query('UPDATE invoices SET private_notes = $1 WHERE id = $2', [notes || '', id]);
+    await logActivity(req.user?.userId, 'update_notes', id);
+    res.json({ message: 'Notes updated' });
+  } catch (err) {
+    console.error('Update notes error:', err);
+    res.status(500).json({ message: 'Failed to update notes' });
+  }
+};
+
 exports.handleSuggestion = async (req, res) => {
   try {
     const { invoice } = req.body;
@@ -536,6 +550,121 @@ exports.updateInvoiceField = async (req, res) => {
   }
 };
 
+exports.bulkArchiveInvoices = async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'No invoice IDs provided' });
+  }
+  try {
+    await pool.query('UPDATE invoices SET archived = TRUE WHERE id = ANY($1::int[])', [ids]);
+    await logActivity(req.user?.userId, 'bulk_archive');
+    res.json({ message: 'Invoices archived' });
+  } catch (err) {
+    console.error('Bulk archive error:', err);
+    res.status(500).json({ message: 'Failed to archive invoices' });
+  }
+};
+
+exports.bulkAssignInvoices = async (req, res) => {
+  const { ids, assignee } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'No invoice IDs provided' });
+  }
+  try {
+    await pool.query('UPDATE invoices SET assignee = $1 WHERE id = ANY($2::int[])', [assignee || null, ids]);
+    await logActivity(req.user?.userId, 'bulk_assign');
+    res.json({ message: 'Invoices assigned' });
+  } catch (err) {
+    console.error('Bulk assign error:', err);
+    res.status(500).json({ message: 'Failed to assign invoices' });
+  }
+};
+
+exports.bulkApproveInvoices = async (req, res) => {
+  const { ids, comment } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'No invoice IDs provided' });
+  }
+  try {
+    for (const id of ids) {
+      const invRes = await pool.query('SELECT approval_chain, current_step FROM invoices WHERE id = $1', [id]);
+      if (invRes.rows.length === 0) continue;
+      const invoice = invRes.rows[0];
+      const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
+      const step = chain[invoice.current_step] || 'Unknown';
+      const nextStep = invoice.current_step + 1;
+      const status = nextStep >= chain.length ? 'Approved' : 'In Progress';
+      await pool.query(
+        `UPDATE invoices SET approval_status = $1, current_step = $2,
+         approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('step',$3,'status','Approved','date', NOW(),'comment',$4))
+         WHERE id = $5`,
+        [status, nextStep, step, comment || '', id]
+      );
+    }
+    await logActivity(req.user?.userId, 'bulk_approve');
+    res.json({ message: 'Invoices approved' });
+  } catch (err) {
+    console.error('Bulk approve error:', err);
+    res.status(500).json({ message: 'Failed to approve invoices' });
+  }
+};
+
+exports.bulkRejectInvoices = async (req, res) => {
+  const { ids, comment } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'No invoice IDs provided' });
+  }
+  try {
+    for (const id of ids) {
+      const invRes = await pool.query('SELECT approval_chain, current_step FROM invoices WHERE id = $1', [id]);
+      if (invRes.rows.length === 0) continue;
+      const invoice = invRes.rows[0];
+      const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
+      const step = chain[invoice.current_step] || 'Unknown';
+      await pool.query(
+        `UPDATE invoices SET approval_status = 'Rejected', current_step = -1,
+         approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('step',$1,'status','Rejected','date', NOW(),'comment',$2))
+         WHERE id = $3`,
+        [step, comment || '', id]
+      );
+    }
+    await logActivity(req.user?.userId, 'bulk_reject');
+    res.json({ message: 'Invoices rejected' });
+  } catch (err) {
+    console.error('Bulk reject error:', err);
+    res.status(500).json({ message: 'Failed to reject invoices' });
+  }
+};
+
+exports.exportPDFBundle = async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'No invoice IDs provided' });
+  }
+  try {
+    const result = await pool.query('SELECT * FROM invoices WHERE id = ANY($1::int[]) ORDER BY id', [ids]);
+    const invoices = result.rows;
+    const doc = new PDFDocument({ autoFirstPage: false });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="invoices.pdf"');
+    doc.pipe(res);
+    invoices.forEach((inv, idx) => {
+      doc.addPage();
+      doc.fontSize(18).text(`Invoice #${inv.invoice_number}`, { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(12).text(`Vendor: ${inv.vendor}`);
+      doc.text(`Date: ${inv.date}`);
+      doc.text(`Amount: $${inv.amount}`);
+      doc.text(`Assignee: ${inv.assignee || '—'}`);
+      doc.text(`Tags: ${(inv.tags || []).join(', ')}`);
+    });
+    doc.end();
+  } catch (err) {
+    console.error('PDF bundle error:', err);
+    res.status(500).json({ message: 'Failed to export invoices' });
+  }
+};
+
 exports.suggestTags = async (req, res) => {
   try {
     const { invoice } = req.body;
@@ -581,9 +710,6 @@ exports.suggestTags = async (req, res) => {
     res.status(500).json({ message: 'Failed to generate tag suggestions' });
   }
 };
-
-
-const PDFDocument = require('pdfkit');
 
 
 const { parse } = require('json2csv');
@@ -1087,5 +1213,11 @@ module.exports = {
   getRecurringInsights,
   getVendorProfile,
   autoArchiveOldInvoices,
+  updatePrivateNotes,
+  bulkArchiveInvoices,
+  bulkAssignInvoices,
+  bulkApproveInvoices,
+  bulkRejectInvoices,
+  exportPDFBundle,
 };
 
