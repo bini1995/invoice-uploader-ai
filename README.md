@@ -78,6 +78,7 @@ ALTER TABLE invoices ADD COLUMN integrity_hash TEXT;
 ALTER TABLE invoices ADD COLUMN retention_policy TEXT DEFAULT 'forever';
 ALTER TABLE invoices ADD COLUMN delete_at TIMESTAMP;
 ALTER TABLE invoices ADD COLUMN tenant_id TEXT DEFAULT 'default';
+ALTER TABLE invoices ADD COLUMN department TEXT;
 ```
 
 Create an `activity_logs` table for the audit trail:
@@ -124,6 +125,15 @@ unless they are marked as `priority`.
 Invoices also store a SHA256 `integrity_hash` generated at upload time. You can
 set a retention policy (`6m`, `2y`, or `forever`) on upload or later. A daily
 job deletes invoices once their `delete_at` date passes.
+
+### Department Workflows
+
+Specify a `department` when uploading invoices and the backend will
+apply custom approval rules:
+
+- **Finance** – requires two separate approvals.
+- **Legal** – auto-approves and is meant for comments only.
+- **Ops** – invoices under $100 auto-approve, others need one manager step.
 
 ### New Endpoints
 
