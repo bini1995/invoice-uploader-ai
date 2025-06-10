@@ -48,7 +48,7 @@ const {
 
 
 const { summarizeUploadErrors } = require('../controllers/aiController');
-const { invoiceQualityScore, assistantQuery } = require('../controllers/aiController');
+const { invoiceQualityScore, assistantQuery, paymentRiskScore, nlChartQuery } = require('../controllers/aiController');
 const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
@@ -75,7 +75,9 @@ router.delete('/clear', authMiddleware, authorizeRoles('admin'), clearAllInvoice
 router.delete('/:id', authMiddleware, authorizeRoles('admin'), deleteInvoiceById);
 router.get('/search', searchInvoicesByVendor);
 router.post('/nl-query', authMiddleware, naturalLanguageQuery);
+router.post('/nl-chart', authMiddleware, nlChartQuery);
 router.post('/quality-score', authMiddleware, invoiceQualityScore);
+router.post('/payment-risk', authMiddleware, paymentRiskScore);
 router.post('/assistant', authMiddleware, assistantQuery);
 router.post('/summarize-errors', summarizeUploadErrors);
 router.post('/login', login);
