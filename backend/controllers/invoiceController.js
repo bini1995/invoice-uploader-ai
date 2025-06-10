@@ -1227,6 +1227,128 @@ exports.getVendorProfile = async (req, res) => {
   }
 };
 
+// Explain why an invoice was flagged
+exports.explainFlaggedInvoice = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+    const invoice = result.rows[0];
+    if (!invoice.flagged) {
+      return res.status(400).json({ message: 'Invoice is not flagged' });
+    }
+    const avgRes = await pool.query('SELECT AVG(amount) AS avg FROM invoices WHERE vendor = $1 AND id <> $2', [invoice.vendor, id]);
+    const avg = parseFloat(avgRes.rows[0].avg) || 0;
+    const prompt = `You are a fraud detection assistant. Explain in one short paragraph why this invoice might be flagged.\nInvoice amount: $${invoice.amount}. Average historical amount for vendor ${invoice.vendor} is $${avg.toFixed(2)}. Flag reason: ${invoice.flag_reason || 'None'}.`;
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You explain invoice flagging decisions.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+          'X-Title': 'invoice-uploader-ai',
+        },
+      }
+    );
+    const explanation = response.data.choices?.[0]?.message?.content?.trim();
+    res.json({ explanation });
+  } catch (err) {
+    console.error('Flag explanation error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to generate flag explanation' });
+  }
+};
+
+// Auto-categorize many invoices using past tagging data
+exports.bulkAutoCategorize = async (req, res) => {
+  const { invoices } = req.body;
+  if (!Array.isArray(invoices) || invoices.length === 0) {
+    return res.status(400).json({ message: 'No invoices provided' });
+  }
+  try {
+    const history = await pool.query('SELECT vendor, tags FROM invoices WHERE tags IS NOT NULL');
+    const vendorTags = {};
+    history.rows.forEach((r) => {
+      if (Array.isArray(r.tags)) {
+        vendorTags[r.vendor] = vendorTags[r.vendor] || new Set();
+        r.tags.forEach((t) => vendorTags[r.vendor].add(t));
+      }
+    });
+
+    const results = [];
+    for (const inv of invoices) {
+      const past = Array.from(vendorTags[inv.vendor] || []);
+      const prompt = `Suggest 1-3 concise categories for this invoice. Vendor: ${inv.vendor}. Amount: $${inv.amount}. Description: ${inv.description || 'None'}. Past tags for this vendor: ${past.join(', ') || 'none'}.`;
+      const aiRes = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'openai/gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'You categorize invoices for bookkeeping.' },
+            { role: 'user', content: prompt },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const tags = aiRes.data.choices?.[0]?.message?.content?.trim();
+      results.push({ invoice_number: inv.invoice_number, tags });
+    }
+
+    res.json({ categorizations: results });
+  } catch (err) {
+    console.error('Bulk categorize error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to categorize invoices' });
+  }
+};
+
+// Fetch vendor bio with short description and website
+exports.getVendorBio = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    const prompt = `Provide a one sentence description, official website link, and likely industry for the company \"${vendor}\". Respond in JSON with keys description, website, and industry.`;
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You generate short company bios.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    let data = {};
+    try {
+      data = JSON.parse(response.data.choices?.[0]?.message?.content || '{}');
+    } catch (e) {
+      data = { description: response.data.choices?.[0]?.message?.content };
+    }
+    res.json(data);
+  } catch (err) {
+    console.error('Vendor bio error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to fetch vendor bio' });
+  }
+};
+
 
 
 module.exports = {
@@ -1270,5 +1392,8 @@ module.exports = {
   bulkApproveInvoices,
   bulkRejectInvoices,
   exportPDFBundle,
+  explainFlaggedInvoice,
+  bulkAutoCategorize,
+  getVendorBio,
 };
 

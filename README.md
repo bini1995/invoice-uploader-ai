@@ -27,6 +27,9 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Shared comment threads for team discussion
 - Approver reminders with escalation
 - Batch actions with bulk approval and PDF export
+- AI explanations for why an invoice was flagged
+- AI-powered bulk categorization of uploaded invoices
+- Hoverable vendor bios with website and industry info
 
 ## Setup Instructions
 
