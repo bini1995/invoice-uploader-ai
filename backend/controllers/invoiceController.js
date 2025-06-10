@@ -74,9 +74,9 @@ exports.uploadInvoice = async (req, res) => {
     });
 
     for (const inv of validRows) {
-      await pool.query(
+      const insertRes = await pool.query(
         `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -89,6 +89,8 @@ exports.uploadInvoice = async (req, res) => {
           0,
         ]
       );
+      const newId = insertRes.rows[0].id;
+      await autoAssignInvoice(newId, inv.vendor, inv.tags || []);
     }
 
     fs.unlinkSync(req.file.path); // cleanup uploaded file
@@ -376,6 +378,23 @@ exports.assignInvoice = async (req, res) => {
   }
 };
 
+async function autoAssignInvoice(invoiceId, vendor, tags = []) {
+  let assignee = null;
+  if (vendor && vendor.toLowerCase().includes('figma')) {
+    assignee = 'Design Team';
+  }
+  if (tags.map(t => t.toLowerCase()).includes('marketing')) {
+    assignee = 'Alice';
+  }
+  if (assignee) {
+    try {
+      await pool.query('UPDATE invoices SET assignee = $1 WHERE id = $2', [assignee, invoiceId]);
+    } catch (err) {
+      console.error('Auto-assign error:', err);
+    }
+  }
+}
+
 exports.approveInvoice = async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body || {};
@@ -588,8 +607,8 @@ function exportArchivedInvoicesCSV(req, res) {
 
 module.exports.exportArchivedInvoicesCSV = exportArchivedInvoicesCSV;
 
-// ✅ Update invoice tags
-exports.updateInvoiceTags = (req, res) => {
+// ✅ Update invoice tags in DB
+exports.updateInvoiceTags = async (req, res) => {
   const id = parseInt(req.params.id);
   const { tags } = req.body;
 
@@ -597,16 +616,20 @@ exports.updateInvoiceTags = (req, res) => {
     return res.status(400).json({ message: 'Tags must be an array' });
   }
 
-  const invoices = require('../data/invoices.json');
-  const invoiceIndex = invoices.findIndex((inv) => inv.id === id);
-
-  if (invoiceIndex === -1) {
-    return res.status(404).json({ message: 'Invoice not found' });
+  try {
+    const result = await pool.query(
+      'UPDATE invoices SET tags = $1 WHERE id = $2 RETURNING id, vendor',
+      [tags, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+    await autoAssignInvoice(id, result.rows[0].vendor, tags);
+    res.json({ message: 'Tags updated', tags });
+  } catch (err) {
+    console.error('Failed to save tags:', err);
+    res.status(500).json({ message: 'Failed to save updated tags' });
   }
-
-  invoices[invoiceIndex].tags = tags;
-  fs.writeFileSync(path.join(__dirname, '../data/invoices.json'), JSON.stringify(invoices, null, 2));
-  res.json({ message: '✅ Tags updated successfully' });
 };
 
 // ✅ Generate PDF for one invoice

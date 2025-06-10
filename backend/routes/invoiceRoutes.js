@@ -43,7 +43,9 @@ const { updateInvoiceTags } = require('../controllers/invoiceController');
 const { generateInvoicePDF } = require('../controllers/invoiceController');
 const { assignInvoice } = require('../controllers/invoiceController');
 const { approveInvoice, rejectInvoice, addComment } = require('../controllers/invoiceController');
-const { getActivityLogs } = require('../controllers/activityController');
+const { getActivityLogs, getInvoiceTimeline } = require('../controllers/activityController');
+const { setBudget, getBudgets, checkBudgetWarnings } = require('../controllers/budgetController');
+const { getAnomalies } = require('../controllers/anomalyController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
@@ -83,6 +85,11 @@ router.post('/:id/comments', authMiddleware, authorizeRoles('approver','admin'),
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
+router.get('/:id/timeline', authMiddleware, getInvoiceTimeline);
+router.post('/budgets', authMiddleware, authorizeRoles('admin'), setBudget);
+router.get('/budgets', authMiddleware, authorizeRoles('admin'), getBudgets);
+router.get('/budgets/warnings', authMiddleware, checkBudgetWarnings);
+router.get('/anomalies', authMiddleware, getAnomalies);
 router.get('/:id/check-recurring', authMiddleware, checkRecurringInvoice);
 
 
