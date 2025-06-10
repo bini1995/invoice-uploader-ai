@@ -34,6 +34,7 @@ const [files, setFile] = useState([]);   // ✅ new
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [loginError, setLoginError] = useState('');
   const [vendorSummary, setVendorSummary] = useState('');
+  const [monthlyInsights, setMonthlyInsights] = useState(null);
   const [vendorSuggestions, setVendorSuggestions] = useState({});
   const [suspicionFlags] = useState({});
   const [duplicateFlags, setDuplicateFlags] = useState({});
@@ -371,6 +372,23 @@ useEffect(() => {
     } catch (err) {
       console.error('Vendor summary error:', err);
       setVendorSummary('⚠️ Failed to summarize vendor trends.');
+    }
+  };
+
+  const handleMonthlyInsights = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/monthly-insights', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMonthlyInsights(data);
+      } else {
+        addToast('Failed to fetch monthly insights', 'error');
+      }
+    } catch (err) {
+      console.error('Monthly insights error:', err);
+      addToast('Failed to fetch monthly insights', 'error');
     }
   };
   
@@ -968,6 +986,39 @@ useEffect(() => {
                     </div>
                   )}
 
+                  {monthlyInsights && (
+                    <div className="mt-4 p-4 bg-blue-100 border border-blue-400 text-blue-800 rounded relative">
+                      <strong>Monthly Insights:</strong>
+                      <button
+                        onClick={() => handleCopy(monthlyInsights.summary)}
+                        className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
+                      >
+                        Copy
+                      </button>
+                      <table className="text-xs mb-2">
+                        <thead>
+                          <tr>
+                            <th className="pr-4 text-left">Vendor</th>
+                            <th className="pr-4 text-right">Total</th>
+                            <th className="text-right">% Change</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {monthlyInsights.vendorTotals.map((v) => (
+                            <tr key={v.vendor}>
+                              <td className="pr-4">{v.vendor}</td>
+                              <td className="pr-4 text-right">${v.total.toFixed(2)}</td>
+                              <td className="text-right">
+                                {v.percentChange > 0 ? '+' : ''}{v.percentChange.toFixed(1)}%
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <pre className="whitespace-pre-wrap">{monthlyInsights.summary}</pre>
+                    </div>
+                  )}
+
 
                  {selectedInvoices.length > 0 && (
                         <div className="mb-4 bg-blue-50 border border-blue-200 p-4 rounded flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-4">
@@ -1023,6 +1074,14 @@ useEffect(() => {
                             className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm disabled:opacity-60"
                           >
                             Get Vendor Insights
+                          </button>
+
+                          <button
+                            onClick={handleMonthlyInsights}
+                            disabled={!token}
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm disabled:opacity-60"
+                          >
+                            🧠 Monthly Insights
                           </button>
 
                           <button
