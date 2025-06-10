@@ -64,6 +64,7 @@ const { getActivityLogs, getInvoiceTimeline } = require('../controllers/activity
 const { setBudget, getBudgets, checkBudgetWarnings } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns } = require('../controllers/fraudController');
+const { vendorReply } = require('../controllers/vendorReplyController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
@@ -103,6 +104,7 @@ router.patch('/:id/assign', authMiddleware, assignInvoice);
 router.patch('/:id/approve', authMiddleware, authorizeRoles('approver','admin'), approveInvoice);
 router.patch('/:id/reject', authMiddleware, authorizeRoles('approver','admin'), rejectInvoice);
 router.post('/:id/comments', authMiddleware, authorizeRoles('approver','admin'), addComment);
+router.post('/:id/vendor-reply', authMiddleware, authorizeRoles('approver','admin'), vendorReply);
 router.patch('/bulk/archive', authMiddleware, authorizeRoles('admin'), bulkArchiveInvoices);
 router.patch('/bulk/assign', authMiddleware, authorizeRoles('admin'), bulkAssignInvoices);
 router.patch('/bulk/approve', authMiddleware, authorizeRoles('approver','admin'), bulkApproveInvoices);
