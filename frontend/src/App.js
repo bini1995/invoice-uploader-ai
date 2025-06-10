@@ -387,6 +387,28 @@ useEffect(() => {
     }
   };
 
+  const handleSummarizeErrors = async () => {
+    if (!errors.length) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/summarize-errors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ errors }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setAiSummary(data.summary);
+        addToast('✅ Errors summarized');
+      } else {
+        addToast('⚠️ Failed to summarize errors', 'error');
+      }
+    } catch (err) {
+      console.error('Summarize errors failed:', err);
+      addToast('⚠️ Failed to summarize errors', 'error');
+    }
+  };
+
   const handleMonthlyInsights = async () => {
     try {
       const res = await fetch('http://localhost:3000/api/invoices/monthly-insights', {
@@ -966,12 +988,18 @@ useEffect(() => {
               <div className="mb-4">
                 <h3 className="text-red-600 font-semibold">Validation Errors:</h3>
                 <ul className="list-disc list-inside text-sm text-red-500">
-                  {errors.map((err, i) => (
-                    <li key={i}>{err}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              {errors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
+            <button
+              onClick={handleSummarizeErrors}
+              className="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700"
+            >
+              Summarize Errors
+            </button>
+          </div>
+        )}
                 {aiSummary && (
                 <div className="mt-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded relative">
                   <strong>AI Suggestions:</strong>
