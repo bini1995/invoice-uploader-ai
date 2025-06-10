@@ -121,6 +121,7 @@ job deletes invoices once their `delete_at` date passes.
 - `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor
 - `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
 - `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
+- `GET /api/invoices/:id/payment-request` – download a JSON payload for a payment request form
 
 ### Vendor Reply Drafts
 
@@ -155,6 +156,20 @@ Response:
 
 ```json
 { "message": "Email sent successfully." }
+```
+
+### Payment Request Form
+
+Request payment data:
+
+```bash
+GET /api/invoices/42/payment-request
+```
+
+Example response:
+
+```json
+{ "vendor": "Acme", "amount": 199.99, "due_date": "2025-06-01" }
 ```
 
 ### Frontend

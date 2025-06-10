@@ -102,6 +102,7 @@ const searchInputRef = useRef();
   });
 
   const [downloadingId, setDownloadingId] = useState(null);
+  const [paymentRequestId, setPaymentRequestId] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
@@ -1171,6 +1172,29 @@ useEffect(() => {
     }
   };
 
+  const handlePaymentRequest = async (id) => {
+    setPaymentRequestId(id);
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/payment-request`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error('Request failed');
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `payment-request-${id}.json`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Payment request error:', err);
+      addToast('⚠️ Failed to fetch payment request', 'error');
+    } finally {
+      setPaymentRequestId(null);
+    }
+  };
+
   const handleAddTag = async (invoiceId, tag) => {
     try {
       const res = await fetch(`http://localhost:3000/api/invoices/${invoiceId}/tags`, {
@@ -2211,17 +2235,24 @@ useEffect(() => {
                       >
                         Flag
                       </button>
-                      <button
-                        onClick={() => handleViewTimeline(inv.id)}
-                        className="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 text-xs w-full"
-                      >
-                        Timeline
-                      </button>
-                      <button
-                        onClick={() => handleDownloadPDF(inv.id)}
-                        className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs w-full flex justify-center items-center space-x-1 disabled:opacity-50"
-                        disabled={downloadingId === inv.id}
-                      >
+                        <button
+                          onClick={() => handleViewTimeline(inv.id)}
+                          className="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 text-xs w-full"
+                        >
+                          Timeline
+                        </button>
+                        <button
+                          onClick={() => handlePaymentRequest(inv.id)}
+                          className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs w-full"
+                          disabled={paymentRequestId === inv.id}
+                        >
+                          {paymentRequestId === inv.id ? 'Preparing...' : 'Payment Request'}
+                        </button>
+                        <button
+                          onClick={() => handleDownloadPDF(inv.id)}
+                          className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs w-full flex justify-center items-center space-x-1 disabled:opacity-50"
+                          disabled={downloadingId === inv.id}
+                        >
                         {downloadingId === inv.id ? (
                           <>
                             <svg className="animate-spin h-3 w-3 text-white" viewBox="0 0 24 24">
@@ -2340,6 +2371,13 @@ useEffect(() => {
                             className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
                           >
                             Reject
+                          </button>
+                          <button
+                            onClick={() => handlePaymentRequest(inv.id)}
+                            className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
+                            disabled={paymentRequestId === inv.id}
+                          >
+                            {paymentRequestId === inv.id ? 'Preparing...' : 'Payment Request'}
                           </button>
                         </>
                       )}
