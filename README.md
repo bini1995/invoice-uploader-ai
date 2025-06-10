@@ -14,12 +14,13 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - AI-generated summaries of common CSV issues (via OpenAI)
 - Query invoices using natural language (via OpenAI)
 - AI-powered invoice quality scores with tips
-- Conversational assistant to analyze spending
+- Ask Me Anything assistant for financial questions
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
 - Auto-routing invoices by vendor or tag
 - Budget threshold warnings
 - Anomaly detection dashboard
+- Fraud pattern detection for suspicious vendor activity
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications
 - Smart auto-fill suggestions for vendor tags and payment terms
@@ -28,6 +29,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Approver reminders with escalation
 - Batch actions with bulk approval and PDF export
 - AI explanations for why an invoice was flagged
+- "Why did AI say this?" links show confidence and reasoning
 - AI-powered bulk categorization of uploaded invoices
 - Hoverable vendor bios with website and industry info
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
