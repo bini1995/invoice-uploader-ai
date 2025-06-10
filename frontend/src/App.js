@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import LiveFeed from './components/LiveFeed';
+import TenantSwitcher from './components/TenantSwitcher';
 import {
   BarChart,
   Bar,
@@ -37,6 +39,7 @@ const [files, setFile] = useState([]);   // file objects to upload
 const [filePreviews, setFilePreviews] = useState([]);
 const [dragActive, setDragActive] = useState(false);
 const fileInputRef = useRef();
+const searchInputRef = useRef();
   const [invoices, setInvoices] = useState([]);
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState([]);
@@ -61,6 +64,7 @@ const fileInputRef = useRef();
   const [assigneeList, setAssigneeList] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState('');
   const [selectedAssignee, setSelectedAssignee] = useState('');
+  const [tenant, setTenant] = useState(() => localStorage.getItem('tenant') || 'default');
   const [recentInvoices, setRecentInvoices] = useState([]);
   const [selectedInvoices, setSelectedInvoices] = useState([]);
   const [showChart, setShowChart] = useState(false);
@@ -135,6 +139,10 @@ const fileInputRef = useRef();
   }, [viewMode]);
 
   useEffect(() => {
+    localStorage.setItem('tenant', tenant);
+  }, [tenant]);
+
+  useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -143,6 +151,43 @@ const fileInputRef = useRef();
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
+
+  useEffect(() => {
+    const orig = window.fetch;
+    window.fetch = (url, options = {}) => {
+      const headers = { 'X-Tenant-Id': tenant, ...(options.headers || {}) };
+      if (token && !headers.Authorization) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      return orig(url, { ...options, headers });
+    };
+    return () => {
+      window.fetch = orig;
+    };
+  }, [tenant, token]);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (e.key === 'a' || e.key === 'A') {
+        if (selectedInvoices.length) handleBulkArchive();
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        if (selectedInvoices.length) {
+          selectedInvoices.forEach((id) => {
+            const inv = invoices.find((i) => i.id === id);
+            if (inv) handleFlagSuspicious(inv);
+          });
+        }
+      }
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [selectedInvoices, invoices]);
 
   useEffect(() => {
     if (showChart && token) {
@@ -1283,6 +1328,7 @@ useEffect(() => {
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">📄 Invoice Uploader AI</h1>
           <div className="flex items-center space-x-4">
+            <TenantSwitcher tenant={tenant} onChange={setTenant} />
             <NotificationBell notifications={notifications} onOpen={markNotificationsRead} />
             <button
               onClick={() => setDarkMode((d) => !d)}
@@ -1306,7 +1352,10 @@ useEffect(() => {
       </header>
   
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
+          <LiveFeed token={token} tenant={tenant} />
+        </div>
   
         {token ? (
           <>
@@ -1360,6 +1409,7 @@ useEffect(() => {
                           placeholder="🔍 Search tags, vendors, descriptions..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
+                          ref={searchInputRef}
                           className="border border-gray-300 rounded px-3 py-2 text-sm w-60"
                         />
 

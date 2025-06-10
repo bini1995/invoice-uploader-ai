@@ -85,10 +85,11 @@ exports.uploadInvoice = async (req, res) => {
       validRows.push(withRules);
     });
 
+    const tenantId = req.headers['x-tenant-id'] || 'default';
     for (const inv of validRows) {
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -102,6 +103,7 @@ exports.uploadInvoice = async (req, res) => {
           integrityHash,
           retention,
           deleteAt,
+          tenantId,
         ]
       );
       const newId = insertRes.rows[0].id;
@@ -128,6 +130,7 @@ exports.getAllInvoices = async (req, res) => {
   try {
     const includeArchived = req.query.includeArchived === 'true';
     const assignee = req.query.assignee;
+    const tenantId = req.headers['x-tenant-id'] || req.query.tenant || 'default';
     const conditions = [];
     const params = [];
     if (!includeArchived) {
@@ -136,6 +139,10 @@ exports.getAllInvoices = async (req, res) => {
     if (assignee) {
       params.push(assignee);
       conditions.push(`assignee = $${params.length}`);
+    }
+    if (tenantId) {
+      params.push(tenantId);
+      conditions.push(`tenant_id = $${params.length}`);
     }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
     const query = `SELECT * FROM invoices ${where} ORDER BY id DESC`;
