@@ -831,6 +831,101 @@ exports.getTopVendors = async (req, res) => {
   }
 };
 
+exports.getSpendingByTag = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { startDate, endDate, minAmount, maxAmount } = req.query;
+    const params = [];
+    const conditions = [];
+
+    if (startDate) {
+      params.push(startDate);
+      conditions.push(`date >= $${params.length}`);
+    }
+    if (endDate) {
+      params.push(endDate);
+      conditions.push(`date <= $${params.length}`);
+    }
+    if (minAmount) {
+      params.push(minAmount);
+      conditions.push(`amount >= $${params.length}`);
+    }
+    if (maxAmount) {
+      params.push(maxAmount);
+      conditions.push(`amount <= $${params.length}`);
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const query = `
+      SELECT tag, SUM(amount) AS total
+      FROM (
+        SELECT jsonb_array_elements_text(tags) AS tag, amount
+        FROM invoices
+        ${where}
+      ) t
+      GROUP BY tag
+      ORDER BY total DESC`;
+    const result = await client.query(query, params);
+    const rows = result.rows.map(r => ({ tag: r.tag, total: parseFloat(r.total) }));
+    res.json({ byTag: rows });
+  } catch (err) {
+    console.error('Tag spending error:', err);
+    res.status(500).json({ message: 'Failed to fetch spending by tag' });
+  } finally {
+    client.release();
+  }
+};
+
+exports.exportDashboardPDF = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { tag, startDate, endDate } = req.query;
+    const params = [];
+    const conditions = [];
+
+    if (startDate) {
+      params.push(startDate);
+      conditions.push(`date >= $${params.length}`);
+    }
+    if (endDate) {
+      params.push(endDate);
+      conditions.push(`date <= $${params.length}`);
+    }
+    if (tag) {
+      params.push(tag);
+      conditions.push(`tags ? $${params.length}`);
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const query = `SELECT invoice_number, date, amount, vendor, tags FROM invoices ${where} ORDER BY date DESC`;
+    const result = await client.query(query, params);
+
+    const doc = new PDFDocument();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="dashboard.pdf"');
+    doc.pipe(res);
+
+    doc.fontSize(18).text('Invoice Dashboard', { align: 'center' });
+    doc.moveDown();
+
+    result.rows.forEach(inv => {
+      doc.fontSize(12).text(`Invoice #${inv.invoice_number}`);
+      doc.text(`Date: ${inv.date}`);
+      doc.text(`Vendor: ${inv.vendor}`);
+      doc.text(`Amount: $${parseFloat(inv.amount).toFixed(2)}`);
+      doc.text(`Tags: ${(inv.tags || []).join(', ')}`);
+      doc.moveDown();
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error('Dashboard PDF error:', err);
+    res.status(500).json({ message: 'Failed to export dashboard PDF' });
+  } finally {
+    client.release();
+  }
+};
+
 // Automatically archive invoices older than 90 days unless marked priority
 exports.autoArchiveOldInvoices = async () => {
   try {
@@ -878,6 +973,8 @@ module.exports = {
   getMonthlyInsights,
   getCashFlow,
   getTopVendors,
+  getSpendingByTag,
+  exportDashboardPDF,
   autoArchiveOldInvoices,
 };
 

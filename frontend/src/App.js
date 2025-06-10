@@ -67,6 +67,7 @@ const fileInputRef = useRef();
   const [cashFlowData, setCashFlowData] = useState([]);
   const [cashFlowInterval, setCashFlowInterval] = useState('monthly');
   const [topVendors, setTopVendors] = useState([]);
+  const [tagReport, setTagReport] = useState([]);
   const [filterType, setFilterType] = useState('none');
   const [filterTag, setFilterTag] = useState('');
   const [filterStartDate, setFilterStartDate] = useState('');
@@ -144,6 +145,7 @@ const fileInputRef = useRef();
     if (showChart && token) {
       fetchCashFlowData(cashFlowInterval);
       fetchTopVendors();
+      fetchTagReport();
     }
   }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
   
@@ -598,6 +600,32 @@ useEffect(() => {
       addToast('Failed to fetch top vendors', 'error');
     }
   };
+
+  const fetchTagReport = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (filterType === 'date') {
+        if (filterStartDate) params.append('startDate', filterStartDate);
+        if (filterEndDate) params.append('endDate', filterEndDate);
+      }
+      if (filterType === 'amount') {
+        if (filterMinAmount) params.append('minAmount', filterMinAmount);
+        if (filterMaxAmount) params.append('maxAmount', filterMaxAmount);
+      }
+      const res = await fetch(`http://localhost:3000/api/invoices/spending-by-tag?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setTagReport(data.byTag || []);
+      } else {
+        addToast('Failed to fetch tag report', 'error');
+      }
+    } catch (err) {
+      console.error('Tag report fetch error:', err);
+      addToast('Failed to fetch tag report', 'error');
+    }
+  };
   
 
   const handleExportAll = async () => {
@@ -618,6 +646,34 @@ useEffect(() => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Export all failed:', err);
+    }
+  };
+
+  const handleExportDashboardPDF = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (filterType === 'tag' && filterTag) params.append('tag', filterTag);
+      if (filterType === 'date') {
+        if (filterStartDate) params.append('startDate', filterStartDate);
+        if (filterEndDate) params.append('endDate', filterEndDate);
+      }
+      if (filterType === 'amount') {
+        if (filterMinAmount) params.append('minAmount', filterMinAmount);
+        if (filterMaxAmount) params.append('maxAmount', filterMaxAmount);
+      }
+      const res = await fetch(`http://localhost:3000/api/invoices/dashboard/pdf?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dashboard.pdf';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Dashboard PDF export failed:', err);
+      addToast('Failed to export dashboard', 'error');
     }
   };
 
@@ -1482,6 +1538,13 @@ useEffect(() => {
                           >
                             Export All as CSV
                           </button>
+                          <button
+                            onClick={handleExportDashboardPDF}
+                            disabled={!token}
+                            className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-sm disabled:opacity-60"
+                          >
+                            Export Dashboard PDF
+                          </button>
 
                           {role === 'admin' && (
                             <button
@@ -1689,6 +1752,18 @@ useEffect(() => {
                             <YAxis />
                             <Tooltip />
                             <Bar dataKey="total" fill="#6366F1" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <h3 className="text-lg font-medium mt-8 mb-2 text-gray-800">Spending by Tag</h3>
+                      <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={tagReport}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="tag" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar dataKey="total" fill="#0ea5e9" />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>

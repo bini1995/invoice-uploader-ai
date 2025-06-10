@@ -20,6 +20,8 @@ const {
   getMonthlyInsights,
   getCashFlow,
   getTopVendors,
+  getSpendingByTag,
+  exportDashboardPDF,
 } = require('../controllers/invoiceController');
 
 
@@ -62,6 +64,8 @@ router.post('/summarize-vendor-data', summarizeVendorData);
 router.get('/monthly-insights', authMiddleware, getMonthlyInsights);
 router.get('/cash-flow', authMiddleware, getCashFlow);
 router.get('/top-vendors', authMiddleware, getTopVendors);
+router.get('/spending-by-tag', authMiddleware, getSpendingByTag);
+router.get('/dashboard/pdf', authMiddleware, exportDashboardPDF);
 router.post('/flag-suspicious', authMiddleware, flagSuspiciousInvoice);
 router.patch('/:id/archive', authMiddleware, archiveInvoice);
 router.post('/:id/unarchive', authMiddleware, unarchiveInvoice);
