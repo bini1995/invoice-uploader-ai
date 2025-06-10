@@ -85,12 +85,25 @@ const [files, setFile] = useState([]);   // ✅ new
   const [downloadingId, setDownloadingId] = useState(null);
   const [toasts, setToasts] = useState([]);
 
-  const addToast = (text, type = 'success') => {
+  const addToast = (
+    text,
+    type = 'success',
+    options = { duration: 3000, actionText: null, onAction: null }
+  ) => {
     const id = Date.now();
-    setToasts((t) => [...t, { id, text, type }]);
-    setTimeout(() => {
+    const toast = {
+      id,
+      text,
+      type,
+      actionText: options.actionText,
+      onAction: options.onAction,
+    };
+    setToasts((t) => [...t, toast]);
+    const timeout = setTimeout(() => {
       setToasts((t) => t.filter((toast) => toast.id !== id));
-    }, 3000);
+    }, options.duration);
+
+    return () => clearTimeout(timeout);
   };
 
   
@@ -565,29 +578,46 @@ useEffect(() => {
   };
   
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete invoice #${id}?`);
+  const handleDelete = (id) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete invoice #${id}?`
+    );
     if (!confirmDelete) return;
 
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
+    const invoice = invoices.find((inv) => inv.id === id);
+    setInvoices((prev) => prev.filter((inv) => inv.id !== id));
 
-      const data = await res.json();
-      addToast(data.message);
+    const undo = () => {
+      clearTimeout(timeout);
+      setInvoices((prev) => [invoice, ...prev].sort((a, b) => b.id - a.id));
+    };
 
-      const updated = await fetch('http://localhost:3000/api/invoices');
-      const updatedData = await updated.json();
-      setInvoices(updatedData);
-    } catch (err) {
-      console.error('Delete error:', err);
-      addToast('Failed to delete invoice.', 'error');
-    }
+    const timeout = setTimeout(async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/api/invoices/${id}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        addToast(data.message);
+
+        const updated = await fetch('http://localhost:3000/api/invoices');
+        const updatedData = await updated.json();
+        setInvoices(updatedData);
+      } catch (err) {
+        console.error('Delete error:', err);
+        addToast('Failed to delete invoice.', 'error');
+      }
+    }, 5000);
+
+    addToast(`Invoice #${id} deleted`, 'success', {
+      duration: 5000,
+      actionText: 'Undo',
+      onAction: undo,
+    });
   };
 
   const handleSort = (key) => {
@@ -1058,7 +1088,13 @@ useEffect(() => {
     <div className="min-h-screen bg-gray-100">
       <div className="fixed top-4 right-4 space-y-2 z-50">
         {toasts.map((t) => (
-          <Toast key={t.id} message={t.text} type={t.type} />
+          <Toast
+            key={t.id}
+            message={t.text}
+            type={t.type}
+            actionText={t.actionText}
+            onAction={t.onAction}
+          />
         ))}
       </div>
       {loading && (
