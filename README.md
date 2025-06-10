@@ -115,6 +115,8 @@ job deletes invoices once their `delete_at` date passes.
 - `GET /api/invoices/anomalies` – list vendors with unusual spending spikes
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
 - `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
+- `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor
+- `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
 
 ### Frontend
 

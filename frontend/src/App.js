@@ -89,6 +89,9 @@ const searchInputRef = useRef();
   const [updatingField, setUpdatingField] = useState(null);
   const [tagSuggestions, setTagSuggestions] = useState({});
   const [qualityScores, setQualityScores] = useState({});
+  const [riskScores, setRiskScores] = useState({});
+  const [chartQuestion, setChartQuestion] = useState('');
+  const [chartDataAuto, setChartDataAuto] = useState([]);
   const [chatQuestion, setChatQuestion] = useState('');
   const [chatAnswer, setChatAnswer] = useState('');
   const [commentInputs, setCommentInputs] = useState({});
@@ -744,6 +747,28 @@ useEffect(() => {
       setChatAnswer('Failed to get answer.');
     }
   };
+
+  const handleChartQuery = async () => {
+    if (!chartQuestion.trim()) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/nl-chart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ question: chartQuestion }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setChartDataAuto(data.rows);
+      } else {
+        setChartDataAuto([]);
+        addToast(data.message, 'error');
+      }
+    } catch (err) {
+      console.error('Chart query failed:', err);
+      setChartDataAuto([]);
+      addToast('Failed to run query', 'error');
+    }
+  };
   
 
   const handleDelete = (id) => {
@@ -948,6 +973,25 @@ useEffect(() => {
     } catch (err) {
       console.error('Quality score error:', err);
       setQualityScores((p) => ({ ...p, [invoice.id]: { score: 'N/A', tips: 'Failed to score.' } }));
+    }
+  };
+
+  const handleRiskScore = async (invoice) => {
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/payment-risk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ vendor: invoice.vendor }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRiskScores((p) => ({ ...p, [invoice.id]: data.risk }));
+      } else {
+        setRiskScores((p) => ({ ...p, [invoice.id]: 'N/A' }));
+      }
+    } catch (err) {
+      console.error('Risk score error:', err);
+      setRiskScores((p) => ({ ...p, [invoice.id]: 'N/A' }));
     }
   };
   
@@ -1658,16 +1702,44 @@ useEffect(() => {
                             placeholder="Ask AI about invoices..."
                             className="border rounded p-1 flex-1 text-sm"
                           />
-                          <button
+                        <button
                             onClick={handleAssistantQuery}
                             className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
                           >
                             Ask
                           </button>
                         </div>
+                        <div className="flex flex-wrap space-x-2 mt-2 w-full">
+                          <input
+                            type="text"
+                            value={chartQuestion}
+                            onChange={(e) => setChartQuestion(e.target.value)}
+                            placeholder="Ask for a chart..."
+                            className="border rounded p-1 flex-1 text-sm"
+                          />
+                          <button
+                            onClick={handleChartQuery}
+                            className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                          >
+                            Chart
+                          </button>
+                        </div>
                         {chatAnswer && (
                           <div className="mt-2 p-2 bg-gray-100 border rounded text-sm whitespace-pre-wrap w-full">
                             {chatAnswer}
+                          </div>
+                        )}
+                        {chartDataAuto.length > 0 && (
+                          <div className="w-full h-64 mt-2">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={chartDataAuto}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey={Object.keys(chartDataAuto[0])[0]} />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey={Object.keys(chartDataAuto[0])[1]} fill="#10B981" />
+                              </BarChart>
+                            </ResponsiveContainer>
                           </div>
                         )}
                       </div>
@@ -1898,6 +1970,7 @@ useEffect(() => {
                     <th className="border px-4 py-2">Status</th>
                     <th className="border px-4 py-2">Updated At</th>
                     <th className="border px-4 py-2">Quality</th>
+                    <th className="border px-4 py-2">Risk</th>
                     <th className="border px-4 py-2">Actions</th>
                     
                   </tr>
@@ -2070,6 +2143,14 @@ useEffect(() => {
                         title={qualityScores[inv.id]?.tips || ''}
                       >
                         {qualityScores[inv.id] ? `💯 ${qualityScores[inv.id].score}` : 'Score'}
+                      </button>
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      <button
+                        onClick={() => handleRiskScore(inv)}
+                        className="bg-orange-600 text-white px-2 py-1 rounded hover:bg-orange-700 text-xs w-full"
+                      >
+                        {riskScores[inv.id] || 'Risk'}
                       </button>
                     </td>
                     <td className="border px-4 py-2 space-y-1 flex flex-col items-center">
