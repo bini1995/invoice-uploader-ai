@@ -30,6 +30,9 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - AI explanations for why an invoice was flagged
 - AI-powered bulk categorization of uploaded invoices
 - Hoverable vendor bios with website and industry info
+- Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
+- Real-time "Ops Mode" dashboard with a live feed of invoice activity
+- Multi-tenant support so agencies can switch between different client accounts
 
 ## Setup Instructions
 
@@ -41,6 +44,12 @@ npm install
 cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
 npm start
 ```
+
+### Multi-Tenant Usage
+
+Set an `X-Tenant-Id` header on every API request. Invoices are filtered by this
+tenant ID and new uploads will be associated with it. The default tenant is
+`"default"` if no header is provided.
 
 ### Database Update
 
@@ -62,6 +71,7 @@ ALTER TABLE invoices ADD COLUMN due_date DATE;
 ALTER TABLE invoices ADD COLUMN integrity_hash TEXT;
 ALTER TABLE invoices ADD COLUMN retention_policy TEXT DEFAULT 'forever';
 ALTER TABLE invoices ADD COLUMN delete_at TIMESTAMP;
+ALTER TABLE invoices ADD COLUMN tenant_id TEXT DEFAULT 'default';
 ```
 
 Create an `activity_logs` table for the audit trail:
