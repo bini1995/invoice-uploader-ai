@@ -9,6 +9,7 @@ const { applyRules } = require('../utils/rulesEngine');
 const { logActivity } = require('../utils/activityLogger');
 const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
+const { getWorkflowForDepartment } = require('../utils/workflows');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -76,20 +77,30 @@ exports.uploadInvoice = async (req, res) => {
         return;
       }
 
+      const department = inv.department?.trim() || req.body.department;
       const withRules = applyRules({
         invoice_number,
         date: new Date(date),
         amount: parseFloat(amount),
         vendor,
       });
-      validRows.push(withRules);
+      const workflow = getWorkflowForDepartment(department, amount);
+      validRows.push({
+        ...withRules,
+        department,
+        approval_chain: workflow.approvalChain,
+        autoApprove: workflow.autoApprove,
+      });
     });
 
     const tenantId = req.headers['x-tenant-id'] || 'default';
     for (const inv of validRows) {
+      const approvalChain = inv.approval_chain || ['Manager','Finance','CFO'];
+      const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
+      const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id, approval_status, department)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -98,12 +109,14 @@ exports.uploadInvoice = async (req, res) => {
           null,
           inv.flagged || false,
           inv.flag_reason,
-          JSON.stringify(['Manager','Finance','CFO']),
-          0,
+          JSON.stringify(approvalChain),
+          currentStep,
           integrityHash,
           retention,
           deleteAt,
           tenantId,
+          approvalStatus,
+          inv.department || null,
         ]
       );
       const newId = insertRes.rows[0].id;
