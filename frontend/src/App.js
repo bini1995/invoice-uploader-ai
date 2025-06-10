@@ -153,7 +153,12 @@ const [files, setFile] = useState([]);   // ✅ new
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
-        fetchInvoices(); // ✅ Refresh invoice list
+        const updatedList = await fetchInvoices(); // refresh and get new data
+
+        if (field === 'vendor') {
+          const updatedInv = updatedList?.find((inv) => inv.id === id);
+          if (updatedInv) handleSuggestTags(updatedInv);
+        }
   
         // ✅ ✅ Add this to show a green checkmark after update
         setUpdatedFields((prev) => ({
@@ -282,6 +287,12 @@ useEffect(() => {
       .filter(inv => !invoices.some(existing => existing.id === inv.id))
       .map(inv => inv.id);
 
+    // automatically fetch tag suggestions for newly uploaded invoices
+    newIds.forEach((newId) => {
+      const inv = updatedData.find(i => i.id === newId);
+      if (inv) handleSuggestTags(inv);
+    });
+
     if (newIds.length > 0) {
       setRecentInvoices(newIds);
       setTimeout(() => {
@@ -322,6 +333,7 @@ useEffect(() => {
         });
         setDuplicateFlags(dupMap);
 
+        return data;
       } catch (err) {
         console.error('Fetch error:', err);
         setMessage('❌ Could not load invoices');
