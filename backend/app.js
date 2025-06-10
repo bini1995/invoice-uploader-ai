@@ -4,7 +4,7 @@ const express = require('express');         // web server framework
 const cors = require('cors');
 require('dotenv').config();                 // load environment variables
 const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
-const { autoArchiveOldInvoices } = require('./controllers/invoiceController');
+const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
 
 const app = express();                      // create the app
 
@@ -17,6 +17,8 @@ app.use('/api/invoices', invoiceRoutes);    // route all invoice requests here
 // Run auto-archive daily
 autoArchiveOldInvoices();
 setInterval(autoArchiveOldInvoices, 24 * 60 * 60 * 1000); // every 24h
+autoDeleteExpiredInvoices();
+setInterval(autoDeleteExpiredInvoices, 24 * 60 * 60 * 1000);
 
 console.log('🟢 Routes mounted');
 

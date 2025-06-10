@@ -56,6 +56,9 @@ ALTER TABLE invoices ADD COLUMN current_step INTEGER DEFAULT 0;
 ALTER TABLE invoices ADD COLUMN payment_terms TEXT;
 ALTER TABLE invoices ADD COLUMN private_notes TEXT;
 ALTER TABLE invoices ADD COLUMN due_date DATE;
+ALTER TABLE invoices ADD COLUMN integrity_hash TEXT;
+ALTER TABLE invoices ADD COLUMN retention_policy TEXT DEFAULT 'forever';
+ALTER TABLE invoices ADD COLUMN delete_at TIMESTAMP;
 ```
 
 Create an `activity_logs` table for the audit trail:
@@ -88,12 +91,17 @@ CREATE TABLE budgets (
 The backend automatically archives invoices older than 90 days
 unless they are marked as `priority`.
 
+Invoices also store a SHA256 `integrity_hash` generated at upload time. You can
+set a retention policy (`6m`, `2y`, or `forever`) on upload or later. A daily
+job deletes invoices once their `delete_at` date passes.
+
 ### New Endpoints
 
 - `POST /api/invoices/budgets` – create/update a monthly or quarterly budget by vendor or tag
 - `GET /api/invoices/budgets/warnings` – check if spending has exceeded 90% of a budget
 - `GET /api/invoices/anomalies` – list vendors with unusual spending spikes
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
+- `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
 
 ### Frontend
 

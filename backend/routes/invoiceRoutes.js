@@ -40,6 +40,7 @@ const {
   bulkRejectInvoices,
   exportPDFBundle,
   updatePrivateNotes,
+  updateRetentionPolicy,
 } = require('../controllers/invoiceController');
 
 
@@ -100,6 +101,7 @@ router.patch('/bulk/approve', authMiddleware, authorizeRoles('approver','admin')
 router.patch('/bulk/reject', authMiddleware, authorizeRoles('approver','admin'), bulkRejectInvoices);
 router.post('/bulk/pdf', authMiddleware, exportPDFBundle);
 router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);
+router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRetentionPolicy);
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
