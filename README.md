@@ -14,6 +14,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - AI-generated summaries of common CSV issues (via OpenAI)
 - Query invoices using natural language (via OpenAI)
 - AI-powered invoice quality scores with tips
+- User ratings on AI responses continuously improve future accuracy
 - Ask Me Anything assistant for financial questions
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
@@ -102,6 +103,17 @@ CREATE TABLE budgets (
 );
 ```
 
+Create a `feedback` table for storing ratings on AI results:
+
+```sql
+CREATE TABLE feedback (
+  id SERIAL PRIMARY KEY,
+  endpoint TEXT,
+  rating INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
 ### Auto-Archive Rule
 
 The backend automatically archives invoices older than 90 days
@@ -122,6 +134,8 @@ job deletes invoices once their `delete_at` date passes.
 - `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
 - `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
 - `GET /api/invoices/:id/payment-request` – download a JSON payload for a payment request form
+- `POST /api/feedback` – submit a rating for an AI-generated result
+- `GET /api/feedback` – view average ratings by endpoint
 
 ### Vendor Reply Drafts
 
@@ -171,6 +185,12 @@ Example response:
 ```json
 { "vendor": "Acme", "amount": 199.99, "due_date": "2025-06-01" }
 ```
+
+### Feedback Loop
+
+Feedback submitted through `/api/feedback` is aggregated daily. The average
+scores for each endpoint are reviewed to fine‑tune prompts and tweak scoring
+heuristics so future AI results get better over time.
 
 ### Frontend
 
