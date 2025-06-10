@@ -213,3 +213,7 @@ cd frontend
 npm install
 npm start
 ```
+
+### Offline Mode (PWA)
+
+The app registers a service worker so you can view and stage invoices even without a network connection. Any actions you take while offline are queued in local storage and automatically synced when the browser comes back online. Install the PWA from your browser's "Add to home screen" option for the best experience.

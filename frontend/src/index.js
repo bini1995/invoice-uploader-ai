@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme === 'dark') {
@@ -12,6 +13,9 @@ const apiBase = process.env.REACT_APP_API_BASE_URL;
 fetch(`${apiBase}/api/invoices`);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
+
+// register service worker for offline support
+serviceWorkerRegistration.register();
 
 
 // If you want to start measuring performance in your app, pass a function

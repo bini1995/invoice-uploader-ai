@@ -106,6 +106,7 @@ const searchInputRef = useRef();
   const [toasts, setToasts] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   const addToast = (
     text,
@@ -137,6 +138,21 @@ const searchInputRef = useRef();
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
+  async function syncPendingActions() {
+    const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
+    if (!pending.length) return;
+    for (const action of pending) {
+      try {
+        await fetch(action.url, action.options);
+      } catch (err) {
+        console.error('Failed to sync action', action, err);
+        return;
+      }
+    }
+    localStorage.removeItem('pendingActions');
+    fetchInvoices(showArchived, selectedAssignee);
+  }
+
   
   useEffect(() => {
     localStorage.setItem('viewMode', viewMode);
@@ -158,15 +174,43 @@ const searchInputRef = useRef();
 
   useEffect(() => {
     const orig = window.fetch;
-    window.fetch = (url, options = {}) => {
+    window.fetch = async (url, options = {}) => {
       const headers = { 'X-Tenant-Id': tenant, ...(options.headers || {}) };
       if (token && !headers.Authorization) {
         headers.Authorization = `Bearer ${token}`;
       }
-      return orig(url, { ...options, headers });
+      try {
+        return await orig(url, { ...options, headers });
+      } catch (err) {
+        if (!navigator.onLine && options.method && options.method !== 'GET') {
+          const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
+          pending.push({ url, options: { ...options, headers } });
+          localStorage.setItem('pendingActions', JSON.stringify(pending));
+          addToast('⏸️ Action queued offline', 'error');
+          throw err;
+        }
+        throw err;
+      }
     };
     return () => {
       window.fetch = orig;
+    };
+  }, [tenant, token]);
+
+  useEffect(() => {
+    const goOnline = () => {
+      setIsOffline(false);
+      syncPendingActions();
+    };
+    const goOffline = () => setIsOffline(true);
+    window.addEventListener('online', goOnline);
+    window.addEventListener('offline', goOffline);
+    if (navigator.onLine) {
+      syncPendingActions();
+    }
+    return () => {
+      window.removeEventListener('online', goOnline);
+      window.removeEventListener('offline', goOffline);
     };
   }, [tenant, token]);
 
@@ -361,7 +405,14 @@ const searchInputRef = useRef();
   const itemsPerPage = 10;
 
 useEffect(() => {
-  fetchInvoices(showArchived, selectedAssignee);
+  if (navigator.onLine) {
+    fetchInvoices(showArchived, selectedAssignee);
+  } else {
+    const cached = localStorage.getItem('cachedInvoices');
+    if (cached) {
+      setInvoices(JSON.parse(cached));
+    }
+  }
 }, [showArchived, selectedAssignee]);
 
   
@@ -482,15 +533,16 @@ useEffect(() => {
         if (assigneeFilter) params.push(`assignee=${encodeURIComponent(assigneeFilter)}`);
         const query = params.length ? `?${params.join('&')}` : '';
         const url = `http://localhost:3000/api/invoices${query}`;
-    
+
         const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-    
+
         const data = await res.json();
         setInvoices(data);
+        localStorage.setItem('cachedInvoices', JSON.stringify(data));
         // Extract unique vendors and assignees from invoices
         const vendors = Array.from(new Set(data.map(inv => inv.vendor).filter(Boolean)));
         setVendorList(vendors);
@@ -517,7 +569,14 @@ useEffect(() => {
         return data;
       } catch (err) {
         console.error('Fetch error:', err);
-        setMessage('❌ Could not load invoices');
+        const cached = localStorage.getItem('cachedInvoices');
+        if (cached) {
+          setInvoices(JSON.parse(cached));
+          setIsOffline(true);
+          setMessage('Offline mode: showing cached invoices');
+        } else {
+          setMessage('❌ Could not load invoices');
+        }
       } finally {
         setLoadingInvoices(false);
       }
@@ -1418,7 +1477,13 @@ useEffect(() => {
           </div>
         </div>
       </header>
-  
+
+      {isOffline && (
+        <div className="bg-yellow-100 text-yellow-800 p-2 text-center">
+          Offline mode - changes will sync when you're online
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
