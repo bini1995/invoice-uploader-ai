@@ -38,6 +38,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Multi-tenant support so agencies can switch between different client accounts
 - Polite vendor notification emails for flagged or rejected invoices
 - Scenario planning to test payment delays
+- Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
 
 ## Setup Instructions
 
@@ -138,6 +139,7 @@ job deletes invoices once their `delete_at` date passes.
 - `GET /api/invoices/:id/payment-request` – download a JSON payload for a payment request form
 - `POST /api/feedback` – submit a rating for an AI-generated result
 - `GET /api/feedback` – view average ratings by endpoint
+- `GET /api/invoices/vendor-scorecards` – view vendor responsiveness and payment metrics
 
 ### Vendor Reply Drafts
 

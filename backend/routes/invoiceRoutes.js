@@ -44,6 +44,7 @@ const {
   explainFlaggedInvoice,
   bulkAutoCategorize,
   getVendorBio,
+  getVendorScorecards,
 } = require('../controllers/invoiceController');
 
 
@@ -126,6 +127,7 @@ router.get('/budgets/warnings', authMiddleware, checkBudgetWarnings);
 router.get('/anomalies', authMiddleware, getAnomalies);
 router.get('/fraud/patterns', authMiddleware, authorizeRoles('admin'), detectPatterns);
 router.get('/:id/check-recurring', authMiddleware, checkRecurringInvoice);
+router.get('/vendor-scorecards', authMiddleware, getVendorScorecards);
 
 
 // ✅ GET PDF download

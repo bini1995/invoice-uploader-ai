@@ -1365,6 +1365,49 @@ exports.getVendorBio = async (req, res) => {
   }
 };
 
+// Generate vendor scorecards for responsiveness, payment consistency,
+// and volume/price changes
+exports.getVendorScorecards = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        vendor,
+        AVG(EXTRACT(EPOCH FROM (COALESCE(updated_at, created_at) - created_at))/86400) AS avg_response,
+        AVG(CASE WHEN paid THEN 1 ELSE 0 END) AS paid_ratio,
+        SUM(CASE WHEN date >= NOW() - INTERVAL '30 days' THEN 1 ELSE 0 END) AS recent_count,
+        SUM(CASE WHEN date >= NOW() - INTERVAL '60 days' AND date < NOW() - INTERVAL '30 days' THEN 1 ELSE 0 END) AS prev_count,
+        AVG(CASE WHEN date >= NOW() - INTERVAL '30 days' THEN amount END) AS recent_avg_amount,
+        AVG(CASE WHEN date >= NOW() - INTERVAL '60 days' AND date < NOW() - INTERVAL '30 days' THEN amount END) AS prev_avg_amount
+      FROM invoices
+      GROUP BY vendor
+    `);
+
+    const scorecards = result.rows.map((r) => {
+      const avgResp = parseFloat(r.avg_response) || 0;
+      const responsiveness = 100 - Math.min(avgResp * 20, 100); // lower is better
+      const paymentConsistency = (parseFloat(r.paid_ratio) || 0) * 100;
+      const volumeChange = r.prev_count
+        ? ((r.recent_count - r.prev_count) / r.prev_count) * 100
+        : 0;
+      const priceChange = r.prev_avg_amount
+        ? ((r.recent_avg_amount - r.prev_avg_amount) / r.prev_avg_amount) * 100
+        : 0;
+      return {
+        vendor: r.vendor,
+        responsiveness: Math.round(responsiveness),
+        payment_consistency: Math.round(paymentConsistency),
+        volume_change_pct: Math.round(volumeChange),
+        price_change_pct: Math.round(priceChange),
+      };
+    });
+
+    res.json({ scorecards });
+  } catch (err) {
+    console.error('Vendor scorecard error:', err);
+    res.status(500).json({ message: 'Failed to generate vendor scorecards' });
+  }
+};
+
 
 
 module.exports = {
@@ -1411,5 +1454,6 @@ module.exports = {
   explainFlaggedInvoice,
   bulkAutoCategorize,
   getVendorBio,
+  getVendorScorecards,
 };
 
