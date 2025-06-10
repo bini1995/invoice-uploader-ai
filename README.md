@@ -31,6 +31,9 @@ Add an `assignee` column for storing invoice assignments:
 
 ```sql
 ALTER TABLE invoices ADD COLUMN assignee TEXT;
+ALTER TABLE invoices ADD COLUMN approval_status TEXT DEFAULT 'Pending';
+ALTER TABLE invoices ADD COLUMN approval_history JSONB DEFAULT '[]';
+ALTER TABLE invoices ADD COLUMN comments JSONB DEFAULT '[]';
 ```
 
 ### Frontend

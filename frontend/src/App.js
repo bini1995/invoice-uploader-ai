@@ -56,6 +56,7 @@ const [files, setFile] = useState([]);   // ✅ new
   const [updatedFields, setUpdatedFields] = useState({});
   const [updatingField, setUpdatingField] = useState(null);
   const [tagSuggestions, setTagSuggestions] = useState({});
+  const [commentInputs, setCommentInputs] = useState({});
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
   const [viewMode, setViewMode] = useState(() => {
@@ -833,6 +834,67 @@ useEffect(() => {
       addToast('❌ Failed to add tag', 'error');
     }
   };
+
+  const handleApprove = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/approve`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast(data.message);
+        fetchInvoices(showArchived, selectedAssignee);
+      } else {
+        addToast('Failed to approve invoice', 'error');
+      }
+    } catch (err) {
+      console.error('Approve error:', err);
+      addToast('Failed to approve invoice', 'error');
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/reject`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast(data.message);
+        fetchInvoices(showArchived, selectedAssignee);
+      } else {
+        addToast('Failed to reject invoice', 'error');
+      }
+    } catch (err) {
+      console.error('Reject error:', err);
+      addToast('Failed to reject invoice', 'error');
+    }
+  };
+
+  const handleAddComment = async (id) => {
+    const text = commentInputs[id];
+    if (!text) return;
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Comment added');
+        setCommentInputs((prev) => ({ ...prev, [id]: '' }));
+        fetchInvoices(showArchived, selectedAssignee);
+      } else {
+        addToast(data.message || 'Failed to add comment', 'error');
+      }
+    } catch (err) {
+      console.error('Comment error:', err);
+      addToast('Failed to add comment', 'error');
+    }
+  };
   
 
   const handleExportArchived = async () => {
@@ -1316,6 +1378,7 @@ useEffect(() => {
                     </th>
                     <th className="border px-4 py-2">Created At</th>
                     <th className="border px-4 py-2">Assignee</th>
+                    <th className="border px-4 py-2">Status</th>
                     <th className="border px-4 py-2">Updated At</th>
                     <th className="border px-4 py-2">Actions</th>
                     
@@ -1474,6 +1537,7 @@ useEffect(() => {
                         ))}
                       </select>
                     </td>
+                    <td className="border px-4 py-2">{inv.approval_status || 'Pending'}</td>
                     <td className="border px-4 py-2">
                       {inv.updated_at ? new Date(inv.updated_at).toLocaleString() : '—'}
                     </td>
@@ -1576,6 +1640,18 @@ useEffect(() => {
                       >
                         Add Tag
                       </button>
+                      <button
+                        onClick={() => handleApprove(inv.id)}
+                        className="bg-green-500 text-white px-2 py-1 mt-1 rounded hover:bg-green-600 text-xs w-full"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(inv.id)}
+                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs w-full"
+                      >
+                        Reject
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -1621,6 +1697,40 @@ useEffect(() => {
                       >
                         Delete
                       </button>
+                      <button
+                        onClick={() => handleApprove(inv.id)}
+                        className="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(inv.id)}
+                        className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                      >
+                        Reject
+                      </button>
+                    </div>
+
+                    <div className="text-xs mt-1">Status: {inv.approval_status || 'Pending'}</div>
+                    <div className="mt-1 space-y-1">
+                      {inv.comments?.map((c, i) => (
+                        <div key={i} className="text-xs bg-gray-100 rounded p-1">{c.text}</div>
+                      ))}
+                      <div className="flex mt-1">
+                        <input
+                          type="text"
+                          value={commentInputs[inv.id] || ''}
+                          onChange={(e) => setCommentInputs((p) => ({ ...p, [inv.id]: e.target.value }))}
+                          className="border rounded px-1 text-xs flex-1"
+                          placeholder="Add comment"
+                        />
+                        <button
+                          onClick={() => handleAddComment(inv.id)}
+                          className="bg-blue-600 text-white text-xs px-2 py-1 ml-1 rounded"
+                        >
+                          Post
+                        </button>
+                      </div>
                     </div>
 
                     </div>
