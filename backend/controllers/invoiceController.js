@@ -4,6 +4,13 @@ const { parseCSV } = require('../utils/csvParser');
 const openai = require("../config/openai"); // ✅ re-use the config
 const axios = require('axios');
 
+// Basic vendor -> tag mapping for quick suggestions
+const vendorTagMap = {
+  staples: ['Office Supplies'],
+  notion: ['SaaS'],
+  figma: ['SaaS'],
+};
+
 
 exports.uploadInvoiceCSV = async (req, res) => {
   try {
@@ -389,6 +396,14 @@ exports.updateInvoiceField = async (req, res) => {
 exports.suggestTags = async (req, res) => {
   try {
     const { invoice } = req.body;
+
+    // Check simple mapping first
+    const vendorKey = invoice.vendor?.toLowerCase() || '';
+    for (const [key, tags] of Object.entries(vendorTagMap)) {
+      if (vendorKey.includes(key)) {
+        return res.json({ tags });
+      }
+    }
 
     const prompt = `
       You are an intelligent finance assistant. Based on the following invoice details:
