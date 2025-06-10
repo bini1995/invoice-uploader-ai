@@ -34,7 +34,13 @@ ALTER TABLE invoices ADD COLUMN assignee TEXT;
 ALTER TABLE invoices ADD COLUMN approval_status TEXT DEFAULT 'Pending';
 ALTER TABLE invoices ADD COLUMN approval_history JSONB DEFAULT '[]';
 ALTER TABLE invoices ADD COLUMN comments JSONB DEFAULT '[]';
+ALTER TABLE invoices ADD COLUMN priority BOOLEAN DEFAULT FALSE;
 ```
+
+### Auto-Archive Rule
+
+The backend automatically archives invoices older than 90 days
+unless they are marked as `priority`.
 
 ### Frontend
 
