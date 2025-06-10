@@ -3,6 +3,7 @@ const pool = require('../config/db');
 const { parseCSV } = require('../utils/csvParser');
 const openai = require("../config/openai"); // ✅ re-use the config
 const axios = require('axios');
+const { applyRules } = require('../utils/rulesEngine');
 const { logActivity } = require('../utils/activityLogger');
 
 // Basic vendor -> tag mapping for quick suggestions
@@ -46,19 +47,30 @@ exports.uploadInvoiceCSV = async (req, res) => {
         return;
       }
 
-      validRows.push({
+      const withRules = applyRules({
         invoice_number,
         date: new Date(date),
         amount: parseFloat(amount),
         vendor,
       });
+      validRows.push(withRules);
     });
 
     for (const inv of validRows) {
       await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [inv.invoice_number, inv.date, inv.amount, inv.vendor, null]
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [
+          inv.invoice_number,
+          inv.date,
+          inv.amount,
+          inv.vendor,
+          null,
+          inv.flagged || false,
+          inv.flag_reason,
+          JSON.stringify(['Manager','Finance','CFO']),
+          0,
+        ]
       );
     }
 
@@ -349,14 +361,23 @@ exports.assignInvoice = async (req, res) => {
 
 exports.approveInvoice = async (req, res) => {
   const { id } = req.params;
+  const { comment } = req.body || {};
   try {
+    const invRes = await pool.query('SELECT approval_chain, current_step FROM invoices WHERE id = $1', [id]);
+    if (invRes.rows.length === 0) return res.status(404).json({ message: 'Invoice not found' });
+    const invoice = invRes.rows[0];
+    const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
+    const step = chain[invoice.current_step] || 'Unknown';
+    const nextStep = invoice.current_step + 1;
+    const status = nextStep >= chain.length ? 'Approved' : 'In Progress';
+
     const result = await pool.query(
-      `UPDATE invoices SET approval_status = 'Approved',
-       approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('status','Approved','date', NOW()))
-       WHERE id = $1 RETURNING approval_status, approval_history`,
-      [id]
+      `UPDATE invoices SET approval_status = $1,
+       current_step = $2,
+       approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('step',$3,'status','Approved','date', NOW(),'comment',$4))
+       WHERE id = $5 RETURNING approval_status, approval_history, current_step`,
+      [status, nextStep, step, comment || '', id]
     );
-    if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
     await logActivity(req.user?.userId, 'approve_invoice', id);
     res.json({ message: 'Invoice approved', invoice: result.rows[0] });
   } catch (err) {
@@ -367,14 +388,21 @@ exports.approveInvoice = async (req, res) => {
 
 exports.rejectInvoice = async (req, res) => {
   const { id } = req.params;
+  const { comment } = req.body || {};
   try {
+    const invRes = await pool.query('SELECT approval_chain, current_step FROM invoices WHERE id = $1', [id]);
+    if (invRes.rows.length === 0) return res.status(404).json({ message: 'Invoice not found' });
+    const invoice = invRes.rows[0];
+    const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
+    const step = chain[invoice.current_step] || 'Unknown';
+
     const result = await pool.query(
       `UPDATE invoices SET approval_status = 'Rejected',
-       approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('status','Rejected','date', NOW()))
-       WHERE id = $1 RETURNING approval_status, approval_history`,
-      [id]
+       current_step = -1,
+       approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('step',$1,'status','Rejected','date', NOW(),'comment',$2))
+       WHERE id = $3 RETURNING approval_status, approval_history`,
+      [step, comment || '', id]
     );
-    if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
     await logActivity(req.user?.userId, 'reject_invoice', id);
     res.json({ message: 'Invoice rejected', invoice: result.rows[0] });
   } catch (err) {

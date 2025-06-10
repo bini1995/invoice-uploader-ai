@@ -37,6 +37,10 @@ ALTER TABLE invoices ADD COLUMN approval_status TEXT DEFAULT 'Pending';
 ALTER TABLE invoices ADD COLUMN approval_history JSONB DEFAULT '[]';
 ALTER TABLE invoices ADD COLUMN comments JSONB DEFAULT '[]';
 ALTER TABLE invoices ADD COLUMN priority BOOLEAN DEFAULT FALSE;
+ALTER TABLE invoices ADD COLUMN flagged BOOLEAN DEFAULT FALSE;
+ALTER TABLE invoices ADD COLUMN flag_reason TEXT;
+ALTER TABLE invoices ADD COLUMN approval_chain JSONB DEFAULT '["Manager","Finance","CFO"]';
+ALTER TABLE invoices ADD COLUMN current_step INTEGER DEFAULT 0;
 ```
 
 Create an `activity_logs` table for the audit trail:
