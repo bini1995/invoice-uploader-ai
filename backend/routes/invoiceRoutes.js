@@ -4,7 +4,7 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const { exportFilteredInvoices, exportAllInvoices } = require('../controllers/invoiceController');
 
-const { login, authMiddleware } = require('../controllers/userController');
+const { login, authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 const {
   uploadInvoiceCSV,
@@ -37,6 +37,7 @@ const { updateInvoiceTags } = require('../controllers/invoiceController');
 const { generateInvoicePDF } = require('../controllers/invoiceController');
 const { assignInvoice } = require('../controllers/invoiceController');
 const { approveInvoice, rejectInvoice, addComment } = require('../controllers/invoiceController');
+const { getActivityLogs } = require('../controllers/activityController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
@@ -44,10 +45,10 @@ router.get('/:id/pdf', generateInvoicePDF);
 router.post('/:id/mark-paid', authMiddleware, markInvoicePaid);
 router.post('/suggest-vendor', suggestVendor);
 router.post('/send-email', sendSummaryEmail);
-router.post('/upload', authMiddleware, upload.single('invoiceFile'), uploadInvoiceCSV);
+router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoiceCSV);
 router.get('/', getAllInvoices);
-router.delete('/clear', authMiddleware, clearAllInvoices);
-router.delete('/:id', authMiddleware, deleteInvoiceById);
+router.delete('/clear', authMiddleware, authorizeRoles('admin'), clearAllInvoices);
+router.delete('/:id', authMiddleware, authorizeRoles('admin'), deleteInvoiceById);
 router.get('/search', searchInvoicesByVendor);
 router.post('/nl-query', authMiddleware, naturalLanguageQuery);
 router.post('/summarize-errors', summarizeUploadErrors);
@@ -64,11 +65,12 @@ router.post('/:id/unarchive', authMiddleware, unarchiveInvoice);
 router.post('/suggest-vendor', authMiddleware, handleSuggestion);
 router.patch('/:id/update', authMiddleware, updateInvoiceField);
 router.patch('/:id/assign', authMiddleware, assignInvoice);
-router.patch('/:id/approve', authMiddleware, approveInvoice);
-router.patch('/:id/reject', authMiddleware, rejectInvoice);
-router.post('/:id/comments', authMiddleware, addComment);
+router.patch('/:id/approve', authMiddleware, authorizeRoles('approver','admin'), approveInvoice);
+router.patch('/:id/reject', authMiddleware, authorizeRoles('approver','admin'), rejectInvoice);
+router.post('/:id/comments', authMiddleware, authorizeRoles('approver','admin'), addComment);
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
+router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
 
 
 // ✅ GET PDF download
