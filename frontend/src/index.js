@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+  document.documentElement.classList.add('dark');
+}
+
 const apiBase = process.env.REACT_APP_API_BASE_URL;
 fetch(`${apiBase}/api/invoices`);
 const root = ReactDOM.createRoot(document.getElementById('root'));
