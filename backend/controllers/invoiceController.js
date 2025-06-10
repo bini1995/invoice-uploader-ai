@@ -450,7 +450,7 @@ exports.updateInvoiceField = async (req, res) => {
   const { id } = req.params;
   const { field, value } = req.body;
 
-  if (!['amount', 'vendor', 'date'].includes(field)) {
+  if (!['amount', 'vendor', 'date', 'priority'].includes(field)) {
     return res.status(400).json({ message: 'Invalid field to update.' });
   }
 
@@ -787,6 +787,24 @@ exports.getTopVendors = async (req, res) => {
   }
 };
 
+// Automatically archive invoices older than 90 days unless marked priority
+exports.autoArchiveOldInvoices = async () => {
+  try {
+    const result = await pool.query(`
+      UPDATE invoices
+      SET archived = TRUE
+      WHERE archived = FALSE
+        AND priority = FALSE
+        AND created_at < NOW() - INTERVAL '90 days'
+    `);
+    if (result.rowCount > 0) {
+      console.log(`\uD83D\uDCE6 Auto-archived ${result.rowCount} invoices`);
+    }
+  } catch (err) {
+    console.error('Auto-archive error:', err);
+  }
+};
+
 
 
 module.exports = {
@@ -816,5 +834,6 @@ module.exports = {
   getMonthlyInsights,
   getCashFlow,
   getTopVendors,
+  autoArchiveOldInvoices,
 };
 
