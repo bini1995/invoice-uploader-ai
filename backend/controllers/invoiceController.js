@@ -344,6 +344,58 @@ exports.assignInvoice = async (req, res) => {
   }
 };
 
+exports.approveInvoice = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `UPDATE invoices SET approval_status = 'Approved',
+       approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('status','Approved','date', NOW()))
+       WHERE id = $1 RETURNING approval_status, approval_history`,
+      [id]
+    );
+    if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
+    res.json({ message: 'Invoice approved', invoice: result.rows[0] });
+  } catch (err) {
+    console.error('Approve error:', err);
+    res.status(500).json({ message: 'Failed to approve invoice' });
+  }
+};
+
+exports.rejectInvoice = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `UPDATE invoices SET approval_status = 'Rejected',
+       approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('status','Rejected','date', NOW()))
+       WHERE id = $1 RETURNING approval_status, approval_history`,
+      [id]
+    );
+    if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
+    res.json({ message: 'Invoice rejected', invoice: result.rows[0] });
+  } catch (err) {
+    console.error('Reject error:', err);
+    res.status(500).json({ message: 'Failed to reject invoice' });
+  }
+};
+
+exports.addComment = async (req, res) => {
+  const { id } = req.params;
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ message: 'Comment text required' });
+  try {
+    const result = await pool.query(
+      `UPDATE invoices SET comments = coalesce(comments, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('text',$1,'date',NOW()))
+       WHERE id = $2 RETURNING comments`,
+      [text, id]
+    );
+    if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
+    res.json({ message: 'Comment added', comments: result.rows[0].comments });
+  } catch (err) {
+    console.error('Add comment error:', err);
+    res.status(500).json({ message: 'Failed to add comment' });
+  }
+};
+
 exports.handleSuggestion = async (req, res) => {
   try {
     const { invoice } = req.body;
@@ -685,6 +737,9 @@ module.exports = {
   unarchiveInvoice,
   markInvoicePaid,
   assignInvoice,
+  approveInvoice,
+  rejectInvoice,
+  addComment,
   handleSuggestion,
   summarizeErrors,
   getMonthlyInsights,
