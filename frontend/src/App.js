@@ -976,12 +976,14 @@ useEffect(() => {
     try {
       const res = await fetch(`http://localhost:3000/api/invoices/${id}/approve`, {
         method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ comment: commentInputs[id] || '' }),
       });
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
         fetchInvoices(showArchived, selectedAssignee);
+        setCommentInputs((p) => ({ ...p, [id]: '' }));
       } else {
         addToast('Failed to approve invoice', 'error');
       }
@@ -995,12 +997,14 @@ useEffect(() => {
     try {
       const res = await fetch(`http://localhost:3000/api/invoices/${id}/reject`, {
         method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ comment: commentInputs[id] || '' }),
       });
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
         fetchInvoices(showArchived, selectedAssignee);
+        setCommentInputs((p) => ({ ...p, [id]: '' }));
       } else {
         addToast('Failed to reject invoice', 'error');
       }
