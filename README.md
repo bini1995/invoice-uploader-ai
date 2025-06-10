@@ -13,6 +13,8 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Get validation feedback for bad rows
 - AI-generated summaries of common CSV issues (via OpenAI)
 - Query invoices using natural language (via OpenAI)
+- AI-powered invoice quality scores with tips
+- Conversational assistant to analyze spending
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
 
