@@ -716,6 +716,27 @@ exports.getMonthlyInsights = async (req, res) => {
   }
 };
 
+exports.getCashFlow = async (req, res) => {
+  const interval = req.query.interval === 'weekly' ? 'week' : 'month';
+  const groupExpr = interval === 'week' ? "DATE_TRUNC('week', date)" : "DATE_TRUNC('month', date)";
+  try {
+    const result = await pool.query(
+      `SELECT ${groupExpr} AS period, SUM(amount) AS total
+       FROM invoices
+       GROUP BY period
+       ORDER BY period`
+    );
+    const rows = result.rows.map(r => ({
+      period: r.period,
+      total: parseFloat(r.total)
+    }));
+    res.json({ interval, data: rows });
+  } catch (err) {
+    console.error('Cash flow trend error:', err);
+    res.status(500).json({ message: 'Failed to fetch cash flow trends' });
+  }
+};
+
 
 
 module.exports = {
@@ -743,5 +764,6 @@ module.exports = {
   handleSuggestion,
   summarizeErrors,
   getMonthlyInsights,
+  getCashFlow,
 };
 

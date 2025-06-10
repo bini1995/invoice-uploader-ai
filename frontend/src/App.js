@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LineChart,
+  Line
 } from 'recharts';
 import Login from './Login';
 import Spinner from './components/Spinner';
@@ -49,6 +57,8 @@ const [files, setFile] = useState([]);   // ✅ new
   const [recentInvoices, setRecentInvoices] = useState([]);
   const [selectedInvoices, setSelectedInvoices] = useState([]);
   const [showChart, setShowChart] = useState(false);
+  const [cashFlowData, setCashFlowData] = useState([]);
+  const [cashFlowInterval, setCashFlowInterval] = useState('monthly');
   const [editingInvoiceId, setEditingInvoiceId] = useState(null);
   const [editingField, setEditingField] = useState(null); // format: { id, field }
   const [editValue, setEditValue] = useState('');
@@ -78,6 +88,12 @@ const [files, setFile] = useState([]);   // ✅ new
   useEffect(() => {
     localStorage.setItem('viewMode', viewMode);
   }, [viewMode]);
+
+  useEffect(() => {
+    if (showChart && token) {
+      fetchCashFlowData(cashFlowInterval);
+    }
+  }, [showChart, cashFlowInterval, token]);
   
 
 
@@ -457,6 +473,23 @@ useEffect(() => {
     } catch (err) {
       console.error('Monthly insights error:', err);
       addToast('Failed to fetch monthly insights', 'error');
+    }
+  };
+
+  const fetchCashFlowData = async (interval = cashFlowInterval) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/cash-flow?interval=${interval}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCashFlowData(data.data || []);
+      } else {
+        addToast('Failed to fetch cash flow', 'error');
+      }
+    } catch (err) {
+      console.error('Cash flow fetch error:', err);
+      addToast('Failed to fetch cash flow', 'error');
     }
   };
   
@@ -1321,6 +1354,7 @@ useEffect(() => {
                   Invoice Totals by Vendor
                         </h2>
                           {showChart && (
+                        <>
                       <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={chartData}>
@@ -1332,6 +1366,32 @@ useEffect(() => {
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
+                      <div className="flex items-center my-4 space-x-2">
+                        <label className="text-sm">Interval:</label>
+                        <select
+                          value={cashFlowInterval}
+                          onChange={(e) => setCashFlowInterval(e.target.value)}
+                          className="border rounded p-1 text-sm"
+                        >
+                          <option value="monthly">Monthly</option>
+                          <option value="weekly">Weekly</option>
+                        </select>
+                      </div>
+                      <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={cashFlowData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                              dataKey="period"
+                              tickFormatter={(v) => new Date(v).toLocaleDateString()}
+                            />
+                            <YAxis />
+                            <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
+                            <Line type="monotone" dataKey="total" stroke="#10B981" />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                        </>
                     )}
                 <div className="flex justify-between items-center mt-6 mb-2 text-sm text-gray-700">
                   <span>Total Invoices: <strong>{totalInvoices}</strong></span>
