@@ -8,6 +8,7 @@ const axios = require('axios');
 const { applyRules } = require('../utils/rulesEngine');
 const { logActivity } = require('../utils/activityLogger');
 const PDFDocument = require('pdfkit');
+const crypto = require('crypto');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -38,6 +39,16 @@ exports.uploadInvoice = async (req, res) => {
       invoices = await parsePDF(req.file.path);
     } else {
       return res.status(400).json({ message: 'Unsupported file type' });
+    }
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const integrityHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+
+    const retention = req.body.retention || 'forever';
+    let deleteAt = null;
+    if (retention === '6m') {
+      deleteAt = new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
+    } else if (retention === '2y') {
+      deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);
     }
     const validRows = [];
     const errors = [];
@@ -76,8 +87,8 @@ exports.uploadInvoice = async (req, res) => {
 
     for (const inv of validRows) {
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -88,6 +99,9 @@ exports.uploadInvoice = async (req, res) => {
           inv.flag_reason,
           JSON.stringify(['Manager','Finance','CFO']),
           0,
+          integrityHash,
+          retention,
+          deleteAt,
         ]
       );
       const newId = insertRes.rows[0].id;
@@ -477,6 +491,28 @@ exports.updatePrivateNotes = async (req, res) => {
   } catch (err) {
     console.error('Update notes error:', err);
     res.status(500).json({ message: 'Failed to update notes' });
+  }
+};
+
+exports.updateRetentionPolicy = async (req, res) => {
+  const { id } = req.params;
+  const { retention } = req.body;
+  let deleteAt = null;
+  if (retention === '6m') {
+    deleteAt = new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
+  } else if (retention === '2y') {
+    deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);
+  }
+  try {
+    await pool.query(
+      'UPDATE invoices SET retention_policy = $1, delete_at = $2 WHERE id = $3',
+      [retention || 'forever', deleteAt, id]
+    );
+    await logActivity(req.user?.userId, 'update_retention', id);
+    res.json({ message: 'Retention policy updated' });
+  } catch (err) {
+    console.error('Retention update error:', err);
+    res.status(500).json({ message: 'Failed to update retention' });
   }
 };
 
@@ -1100,6 +1136,19 @@ exports.autoArchiveOldInvoices = async () => {
   }
 };
 
+exports.autoDeleteExpiredInvoices = async () => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM invoices WHERE delete_at IS NOT NULL AND delete_at < NOW()`
+    );
+    if (result.rowCount > 0) {
+      console.log(`🗑️ Auto-deleted ${result.rowCount} invoices`);
+    }
+  } catch (err) {
+    console.error('Auto-delete error:', err);
+  }
+};
+
 exports.checkRecurringInvoice = async (req, res) => {
   const { id } = req.params;
   try {
@@ -1213,7 +1262,9 @@ module.exports = {
   getRecurringInsights,
   getVendorProfile,
   autoArchiveOldInvoices,
+  autoDeleteExpiredInvoices,
   updatePrivateNotes,
+  updateRetentionPolicy,
   bulkArchiveInvoices,
   bulkAssignInvoices,
   bulkApproveInvoices,
