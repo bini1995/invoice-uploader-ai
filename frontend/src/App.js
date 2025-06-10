@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BarChart,
   Bar,
@@ -33,7 +33,10 @@ function App() {
   actions: true,
   updated_at: true
 });
-const [files, setFile] = useState([]);   // ✅ new
+const [files, setFile] = useState([]);   // file objects to upload
+const [filePreviews, setFilePreviews] = useState([]);
+const [dragActive, setDragActive] = useState(false);
+const fileInputRef = useRef();
   const [invoices, setInvoices] = useState([]);
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState([]);
@@ -316,8 +319,20 @@ useEffect(() => {
   
   
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleFiles = async (fileList) => {
+    const arr = Array.from(fileList);
+    const previews = await Promise.all(
+      arr.map(async (f) => {
+        let rows = 'N/A';
+        if (f.name.toLowerCase().endsWith('.csv')) {
+          const text = await f.text();
+          rows = Math.max(text.trim().split(/\r?\n/).length - 1, 0);
+        }
+        return { file: f, name: f.name, size: f.size, rows };
+      })
+    );
+    setFile(arr);
+    setFilePreviews(previews);
   };
 
   const handleUpload = async () => {
@@ -401,6 +416,8 @@ useEffect(() => {
       }, 5000); // Clear after 5 seconds
     }
     setLoading(false);
+    setFile([]);
+    setFilePreviews([]);
   };
   
     const fetchInvoices = async (includeArchived = false, assigneeFilter = '') => {
@@ -1207,13 +1224,37 @@ useEffect(() => {
         {token ? (
           <>
             <div className="flex flex-wrap gap-4 mb-6 items-center">
-                        <input
-                          type="file"
-                          multiple
-                          disabled={!token}
-                          onChange={(e) => setFile(Array.from(e.target.files))}
-                          className="border rounded px-3 py-2 text-sm disabled:bg-gray-100"
-                        />
+              <div
+                className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-blue-50' : ''}`}
+                onDragOver={(e) => e.preventDefault()}
+                onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
+                onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
+                onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
+                onClick={() => fileInputRef.current.click()}
+              >
+                <p className="text-sm text-gray-600">Drag & drop CSV/PDF here or click to select</p>
+                <input
+                  type="file"
+                  multiple
+                  accept=".csv,.pdf"
+                  ref={fileInputRef}
+                  disabled={!token}
+                  onChange={(e) => handleFiles(e.target.files)}
+                  className="hidden"
+                />
+              </div>
+
+              {filePreviews.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {filePreviews.map((f, idx) => (
+                    <div key={idx} className="border rounded p-2 text-xs">
+                      <div className="font-semibold">{f.name}</div>
+                      <div>Size: {(f.size / 1024).toFixed(1)} KB</div>
+                      <div>Rows: {f.rows}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
                         <button
                           onClick={handleExport}

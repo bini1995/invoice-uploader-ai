@@ -1,6 +1,8 @@
 const fs = require('fs');
 const pool = require('../config/db');
+const path = require('path');
 const { parseCSV } = require('../utils/csvParser');
+const { parsePDF } = require('../utils/pdfParser');
 const openai = require("../config/openai"); // ✅ re-use the config
 const axios = require('axios');
 const { applyRules } = require('../utils/rulesEngine');
@@ -14,18 +16,26 @@ const vendorTagMap = {
 };
 
 
-exports.uploadInvoiceCSV = async (req, res) => {
+exports.uploadInvoice = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const invoices = await parseCSV(req.file.path);
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    let invoices;
+    if (ext === '.csv') {
+      invoices = await parseCSV(req.file.path);
+    } else if (ext === '.pdf') {
+      invoices = await parsePDF(req.file.path);
+    } else {
+      return res.status(400).json({ message: 'Unsupported file type' });
+    }
     const validRows = [];
     const errors = [];
 
     invoices.forEach((inv, index) => {
-      const rowNum = index + 2; // header + 1-index
+      const rowNum = index + 1;
 
       const invoice_number = inv.invoice_number?.trim();
       const date = inv.date?.trim();
@@ -848,7 +858,7 @@ module.exports = {
   flagSuspiciousInvoice,
   updateInvoiceField,
   // ✅ Add all others you want to expose:
-  uploadInvoiceCSV,
+  uploadInvoice,
   getAllInvoices,
   clearAllInvoices,
   deleteInvoiceById,
