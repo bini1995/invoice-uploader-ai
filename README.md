@@ -23,6 +23,10 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications
 - Smart auto-fill suggestions for vendor tags and payment terms
+- Private notes on invoices
+- Shared comment threads for team discussion
+- Approver reminders with escalation
+- Batch actions with bulk approval and PDF export
 
 ## Setup Instructions
 
@@ -50,6 +54,8 @@ ALTER TABLE invoices ADD COLUMN flag_reason TEXT;
 ALTER TABLE invoices ADD COLUMN approval_chain JSONB DEFAULT '["Manager","Finance","CFO"]';
 ALTER TABLE invoices ADD COLUMN current_step INTEGER DEFAULT 0;
 ALTER TABLE invoices ADD COLUMN payment_terms TEXT;
+ALTER TABLE invoices ADD COLUMN private_notes TEXT;
+ALTER TABLE invoices ADD COLUMN due_date DATE;
 ```
 
 Create an `activity_logs` table for the audit trail:

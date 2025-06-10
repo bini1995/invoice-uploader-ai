@@ -25,6 +25,21 @@ const {
   checkRecurringInvoice,
   getRecurringInsights,
   getVendorProfile,
+  assignInvoice,
+  approveInvoice,
+  rejectInvoice,
+  addComment,
+  handleSuggestion,
+  suggestTags,
+  updateInvoiceTags,
+  generateInvoicePDF,
+  markInvoicePaid,
+  bulkArchiveInvoices,
+  bulkAssignInvoices,
+  bulkApproveInvoices,
+  bulkRejectInvoices,
+  exportPDFBundle,
+  updatePrivateNotes,
 } = require('../controllers/invoiceController');
 
 
@@ -41,15 +56,12 @@ const { handleSuggestion } = require('../controllers/invoiceController');
 const { suggestTags } = require('../controllers/invoiceController');
 const { updateInvoiceTags } = require('../controllers/invoiceController');
 const { generateInvoicePDF } = require('../controllers/invoiceController');
-const { assignInvoice } = require('../controllers/invoiceController');
-const { approveInvoice, rejectInvoice, addComment } = require('../controllers/invoiceController');
 const { getActivityLogs, getInvoiceTimeline } = require('../controllers/activityController');
 const { setBudget, getBudgets, checkBudgetWarnings } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
-router.get('/:id/pdf', generateInvoicePDF);
 router.post('/:id/mark-paid', authMiddleware, markInvoicePaid);
 router.post('/suggest-vendor', suggestVendor);
 router.post('/send-email', sendSummaryEmail);
@@ -82,6 +94,12 @@ router.patch('/:id/assign', authMiddleware, assignInvoice);
 router.patch('/:id/approve', authMiddleware, authorizeRoles('approver','admin'), approveInvoice);
 router.patch('/:id/reject', authMiddleware, authorizeRoles('approver','admin'), rejectInvoice);
 router.post('/:id/comments', authMiddleware, authorizeRoles('approver','admin'), addComment);
+router.patch('/bulk/archive', authMiddleware, authorizeRoles('admin'), bulkArchiveInvoices);
+router.patch('/bulk/assign', authMiddleware, authorizeRoles('admin'), bulkAssignInvoices);
+router.patch('/bulk/approve', authMiddleware, authorizeRoles('approver','admin'), bulkApproveInvoices);
+router.patch('/bulk/reject', authMiddleware, authorizeRoles('approver','admin'), bulkRejectInvoices);
+router.post('/bulk/pdf', authMiddleware, exportPDFBundle);
+router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
