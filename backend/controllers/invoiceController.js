@@ -84,7 +84,7 @@ exports.uploadInvoice = async (req, res) => {
         amount: parseFloat(amount),
         vendor,
       });
-      const workflow = getWorkflowForDepartment(department, amount);
+      const workflow = getWorkflowForDepartment(department, parseFloat(amount));
       validRows.push({
         ...withRules,
         department,
@@ -848,70 +848,6 @@ exports.generateInvoicePDF = (req, res) => {
 
 
 
-const updateInvoiceTags = (req, res) => {
-  const invoiceId = parseInt(req.params.id);
-  const { tags } = req.body;
-
-  if (!Array.isArray(tags)) {
-    return res.status(400).json({ message: 'Tags must be an array' });
-  }
-
-  const filePath = path.join(__dirname, '../data/invoices.json');
-  let invoices = [];
-
-  try {
-    invoices = JSON.parse(fs.readFileSync(filePath));
-  } catch (err) {
-    console.error('Failed to read invoices:', err);
-    return res.status(500).json({ message: 'Failed to read invoice data' });
-  }
-
-  const invoice = invoices.find(inv => inv.id === invoiceId);
-  if (!invoice) {
-    return res.status(404).json({ message: 'Invoice not found' });
-  }
-
-  invoice.tags = tags;
-
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(invoices, null, 2));
-    res.json({ message: 'Tags updated', tags });
-  } catch (err) {
-    console.error('Failed to save tags:', err);
-    res.status(500).json({ message: 'Failed to save updated tags' });
-  }
-};
-
-
-const generateInvoicePDF = (req, res) => {
-  try {
-    const invoiceId = req.params.id;
-    const invoices = require('../data/invoices.json'); // Adjust this if you're using a database
-    const invoice = invoices.find((inv) => inv.id == invoiceId);
-
-    if (!invoice) {
-      return res.status(404).json({ message: 'Invoice not found' });
-    }
-
-    const doc = new PDFDocument();
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoiceId}.pdf`);
-    doc.pipe(res);
-
-    doc.fontSize(20).text(`Invoice #${invoice.invoice_number}`, { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(12).text(`Date: ${invoice.date}`);
-    doc.text(`Vendor: ${invoice.vendor}`);
-    doc.text(`Amount: $${parseFloat(invoice.amount).toFixed(2)}`);
-    doc.text(`Tags: ${(invoice.tags || []).join(', ')}`);
-    doc.text(`Created At: ${invoice.created_at || '—'}`);
-    doc.text(`Updated At: ${invoice.updated_at || '—'}`);
-    doc.end();
-  } catch (err) {
-    console.error('PDF generation error:', err);
-    res.status(500).json({ message: 'Error generating PDF' });
-  }
-};
 
 exports.getMonthlyInsights = async (req, res) => {
   const client = await pool.connect();
