@@ -10,16 +10,18 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-force-graph": "^1.47.6",
+    "react-force-graph-2d": "^1.27.1",
     "react-scripts": "5.0.1",
     "recharts": "^2.15.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:3000",
   "eslintConfig": {
     "extends": [
       "react-app",

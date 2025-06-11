@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "app.js",
     "scripts": {
-        "start": "node app.js"
+        "start": "PORT=3000 node app.js"
     },
     "dependencies": {
         "archiver": "^5.3.2",
