@@ -2509,7 +2509,7 @@ useEffect(() => {
                   ))}
                 </div>
 
-                )}
+                ) : null}
               
               {selectedInvoices.length > 0 && (
                   <div className="mt-4 flex space-x-2 justify-center bg-blue-50 p-3 rounded border border-blue-300">
