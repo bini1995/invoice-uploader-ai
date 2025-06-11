@@ -6,6 +6,7 @@ require('dotenv').config();                 // load environment variables
 const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
+const { initDb } = require('./utils/dbInit');
 
 const app = express();                      // create the app
 
@@ -16,15 +17,19 @@ app.use(express.json());                    // allow reading JSON data
 app.use('/api/invoices', invoiceRoutes);    // route all invoice requests here
 app.use('/api/feedback', feedbackRoutes);
 
-// Run auto-archive daily
-autoArchiveOldInvoices();
-setInterval(autoArchiveOldInvoices, 24 * 60 * 60 * 1000); // every 24h
-autoDeleteExpiredInvoices();
-setInterval(autoDeleteExpiredInvoices, 24 * 60 * 60 * 1000);
+(async () => {
+  await initDb();
 
-console.log('🟢 Routes mounted');
+  // Run auto-archive daily
+  autoArchiveOldInvoices();
+  setInterval(autoArchiveOldInvoices, 24 * 60 * 60 * 1000); // every 24h
+  autoDeleteExpiredInvoices();
+  setInterval(autoDeleteExpiredInvoices, 24 * 60 * 60 * 1000);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
-});
+  console.log('🟢 Routes mounted');
+
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`🚀 Server running on http://localhost:${port}`);
+  });
+})();
