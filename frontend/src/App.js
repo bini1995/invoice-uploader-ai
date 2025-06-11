@@ -1900,26 +1900,27 @@ useEffect(() => {
 
 
                 <h2 className="text-lg font-medium mt-8 mb-2 text-gray-800">
-                  
-        <div className="mb-4 flex flex-wrap gap-4">
-          {Object.keys(visibleColumns).map((col) => (
-            <label key={col} className="text-sm flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={visibleColumns[col]}
-                onChange={() =>
-                  setVisibleColumns((prev) => ({
-                    ...prev,
-                    [col]: !prev[col],
-                  }))
-                }
-              />
-              {col.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                  Invoice Totals by Vendor
+                </h2>
+                <div className="mb-4 flex flex-wrap gap-4">
+                  {Object.keys(visibleColumns).map((col) => (
+                    <label key={col} className="text-sm flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns[col]}
+                        onChange={() =>
+                          setVisibleColumns((prev) => ({
+                            ...prev,
+                            [col]: !prev[col],
+                          }))
+                        }
+                      />
+                      {col
+                        .replace('_', ' ')
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
                     </label>
                   ))}
                 </div>
-                  Invoice Totals by Vendor
-                        </h2>
                           {showChart && (
                         <>
                       <div className="h-64">
@@ -2509,7 +2510,7 @@ useEffect(() => {
                   ))}
                 </div>
 
-                ) : null}
+                ) : null)}
               
               {selectedInvoices.length > 0 && (
                   <div className="mt-4 flex space-x-2 justify-center bg-blue-50 p-3 rounded border border-blue-300">
@@ -2553,11 +2554,11 @@ useEffect(() => {
                   )
                 )}
               </div>
-            </div>
-          )}
-          {viewMode === 'graph' && (
+              </div>
+            {viewMode === 'graph' && (
             <GraphView token={token} tenant={tenant} />
           )}
+          </>
         ) : (
           <div className="text-center text-gray-600 dark:text-gray-300 mt-8">
             🔒 Please log in to access invoice management tools.
