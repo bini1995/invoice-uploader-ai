@@ -1447,6 +1447,7 @@ useEffect(() => {
             <NotificationBell notifications={notifications} onOpen={markNotificationsRead} />
             <Link to="/dashboard" className="underline text-sm">Dashboard</Link>
             <Link to="/reports" className="underline text-sm">Reports</Link>
+            <Link to="/archive" className="underline text-sm">Archive</Link>
             <button
               onClick={() => setDarkMode((d) => !d)}
               className="text-xl focus:outline-none"
