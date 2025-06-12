@@ -58,7 +58,7 @@ function VendorManagement() {
               <td className="p-2">${v.total_spend.toFixed(2)}</td>
               <td className="p-2">
                 <textarea
-                  className="border rounded p-1 w-full"
+                  className="input w-full p-1"
                   value={notesInput[v.vendor] ?? v.notes}
                   onChange={e => setNotesInput({ ...notesInput, [v.vendor]: e.target.value })}
                 />

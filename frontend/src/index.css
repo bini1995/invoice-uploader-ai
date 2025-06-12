@@ -41,4 +41,7 @@ code {
   .btn-danger {
     @apply bg-red-500 text-white hover:bg-red-600;
   }
+  .input {
+    @apply border border-gray-300 rounded px-3 py-2 text-sm;
+  }
 }

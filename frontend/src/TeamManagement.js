@@ -68,9 +68,9 @@ function TeamManagement() {
       </nav>
       <div className="space-y-6 max-w-xl">
         <div className="space-y-2">
-          <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" className="border p-2 rounded w-full" />
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" className="border p-2 rounded w-full" />
-          <select value={newRole} onChange={e => setNewRole(e.target.value)} className="border p-2 rounded w-full">
+          <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" className="input w-full" />
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" className="input w-full" />
+          <select value={newRole} onChange={e => setNewRole(e.target.value)} className="input w-full">
             <option value="viewer">viewer</option>
             <option value="approver">approver</option>
             <option value="admin">admin</option>
@@ -90,7 +90,7 @@ function TeamManagement() {
               <tr key={u.id} className="border-t">
                 <td className="p-2">{u.username}</td>
                 <td className="p-2">
-                  <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="border p-1 rounded">
+                  <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="input p-1">
                     <option value="viewer">viewer</option>
                     <option value="approver">approver</option>
                     <option value="admin">admin</option>

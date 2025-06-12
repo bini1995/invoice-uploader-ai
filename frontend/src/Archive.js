@@ -56,9 +56,9 @@ function Archive() {
       </nav>
       <div className="space-y-4 max-w-4xl mx-auto">
         <div className="flex flex-wrap items-end space-x-2">
-          <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor" className="border p-2 rounded" />
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border p-2 rounded" />
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border p-2 rounded" />
+          <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor" className="input" />
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="input" />
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="input" />
           <label className="flex items-center space-x-1 text-sm">
             <input type="checkbox" checked={priorityOnly} onChange={(e) => setPriorityOnly(e.target.checked)} />
             <span>Priority</span>

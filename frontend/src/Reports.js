@@ -72,13 +72,13 @@ function Reports() {
       </nav>
       <div className="space-y-4 max-w-2xl">
         <div className="grid grid-cols-2 gap-2">
-          <input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="Vendor" className="border p-2 rounded" />
+          <input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="Vendor" className="input" />
           <div className="flex space-x-2">
-            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="border p-2 rounded w-full" />
-            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="border p-2 rounded w-full" />
+            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="input w-full" />
+            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="input w-full" />
           </div>
-          <input type="number" value={minAmount} onChange={e => setMinAmount(e.target.value)} placeholder="Min" className="border p-2 rounded" />
-          <input type="number" value={maxAmount} onChange={e => setMaxAmount(e.target.value)} placeholder="Max" className="border p-2 rounded" />
+          <input type="number" value={minAmount} onChange={e => setMinAmount(e.target.value)} placeholder="Min" className="input" />
+          <input type="number" value={maxAmount} onChange={e => setMaxAmount(e.target.value)} placeholder="Max" className="input" />
         </div>
         <div className="space-x-2">
           <button onClick={fetchReport} className="btn btn-primary" title="Run Report">Run Report</button>
@@ -87,7 +87,7 @@ function Reports() {
         <div>
           <h2 className="font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
           <div className="flex space-x-2 items-center">
-            <input type="number" value={threshold} onChange={e => setThreshold(e.target.value)} className="border p-2 rounded w-32" />
+            <input type="number" value={threshold} onChange={e => setThreshold(e.target.value)} className="input w-32" />
             <button onClick={addAmountRule} className="btn btn-primary" title="Set Threshold">Set Threshold</button>
           </div>
           <ul className="list-disc pl-5 mt-2 text-gray-700 dark:text-gray-300">
