@@ -1027,6 +1027,27 @@ exports.getSpendingByTag = async (req, res) => {
   }
 };
 
+exports.getUploadHeatmap = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT EXTRACT(DOW FROM created_at) AS dow,
+             EXTRACT(HOUR FROM created_at) AS hour,
+             COUNT(*) AS count
+      FROM invoices
+      GROUP BY dow, hour
+    `);
+    const heatmap = result.rows.map(r => ({
+      day: parseInt(r.dow, 10),
+      hour: parseInt(r.hour, 10),
+      count: parseInt(r.count, 10)
+    }));
+    res.json({ heatmap });
+  } catch (err) {
+    console.error('Upload heatmap error:', err);
+    res.status(500).json({ message: 'Failed to fetch heatmap data' });
+  }
+};
+
 exports.exportDashboardPDF = async (req, res) => {
   const client = await pool.connect();
   try {
@@ -1463,5 +1484,6 @@ module.exports = {
   getVendorBio: exports.getVendorBio,
   getVendorScorecards: exports.getVendorScorecards,
   getRelationshipGraph: exports.getRelationshipGraph,
+  getUploadHeatmap: exports.getUploadHeatmap,
 };
 
