@@ -52,6 +52,7 @@ function App() {
 });
 const [files, setFile] = useState([]);   // file objects to upload
 const [filePreviews, setFilePreviews] = useState([]);
+const [fileErrors, setFileErrors] = useState([]);
 const [dragActive, setDragActive] = useState(false);
 const fileInputRef = useRef();
 const searchInputRef = useRef();
@@ -446,18 +447,34 @@ useEffect(() => {
 
   const handleFiles = async (fileList) => {
     const arr = Array.from(fileList);
-    const previews = await Promise.all(
-      arr.map(async (f) => {
-        let rows = 'N/A';
-        if (f.name.toLowerCase().endsWith('.csv')) {
-          const text = await f.text();
-          rows = Math.max(text.trim().split(/\r?\n/).length - 1, 0);
+    const previews = [];
+    const errors = [];
+
+    for (const f of arr) {
+      let rows = 'N/A';
+      const lower = f.name.toLowerCase();
+      const ext = lower.substring(lower.lastIndexOf('.'));
+
+      if (ext === '.csv') {
+        const text = await f.text();
+        const lines = text.trim().split(/\r?\n/);
+        rows = Math.max(lines.length - 1, 0);
+        const headers = lines[0].split(',');
+        const required = ['invoice_number', 'date', 'amount', 'vendor'];
+        const missing = required.filter((h) => !headers.includes(h));
+        if (missing.length) {
+          errors.push(`${f.name} missing: ${missing.join(', ')}`);
         }
-        return { file: f, name: f.name, size: f.size, rows };
-      })
-    );
+      } else if (ext !== '.pdf') {
+        errors.push(`${f.name} is not a CSV or PDF file`);
+      }
+
+      previews.push({ file: f, name: f.name, size: f.size, rows });
+    }
+
     setFile(arr);
     setFilePreviews(previews);
+    setFileErrors(errors);
   };
 
   const handleUpload = async () => {
@@ -1441,16 +1458,22 @@ useEffect(() => {
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-sm space-y-4">
           <h2 className="text-xl font-bold mb-4">Login</h2>
           {loginError && <p className="text-red-600 mb-2">{loginError}</p>}
+          <label htmlFor="username" className="block text-sm font-medium">
+            Username
+          </label>
           <input
+            id="username"
             type="text"
-            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full mb-3 px-3 py-2 border rounded"
           />
+          <label htmlFor="password" className="block text-sm font-medium">
+            Password
+          </label>
           <input
+            id="password"
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full mb-3 px-3 py-2 border rounded"
@@ -1544,112 +1567,137 @@ useEffect(() => {
   
         {token ? (
           <>
-            <div className="flex flex-wrap gap-4 mb-6 items-center">
-              <div
-                className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-blue-50' : ''}`}
-                onDragOver={(e) => e.preventDefault()}
-                onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
-                onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
-                onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
-                onClick={() => fileInputRef.current.click()}
-              >
-                <p className="text-sm text-gray-600">Drag & drop CSV/PDF here or click to select</p>
-                <input
-                  type="file"
-                  multiple
-                  accept=".csv,.pdf"
-                  ref={fileInputRef}
-                  disabled={!token}
-                  onChange={(e) => handleFiles(e.target.files)}
-                  className="hidden"
-                />
-              </div>
 
-              {filePreviews.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filePreviews.map((f, idx) => (
-                    <div key={idx} className="border rounded p-2 text-xs">
-                      <div className="font-semibold">{f.name}</div>
-                      <div>Size: {(f.size / 1024).toFixed(1)} KB</div>
-                      <div>Rows: {f.rows}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
+<div className="flex flex-wrap gap-4 mb-6 items-start">
+  <fieldset className="border border-gray-200 p-4 rounded flex flex-col gap-2">
+    <legend className="text-sm font-semibold px-2">Upload</legend>
+    <div
+      className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-blue-50' : ''}`}
+      onDragOver={(e) => e.preventDefault()}
+      onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
+      onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
+      onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
+      onClick={() => fileInputRef.current.click()}
+    >
+      <p className="text-sm text-gray-600">Drag & drop CSV/PDF here or click to select</p>
+      <input
+        type="file"
+        multiple
+        accept=".csv,.pdf"
+        ref={fileInputRef}
+        disabled={!token}
+        onChange={(e) => handleFiles(e.target.files)}
+        className="hidden"
+      />
+    </div>
+    {filePreviews.length > 0 && (
+      <div className="flex flex-wrap gap-2 mt-2">
+        {filePreviews.map((f, idx) => (
+          <div key={idx} className="border rounded p-2 text-xs">
+            <div className="font-semibold">{f.name}</div>
+            <div>Size: {(f.size / 1024).toFixed(1)} KB</div>
+            <div>Rows: {f.rows}</div>
+          </div>
+        ))}
+      </div>
+    )}
+    {fileErrors.length > 0 && (
+      <ul className="text-red-600 text-xs list-disc list-inside mt-2">
+        {fileErrors.map((err, idx) => (
+          <li key={idx}>{err}</li>
+        ))}
+      </ul>
+    )}
+  </fieldset>
 
-                        <button
-                          onClick={handleExport}
-                          disabled={!token}
-                          className={`px-4 py-2 rounded text-sm ${
-                            token
-                              ? 'bg-blue-600 text-white hover:bg-blue-700'
-                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          }`}
-                        >
-                          Export Filtered Invoices
-                        </button>
-
-                        <input
-                          type="text"
-                          placeholder="🔍 Search tags, vendors, descriptions..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          ref={searchInputRef}
-                          className="border border-gray-300 rounded px-3 py-2 text-sm w-60"
-                        />
-
-                        <label className="flex items-center space-x-2 text-sm">
-                          <input
-                            type="checkbox"
-                            checked={showArchived}
-                            onChange={() => setShowArchived(!showArchived)}
-                            className="form-checkbox h-4 w-4 text-blue-600"
-                          />
-                          <span>Show Archived</span>
-                        </label>
-
-                        <select
-                          value={selectedVendor}
-                          onChange={(e) => setSelectedVendor(e.target.value)}
-                          className="border border-gray-300 rounded px-3 py-2 text-sm"
-                        >
-                          <option value="">All Vendors</option>
-                          {vendorList.map((vendor, idx) => (
-                            <option key={idx} value={vendor}>
-                              {vendor}
-                            </option>
-                          ))}
-                        </select>
-
-                        <select
-                          value={selectedAssignee}
-                          onChange={(e) => setSelectedAssignee(e.target.value)}
-                          className="border border-gray-300 rounded px-3 py-2 text-sm"
-                        >
-                          <option value="">All Assignees</option>
-                          {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
-                            <option key={idx} value={person}>
-                              {person}
-                            </option>
-                          ))}
-                        </select>
-
-                        <input
-                          type="number"
-                          placeholder="Min Amount"
-                          value={minAmount}
-                          onChange={(e) => setMinAmount(e.target.value)}
-                          className="border border-gray-300 rounded px-2 py-2 text-sm w-28"
-                        />
-                        <input
-                          type="number"
-                          placeholder="Max Amount"
-                          value={maxAmount}
-                          onChange={(e) => setMaxAmount(e.target.value)}
-                          className="border border-gray-300 rounded px-2 py-2 text-sm w-28"
-                        />
-                      </div>
-
+  <fieldset className="border border-gray-200 p-4 rounded flex flex-wrap gap-4 items-end flex-1">
+    <legend className="text-sm font-semibold px-2">Filters</legend>
+    <div className="flex flex-col">
+      <label htmlFor="searchTerm" className="text-xs font-medium mb-1">Search</label>
+      <input
+        id="searchTerm"
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        ref={searchInputRef}
+        className="border border-gray-300 rounded px-3 py-2 text-sm w-60"
+      />
+    </div>
+    <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm">
+      <input
+        id="archivedToggle"
+        type="checkbox"
+        checked={showArchived}
+        onChange={() => setShowArchived(!showArchived)}
+        className="form-checkbox h-4 w-4 text-blue-600"
+      />
+      <span>Show Archived</span>
+    </label>
+    <div className="flex flex-col">
+      <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Vendor</label>
+      <select
+        id="vendorSelect"
+        value={selectedVendor}
+        onChange={(e) => setSelectedVendor(e.target.value)}
+        className="border border-gray-300 rounded px-3 py-2 text-sm"
+      >
+        <option value="">All Vendors</option>
+        {vendorList.map((vendor, idx) => (
+          <option key={idx} value={vendor}>
+            {vendor}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div className="flex flex-col">
+      <label htmlFor="assigneeSelect" className="text-xs font-medium mb-1">Assignee</label>
+      <select
+        id="assigneeSelect"
+        value={selectedAssignee}
+        onChange={(e) => setSelectedAssignee(e.target.value)}
+        className="border border-gray-300 rounded px-3 py-2 text-sm"
+      >
+        <option value="">All Assignees</option>
+        {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
+          <option key={idx} value={person}>
+            {person}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div className="flex flex-col">
+      <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
+      <input
+        id="minAmount"
+        type="number"
+        value={minAmount}
+        onChange={(e) => setMinAmount(e.target.value)}
+        className="border border-gray-300 rounded px-2 py-2 text-sm w-28"
+      />
+    </div>
+    <div className="flex flex-col">
+      <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
+      <input
+        id="maxAmount"
+        type="number"
+        value={maxAmount}
+        onChange={(e) => setMaxAmount(e.target.value)}
+        className="border border-gray-300 rounded px-2 py-2 text-sm w-28"
+      />
+    </div>
+    <button
+      onClick={handleExport}
+      disabled={!token}
+      className={`px-4 py-2 rounded text-sm ${
+        token
+          ? 'bg-blue-600 text-white hover:bg-blue-700'
+          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+      }`}
+    >
+      Export Filtered Invoices
+    </button>
+  </fieldset>
+</div>
   
             {message && (
               <div className="whitespace-pre-wrap mb-4 text-gray-700">{message}</div>
