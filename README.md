@@ -220,3 +220,16 @@ npm start
 ### Offline Mode (PWA)
 
 The app registers a service worker so you can view and stage invoices even without a network connection. Any actions you take while offline are queued in local storage and automatically synced when the browser comes back online. Install the PWA from your browser's "Add to home screen" option for the best experience.
+
+### Troubleshooting
+
+**`Module not found: Can't resolve 'react-router-dom'`**
+
+If you get this error when running `npm start` in the `frontend` directory, the dependencies may not be installed yet. Run:
+
+```bash
+cd frontend
+npm install
+```
+
+This installs `react-router-dom` along with the rest of the packages.
