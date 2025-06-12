@@ -48,7 +48,7 @@ export default function Login({ onLogin, addToast }) {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full mb-3 px-3 py-2 border rounded"
+            className="input w-full mb-3"
           />
 
           <input
@@ -56,7 +56,7 @@ export default function Login({ onLogin, addToast }) {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full mb-4 px-3 py-2 border rounded"
+            className="input w-full mb-4"
           />
 
           <button onClick={handleLogin} className="btn btn-primary w-full" title="Log In">

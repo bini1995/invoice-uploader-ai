@@ -1435,7 +1435,7 @@ useEffect(() => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full mb-3 px-3 py-2 border rounded"
+            className="input w-full mb-3"
           />
           <label htmlFor="password" className="block text-sm font-medium">
             Password
@@ -1445,7 +1445,7 @@ useEffect(() => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full mb-3 px-3 py-2 border rounded"
+            className="input w-full mb-3"
           />
           <button onClick={handleLogin} className="btn btn-primary w-full">
             Log In
@@ -1565,9 +1565,9 @@ useEffect(() => {
     )}
   </fieldset>
 
-  <fieldset className="border border-gray-200 p-4 rounded flex flex-wrap gap-4 items-end flex-1">
-    <legend className="text-sm font-semibold px-2">Filters</legend>
-    <div className="flex flex-col">
+  <details className="border border-gray-200 p-4 rounded flex-1">
+    <summary className="font-semibold cursor-pointer select-none">Filters</summary>
+    <div className="mt-2 flex flex-wrap gap-4 items-end">
       <label htmlFor="searchTerm" className="text-xs font-medium mb-1">Search</label>
       <input
         id="searchTerm"
@@ -1575,9 +1575,8 @@ useEffect(() => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         ref={searchInputRef}
-        className="border border-gray-300 rounded px-3 py-2 text-sm w-60"
+        className="input w-60"
       />
-    </div>
     <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm">
       <input
         id="archivedToggle"
@@ -1594,7 +1593,7 @@ useEffect(() => {
         id="vendorSelect"
         value={selectedVendor}
         onChange={(e) => setSelectedVendor(e.target.value)}
-        className="border border-gray-300 rounded px-3 py-2 text-sm"
+        className="input"
       >
         <option value="">All Vendors</option>
         {vendorList.map((vendor, idx) => (
@@ -1610,7 +1609,7 @@ useEffect(() => {
         id="assigneeSelect"
         value={selectedAssignee}
         onChange={(e) => setSelectedAssignee(e.target.value)}
-        className="border border-gray-300 rounded px-3 py-2 text-sm"
+        className="input"
       >
         <option value="">All Assignees</option>
         {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
@@ -1627,7 +1626,7 @@ useEffect(() => {
         type="number"
         value={minAmount}
         onChange={(e) => setMinAmount(e.target.value)}
-        className="border border-gray-300 rounded px-2 py-2 text-sm w-28"
+        className="input w-28"
       />
     </div>
     <div className="flex flex-col">
@@ -1637,7 +1636,7 @@ useEffect(() => {
         type="number"
         value={maxAmount}
         onChange={(e) => setMaxAmount(e.target.value)}
-        className="border border-gray-300 rounded px-2 py-2 text-sm w-28"
+        className="input w-28"
       />
     </div>
     <button
@@ -1651,7 +1650,8 @@ useEffect(() => {
     >
       Export Filtered Invoices
     </button>
-  </fieldset>
+  </div>
+  </details>
 </div>
   
             {message && (
@@ -1856,7 +1856,7 @@ useEffect(() => {
                             value={chatQuestion}
                             onChange={(e) => setChatQuestion(e.target.value)}
                             placeholder="Ask AI about invoices..."
-                            className="border rounded p-1 flex-1 text-sm"
+                            className="input flex-1 text-sm"
                           />
                           <button
                             onClick={handleAssistantQuery}
@@ -1874,7 +1874,7 @@ useEffect(() => {
                             value={chartQuestion}
                             onChange={(e) => setChartQuestion(e.target.value)}
                             placeholder="Ask for a chart..."
-                            className="border rounded p-1 flex-1 text-sm"
+                            className="input flex-1 text-sm"
                           />
                           <button
                             onClick={handleChartQuery}
@@ -1911,7 +1911,7 @@ useEffect(() => {
                             <select
                               value={selectedVendor}
                               onChange={(e) => setSelectedVendor(e.target.value)}
-                              className="border rounded p-1"
+                              className="input p-1"
                             >
                               <option value="">All Vendors</option>
                               {vendorList.map((vendor, idx) => (
@@ -1989,7 +1989,7 @@ useEffect(() => {
                         <select
                           value={cashFlowInterval}
                           onChange={(e) => setCashFlowInterval(e.target.value)}
-                          className="border rounded p-1 text-sm"
+                          className="input p-1 text-sm"
                         >
                           <option value="monthly">Monthly</option>
                           <option value="weekly">Weekly</option>
@@ -2016,7 +2016,7 @@ useEffect(() => {
                         <select
                           value={filterType}
                           onChange={(e) => setFilterType(e.target.value)}
-                          className="border rounded p-1"
+                          className="input p-1"
                         >
                           <option value="none">None</option>
                           <option value="tag">Tag</option>
@@ -2029,7 +2029,7 @@ useEffect(() => {
                             value={filterTag}
                             onChange={(e) => setFilterTag(e.target.value)}
                             placeholder="Tag"
-                            className="border rounded p-1"
+                            className="input p-1"
                           />
                         )}
                         {filterType === 'date' && (
@@ -2038,13 +2038,13 @@ useEffect(() => {
                               type="date"
                               value={filterStartDate}
                               onChange={(e) => setFilterStartDate(e.target.value)}
-                              className="border rounded p-1"
+                              className="input p-1"
                             />
                             <input
                               type="date"
                               value={filterEndDate}
                               onChange={(e) => setFilterEndDate(e.target.value)}
-                              className="border rounded p-1"
+                              className="input p-1"
                             />
                           </>
                         )}
@@ -2055,14 +2055,14 @@ useEffect(() => {
                               value={filterMinAmount}
                               onChange={(e) => setFilterMinAmount(e.target.value)}
                               placeholder="Min"
-                              className="border rounded p-1"
+                              className="input p-1"
                             />
                             <input
                               type="number"
                               value={filterMaxAmount}
                               onChange={(e) => setFilterMaxAmount(e.target.value)}
                               placeholder="Max"
-                              className="border rounded p-1"
+                              className="input p-1"
                             />
                           </>
                         )}
@@ -2217,7 +2217,7 @@ useEffect(() => {
                             handleUpdateInvoice(inv.id, 'date', editingValue);
                             setEditingInvoiceId(null);
                           }}
-                          className="border px-1 text-sm w-full"
+                          className="input px-1 text-sm w-full"
                           autoFocus
                         />
                       ) : (
@@ -2277,7 +2277,7 @@ useEffect(() => {
                             handleUpdateInvoice(inv.id, 'vendor', editingValue);
                             setEditingInvoiceId(null);
                           }}
-                          className="border px-1 text-sm w-full"
+                          className="input px-1 text-sm w-full"
                           autoFocus
                         />
                         
@@ -2433,14 +2433,14 @@ useEffect(() => {
                           🚩 {suspicionFlags[inv.id]}
                         </div>
                       )}
-                     <input
+                      <input
                         type="text"
                         value={tagInputs[inv.id] || ''}
                         onChange={(e) =>
                           setTagInputs((prev) => ({ ...prev, [inv.id]: e.target.value }))
                         }
                         placeholder="Add tag"
-                        className="text-xs p-1 border rounded w-full"
+                        className="input text-xs w-full"
                       />
                       <button
                         onClick={() => handleAddTag(inv.id, tagInputs[inv.id])}
@@ -2565,7 +2565,7 @@ useEffect(() => {
                           type="text"
                           value={commentInputs[inv.id] || ''}
                           onChange={(e) => setCommentInputs((p) => ({ ...p, [inv.id]: e.target.value }))}
-                          className="border rounded px-1 text-xs flex-1"
+                          className="input text-xs flex-1 px-1"
                           placeholder="Add comment"
                         />
                         <button
