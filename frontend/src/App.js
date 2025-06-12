@@ -18,6 +18,20 @@ import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
 import NotificationBell from './components/NotificationBell';
 import GraphView from './components/GraphView';
+import {
+  ArchiveBoxIcon,
+  ArrowDownTrayIcon,
+  ArrowUturnUpIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  CurrencyDollarIcon,
+  FlagIcon,
+  LightBulbIcon,
+  PlusCircleIcon,
+  TagIcon,
+  TrashIcon,
+  XCircleIcon,
+} from '@heroicons/react/24/outline';
 
 const teamMembers = ['Alice', 'Bob', 'Charlie'];
 
@@ -1481,7 +1495,7 @@ useEffect(() => {
           </div>
         </div>
       )}
-      <header className="bg-blue-700 dark:bg-blue-900 text-white shadow p-4 mb-6">
+      <nav className="fixed top-0 left-0 right-0 bg-blue-700 dark:bg-blue-900 text-white shadow p-4 z-20">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">📄 Invoice Uploader AI</h1>
           <div className="flex items-center space-x-4">
@@ -1506,15 +1520,15 @@ useEffect(() => {
             )}
           </div>
         </div>
-      </header>
+      </nav>
 
       {isOffline && (
-        <div className="bg-yellow-100 text-yellow-800 p-2 text-center">
+        <div className="bg-yellow-100 text-yellow-800 p-2 text-center mt-20">
           Offline mode - changes will sync when you're online
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-24">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
           <LiveFeed token={token} tenant={tenant} />
@@ -2124,11 +2138,13 @@ useEffect(() => {
                 </tr>
               ) : (
                 
-                sortedInvoices.map((inv) => (
+                sortedInvoices.map((inv, idx) => (
                   <tr
                           key={inv.id}
-                          className={`text-center ${
-                            inv.archived ? 'bg-gray-100 text-gray-500 italic' : ''
+                          className={`text-center hover:bg-gray-100 ${
+                            idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                          } ${
+                            inv.archived ? '!bg-gray-200 text-gray-500 italic' : ''
                           } ${
                             recentInvoices.includes(inv.id) ? 'bg-green-100 border-green-400' : ''
                           } ${
@@ -2295,15 +2311,17 @@ useEffect(() => {
                                 <button
                                   onClick={() => handleDelete(inv.id)}
                                   className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 text-xs w-full"
+                                  title="Delete"
                                 >
-                                  Delete
+                                  <TrashIcon className="w-4 h-4" />
                                 </button>
                               )}
                               <button
                                 onClick={() => handleArchive(inv.id)}
                                 className="bg-gray-600 text-white px-2 py-1 rounded hover:bg-gray-700 text-xs w-full"
+                                title="Archive"
                               >
-                                Archive
+                                <ArchiveBoxIcon className="w-4 h-4" />
                               </button>
                             </>
                           )}
@@ -2311,29 +2329,33 @@ useEffect(() => {
                         <button
                             onClick={() => handleDownloadPDF(inv.id)}
                             className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs w-full"
+                            title="Download PDF"
                           >
-                            Download PDF
+                            <ArrowDownTrayIcon className="w-4 h-4" />
                           </button>
 
                       {inv.archived && (
                         <button
                           onClick={() => handleUnarchive(inv.id)}
                           className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs w-full"
+                          title="Unarchive"
                         >
-                          Unarchive
+                          <ArrowUturnUpIcon className="w-4 h-4" />
                         </button>
                       )}
                       <button
                         onClick={() => handleSuggestVendor(inv)}
                         className="bg-purple-600 text-white px-2 py-1 rounded hover:bg-purple-700 text-xs w-full"
+                        title="Suggest Vendor"
                       >
-                        Suggest Vendor
+                        <LightBulbIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleSuggestTags(inv)}
                         className="bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 text-xs w-full"
+                        title="Suggest Tags"
                       >
-                        Tags
+                        <TagIcon className="w-4 h-4" />
                       </button>
                       {tagSuggestions[inv.id] && (
                         <div className="text-xs text-indigo-800 mt-1 text-center">
@@ -2343,21 +2365,27 @@ useEffect(() => {
                       <button
                         onClick={() => handleFlagSuspicious(inv)}
                         className="bg-yellow-600 text-white px-2 py-1 rounded hover:bg-yellow-700 text-xs w-full"
+                        title="Flag"
                       >
-                        Flag
+                        <FlagIcon className="w-4 h-4" />
                       </button>
                         <button
                           onClick={() => handleViewTimeline(inv.id)}
                           className="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 text-xs w-full"
+                          title="Timeline"
                         >
-                          Timeline
+                          <ClockIcon className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handlePaymentRequest(inv.id)}
                           className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs w-full"
                           disabled={paymentRequestId === inv.id}
                         >
-                          {paymentRequestId === inv.id ? 'Preparing...' : 'Payment Request'}
+                          {paymentRequestId === inv.id ? (
+                            <Spinner className="h-3 w-3" />
+                          ) : (
+                            <CurrencyDollarIcon className="w-4 h-4" />
+                          )}
                         </button>
                         <button
                           onClick={() => handleDownloadPDF(inv.id)}
@@ -2365,16 +2393,10 @@ useEffect(() => {
                           disabled={downloadingId === inv.id}
                         >
                         {downloadingId === inv.id ? (
-                          <>
-                            <svg className="animate-spin h-3 w-3 text-white" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                            </svg>
-                            <span>Downloading...</span>
-                          </>
-                        ) : (
-                          'Download PDF'
-                        )}
+                            <Spinner className="h-3 w-3" />
+                          ) : (
+                            <ArrowDownTrayIcon className="w-4 h-4" />
+                          )}
                       </button>
 
                       {vendorSuggestions[inv.id] && (
@@ -2399,22 +2421,25 @@ useEffect(() => {
                       <button
                         onClick={() => handleAddTag(inv.id, tagInputs[inv.id])}
                         className="bg-green-600 text-white px-2 py-1 mt-1 rounded hover:bg-green-700 text-xs w-full"
+                        title="Add Tag"
                       >
-                        Add Tag
+                        <PlusCircleIcon className="w-4 h-4" />
                       </button>
                       {(role === 'approver' || role === 'admin') && (
                         <>
                           <button
                             onClick={() => handleApprove(inv.id)}
                             className="bg-green-500 text-white px-2 py-1 mt-1 rounded hover:bg-green-600 text-xs w-full"
+                            title="Approve"
                           >
-                            Approve
+                            <CheckCircleIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleReject(inv.id)}
                             className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs w-full"
+                            title="Reject"
                           >
-                            Reject
+                            <XCircleIcon className="w-4 h-4" />
                           </button>
                         </>
                       )}
@@ -2428,7 +2453,7 @@ useEffect(() => {
               </div>
                 ) : viewMode === 'card' ? (
                   // 👇 step 2 goes here
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                   {loadingInvoices ? (
                     Array.from({ length: 4 }).map((_, idx) => (
                       <div key={idx} className="h-32 bg-gray-200 rounded animate-pulse" />
@@ -2461,16 +2486,18 @@ useEffect(() => {
                         <button
                           onClick={() => handleArchive(inv.id)}
                           className="bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"
+                          title="Archive"
                         >
-                          Archive
+                          <ArchiveBoxIcon className="w-4 h-4" />
                         </button>
                       )}
                       {role === 'admin' && (
                         <button
                           onClick={() => handleDelete(inv.id)}
                           className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+                          title="Delete"
                         >
-                          Delete
+                          <TrashIcon className="w-4 h-4" />
                         </button>
                       )}
                       {(role === 'approver' || role === 'admin') && (
@@ -2478,21 +2505,27 @@ useEffect(() => {
                           <button
                             onClick={() => handleApprove(inv.id)}
                             className="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
+                            title="Approve"
                           >
-                            Approve
+                            <CheckCircleIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleReject(inv.id)}
                             className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                            title="Reject"
                           >
-                            Reject
+                            <XCircleIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handlePaymentRequest(inv.id)}
                             className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
                             disabled={paymentRequestId === inv.id}
                           >
-                            {paymentRequestId === inv.id ? 'Preparing...' : 'Payment Request'}
+                            {paymentRequestId === inv.id ? (
+                              <Spinner className="h-3 w-3" />
+                            ) : (
+                              <CurrencyDollarIcon className="w-4 h-4" />
+                            )}
                           </button>
                         </>
                       )}
