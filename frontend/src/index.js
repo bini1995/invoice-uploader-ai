@@ -9,13 +9,17 @@ if (savedTheme === 'dark') {
   document.documentElement.classList.add('dark');
 }
 
-const apiBase = process.env.REACT_APP_API_BASE_URL;
-fetch(`${apiBase}/api/invoices`);
+const apiBase = process.env.REACT_APP_API_BASE_URL || '';
+if (apiBase) {
+  fetch(`${apiBase}/api/invoices`).catch((err) => {
+    console.error('API connection failed', err);
+  });
+}
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 
 // register service worker for offline support
-serviceWorkerRegistration.register();
+serviceWorkerRegistration.unregister();
 
 
 // If you want to start measuring performance in your app, pass a function
