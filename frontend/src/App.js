@@ -1,8 +1,7 @@
 /* eslint-disable no-use-before-define */
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import LiveFeed from './components/LiveFeed';
-import TenantSwitcher from './components/TenantSwitcher';
+import Navbar from './components/Navbar';
 import {
   BarChart,
   Bar,
@@ -18,7 +17,6 @@ import Login from './Login';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
-import NotificationBell from './components/NotificationBell';
 import GraphView from './components/GraphView';
 import ConfirmModal from './components/ConfirmModal';
 import SuggestionChips from './components/SuggestionChips';
@@ -1493,49 +1491,17 @@ useEffect(() => {
           </div>
         </div>
       )}
-      <nav className="fixed top-0 left-0 right-0 bg-blue-700 dark:bg-blue-900 text-white shadow p-4 z-20">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">📄 Invoice Uploader AI</h1>
-          <div className="flex items-center space-x-4">
-            <TenantSwitcher tenant={tenant} onChange={setTenant} />
-            <NotificationBell notifications={notifications} onOpen={markNotificationsRead} />
-            <Link to="/dashboard" className="underline text-sm">Dashboard</Link>
-            <Link to="/reports" className="underline text-sm">Reports</Link>
-            <Link to="/archive" className="underline text-sm">Archive</Link>
-            {role === 'admin' && (
-              <Link to="/team" className="underline text-sm">Team</Link>
-            )}
-            <button
-              onClick={() => setDarkMode((d) => !d)}
-              className="text-xl focus:outline-none"
-              title={darkMode ? 'Light Mode' : 'Dark Mode'}
-            >
-              {darkMode ? '☀️' : '🌙'}
-            </button>
-            {darkMode && (
-              <button
-                onClick={() => setDarkMode(false)}
-                className="ml-2 px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded focus:outline-none"
-                title="Light Mode"
-              >
-                Light Mode
-              </button>
-            )}
-            {token && (
-              <>
-                <span className="text-sm">by Bini</span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-                  title="Logout"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        tenant={tenant}
+        onTenantChange={setTenant}
+        notifications={notifications}
+        onNotificationsOpen={markNotificationsRead}
+        role={role}
+        onLogout={handleLogout}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        token={token}
+      />
 
       {isOffline && (
         <div className="bg-yellow-100 text-yellow-800 p-2 text-center mt-20">
