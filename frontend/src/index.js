@@ -4,6 +4,7 @@ import App from './App';
 import Dashboard from './Dashboard';
 import Reports from './Reports';
 import Archive from './Archive';
+import TeamManagement from './TeamManagement';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
@@ -26,6 +27,7 @@ root.render(
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/reports" element={<Reports />} />
       <Route path="/archive" element={<Archive />} />
+      <Route path="/team" element={<TeamManagement />} />
       <Route path="/*" element={<App />} />
     </Routes>
   </BrowserRouter>
