@@ -31,33 +31,38 @@ export default function Login({ onLogin, addToast }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-80 space-y-4">
-        <h1 className="text-xl font-bold text-center">Login</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+      <nav className="fixed top-0 left-0 right-0 bg-blue-700 dark:bg-blue-900 text-white shadow p-4 z-20">
+        <h1 className="text-xl font-bold">📄 Invoice Uploader AI</h1>
+      </nav>
+      <div className="flex-1 flex items-center justify-center pt-20">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-80 space-y-4">
+          <h1 className="text-xl font-bold text-center">Login</h1>
 
-        {error && (
-          <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded">{error}</div>
-        )}
+          {error && (
+            <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded">{error}</div>
+          )}
 
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full mb-3 px-3 py-2 border rounded"
-        />
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full mb-3 px-3 py-2 border rounded"
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border rounded"
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full mb-4 px-3 py-2 border rounded"
+          />
 
-        <button onClick={handleLogin} className="btn btn-primary w-full">
-          Log In
-        </button>
+          <button onClick={handleLogin} className="btn btn-primary w-full">
+            Log In
+          </button>
+        </div>
       </div>
     </div>
   );

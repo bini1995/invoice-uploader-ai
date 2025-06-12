@@ -1671,64 +1671,66 @@ useEffect(() => {
             </button>
           </div>
         )}
-                {aiSummary && (
-                <div className="mt-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded relative">
-                  <strong>AI Suggestions:</strong>
-                  <button
-                    onClick={() => handleCopy(aiSummary)}
-                    className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
-                  >
-                    Copy
-                  </button>
-                  <pre className="whitespace-pre-wrap">{aiSummary}</pre>
-                </div>
-              )}
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {aiSummary && (
+            <div className="p-4 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded relative">
+              <strong>AI Suggestions:</strong>
+              <button
+                onClick={() => handleCopy(aiSummary)}
+                className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
+              >
+                Copy
+              </button>
+              <pre className="whitespace-pre-wrap">{aiSummary}</pre>
+            </div>
+          )}
 
-                  {vendorSummary && (
-                    <div className="mt-4 p-4 bg-purple-100 border border-purple-400 text-purple-800 rounded relative">
-                      <strong>Vendor Insights:</strong>
-                      <button
-                        onClick={() => handleCopy(vendorSummary)}
-                        className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
-                      >
-                        Copy
-                      </button>
-                      <pre className="whitespace-pre-wrap">{vendorSummary}</pre>
-                    </div>
-                  )}
+          {vendorSummary && (
+            <div className="p-4 bg-purple-100 border border-purple-400 text-purple-800 rounded relative">
+              <strong>Vendor Insights:</strong>
+              <button
+                onClick={() => handleCopy(vendorSummary)}
+                className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
+              >
+                Copy
+              </button>
+              <pre className="whitespace-pre-wrap">{vendorSummary}</pre>
+            </div>
+          )}
 
-                  {monthlyInsights && (
-                    <div className="mt-4 p-4 bg-blue-100 border border-blue-400 text-blue-800 rounded relative">
-                      <strong>Monthly Insights:</strong>
-                      <button
-                        onClick={() => handleCopy(monthlyInsights.summary)}
-                        className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
-                      >
-                        Copy
-                      </button>
-                      <table className="text-xs mb-2">
-                        <thead>
-                          <tr>
-                            <th className="pr-4 text-left">Vendor</th>
-                            <th className="pr-4 text-right">Total</th>
-                            <th className="text-right">% Change</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {monthlyInsights.vendorTotals.map((v) => (
-                            <tr key={v.vendor}>
-                              <td className="pr-4">{v.vendor}</td>
-                              <td className="pr-4 text-right">${v.total.toFixed(2)}</td>
-                              <td className="text-right">
-                                {v.percentChange > 0 ? '+' : ''}{v.percentChange.toFixed(1)}%
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      <pre className="whitespace-pre-wrap">{monthlyInsights.summary}</pre>
-                    </div>
-                  )}
+          {monthlyInsights && (
+            <div className="p-4 bg-blue-100 border border-blue-400 text-blue-800 rounded relative">
+              <strong>Monthly Insights:</strong>
+              <button
+                onClick={() => handleCopy(monthlyInsights.summary)}
+                className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
+              >
+                Copy
+              </button>
+              <table className="text-xs mb-2">
+                <thead>
+                  <tr>
+                    <th className="pr-4 text-left">Vendor</th>
+                    <th className="pr-4 text-right">Total</th>
+                    <th className="text-right">% Change</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthlyInsights.vendorTotals.map((v) => (
+                    <tr key={v.vendor}>
+                      <td className="pr-4">{v.vendor}</td>
+                      <td className="pr-4 text-right">${v.total.toFixed(2)}</td>
+                      <td className="text-right">
+                        {v.percentChange > 0 ? '+' : ''}{v.percentChange.toFixed(1)}%
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <pre className="whitespace-pre-wrap">{monthlyInsights.summary}</pre>
+            </div>
+          )}
+        </div>
 
 
                  {selectedInvoices.length > 0 && (
