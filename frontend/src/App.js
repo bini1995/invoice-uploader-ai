@@ -1,5 +1,6 @@
 /* eslint-disable no-use-before-define */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import LiveFeed from './components/LiveFeed';
 import TenantSwitcher from './components/TenantSwitcher';
 import {
@@ -1441,6 +1442,7 @@ useEffect(() => {
           <div className="flex items-center space-x-4">
             <TenantSwitcher tenant={tenant} onChange={setTenant} />
             <NotificationBell notifications={notifications} onOpen={markNotificationsRead} />
+            <Link to="/dashboard" className="underline text-sm">Dashboard</Link>
             <button
               onClick={() => setDarkMode((d) => !d)}
               className="text-xl focus:outline-none"
