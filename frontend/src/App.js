@@ -1507,6 +1507,14 @@ useEffect(() => {
             >
               {darkMode ? '☀️' : '🌙'}
             </button>
+            {darkMode && (
+              <button
+                onClick={() => setDarkMode(false)}
+                className="ml-2 px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded focus:outline-none"
+              >
+                Light Mode
+              </button>
+            )}
             {token && (
               <>
                 <span className="text-sm">by Bini</span>
