@@ -414,13 +414,6 @@ const searchInputRef = useRef();
     return () => window.removeEventListener('keydown', handleKey);
   }, [selectedInvoices, invoices, handleBulkArchive, handleFlagSuspicious]);
 
-  useEffect(() => {
-    if (showChart && token) {
-      fetchCashFlowData(cashFlowInterval);
-      fetchTopVendors();
-      fetchTagReport();
-    }
-  }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, fetchCashFlowData, fetchTopVendors, fetchTagReport]);
   
 
 
@@ -873,7 +866,15 @@ useEffect(() => {
       addToast('Failed to fetch tag report', 'error');
     }
   }, [token, filterType, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
-  
+
+  useEffect(() => {
+    if (showChart && token) {
+      fetchCashFlowData(cashFlowInterval);
+      fetchTopVendors();
+      fetchTagReport();
+    }
+  }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, fetchCashFlowData, fetchTopVendors, fetchTagReport]);
+
 
   const handleExportAll = async () => {
     try {
