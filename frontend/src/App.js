@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable no-use-before-define */
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import LiveFeed from './components/LiveFeed';
 import TenantSwitcher from './components/TenantSwitcher';
 import {
@@ -99,7 +100,6 @@ const searchInputRef = useRef();
   const [filterMaxAmount, setFilterMaxAmount] = useState('');
   const [editingInvoiceId, setEditingInvoiceId] = useState(null);
   const [editingField, setEditingField] = useState(null); // format: { id, field }
-  const [editValue, setEditValue] = useState('');
   const [editingValue, setEditingValue] = useState('');
   const [updatedFields, setUpdatedFields] = useState({});
   const [updatingField, setUpdatingField] = useState(null);
@@ -159,7 +159,7 @@ const searchInputRef = useRef();
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
-  async function syncPendingActions() {
+  const syncPendingActions = useCallback(async () => {
     const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
     if (!pending.length) return;
     for (const action of pending) {
@@ -172,7 +172,7 @@ const searchInputRef = useRef();
     }
     localStorage.removeItem('pendingActions');
     fetchInvoices(showArchived, selectedAssignee);
-  }
+  }, [fetchInvoices, showArchived, selectedAssignee]);
 
   
   useEffect(() => {
@@ -216,7 +216,7 @@ const searchInputRef = useRef();
     return () => {
       window.fetch = orig;
     };
-  }, [tenant, token]);
+  }, [tenant, token, syncPendingActions]);
 
   useEffect(() => {
     const goOnline = () => {
@@ -233,7 +233,7 @@ const searchInputRef = useRef();
       window.removeEventListener('online', goOnline);
       window.removeEventListener('offline', goOffline);
     };
-  }, [tenant, token]);
+  }, [tenant, token, syncPendingActions]);
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -256,7 +256,7 @@ const searchInputRef = useRef();
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [selectedInvoices, invoices]);
+  }, [selectedInvoices, invoices, handleBulkArchive, handleFlagSuspicious]);
 
   useEffect(() => {
     if (showChart && token) {
@@ -264,7 +264,7 @@ const searchInputRef = useRef();
       fetchTopVendors();
       fetchTagReport();
     }
-  }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
+  }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, fetchCashFlowData, fetchTopVendors, fetchTagReport]);
   
 
 
@@ -321,10 +321,10 @@ const searchInputRef = useRef();
     }
   };
   
-  const handleBulkArchive = () => {
+  const handleBulkArchive = useCallback(() => {
     selectedInvoices.forEach((id) => handleArchive(id));
     setSelectedInvoices([]);
-  };
+  }, [selectedInvoices, handleArchive]);
   
   const handleBulkDelete = () => {
     selectedInvoices.forEach((id) => handleDelete(id));
@@ -434,7 +434,7 @@ useEffect(() => {
       setInvoices(JSON.parse(cached));
     }
   }
-}, [showArchived, selectedAssignee]);
+}, [showArchived, selectedAssignee, fetchInvoices]);
 
   
 
@@ -562,7 +562,7 @@ useEffect(() => {
     setFilePreviews([]);
   };
   
-    const fetchInvoices = async (includeArchived = false, assigneeFilter = '') => {
+    const fetchInvoices = useCallback(async (includeArchived = false, assigneeFilter = '') => {
       try {
         setLoadingInvoices(true);
         const params = [];
@@ -637,7 +637,7 @@ useEffect(() => {
       } finally {
         setLoadingInvoices(false);
       }
-    };
+    }, [token]);
   
   
   const handleExport = async () => {
@@ -732,7 +732,7 @@ useEffect(() => {
     }
   };
 
-  const fetchCashFlowData = async (interval = cashFlowInterval) => {
+  const fetchCashFlowData = useCallback(async (interval = cashFlowInterval) => {
     try {
       const res = await fetch(`http://localhost:3000/api/invoices/cash-flow?interval=${interval}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -747,9 +747,9 @@ useEffect(() => {
       console.error('Cash flow fetch error:', err);
       addToast('Failed to fetch cash flow', 'error');
     }
-  };
+  }, [token, cashFlowInterval]);
 
-  const fetchTopVendors = async () => {
+  const fetchTopVendors = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       if (filterType === 'tag' && filterTag) params.append('tag', filterTag);
@@ -774,9 +774,9 @@ useEffect(() => {
       console.error('Top vendors fetch error:', err);
       addToast('Failed to fetch top vendors', 'error');
     }
-  };
+  }, [token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
 
-  const fetchTagReport = async () => {
+  const fetchTagReport = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       if (filterType === 'date') {
@@ -800,7 +800,7 @@ useEffect(() => {
       console.error('Tag report fetch error:', err);
       addToast('Failed to fetch tag report', 'error');
     }
-  };
+  }, [token, filterType, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
   
 
   const handleExportAll = async () => {
@@ -1042,7 +1042,7 @@ useEffect(() => {
     }
   };
   
-  const handleFlagSuspicious = async (invoice) => {
+  const handleFlagSuspicious = useCallback(async (invoice) => {
     try {
       const res = await fetch('http://localhost:3000/api/invoices/flag-suspicious', {
         method: 'POST',
@@ -1064,7 +1064,7 @@ useEffect(() => {
       console.error('🚩 Flagging failed:', err);
       addToast('🚩 ⚠️ Failed to flag invoice.', 'error');
     }
-  };
+  }, [token]);
 
   const handleViewTimeline = async (id) => {
     try {
@@ -1119,7 +1119,7 @@ useEffect(() => {
     }
   };
   
-  const handleArchive = async (id) => {
+  const handleArchive = useCallback(async (id) => {
     const confirmArchive = window.confirm(`Are you sure you want to archive invoice #${id}?`);
     if (!confirmArchive) return;
   
@@ -1142,7 +1142,7 @@ useEffect(() => {
       console.error('Archive error:', err);
       addToast('⚠️ Failed to archive invoice.', 'error');
     }
-  };
+  }, [token]);
   
   const handleUnarchive = async (id) => {
     try {
@@ -1163,62 +1163,6 @@ useEffect(() => {
     } catch (err) {
       console.error('Unarchive error:', err);
       addToast('❌ Failed to unarchive invoice', 'error');
-    }
-  };
-
-  const handleMarkPaid = async (id, currentStatus) => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${id}/mark-paid`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ paid: !currentStatus }),
-      });
-  
-      const data = await res.json();
-      if (res.ok) {
-        addToast(data.message);
-        fetchInvoices(showArchived, selectedAssignee); // already declared in your file
-      } else {
-        addToast('Failed to update payment status', 'error');
-      }
-    } catch (err) {
-      console.error('Error updating paid status:', err);
-      addToast('Something went wrong.', 'error');
-    }
-  };
-
-  const handleEditStart = (id, field, currentValue) => {
-    setEditingField({ id, field });
-    setEditValue(currentValue);
-  };
-  
-  const handleEditSave = async () => {
-    if (!editingField) return;
-  
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${editingField.id}/update`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          field: editingField.field,
-          value: editValue,
-        }),
-      });
-  
-      const data = await res.json();
-      addToast(data.message);
-      fetchInvoices(showArchived, selectedAssignee); // refresh data
-      setEditingField(null);
-      setEditValue('');
-    } catch (err) {
-      console.error('Edit failed:', err);
-      addToast('Failed to update invoice.', 'error');
     }
   };
 
@@ -1249,29 +1193,7 @@ useEffect(() => {
     }
   };
   
-  const handleManualTagUpdate = async (id, tagsArray) => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${id}/update-tags`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ tags: tagsArray }),
-      });
-  
-      const data = await res.json();
-      if (res.ok) {
-        addToast(data.message);
-        fetchInvoices(showArchived, selectedAssignee);
-      } else {
-        addToast('❌ Failed to update tags', 'error');
-      }
-    } catch (err) {
-      console.error('Tag update error:', err);
-      addToast('⚠️ Something went wrong.', 'error');
-    }
-  };
+
   
   const handleDownloadPDF = async (id) => {
     setDownloadingId(id);
@@ -1435,11 +1357,6 @@ useEffect(() => {
     const amount = parseFloat(inv.amount);
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0).toFixed(2);
-
-  const visibleInvoices = invoices.filter(inv => {
-    return selectedVendor === '' || inv.vendor === selectedVendor;
-  });
-  
 
   
   if (!token) {
