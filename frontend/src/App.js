@@ -96,6 +96,8 @@ const searchInputRef = useRef();
   const [chartDataAuto, setChartDataAuto] = useState([]);
   const [chatQuestion, setChatQuestion] = useState('');
   const [chatAnswer, setChatAnswer] = useState('');
+  const [loadingVendor, setLoadingVendor] = useState(false);
+  const [loadingInsights, setLoadingInsights] = useState(false);
   const [commentInputs, setCommentInputs] = useState({});
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
@@ -633,6 +635,7 @@ useEffect(() => {
 
   const handleVendorSummary = async () => {
     try {
+      setLoadingVendor(true);
       const vendorData = {};
       invoices.forEach((inv) => {
         if (!vendorData[inv.vendor]) vendorData[inv.vendor] = 0;
@@ -650,6 +653,9 @@ useEffect(() => {
     } catch (err) {
       console.error('Vendor summary error:', err);
       setVendorSummary('⚠️ Failed to summarize vendor trends.');
+    } 
+    finally {
+      setLoadingVendor(false);
     }
   };
 
@@ -677,6 +683,7 @@ useEffect(() => {
 
   const handleMonthlyInsights = async () => {
     try {
+      setLoadingInsights(true);
       const res = await fetch('http://localhost:3000/api/invoices/monthly-insights', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -689,6 +696,8 @@ useEffect(() => {
     } catch (err) {
       console.error('Monthly insights error:', err);
       addToast('Failed to fetch monthly insights', 'error');
+    } finally {
+      setLoadingInsights(false);
     }
   };
 
@@ -1414,8 +1423,8 @@ useEffect(() => {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-900 dark:text-gray-100">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-md w-full max-w-sm">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-900 dark:text-gray-100">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-sm space-y-4">
           <h2 className="text-xl font-bold mb-4">Login</h2>
           {loginError && <p className="text-red-600 mb-2">{loginError}</p>}
           <input
@@ -1432,10 +1441,7 @@ useEffect(() => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full mb-3 px-3 py-2 border rounded"
           />
-          <button
-            onClick={handleLogin}
-            className="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700"
-          >
+          <button onClick={handleLogin} className="btn btn-primary w-full">
             Log In
           </button>
         </div>
@@ -1445,7 +1451,7 @@ useEffect(() => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="fixed top-4 right-4 space-y-2 z-50">
         {toasts.map((t) => (
           <Toast
@@ -1744,7 +1750,7 @@ useEffect(() => {
                             <button
                               onClick={handleUpload}
                               disabled={!token}
-                              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center space-x-2 disabled:opacity-60"
+                              className="btn btn-primary text-sm flex items-center space-x-2 disabled:opacity-60"
                             >
                               {loading && (
                                 <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
@@ -1756,30 +1762,36 @@ useEffect(() => {
                           <button
                             onClick={handleVendorSummary}
                             disabled={!token}
-                            className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm disabled:opacity-60"
+                            className="btn bg-purple-600 hover:bg-purple-700 text-white text-sm flex items-center space-x-2 disabled:opacity-60"
                           >
-                            Get Vendor Insights
+                            {loadingVendor && (
+                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                            )}
+                            <span>{loadingVendor ? 'Loading...' : 'Get Vendor Insights'}</span>
                           </button>
 
                           <button
                             onClick={handleMonthlyInsights}
                             disabled={!token}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm disabled:opacity-60"
+                            className="btn btn-primary text-sm flex items-center space-x-2 disabled:opacity-60"
                           >
-                            🧠 Monthly Insights
+                            {loadingInsights && (
+                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                            )}
+                            <span>{loadingInsights ? 'Loading...' : '🧠 Monthly Insights'}</span>
                           </button>
 
                           <button
                             onClick={handleExportAll}
                             disabled={!token}
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm disabled:opacity-60"
+                            className="btn btn-primary bg-green-600 hover:bg-green-700 text-sm disabled:opacity-60"
                           >
                             Export All as CSV
                           </button>
                           <button
                             onClick={handleExportDashboardPDF}
                             disabled={!token}
-                            className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-sm disabled:opacity-60"
+                            className="btn btn-primary bg-green-700 hover:bg-green-800 text-sm disabled:opacity-60"
                           >
                             Export Dashboard PDF
                           </button>
@@ -1788,20 +1800,20 @@ useEffect(() => {
                             <button
                               onClick={handleClearAll}
                               disabled={!token}
-                              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm disabled:opacity-60"
+                              className="btn btn-danger text-sm disabled:opacity-60"
                             >
                               Clear All Invoices
                             </button>
                           )}
                           <button
                             onClick={handleResetFilters}
-                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 text-sm"
+                            className="btn btn-secondary text-sm"
                           >
                             Reset Filters
                           </button>
                           <button
                             onClick={handleExportArchived}
-                            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 text-sm"
+                            className="btn bg-yellow-600 hover:bg-yellow-700 text-white text-sm"
                           >
                             Export Archived
                           </button>

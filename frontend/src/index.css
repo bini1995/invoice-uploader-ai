@@ -11,6 +11,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @apply bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100;
 }
 
 code {
@@ -25,4 +26,19 @@ code {
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-xl transition;
+  }
+  .btn-primary {
+    @apply bg-blue-500 text-white hover:bg-blue-600;
+  }
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+  }
+  .btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600;
+  }
 }

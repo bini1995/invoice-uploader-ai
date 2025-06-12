@@ -31,9 +31,9 @@ export default function Login({ onLogin, addToast }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-80">
-        <h1 className="text-xl font-bold mb-4 text-center">Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-80 space-y-4">
+        <h1 className="text-xl font-bold text-center">Login</h1>
 
         {error && (
           <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded">{error}</div>
@@ -44,7 +44,7 @@ export default function Login({ onLogin, addToast }) {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="w-full mb-3 p-2 border rounded"
+          className="w-full mb-3 px-3 py-2 border rounded"
         />
 
         <input
@@ -52,13 +52,10 @@ export default function Login({ onLogin, addToast }) {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-4 p-2 border rounded"
+          className="w-full mb-4 px-3 py-2 border rounded"
         />
 
-        <button
-          onClick={handleLogin}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
+        <button onClick={handleLogin} className="btn btn-primary w-full">
           Log In
         </button>
       </div>
