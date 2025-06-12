@@ -1448,6 +1448,9 @@ useEffect(() => {
             <Link to="/dashboard" className="underline text-sm">Dashboard</Link>
             <Link to="/reports" className="underline text-sm">Reports</Link>
             <Link to="/archive" className="underline text-sm">Archive</Link>
+            {role === 'admin' && (
+              <Link to="/team" className="underline text-sm">Team</Link>
+            )}
             <button
               onClick={() => setDarkMode((d) => !d)}
               className="text-xl focus:outline-none"

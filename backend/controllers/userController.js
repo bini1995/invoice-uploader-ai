@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { logActivity } = require('../utils/activityLogger');
 
 const USERS = [
   {
@@ -56,4 +57,48 @@ exports.authorizeRoles = (...roles) => (req, res, next) => {
     return res.status(403).json({ message: 'Forbidden' });
   }
   next();
+};
+
+exports.getUsers = (_req, res) => {
+  const sanitized = USERS.map(({ passwordHash, ...rest }) => rest);
+  res.json(sanitized);
+};
+
+exports.addUser = (req, res) => {
+  const { username, password, role } = req.body;
+  if (!username || !password || !role) {
+    return res.status(400).json({ message: 'Missing fields' });
+  }
+  if (USERS.find((u) => u.username === username)) {
+    return res.status(400).json({ message: 'User exists' });
+  }
+  const id = USERS.length ? Math.max(...USERS.map((u) => u.id)) + 1 : 1;
+  const passwordHash = bcrypt.hashSync(password, 10);
+  const user = { id, username, passwordHash, role };
+  USERS.push(user);
+  logActivity(req.user?.userId, 'add_user');
+  res.json({ id, username, role });
+};
+
+exports.deleteUser = (req, res) => {
+  const { id } = req.params;
+  const idx = USERS.findIndex((u) => u.id === parseInt(id, 10));
+  if (idx === -1) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  USERS.splice(idx, 1);
+  logActivity(req.user?.userId, 'delete_user');
+  res.json({ message: 'User deleted' });
+};
+
+exports.updateUserRole = (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+  const user = USERS.find((u) => u.id === parseInt(id, 10));
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  user.role = role;
+  logActivity(req.user?.userId, 'update_user_role');
+  res.json({ id: user.id, username: user.username, role: user.role });
 };
