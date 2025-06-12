@@ -324,6 +324,12 @@ const searchInputRef = useRef();
     fetchInvoices(showArchived, selectedAssignee);
   }, [fetchInvoices, showArchived, selectedAssignee]);
 
+  const handleBulkArchive = useCallback(() => {
+    selectedInvoices.forEach((id) => handleArchive(id));
+    setSelectedInvoices([]);
+  }, [selectedInvoices, handleArchive]);
+
+
   
   useEffect(() => {
     localStorage.setItem('viewMode', viewMode);
@@ -470,13 +476,7 @@ const searchInputRef = useRef();
       setSelectedInvoices(visibleIds);
     }
   };
-  
-  const handleBulkArchive = useCallback(() => {
-    selectedInvoices.forEach((id) => handleArchive(id));
-    setSelectedInvoices([]);
-  }, [selectedInvoices, handleArchive]);
-  
-  const handleBulkDelete = () => {
+const handleBulkDelete = () => {
     selectedInvoices.forEach((id) => handleDelete(id));
     setSelectedInvoices([]);
   };
