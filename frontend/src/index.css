@@ -30,7 +30,7 @@ code {
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-xl transition;
+    @apply px-4 py-2 rounded-xl transition shadow-sm hover:shadow-md hover:-translate-y-0.5;
   }
   .btn-primary {
     @apply bg-indigo-600 text-white hover:bg-indigo-700;
