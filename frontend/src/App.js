@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import LiveFeed from './components/LiveFeed';
 import TenantSwitcher from './components/TenantSwitcher';
@@ -20,6 +20,9 @@ import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
 import NotificationBell from './components/NotificationBell';
 import GraphView from './components/GraphView';
+import ConfirmModal from './components/ConfirmModal';
+import SuggestionChips from './components/SuggestionChips';
+import Fuse from 'fuse.js';
 import {
   ArchiveBoxIcon,
   ArrowDownTrayIcon,
@@ -128,6 +131,7 @@ const searchInputRef = useRef();
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [tagInputs, setTagInputs] = useState({});
+  const [confirmData, setConfirmData] = useState(null);
 
 
   const addToast = (
@@ -225,6 +229,7 @@ const searchInputRef = useRef();
         return data;
       } catch (err) {
         console.error('Fetch error:', err);
+        addToast('Failed to fetch invoices', 'error');
         const cached = localStorage.getItem('cachedInvoices');
         if (cached) {
           setInvoices(JSON.parse(cached));
@@ -240,29 +245,34 @@ const searchInputRef = useRef();
     [token]
   );
 
-  const handleArchive = useCallback(async (id) => {
-    const confirmArchive = window.confirm(`Are you sure you want to archive invoice #${id}?`);
-    if (!confirmArchive) return;
+  const handleArchive = useCallback(
+    (id) => {
+      setConfirmData({
+        message: `Are you sure you want to archive invoice #${id}?`,
+        onConfirm: async () => {
+          try {
+            const res = await fetch(`http://localhost:3000/api/invoices/${id}/archive`, {
+              method: 'PATCH',
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
 
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${id}/archive`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
+            const data = await res.json();
+            addToast(`📦 ${data.message}`);
+
+            const updated = await fetch('http://localhost:3000/api/invoices');
+            const updatedData = await updated.json();
+            setInvoices(updatedData);
+          } catch (err) {
+            console.error('Archive error:', err);
+            addToast('⚠️ Failed to archive invoice.', 'error');
+          }
         },
       });
-
-      const data = await res.json();
-      addToast(`📦 ${data.message}`);
-
-      const updated = await fetch('http://localhost:3000/api/invoices');
-      const updatedData = await updated.json();
-      setInvoices(updatedData);
-    } catch (err) {
-      console.error('Archive error:', err);
-      addToast('⚠️ Failed to archive invoice.', 'error');
-    }
-  }, [token]);
+    },
+    [token]
+  );
 
   const handleUnarchive = async (id) => {
     try {
@@ -325,8 +335,14 @@ const searchInputRef = useRef();
   }, [fetchInvoices, showArchived, selectedAssignee]);
 
   const handleBulkArchive = useCallback(() => {
-    selectedInvoices.forEach((id) => handleArchive(id));
-    setSelectedInvoices([]);
+    if (!selectedInvoices.length) return;
+    setConfirmData({
+      message: `Archive ${selectedInvoices.length} selected invoices?`,
+      onConfirm: () => {
+        selectedInvoices.forEach((id) => handleArchive(id));
+        setSelectedInvoices([]);
+      },
+    });
   }, [selectedInvoices, handleArchive]);
 
 
@@ -417,14 +433,19 @@ const searchInputRef = useRef();
   
 
 
-  const filteredInvoices = invoices
-  .filter((inv) => {
-    const term = searchTerm.toLowerCase();
-    const vendorMatch = inv.vendor?.toLowerCase().includes(term);
-    const tagMatch = inv.tags?.some((t) => t.toLowerCase().includes(term));
-    const descMatch = inv.description?.toLowerCase().includes(term);
-    return vendorMatch || tagMatch || descMatch;
-  })
+  const fuse = useMemo(
+    () =>
+      new Fuse(invoices, {
+        keys: ['invoice_number', 'vendor', 'description', 'tags', 'id'],
+        threshold: 0.3,
+        ignoreLocation: true,
+      }),
+    [invoices]
+  );
+
+  const searchResults = searchTerm ? fuse.search(searchTerm).map((r) => r.item) : invoices;
+
+  const filteredInvoices = searchResults
   .filter((inv) => !selectedVendor || inv.vendor === selectedVendor)
   .filter((inv) => !selectedAssignee || inv.assignee === selectedAssignee)
   .filter((inv) => {
@@ -470,8 +491,14 @@ const searchInputRef = useRef();
     }
   };
 const handleBulkDelete = () => {
-    selectedInvoices.forEach((id) => handleDelete(id));
-    setSelectedInvoices([]);
+    if (!selectedInvoices.length) return;
+    setConfirmData({
+      message: `Delete ${selectedInvoices.length} selected invoices?`,
+      onConfirm: () => {
+        selectedInvoices.forEach((id) => handleDelete(id));
+        setSelectedInvoices([]);
+      },
+    });
   };
   
   const handleBulkUnarchive = () => {
@@ -969,44 +996,46 @@ useEffect(() => {
   
 
   const handleDelete = (id) => {
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete invoice #${id}?`
-    );
-    if (!confirmDelete) return;
+    const proceed = async () => {
+      const invoice = invoices.find((inv) => inv.id === id);
+      setInvoices((prev) => prev.filter((inv) => inv.id !== id));
 
-    const invoice = invoices.find((inv) => inv.id === id);
-    setInvoices((prev) => prev.filter((inv) => inv.id !== id));
+      const undo = () => {
+        clearTimeout(timeout);
+        setInvoices((prev) => [invoice, ...prev].sort((a, b) => b.id - a.id));
+      };
 
-    const undo = () => {
-      clearTimeout(timeout);
-      setInvoices((prev) => [invoice, ...prev].sort((a, b) => b.id - a.id));
+      const timeout = setTimeout(async () => {
+        try {
+          const res = await fetch(`http://localhost:3000/api/invoices/${id}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          const data = await res.json();
+          addToast(data.message);
+
+          const updated = await fetch('http://localhost:3000/api/invoices');
+          const updatedData = await updated.json();
+          setInvoices(updatedData);
+        } catch (err) {
+          console.error('Delete error:', err);
+          addToast('Failed to delete invoice.', 'error');
+        }
+      }, 5000);
+
+      addToast(`Invoice #${id} deleted`, 'success', {
+        duration: 5000,
+        actionText: 'Undo',
+        onAction: undo,
+      });
     };
 
-    const timeout = setTimeout(async () => {
-      try {
-        const res = await fetch(`http://localhost:3000/api/invoices/${id}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await res.json();
-        addToast(data.message);
-
-        const updated = await fetch('http://localhost:3000/api/invoices');
-        const updatedData = await updated.json();
-        setInvoices(updatedData);
-      } catch (err) {
-        console.error('Delete error:', err);
-        addToast('Failed to delete invoice.', 'error');
-      }
-    }, 5000);
-
-    addToast(`Invoice #${id} deleted`, 'success', {
-      duration: 5000,
-      actionText: 'Undo',
-      onAction: undo,
+    setConfirmData({
+      message: `Are you sure you want to delete invoice #${id}?`,
+      onConfirm: proceed,
     });
   };
 
@@ -1043,29 +1072,31 @@ useEffect(() => {
     }
   };
   
-  const handleClearAll = async () => {
-    const confirmClear = window.confirm('⚠️ Are you sure you want to delete all invoices?');
-    if (!confirmClear) return;
-  
-    try {
-      const res = await fetch('http://localhost:3000/api/invoices/clear', {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      const data = await res.json();
-      addToast(data.message);
-  
-      // Refresh the invoice list
-      const updated = await fetch('http://localhost:3000/api/invoices');
-      const updatedData = await updated.json();
-      setInvoices(updatedData);
-    } catch (err) {
-      console.error('Clear all failed:', err);
-      addToast('❌ Failed to clear invoices.', 'error');
-    }
+  const handleClearAll = () => {
+    setConfirmData({
+      message: '⚠️ Are you sure you want to delete all invoices?',
+      onConfirm: async () => {
+        try {
+          const res = await fetch('http://localhost:3000/api/invoices/clear', {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          const data = await res.json();
+          addToast(data.message);
+
+          // Refresh the invoice list
+          const updated = await fetch('http://localhost:3000/api/invoices');
+          const updatedData = await updated.json();
+          setInvoices(updatedData);
+        } catch (err) {
+          console.error('Clear all failed:', err);
+          addToast('❌ Failed to clear invoices.', 'error');
+        }
+      },
+    });
   };
 
   const handleResetFilters = () => {
@@ -1426,6 +1457,15 @@ useEffect(() => {
           <Spinner />
         </div>
       )}
+      <ConfirmModal
+        open={!!confirmData}
+        message={confirmData?.message}
+        onConfirm={() => {
+          confirmData?.onConfirm?.();
+          setConfirmData(null);
+        }}
+        onCancel={() => setConfirmData(null)}
+      />
       {showTimeline && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-4 rounded w-96">
@@ -2343,9 +2383,10 @@ useEffect(() => {
                         <TagIcon className="w-4 h-4" />
                       </button>
                       {tagSuggestions[inv.id] && (
-                        <div className="text-xs text-indigo-800 mt-1 text-center">
-                          🏷️ {tagSuggestions[inv.id].join(', ')}
-                        </div>
+                        <SuggestionChips
+                          suggestions={tagSuggestions[inv.id]}
+                          onClick={(tag) => handleAddTag(inv.id, tag)}
+                        />
                       )}
                       <button
                         onClick={() => handleFlagSuspicious(inv)}
@@ -2385,9 +2426,10 @@ useEffect(() => {
                       </button>
 
                       {vendorSuggestions[inv.id] && (
-                        <div className="text-xs text-purple-800 mt-1 text-center">
-                          💡 {vendorSuggestions[inv.id]}
-                        </div>
+                        <SuggestionChips
+                          suggestions={[vendorSuggestions[inv.id]]}
+                          onClick={(v) => handleUpdateInvoice(inv.id, 'vendor', v)}
+                        />
                       )}
                       {suspicionFlags[inv.id] && (
                         <div className="text-xs text-yellow-800 mt-1 text-center">
