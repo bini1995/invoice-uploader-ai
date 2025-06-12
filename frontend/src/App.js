@@ -55,7 +55,7 @@ function App() {
   actions: true,
   updated_at: true
 });
-const [files, setFile] = useState([]);   // file objects to upload
+const [files, setFile] = useState([]);   // file objects to submit
 const [filePreviews, setFilePreviews] = useState([]);
 const [fileErrors, setFileErrors] = useState([]);
 const [dragActive, setDragActive] = useState(false);
@@ -366,6 +366,20 @@ const searchInputRef = useRef();
   }, [darkMode]);
 
   useEffect(() => {
+    const addTitles = () => {
+      document.querySelectorAll('button').forEach((btn) => {
+        if (!btn.getAttribute('title') && btn.textContent.trim()) {
+          btn.setAttribute('title', btn.textContent.trim());
+        }
+      });
+    };
+    addTitles();
+    const observer = new MutationObserver(addTitles);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const orig = window.fetch;
     window.fetch = async (url, options = {}) => {
       const headers = { 'X-Tenant-Id': tenant, ...(options.headers || {}) };
@@ -667,8 +681,8 @@ useEffect(() => {
         
         const data = await res.json();
   
-        setMessage((prev) => prev + `\n✅ ${data.inserted} invoice(s) uploaded from ${file.name}`);
-        addToast(`✅ Uploaded ${data.inserted} invoice(s) from ${file.name}`);
+        setMessage((prev) => prev + `\n✅ ${data.inserted} invoice(s) submitted from ${file.name}`);
+        addToast(`✅ Submitted ${data.inserted} invoice(s) from ${file.name}`);
         if (data.errors?.length) {
           setMessage((prev) => prev + `\n❌ ${data.errors.length} row(s) had issues in ${file.name}`);
           setErrors((prev) => [...prev, ...data.errors]);
@@ -701,8 +715,8 @@ useEffect(() => {
           }
         }
       } catch (err) {
-        console.error(`Upload failed for ${file.name}:`, err);
-        setMessage((prev) => prev + `\n❌ Upload failed for ${file.name}`);
+        console.error(`Submission failed for ${file.name}:`, err);
+        setMessage((prev) => prev + `\n❌ Submission failed for ${file.name}`);
       }
     }
 
@@ -1475,7 +1489,7 @@ useEffect(() => {
                 <li key={i}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
               ))}
             </ul>
-            <button onClick={() => setShowTimeline(false)} className="mt-2 bg-blue-600 text-white px-3 py-1 rounded">Close</button>
+            <button onClick={() => setShowTimeline(false)} className="mt-2 bg-blue-600 text-white px-3 py-1 rounded" title="Close">Close</button>
           </div>
         </div>
       )}
@@ -1494,6 +1508,7 @@ useEffect(() => {
             <button
               onClick={() => setDarkMode((d) => !d)}
               className="text-xl focus:outline-none"
+              title={darkMode ? 'Light Mode' : 'Dark Mode'}
             >
               {darkMode ? '☀️' : '🌙'}
             </button>
@@ -1501,6 +1516,7 @@ useEffect(() => {
               <button
                 onClick={() => setDarkMode(false)}
                 className="ml-2 px-2 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded focus:outline-none"
+                title="Light Mode"
               >
                 Light Mode
               </button>
@@ -1511,6 +1527,7 @@ useEffect(() => {
                 <button
                   onClick={handleLogout}
                   className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                  title="Logout"
                 >
                   Logout
                 </button>
@@ -1537,7 +1554,7 @@ useEffect(() => {
 
 <div className="flex flex-wrap gap-4 mb-6 items-start">
   <fieldset className="border border-gray-200 p-4 rounded flex flex-col gap-2">
-    <legend className="text-sm font-semibold px-2">Upload</legend>
+    <legend className="text-sm font-semibold px-2">Submit Invoice</legend>
     <div
       className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-blue-50' : ''}`}
       onDragOver={(e) => e.preventDefault()}
@@ -1794,7 +1811,7 @@ useEffect(() => {
                               {loading && (
                                 <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
                               )}
-                              <span>{loading ? 'Uploading...' : 'Upload CSV'}</span>
+                              <span>{loading ? 'Submitting...' : 'Submit Invoice'}</span>
                             </button>
                           )}
 
@@ -1869,6 +1886,7 @@ useEffect(() => {
                         <button
                             onClick={handleAssistantQuery}
                             className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                            title="Ask"
                           >
                             Ask
                           </button>
@@ -1884,6 +1902,7 @@ useEffect(() => {
                           <button
                             onClick={handleChartQuery}
                             className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                            title="Chart"
                           >
                             Chart
                           </button>
@@ -2158,7 +2177,7 @@ useEffect(() => {
               ) : sortedInvoices.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="text-center py-10 text-gray-500 italic">
-                    💤 No invoices to display. Try uploading one or adjusting your filters.
+                    💤 No invoices to display. Try submitting one or adjusting your filters.
                   </td>
                 </tr>
               ) : (

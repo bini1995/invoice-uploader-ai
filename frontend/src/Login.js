@@ -59,7 +59,7 @@ export default function Login({ onLogin, addToast }) {
             className="w-full mb-4 px-3 py-2 border rounded"
           />
 
-          <button onClick={handleLogin} className="btn btn-primary w-full">
+          <button onClick={handleLogin} className="btn btn-primary w-full" title="Log In">
             Log In
           </button>
         </div>

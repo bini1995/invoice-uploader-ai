@@ -75,7 +75,7 @@ function TeamManagement() {
             <option value="approver">approver</option>
             <option value="admin">admin</option>
           </select>
-          <button onClick={addUser} className="bg-blue-600 text-white px-3 py-1 rounded">Add User</button>
+          <button onClick={addUser} className="bg-blue-600 text-white px-3 py-1 rounded" title="Add User">Add User</button>
         </div>
         <table className="w-full text-left border mt-4">
           <thead>
@@ -97,7 +97,7 @@ function TeamManagement() {
                   </select>
                 </td>
                 <td className="p-2">
-                  <button onClick={() => deleteUser(u.id)} className="text-red-600">Remove</button>
+                  <button onClick={() => deleteUser(u.id)} className="text-red-600" title="Remove">Remove</button>
                 </td>
               </tr>
             ))}
