@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowDownTrayIcon, MagnifyingGlassIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
@@ -80,15 +81,24 @@ function Reports() {
           <input type="number" value={minAmount} onChange={e => setMinAmount(e.target.value)} placeholder="Min" className="border p-2 rounded" />
           <input type="number" value={maxAmount} onChange={e => setMaxAmount(e.target.value)} placeholder="Max" className="border p-2 rounded" />
         </div>
-        <div className="space-x-2">
-          <button onClick={fetchReport} className="btn btn-primary" title="Run Report">Run Report</button>
-          <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
+        <div className="flex space-x-2">
+          <button onClick={fetchReport} className="btn btn-primary" title="Run Report">
+            <MagnifyingGlassIcon className="w-4 h-4" />
+            <span>Run Report</span>
+          </button>
+          <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">
+            <ArrowDownTrayIcon className="w-4 h-4" />
+            <span>Export PDF</span>
+          </button>
         </div>
         <div>
           <h2 className="font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
           <div className="flex space-x-2 items-center">
             <input type="number" value={threshold} onChange={e => setThreshold(e.target.value)} className="border p-2 rounded w-32" />
-            <button onClick={addAmountRule} className="btn btn-primary" title="Set Threshold">Set Threshold</button>
+            <button onClick={addAmountRule} className="btn btn-primary" title="Set Threshold">
+              <PlusCircleIcon className="w-4 h-4" />
+              <span>Set Threshold</span>
+            </button>
           </div>
           <ul className="list-disc pl-5 mt-2 text-gray-700 dark:text-gray-300">
             {rules.map((r, i) => <li key={i}>{r.flagReason}</li>)}

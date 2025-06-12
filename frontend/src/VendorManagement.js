@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 function VendorManagement() {
   const token = localStorage.getItem('token') || '';
@@ -66,10 +67,11 @@ function VendorManagement() {
               <td className="p-2">
                 <button
                   onClick={() => saveNotes(v.vendor)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded"
+                  className="btn btn-primary"
                   title="Save"
                 >
-                  Save
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                  <span>Save</span>
                 </button>
               </td>
             </tr>

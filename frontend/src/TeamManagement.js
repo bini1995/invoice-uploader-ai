@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
 
 function TeamManagement() {
   const token = localStorage.getItem('token') || '';
@@ -75,7 +76,10 @@ function TeamManagement() {
             <option value="approver">approver</option>
             <option value="admin">admin</option>
           </select>
-          <button onClick={addUser} className="bg-blue-600 text-white px-3 py-1 rounded" title="Add User">Add User</button>
+          <button onClick={addUser} className="btn btn-primary" title="Add User">
+            <PlusCircleIcon className="w-4 h-4" />
+            <span>Add User</span>
+          </button>
         </div>
         <table className="w-full text-left border mt-4">
           <thead>

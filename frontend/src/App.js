@@ -24,12 +24,16 @@ import Fuse from 'fuse.js';
 import {
   ArchiveBoxIcon,
   ArrowDownTrayIcon,
+  DocumentArrowDownIcon,
   ArrowUturnUpIcon,
+  ArrowPathIcon,
   CheckCircleIcon,
   ClockIcon,
   CurrencyDollarIcon,
   FlagIcon,
+  SparklesIcon,
   LightBulbIcon,
+  ChartBarIcon,
   PlusCircleIcon,
   TagIcon,
   TrashIcon,
@@ -1765,83 +1769,100 @@ useEffect(() => {
                         </div>
                       )}
 
-                     {/* Upload/Export Action Buttons */}
-                      <div className="flex flex-wrap justify-between items-center mt-6 mb-2 gap-2">
-                        <div className="flex flex-wrap space-x-2">
+                    {/* Upload/Export Action Buttons */}
+                      <div className="mt-6 mb-2 flex flex-col gap-4">
+                        <div className="flex flex-wrap items-center gap-4">
                           {role === 'admin' && (
                             <button
                               onClick={handleUpload}
                               disabled={!token}
-                              className="btn btn-primary text-sm flex items-center space-x-2 disabled:opacity-60"
+                              className="btn btn-primary text-sm disabled:opacity-60"
                             >
-                              {loading && (
-                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                              {loading ? (
+                                <Spinner className="h-4 w-4" />
+                              ) : (
+                                <PlusCircleIcon className="w-4 h-4" />
                               )}
                               <span>{loading ? 'Submitting...' : 'Submit Invoice'}</span>
                             </button>
                           )}
 
-                          <button
-                            onClick={handleVendorSummary}
-                            disabled={!token}
-                            className="btn bg-purple-600 hover:bg-purple-700 text-white text-sm flex items-center space-x-2 disabled:opacity-60"
-                          >
-                            {loadingVendor && (
-                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                            )}
-                            <span>{loadingVendor ? 'Loading...' : 'Get Vendor Insights'}</span>
-                          </button>
-
-                          <button
-                            onClick={handleMonthlyInsights}
-                            disabled={!token}
-                            className="btn btn-primary text-sm flex items-center space-x-2 disabled:opacity-60"
-                          >
-                            {loadingInsights && (
-                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                            )}
-                            <span>{loadingInsights ? 'Loading...' : '🧠 Monthly Insights'}</span>
-                          </button>
-
-                          <button
-                            onClick={handleExportAll}
-                            disabled={!token}
-                            className="btn btn-primary bg-green-600 hover:bg-green-700 text-sm disabled:opacity-60"
-                          >
-                            Export All as CSV
-                          </button>
-                          <button
-                            onClick={handleExportDashboardPDF}
-                            disabled={!token}
-                            className="btn btn-primary bg-green-700 hover:bg-green-800 text-sm disabled:opacity-60"
-                          >
-                            Export Dashboard PDF
-                          </button>
-
-                          {role === 'admin' && (
+                          <div className="flex flex-wrap items-center gap-2 border-l border-gray-300 pl-4">
                             <button
-                              onClick={handleClearAll}
+                              onClick={handleVendorSummary}
                               disabled={!token}
-                              className="btn btn-danger text-sm disabled:opacity-60"
+                              className="btn bg-purple-600 hover:bg-purple-700 text-white text-sm disabled:opacity-60"
                             >
-                              Clear All Invoices
+                              {loadingVendor ? (
+                                <Spinner className="h-4 w-4" />
+                              ) : (
+                                <LightBulbIcon className="w-4 h-4" />
+                              )}
+                              <span>Vendor Insights</span>
                             </button>
-                          )}
-                          <button
-                            onClick={handleResetFilters}
-                            className="btn btn-secondary text-sm"
-                          >
-                            Reset Filters
-                          </button>
-                          <button
-                            onClick={handleExportArchived}
-                            className="btn bg-yellow-600 hover:bg-yellow-700 text-white text-sm"
-                          >
-                            Export Archived
-                          </button>
 
+                            <button
+                              onClick={handleMonthlyInsights}
+                              disabled={!token}
+                              className="btn btn-primary text-sm disabled:opacity-60"
+                            >
+                              {loadingInsights ? (
+                                <Spinner className="h-4 w-4" />
+                              ) : (
+                                <SparklesIcon className="w-4 h-4" />
+                              )}
+                              <span>Monthly Insights</span>
+                            </button>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 border-l border-gray-300 pl-4">
+                            <button
+                              onClick={handleExportAll}
+                              disabled={!token}
+                              className="btn btn-primary bg-green-600 hover:bg-green-700 text-sm disabled:opacity-60"
+                            >
+                              <ArrowDownTrayIcon className="w-4 h-4" />
+                              <span>All CSV</span>
+                            </button>
+                            <button
+                              onClick={handleExportDashboardPDF}
+                              disabled={!token}
+                              className="btn btn-primary bg-green-700 hover:bg-green-800 text-sm disabled:opacity-60"
+                            >
+                              <DocumentArrowDownIcon className="w-4 h-4" />
+                              <span>Dashboard PDF</span>
+                            </button>
+                            <button
+                              onClick={handleExportArchived}
+                              className="btn bg-yellow-600 hover:bg-yellow-700 text-white text-sm"
+                            >
+                              <ArchiveBoxIcon className="w-4 h-4" />
+                              <span>Archived</span>
+                            </button>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 border-l border-gray-300 pl-4">
+                            {role === 'admin' && (
+                              <button
+                                onClick={handleClearAll}
+                                disabled={!token}
+                                className="btn btn-danger text-sm disabled:opacity-60"
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                                <span>Clear All</span>
+                              </button>
+                            )}
+                            <button
+                              onClick={handleResetFilters}
+                              className="btn btn-secondary text-sm"
+                            >
+                              <ArrowPathIcon className="w-4 h-4" />
+                              <span>Reset</span>
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex flex-wrap space-x-2 mt-2 w-full">
+
+                        <div className="flex flex-wrap items-center gap-2">
                           <input
                             type="text"
                             value={chatQuestion}
@@ -1849,15 +1870,16 @@ useEffect(() => {
                             placeholder="Ask AI about invoices..."
                             className="border rounded p-1 flex-1 text-sm"
                           />
-                        <button
+                          <button
                             onClick={handleAssistantQuery}
-                            className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                            className="btn btn-primary text-sm"
                             title="Ask"
                           >
-                            Ask
+                            <SparklesIcon className="w-4 h-4" />
+                            <span>Ask</span>
                           </button>
                         </div>
-                        <div className="flex flex-wrap space-x-2 mt-2 w-full">
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
                           <input
                             type="text"
                             value={chartQuestion}
@@ -1867,10 +1889,11 @@ useEffect(() => {
                           />
                           <button
                             onClick={handleChartQuery}
-                            className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                            className="btn bg-green-600 hover:bg-green-700 text-white text-sm"
                             title="Chart"
                           >
-                            Chart
+                            <ChartBarIcon className="w-4 h-4" />
+                            <span>Chart</span>
                           </button>
                         </div>
                         {chatAnswer && (
