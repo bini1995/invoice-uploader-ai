@@ -43,6 +43,11 @@ async function initDb() {
       rating INTEGER NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS vendor_notes (
+      vendor TEXT PRIMARY KEY,
+      notes TEXT
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

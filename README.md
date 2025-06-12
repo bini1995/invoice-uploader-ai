@@ -41,6 +41,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Polite vendor notification emails for flagged or rejected invoices
 - Scenario planning to test payment delays
 - Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
+- Vendor management page with notes and spending totals per vendor
 
 ## Setup Instructions
 
@@ -108,6 +109,15 @@ CREATE TABLE budgets (
 );
 ```
 
+Create a `vendor_notes` table to store notes about each vendor:
+
+```sql
+CREATE TABLE vendor_notes (
+  vendor TEXT PRIMARY KEY,
+  notes TEXT
+);
+```
+
 Create a `feedback` table for storing ratings on AI results:
 
 ```sql
@@ -153,6 +163,8 @@ apply custom approval rules:
 - `GET /api/feedback` – view average ratings by endpoint
 - `GET /api/invoices/vendor-scorecards` – view vendor responsiveness and payment metrics
 - `GET /api/invoices/graph` – network graph data linking vendors and duplicate invoices
+- `GET /api/vendors` – list vendors with last invoice date and total spend
+- `PATCH /api/vendors/:vendor/notes` – update notes for a vendor
 
 ### Vendor Reply Drafts
 

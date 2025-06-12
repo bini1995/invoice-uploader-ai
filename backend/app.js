@@ -7,6 +7,7 @@ const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const userRoutes = require('./routes/userRoutes');
+const vendorRoutes = require('./routes/vendorRoutes');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
 const { initDb } = require('./utils/dbInit');
 
@@ -20,6 +21,7 @@ app.use('/api/invoices', invoiceRoutes);    // route all invoice requests here
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/vendors', vendorRoutes);
 
 (async () => {
   await initDb();
