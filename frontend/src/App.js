@@ -160,6 +160,155 @@ const searchInputRef = useRef();
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
+  const fetchInvoices = useCallback(
+    async (includeArchived = false, assigneeFilter = '') => {
+      try {
+        setLoadingInvoices(true);
+        const params = [];
+        if (includeArchived) params.push('includeArchived=true');
+        if (assigneeFilter) params.push(`assignee=${encodeURIComponent(assigneeFilter)}`);
+        const query = params.length ? `?${params.join('&')}` : '';
+        const url = `http://localhost:3000/api/invoices${query}`;
+
+        const res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        setInvoices(data);
+        localStorage.setItem('cachedInvoices', JSON.stringify(data));
+        const vendors = Array.from(new Set(data.map((inv) => inv.vendor).filter(Boolean)));
+        setVendorList(vendors);
+        const assignees = Array.from(new Set(data.map((inv) => inv.assignee).filter(Boolean)));
+        setAssigneeList(Array.from(new Set([...teamMembers, ...assignees])));
+
+        const uniqueTags = Array.from(new Set(data.flatMap((inv) => inv.tags || [])));
+        if (uniqueTags.length) {
+          try {
+            const colorRes = await fetch('http://localhost:3000/api/invoices/suggest-tag-colors', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ tags: uniqueTags }),
+            });
+            const colorData = await colorRes.json();
+            if (colorRes.ok && colorData.colors) {
+              setTagColors(colorData.colors);
+            }
+          } catch (e) {
+            console.error('Tag color fetch failed:', e);
+          }
+        }
+
+        const groups = {};
+        data.forEach((inv) => {
+          const key = `${inv.vendor}|${new Date(inv.date).toISOString().slice(0, 10)}|${inv.amount}`;
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(inv.id);
+        });
+        const dupMap = {};
+        Object.values(groups).forEach((list) => {
+          if (list.length > 1) list.forEach((id) => {
+            dupMap[id] = true;
+          });
+        });
+        setDuplicateFlags(dupMap);
+
+        if (Object.keys(dupMap).length > 0) {
+          addToast('⚠️ Duplicate invoices detected', 'error');
+        }
+
+        return data;
+      } catch (err) {
+        console.error('Fetch error:', err);
+        const cached = localStorage.getItem('cachedInvoices');
+        if (cached) {
+          setInvoices(JSON.parse(cached));
+          setIsOffline(true);
+          setMessage('Offline mode: showing cached invoices');
+        } else {
+          setMessage('❌ Could not load invoices');
+        }
+      } finally {
+        setLoadingInvoices(false);
+      }
+    },
+    [token]
+  );
+
+  const handleArchive = useCallback(async (id) => {
+    const confirmArchive = window.confirm(`Are you sure you want to archive invoice #${id}?`);
+    if (!confirmArchive) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/archive`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      addToast(`📦 ${data.message}`);
+
+      const updated = await fetch('http://localhost:3000/api/invoices');
+      const updatedData = await updated.json();
+      setInvoices(updatedData);
+    } catch (err) {
+      console.error('Archive error:', err);
+      addToast('⚠️ Failed to archive invoice.', 'error');
+    }
+  }, [token]);
+
+  const handleUnarchive = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/unarchive`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      addToast(`✅ ${data.message}`);
+
+      if (showArchived) {
+        fetchInvoices(showArchived, selectedAssignee);
+      }
+    } catch (err) {
+      console.error('Unarchive error:', err);
+      addToast('❌ Failed to unarchive invoice', 'error');
+    }
+  };
+
+  const handleFlagSuspicious = useCallback(async (invoice) => {
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/flag-suspicious', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ invoice }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.insights) {
+        addToast(`🚩 Suspicion Insight: ${data.insights}`);
+      } else {
+        addToast(`🚩 ${data.message || 'No insights returned.'}`);
+      }
+    } catch (err) {
+      console.error('🚩 Flagging failed:', err);
+      addToast('🚩 ⚠️ Failed to flag invoice.', 'error');
+    }
+  }, [token]);
+
   const syncPendingActions = useCallback(async () => {
     const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
     if (!pending.length) return;
@@ -563,84 +712,6 @@ useEffect(() => {
     setFilePreviews([]);
   };
   
-    const fetchInvoices = useCallback(async (includeArchived = false, assigneeFilter = '') => {
-      try {
-        setLoadingInvoices(true);
-        const params = [];
-        if (includeArchived) params.push('includeArchived=true');
-        if (assigneeFilter) params.push(`assignee=${encodeURIComponent(assigneeFilter)}`);
-        const query = params.length ? `?${params.join('&')}` : '';
-        const url = `http://localhost:3000/api/invoices${query}`;
-
-        const res = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await res.json();
-        setInvoices(data);
-        localStorage.setItem('cachedInvoices', JSON.stringify(data));
-        // Extract unique vendors and assignees from invoices
-        const vendors = Array.from(new Set(data.map(inv => inv.vendor).filter(Boolean)));
-        setVendorList(vendors);
-        const assignees = Array.from(new Set(data.map(inv => inv.assignee).filter(Boolean)));
-        setAssigneeList(Array.from(new Set([...teamMembers, ...assignees])));
-
-        const uniqueTags = Array.from(new Set(data.flatMap(inv => inv.tags || [])));
-        if (uniqueTags.length) {
-          try {
-            const colorRes = await fetch('http://localhost:3000/api/invoices/suggest-tag-colors', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ tags: uniqueTags }),
-            });
-            const colorData = await colorRes.json();
-            if (colorRes.ok && colorData.colors) {
-              setTagColors(colorData.colors);
-            }
-          } catch (e) {
-            console.error('Tag color fetch failed:', e);
-          }
-        }
-
-        // Detect duplicates by vendor+date+amount
-        const groups = {};
-        data.forEach(inv => {
-          const key = `${inv.vendor}|${new Date(inv.date).toISOString().slice(0,10)}|${inv.amount}`;
-          if (!groups[key]) groups[key] = [];
-          groups[key].push(inv.id);
-        });
-        const dupMap = {};
-        Object.values(groups).forEach(list => {
-          if (list.length > 1) list.forEach(id => { dupMap[id] = true; });
-        });
-        setDuplicateFlags(dupMap);
-
-        if (Object.keys(dupMap).length > 0) {
-          addToast('⚠️ Duplicate invoices detected', 'error');
-        }
-
-        return data;
-      } catch (err) {
-        console.error('Fetch error:', err);
-        const cached = localStorage.getItem('cachedInvoices');
-        if (cached) {
-          setInvoices(JSON.parse(cached));
-          setIsOffline(true);
-          setMessage('Offline mode: showing cached invoices');
-        } else {
-          setMessage('❌ Could not load invoices');
-        }
-      } finally {
-        setLoadingInvoices(false);
-      }
-    }, [token]);
-  
-  
   const handleExport = async () => {
     try {
       const res = await fetch('http://localhost:3000/api/invoices/export', {
@@ -1043,29 +1114,6 @@ useEffect(() => {
     }
   };
   
-  const handleFlagSuspicious = useCallback(async (invoice) => {
-    try {
-      const res = await fetch('http://localhost:3000/api/invoices/flag-suspicious', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // include token if required
-        },
-        body: JSON.stringify({ invoice }),
-      });
-  
-      const data = await res.json();
-  
-      if (res.ok && data.insights) {
-        addToast(`🚩 Suspicion Insight: ${data.insights}`);
-      } else {
-        addToast(`🚩 ${data.message || 'No insights returned.'}`);
-      }
-    } catch (err) {
-      console.error('🚩 Flagging failed:', err);
-      addToast('🚩 ⚠️ Failed to flag invoice.', 'error');
-    }
-  }, [token]);
 
   const handleViewTimeline = async (id) => {
     try {
@@ -1120,52 +1168,6 @@ useEffect(() => {
     }
   };
   
-  const handleArchive = useCallback(async (id) => {
-    const confirmArchive = window.confirm(`Are you sure you want to archive invoice #${id}?`);
-    if (!confirmArchive) return;
-  
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${id}/archive`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      const data = await res.json();
-      addToast(`📦 ${data.message}`);
-  
-      // Refresh invoice list
-      const updated = await fetch('http://localhost:3000/api/invoices');
-      const updatedData = await updated.json();
-      setInvoices(updatedData);
-    } catch (err) {
-      console.error('Archive error:', err);
-      addToast('⚠️ Failed to archive invoice.', 'error');
-    }
-  }, [token]);
-  
-  const handleUnarchive = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${id}/unarchive`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      const data = await res.json();
-      addToast(`✅ ${data.message}`);
-  
-      // Refresh only if still viewing archived invoices
-      if (showArchived) {
-        fetchInvoices(showArchived, selectedAssignee);
-      }
-    } catch (err) {
-      console.error('Unarchive error:', err);
-      addToast('❌ Failed to unarchive invoice', 'error');
-    }
-  };
 
   const handleSuggestTags = async (invoice) => {
     try {
