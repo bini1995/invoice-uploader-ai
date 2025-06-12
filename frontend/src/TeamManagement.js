@@ -64,7 +64,7 @@ function TeamManagement() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <nav className="mb-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Team Management</h1>
-        <Link to="/" className="text-blue-600 underline">Back to App</Link>
+        <Link to="/" className="text-indigo-600 underline">Back to App</Link>
       </nav>
       <div className="space-y-6 max-w-xl">
         <div className="space-y-2">
@@ -75,7 +75,7 @@ function TeamManagement() {
             <option value="approver">approver</option>
             <option value="admin">admin</option>
           </select>
-          <button onClick={addUser} className="bg-blue-600 text-white px-3 py-1 rounded" title="Add User">Add User</button>
+          <button onClick={addUser} className="bg-indigo-600 text-white px-3 py-1 rounded" title="Add User">Add User</button>
         </div>
         <table className="w-full text-left border mt-4">
           <thead>

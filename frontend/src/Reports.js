@@ -68,7 +68,7 @@ function Reports() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <nav className="mb-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Reports</h1>
-        <Link to="/" className="text-blue-600 underline">Back to App</Link>
+        <Link to="/" className="text-indigo-600 underline">Back to App</Link>
       </nav>
       <div className="space-y-4 max-w-2xl">
         <div className="grid grid-cols-2 gap-2">

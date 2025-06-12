@@ -52,7 +52,7 @@ function Archive() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <nav className="mb-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Invoice Archive</h1>
-        <Link to="/" className="text-blue-600 underline">Back to App</Link>
+        <Link to="/" className="text-indigo-600 underline">Back to App</Link>
       </nav>
       <div className="space-y-4 max-w-4xl mx-auto">
         <div className="flex flex-wrap items-end space-x-2">
@@ -82,7 +82,7 @@ function Archive() {
                 <td className="px-2 py-1">{inv.vendor}</td>
                 <td className="px-2 py-1">${inv.amount}</td>
                 <td className="px-2 py-1">
-                  <button onClick={() => handleRestore(inv.id)} className="bg-blue-500 text-white px-2 py-1 rounded text-xs" title="Restore">
+                  <button onClick={() => handleRestore(inv.id)} className="bg-indigo-600 text-white px-2 py-1 rounded text-xs" title="Restore">
                     Restore
                   </button>
                 </td>

@@ -32,7 +32,7 @@ export default function Login({ onLogin, addToast }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <nav className="fixed top-0 left-0 right-0 bg-blue-700 dark:bg-blue-900 text-white shadow p-4 z-20">
+      <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-4 z-20">
         <h1 className="text-xl font-bold">📄 Invoice Uploader AI</h1>
       </nav>
       <div className="flex-1 flex items-center justify-center pt-20">
