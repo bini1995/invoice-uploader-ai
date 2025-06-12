@@ -35,7 +35,7 @@ function Dashboard() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <nav className="mb-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">AI Dashboard</h1>
-        <Link to="/" className="text-blue-600 underline">Back to App</Link>
+        <Link to="/" className="text-indigo-600 underline">Back to App</Link>
       </nav>
       {!token ? (
         <p className="text-center text-gray-600">Please log in from the main app.</p>

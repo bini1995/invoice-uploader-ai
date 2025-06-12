@@ -8,7 +8,7 @@ export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
         <p className="mb-4 text-sm">{message}</p>
         <div className="flex justify-end space-x-2">
           <button onClick={onCancel} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100" title="Cancel">Cancel</button>
-          <button onClick={onConfirm} className="px-3 py-1 rounded bg-blue-600 text-white" title="Confirm">Confirm</button>
+          <button onClick={onConfirm} className="px-3 py-1 rounded bg-indigo-600 text-white" title="Confirm">Confirm</button>
         </div>
       </div>
     </div>

@@ -1487,7 +1487,7 @@ useEffect(() => {
                 <li key={i}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
               ))}
             </ul>
-            <button onClick={() => setShowTimeline(false)} className="mt-2 bg-blue-600 text-white px-3 py-1 rounded" title="Close">Close</button>
+            <button onClick={() => setShowTimeline(false)} className="mt-2 bg-indigo-600 text-white px-3 py-1 rounded" title="Close">Close</button>
           </div>
         </div>
       )}
@@ -1522,7 +1522,7 @@ useEffect(() => {
   <fieldset className="border border-gray-200 p-4 rounded flex flex-col gap-2">
     <legend className="text-sm font-semibold px-2">Submit Invoice</legend>
     <div
-      className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-blue-50' : ''}`}
+      className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-indigo-50' : ''}`}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
       onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
@@ -1579,7 +1579,7 @@ useEffect(() => {
         type="checkbox"
         checked={showArchived}
         onChange={() => setShowArchived(!showArchived)}
-        className="form-checkbox h-4 w-4 text-blue-600"
+        className="form-checkbox h-4 w-4 text-indigo-600"
       />
       <span>Show Archived</span>
     </label>
@@ -1640,7 +1640,7 @@ useEffect(() => {
       disabled={!token}
       className={`px-4 py-2 rounded text-sm ${
         token
-          ? 'bg-blue-600 text-white hover:bg-blue-700'
+          ? 'bg-indigo-600 text-white hover:bg-indigo-700'
           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
       }`}
     >
@@ -1675,7 +1675,7 @@ useEffect(() => {
               <strong>AI Suggestions:</strong>
               <button
                 onClick={() => handleCopy(aiSummary)}
-                className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
+                className="absolute top-2 right-2 text-xs text-indigo-700 hover:underline"
               >
                 Copy
               </button>
@@ -1688,7 +1688,7 @@ useEffect(() => {
               <strong>Vendor Insights:</strong>
               <button
                 onClick={() => handleCopy(vendorSummary)}
-                className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
+                className="absolute top-2 right-2 text-xs text-indigo-700 hover:underline"
               >
                 Copy
               </button>
@@ -1697,11 +1697,11 @@ useEffect(() => {
           )}
 
           {monthlyInsights && (
-            <div className="p-4 bg-blue-100 border border-blue-400 text-blue-800 rounded relative">
+            <div className="p-4 bg-indigo-100 border border-indigo-400 text-indigo-800 rounded relative">
               <strong>Monthly Insights:</strong>
               <button
                 onClick={() => handleCopy(monthlyInsights.summary)}
-                className="absolute top-2 right-2 text-xs text-blue-700 hover:underline"
+                className="absolute top-2 right-2 text-xs text-indigo-700 hover:underline"
               >
                 Copy
               </button>
@@ -1732,8 +1732,8 @@ useEffect(() => {
 
 
                  {selectedInvoices.length > 0 && (
-                        <div className="mb-4 bg-blue-50 border border-blue-200 p-4 rounded flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-4">
-                          <span className="text-blue-700 text-sm">
+                        <div className="mb-4 bg-indigo-50 border border-indigo-200 p-4 rounded flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+                          <span className="text-indigo-700 text-sm">
                             ✅ {selectedInvoices.length} invoice{selectedInvoices.length > 1 ? 's' : ''} selected
                           </span>
                           <div className="flex space-x-2">
@@ -1756,7 +1756,7 @@ useEffect(() => {
                             {showArchived && (
                               <button
                                 onClick={handleBulkUnarchive}
-                                className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                                className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
                               >
                                 Unarchive Selected
                               </button>
@@ -1851,7 +1851,7 @@ useEffect(() => {
                           />
                         <button
                             onClick={handleAssistantQuery}
-                            className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                          className="bg-indigo-600 text-white px-3 py-1 rounded text-sm"
                             title="Ask"
                           >
                             Ask
@@ -1915,21 +1915,21 @@ useEffect(() => {
                       <div className="flex justify-end mb-2 space-x-4">
                         <button
                           onClick={() => setShowChart(!showChart)}
-                          className="text-sm text-blue-700 underline hover:text-blue-900"
+                          className="text-sm text-indigo-700 underline hover:text-indigo-900"
                         >
                           {showChart ? 'Hide Chart' : 'Show Chart'}
                         </button>
                         {viewMode !== 'graph' && (
                           <button
                             onClick={() => setViewMode(viewMode === 'table' ? 'card' : 'table')}
-                            className="text-sm text-blue-700 underline hover:text-blue-900"
+                            className="text-sm text-indigo-700 underline hover:text-indigo-900"
                           >
                             {viewMode === 'table' ? '📇 Card View' : '📊 Table View'}
                           </button>
                         )}
                         <button
                           onClick={() => setViewMode(viewMode === 'graph' ? 'table' : 'graph')}
-                          className="text-sm text-blue-700 underline hover:text-blue-900"
+                          className="text-sm text-indigo-700 underline hover:text-indigo-900"
                         >
                           {viewMode === 'graph' ? '📊 Table View' : '🕸 Graph View'}
                         </button>
@@ -2158,7 +2158,7 @@ useEffect(() => {
                           } ${
                             recentInvoices.includes(inv.id) ? 'bg-green-100 border-green-400' : ''
                           } ${
-                            selectedVendor && inv.vendor === selectedVendor ? 'bg-blue-50 border-blue-300' : ''
+                            selectedVendor && inv.vendor === selectedVendor ? 'bg-indigo-50 border-indigo-300' : ''
                           }`}
                         >
                     <td className="border px-4 py-2">
@@ -2338,7 +2338,7 @@ useEffect(() => {
 
                         <button
                             onClick={() => handleDownloadPDF(inv.id)}
-                            className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs w-full"
+                            className="bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 text-xs w-full"
                             title="Download PDF"
                           >
                             <ArrowDownTrayIcon className="w-4 h-4" />
@@ -2347,7 +2347,7 @@ useEffect(() => {
                       {inv.archived && (
                         <button
                           onClick={() => handleUnarchive(inv.id)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs w-full"
+                          className="bg-indigo-500 text-white px-2 py-1 rounded hover:bg-indigo-600 text-xs w-full"
                           title="Unarchive"
                         >
                           <ArrowUturnUpIcon className="w-4 h-4" />
@@ -2389,7 +2389,7 @@ useEffect(() => {
                         </button>
                         <button
                           onClick={() => handlePaymentRequest(inv.id)}
-                          className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs w-full"
+                          className="bg-indigo-500 text-white px-2 py-1 rounded hover:bg-indigo-600 text-xs w-full"
                           disabled={paymentRequestId === inv.id}
                         >
                           {paymentRequestId === inv.id ? (
@@ -2400,7 +2400,7 @@ useEffect(() => {
                         </button>
                         <button
                           onClick={() => handleDownloadPDF(inv.id)}
-                          className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 text-xs w-full flex justify-center items-center space-x-1 disabled:opacity-50"
+                          className="bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 text-xs w-full flex justify-center items-center space-x-1 disabled:opacity-50"
                           disabled={downloadingId === inv.id}
                         >
                         {downloadingId === inv.id ? (
@@ -2530,7 +2530,7 @@ useEffect(() => {
                           </button>
                           <button
                             onClick={() => handlePaymentRequest(inv.id)}
-                            className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
+                            className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
                             disabled={paymentRequestId === inv.id}
                           >
                             {paymentRequestId === inv.id ? (
@@ -2558,7 +2558,7 @@ useEffect(() => {
                         />
                         <button
                           onClick={() => handleAddComment(inv.id)}
-                          className="bg-blue-600 text-white text-xs px-2 py-1 ml-1 rounded"
+                          className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded"
                         >
                           Post
                         </button>
@@ -2572,7 +2572,7 @@ useEffect(() => {
                 ) : null)}
               
               {selectedInvoices.length > 0 && (
-                  <div className="mt-4 flex space-x-2 justify-center bg-blue-50 p-3 rounded border border-blue-300">
+                  <div className="mt-4 flex space-x-2 justify-center bg-indigo-50 p-3 rounded border border-indigo-300">
                     <span className="text-sm text-gray-700 self-center">
                       {selectedInvoices.length} selected
                     </span>
@@ -2604,7 +2604,7 @@ useEffect(() => {
                       onClick={() => setCurrentPage(index + 1)}
                       className={`px-3 py-1 rounded ${
                         currentPage === index + 1
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-indigo-600 text-white'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                       }`}
                     >

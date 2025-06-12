@@ -28,7 +28,7 @@ export default function Navbar({
   const [userOpen, setUserOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-blue-700 dark:bg-blue-900 text-white shadow z-20">
+    <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow z-20">
       <div className="max-w-4xl mx-auto flex justify-between items-center p-2">
         <Link to="/" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
           <ArchiveBoxIcon className="h-5 w-5" />

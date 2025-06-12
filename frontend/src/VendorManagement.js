@@ -38,7 +38,7 @@ function VendorManagement() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <nav className="mb-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Vendor Management</h1>
-        <Link to="/" className="text-blue-600 underline">Back to App</Link>
+        <Link to="/" className="text-indigo-600 underline">Back to App</Link>
       </nav>
       <table className="w-full text-left border">
         <thead>
@@ -66,7 +66,7 @@ function VendorManagement() {
               <td className="p-2">
                 <button
                   onClick={() => saveNotes(v.vendor)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded"
+                  className="bg-indigo-600 text-white px-3 py-1 rounded"
                   title="Save"
                 >
                   Save
