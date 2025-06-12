@@ -15,6 +15,7 @@ export default function NotificationBell({ notifications = [], onOpen }) {
         className="text-xl focus:outline-none"
         onClick={handleToggle}
         aria-label="Notifications"
+        title="Notifications"
       >
         🔔
         {unreadCount > 0 && (

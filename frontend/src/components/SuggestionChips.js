@@ -9,6 +9,7 @@ export default function SuggestionChips({ suggestions = [], onClick }) {
           key={idx}
           onClick={() => onClick && onClick(s)}
           className="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-xs hover:bg-indigo-200"
+          title={s}
         >
           {s}
         </button>

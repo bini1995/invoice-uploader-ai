@@ -67,6 +67,7 @@ function VendorManagement() {
                 <button
                   onClick={() => saveNotes(v.vendor)}
                   className="bg-blue-600 text-white px-3 py-1 rounded"
+                  title="Save"
                 >
                   Save
                 </button>

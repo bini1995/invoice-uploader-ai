@@ -10,6 +10,7 @@ export default function Toast({ message, type, actionText, onAction }) {
         <button
           className="underline font-semibold"
           onClick={onAction}
+          title={actionText}
         >
           {actionText}
         </button>

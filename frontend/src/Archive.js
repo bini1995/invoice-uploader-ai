@@ -82,7 +82,7 @@ function Archive() {
                 <td className="px-2 py-1">{inv.vendor}</td>
                 <td className="px-2 py-1">${inv.amount}</td>
                 <td className="px-2 py-1">
-                  <button onClick={() => handleRestore(inv.id)} className="bg-blue-500 text-white px-2 py-1 rounded text-xs">
+                  <button onClick={() => handleRestore(inv.id)} className="bg-blue-500 text-white px-2 py-1 rounded text-xs" title="Restore">
                     Restore
                   </button>
                 </td>

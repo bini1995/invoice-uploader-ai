@@ -81,14 +81,14 @@ function Reports() {
           <input type="number" value={maxAmount} onChange={e => setMaxAmount(e.target.value)} placeholder="Max" className="border p-2 rounded" />
         </div>
         <div className="space-x-2">
-          <button onClick={fetchReport} className="btn btn-primary">Run Report</button>
-          <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800">Export PDF</button>
+          <button onClick={fetchReport} className="btn btn-primary" title="Run Report">Run Report</button>
+          <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
         </div>
         <div>
           <h2 className="font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
           <div className="flex space-x-2 items-center">
             <input type="number" value={threshold} onChange={e => setThreshold(e.target.value)} className="border p-2 rounded w-32" />
-            <button onClick={addAmountRule} className="btn btn-primary">Set Threshold</button>
+            <button onClick={addAmountRule} className="btn btn-primary" title="Set Threshold">Set Threshold</button>
           </div>
           <ul className="list-disc pl-5 mt-2 text-gray-700 dark:text-gray-300">
             {rules.map((r, i) => <li key={i}>{r.flagReason}</li>)}
