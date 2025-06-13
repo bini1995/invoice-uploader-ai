@@ -4,6 +4,7 @@ import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
 import {
   Bars3Icon,
+  AdjustmentsHorizontalIcon,
   HomeIcon,
   DocumentChartBarIcon,
   ArchiveBoxIcon,
@@ -23,6 +24,7 @@ export default function Navbar({
   darkMode,
   setDarkMode,
   token,
+  onToggleFilters,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -37,6 +39,15 @@ export default function Navbar({
         <div className="flex items-center space-x-3 relative">
           <TenantSwitcher tenant={tenant} onChange={onTenantChange} />
           <NotificationBell notifications={notifications} onOpen={onNotificationsOpen} />
+          {token && (
+            <button
+              onClick={onToggleFilters}
+              className="focus:outline-none"
+              title="Filters"
+            >
+              <AdjustmentsHorizontalIcon className="h-6 w-6" />
+            </button>
+          )}
           {token && (
             <>
               <button

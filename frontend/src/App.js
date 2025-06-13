@@ -137,6 +137,13 @@ const searchInputRef = useRef();
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [tagInputs, setTagInputs] = useState({});
   const [confirmData, setConfirmData] = useState(null);
+  const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
+  const [filterPresets, setFilterPresets] = useState(() => {
+    const saved = localStorage.getItem('filterPresets');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [selectedPreset, setSelectedPreset] = useState('');
+  const [presetName, setPresetName] = useState('');
 
 
   const addToast = (
@@ -1132,6 +1139,37 @@ useEffect(() => {
     setMaxAmount('');
   };
 
+  const handleSavePreset = () => {
+    const preset = {
+      name: presetName || `Preset ${filterPresets.length + 1}`,
+      searchTerm,
+      selectedVendor,
+      selectedAssignee,
+      minAmount,
+      maxAmount,
+      showArchived,
+    };
+    const updated = [
+      ...filterPresets.filter((p) => p.name !== preset.name),
+      preset,
+    ];
+    setFilterPresets(updated);
+    localStorage.setItem('filterPresets', JSON.stringify(updated));
+    setPresetName('');
+  };
+
+  const handleApplyPreset = (name) => {
+    const preset = filterPresets.find((p) => p.name === name);
+    if (preset) {
+      setSearchTerm(preset.searchTerm);
+      setSelectedVendor(preset.selectedVendor);
+      setSelectedAssignee(preset.selectedAssignee);
+      setMinAmount(preset.minAmount);
+      setMaxAmount(preset.maxAmount);
+      setShowArchived(preset.showArchived);
+    }
+  };
+
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     addToast('📋 Copied to clipboard!');
@@ -1515,7 +1553,152 @@ useEffect(() => {
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         token={token}
+        onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
       />
+
+      {token && (
+        <aside
+          className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
+            filterSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 md:static md:shadow-none`}
+        >
+          <div className="p-4 space-y-4 overflow-y-auto h-full">
+            <button
+              className="md:hidden text-right w-full"
+              onClick={() => setFilterSidebarOpen(false)}
+            >
+              ✖
+            </button>
+            <h2 className="text-lg font-semibold">Filters</h2>
+            <div className="flex flex-col space-y-3 md:space-y-4">
+              <div className="flex flex-col">
+                <label htmlFor="searchTerm" className="text-xs font-medium mb-1">Search</label>
+                <input
+                  id="searchTerm"
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  ref={searchInputRef}
+                  className="input"
+                />
+              </div>
+              <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm">
+                <input
+                  id="archivedToggle"
+                  type="checkbox"
+                  checked={showArchived}
+                  onChange={() => setShowArchived(!showArchived)}
+                  className="form-checkbox h-4 w-4 text-indigo-600"
+                />
+                <span>Show Archived</span>
+              </label>
+              <div className="flex flex-col">
+                <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Vendor</label>
+                <select
+                  id="vendorSelect"
+                  value={selectedVendor}
+                  onChange={(e) => setSelectedVendor(e.target.value)}
+                  className="input"
+                >
+                  <option value="">All Vendors</option>
+                  {vendorList.map((vendor, idx) => (
+                    <option key={idx} value={vendor}>
+                      {vendor}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="assigneeSelect" className="text-xs font-medium mb-1">Assignee</label>
+                <select
+                  id="assigneeSelect"
+                  value={selectedAssignee}
+                  onChange={(e) => setSelectedAssignee(e.target.value)}
+                  className="input"
+                >
+                  <option value="">All Assignees</option>
+                  {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
+                    <option key={idx} value={person}>
+                      {person}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
+                <input
+                  id="minAmount"
+                  type="number"
+                  value={minAmount}
+                  onChange={(e) => setMinAmount(e.target.value)}
+                  className="input"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
+                <input
+                  id="maxAmount"
+                  type="number"
+                  value={maxAmount}
+                  onChange={(e) => setMaxAmount(e.target.value)}
+                  className="input"
+                />
+              </div>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={presetName}
+                  onChange={(e) => setPresetName(e.target.value)}
+                  placeholder="Preset name"
+                  className="input flex-1"
+                />
+                <button
+                  onClick={handleSavePreset}
+                  className="bg-indigo-600 text-white px-2 py-1 rounded text-sm"
+                >
+                  Save
+                </button>
+              </div>
+              {filterPresets.length > 0 && (
+                <div className="flex space-x-2">
+                  <select
+                    value={selectedPreset}
+                    onChange={(e) => setSelectedPreset(e.target.value)}
+                    className="input flex-1"
+                  >
+                    <option value="">Select preset</option>
+                    {filterPresets.map((p) => (
+                      <option key={p.name} value={p.name}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => handleApplyPreset(selectedPreset)}
+                    className="bg-gray-600 text-white px-2 py-1 rounded text-sm"
+                  >
+                    Load
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={handleExport}
+                disabled={!token}
+                className={`px-4 py-2 rounded text-sm ${
+                  token
+                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Export Filtered Invoices
+              </button>
+              <button onClick={handleResetFilters} className="text-sm text-indigo-600">
+                Reset Filters
+              </button>
+            </div>
+          </div>
+        </aside>
+      )}
 
       {isOffline && (
         <div className="bg-yellow-100 text-yellow-800 p-2 text-center mt-20">
@@ -1523,7 +1706,7 @@ useEffect(() => {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-24">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-24 md:ml-64">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
           <LiveFeed token={token} tenant={tenant} />
@@ -1532,7 +1715,7 @@ useEffect(() => {
         {token ? (
           <>
 
-<div className="flex flex-wrap gap-4 mb-6 items-start">
+<div className="mb-6">
   <fieldset className="border border-gray-200 p-4 rounded flex flex-col gap-2">
     <legend className="text-sm font-semibold px-2">Upload Invoice</legend>
     <div
@@ -1605,93 +1788,6 @@ useEffect(() => {
     )}
   </fieldset>
 
-  <details className="border border-gray-200 p-4 rounded flex-1">
-    <summary className="font-semibold cursor-pointer select-none">Filters</summary>
-    <div className="mt-2 flex flex-wrap gap-4 items-end">
-      <label htmlFor="searchTerm" className="text-xs font-medium mb-1">Search</label>
-      <input
-        id="searchTerm"
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        ref={searchInputRef}
-        className="input w-60"
-      />
-    <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm">
-      <input
-        id="archivedToggle"
-        type="checkbox"
-        checked={showArchived}
-        onChange={() => setShowArchived(!showArchived)}
-        className="form-checkbox h-4 w-4 text-indigo-600"
-      />
-      <span>Show Archived</span>
-    </label>
-    <div className="flex flex-col">
-      <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Vendor</label>
-      <select
-        id="vendorSelect"
-        value={selectedVendor}
-        onChange={(e) => setSelectedVendor(e.target.value)}
-        className="input"
-      >
-        <option value="">All Vendors</option>
-        {vendorList.map((vendor, idx) => (
-          <option key={idx} value={vendor}>
-            {vendor}
-          </option>
-        ))}
-      </select>
-    </div>
-    <div className="flex flex-col">
-      <label htmlFor="assigneeSelect" className="text-xs font-medium mb-1">Assignee</label>
-      <select
-        id="assigneeSelect"
-        value={selectedAssignee}
-        onChange={(e) => setSelectedAssignee(e.target.value)}
-        className="input"
-      >
-        <option value="">All Assignees</option>
-        {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
-          <option key={idx} value={person}>
-            {person}
-          </option>
-        ))}
-      </select>
-    </div>
-    <div className="flex flex-col">
-      <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
-      <input
-        id="minAmount"
-        type="number"
-        value={minAmount}
-        onChange={(e) => setMinAmount(e.target.value)}
-        className="input w-28"
-      />
-    </div>
-    <div className="flex flex-col">
-      <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
-      <input
-        id="maxAmount"
-        type="number"
-        value={maxAmount}
-        onChange={(e) => setMaxAmount(e.target.value)}
-        className="input w-28"
-      />
-    </div>
-    <button
-      onClick={handleExport}
-      disabled={!token}
-      className={`px-4 py-2 rounded text-sm ${
-        token
-          ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-      }`}
-    >
-      Export Filtered Invoices
-    </button>
-  </div>
-  </details>
 </div>
   
             {message && (
@@ -2203,7 +2299,7 @@ useEffect(() => {
                 sortedInvoices.map((inv, idx) => (
                   <tr
                           key={inv.id}
-                          className={`text-center hover:bg-gray-100 ${
+                          className={`text-center hover:bg-indigo-50 hover:shadow ${
                             idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                           } ${
                             inv.archived ? '!bg-gray-200 text-gray-500 italic' : ''
@@ -2226,16 +2322,16 @@ useEffect(() => {
                         <span className="font-medium">{inv.invoice_number}</span>
                         <div className="flex space-x-1 mt-1">
                           {recentInvoices.includes(inv.id) && (
-                            <span className="text-green-600 text-[10px] font-semibold">🆕 New</span>
+                            <span title="New" className="text-green-600 text-[10px] font-semibold">🆕 New</span>
                           )}
                           {inv.paid && (
-                            <span className="text-green-600 text-[10px] font-semibold">✅ Paid</span>
+                            <span title="Paid" className="text-green-600 text-[10px] font-semibold">✅ Paid</span>
                           )}
                           {inv.archived && (
-                            <span className="text-gray-500 text-[10px] font-semibold">📦 Archived</span>
+                            <span title="Archived" className="text-gray-500 text-[10px] font-semibold">📦 Archived</span>
                           )}
                           {duplicateFlags[inv.id] && (
-                            <span className="text-yellow-500 text-[10px] font-semibold">⚠️</span>
+                            <span title="Possible duplicate" className="text-yellow-500 text-[10px] font-semibold">⚠️</span>
                           )}
                         </div>
                       </div>
