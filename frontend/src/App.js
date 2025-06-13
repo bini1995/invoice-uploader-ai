@@ -1556,6 +1556,7 @@ useEffect(() => {
         onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
       />
 
+      <div className="pt-16 md:flex">
       {token && (
         <aside
           className={`fixed top-16 bottom-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
@@ -1701,12 +1702,12 @@ useEffect(() => {
       )}
 
       {isOffline && (
-        <div className="bg-yellow-100 text-yellow-800 p-2 text-center mt-20">
+        <div className="bg-yellow-100 text-yellow-800 p-2 text-center mt-4">
           Offline mode - changes will sync when you're online
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-24 md:ml-64">
+      <main className="flex-1 max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
           <LiveFeed token={token} tenant={tenant} />
@@ -2771,6 +2772,7 @@ useEffect(() => {
             🔒 Please log in to access invoice management tools.
           </div>
         )}
+      </main>
       </div>
     </div>
   );
