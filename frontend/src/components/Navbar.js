@@ -68,11 +68,18 @@ export default function Navbar({
                     <HomeIcon className="h-5 w-5 mr-2" /> Dashboard
                   </Link>
                   <Link
-                    to="/insights"
+                    to="/analytics"
                     className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <DocumentChartBarIcon className="h-5 w-5 mr-2" /> Insights
+                    <DocumentChartBarIcon className="h-5 w-5 mr-2" /> Analytics
+                  </Link>
+                  <Link
+                    to="/vendors"
+                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <UsersIcon className="h-5 w-5 mr-2" /> Vendors
                   </Link>
                   <Link
                     to="/archive"
