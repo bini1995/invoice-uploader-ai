@@ -94,7 +94,7 @@ export default function Navbar({
               )}
               <button
                 onClick={() => setDarkMode((d) => !d)}
-                className="focus:outline-none"
+                className={`focus:outline-none transform transition-transform duration-300 ${darkMode ? 'rotate-180' : ''}`}
                 title={darkMode ? 'Light Mode' : 'Dark Mode'}
               >
                 {darkMode ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}

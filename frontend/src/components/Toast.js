@@ -1,11 +1,15 @@
 import React from 'react';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 export default function Toast({ message, type, actionText, onAction }) {
-  const base = 'px-4 py-2 rounded shadow-lg text-white mb-2 flex items-center';
+  const base =
+    'px-4 py-2 rounded shadow-lg text-white mb-2 flex items-center space-x-2';
   const color = type === 'error' ? 'bg-red-600' : 'bg-green-600';
+  const Icon = type === 'error' ? XCircleIcon : CheckCircleIcon;
   return (
-    <div className={`${base} ${color} animate-fade-in`}>
-      <span className="flex-1 mr-2">{message}</span>
+    <div className={`${base} ${color} animate-slide-in-right`}>
+      <Icon className="h-5 w-5" />
+      <span className="flex-1">{message}</span>
       {actionText && (
         <button
           className="underline font-semibold"

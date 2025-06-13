@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Skeleton from './components/Skeleton';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
@@ -9,19 +10,17 @@ function Dashboard() {
   const [vendors, setVendors] = useState([]);
   const [cashFlow, setCashFlow] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) return;
     const headers = { Authorization: `Bearer ${token}` };
-    fetch('http://localhost:3000/api/invoices/top-vendors', { headers })
-      .then(r => r.json().then(d => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => { if (ok) setVendors(d.topVendors || []); });
-    fetch('http://localhost:3000/api/invoices/cash-flow?interval=monthly', { headers })
-      .then(r => r.json().then(d => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => { if (ok) setCashFlow(d.data || []); });
-    fetch('http://localhost:3000/api/invoices/upload-heatmap', { headers })
-      .then(r => r.json().then(d => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => { if (ok) setHeatmap(d.heatmap || []); });
+    setLoading(true);
+    Promise.all([
+      fetch('http://localhost:3000/api/invoices/top-vendors', { headers }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => { if (ok) setVendors(d.topVendors || []); }),
+      fetch('http://localhost:3000/api/invoices/cash-flow?interval=monthly', { headers }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => { if (ok) setCashFlow(d.data || []); }),
+      fetch('http://localhost:3000/api/invoices/upload-heatmap', { headers }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => { if (ok) setHeatmap(d.heatmap || []); })
+    ]).finally(() => setLoading(false));
   }, [token]);
 
   const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
@@ -42,25 +41,35 @@ function Dashboard() {
       ) : (
         <div className="space-y-8">
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={vendors} dataKey="total" nameKey="vendor" outerRadius={80}>
-                  {vendors.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <Skeleton rows={1} className="h-full" height="h-full" />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={vendors} dataKey="total" nameKey="vendor" outerRadius={80}>
+                    {vendors.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={cashFlow}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" tickFormatter={(v) => new Date(v).toLocaleDateString()} />
-                <YAxis />
-                <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
-                <Bar dataKey="total" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <Skeleton rows={1} className="h-full" height="h-full" />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={cashFlow}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="period" tickFormatter={(v) => new Date(v).toLocaleDateString()} />
+                  <YAxis />
+                  <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
+                  <Bar dataKey="total" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Suspicious Pattern Heatmap</h2>
