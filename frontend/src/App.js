@@ -1596,12 +1596,12 @@ useEffect(() => {
         onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
       />
 
-      <div className="pt-16 grid md:grid-cols-[250px_1fr] min-h-screen">
+      <div className="pt-16 grid grid-cols-1 md:grid-cols-[250px_1fr] md:gap-4 min-h-screen">
       {token && (
         <aside
           className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 ${
             filterSidebarOpen ? '' : 'hidden md:block'
-          } md:fixed md:top-16 md:bottom-0 md:left-0 md:shadow-none md:border-r md:border-gray-200 md:flex-shrink-0`}
+          } md:border-r md:border-gray-200 md:max-h-screen md:overflow-y-auto`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
             <button
