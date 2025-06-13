@@ -62,6 +62,8 @@ const [files, setFile] = useState([]);   // file objects to submit
 const [filePreviews, setFilePreviews] = useState([]);
 const [fileErrors, setFileErrors] = useState([]);
 const [dragActive, setDragActive] = useState(false);
+const [uploadProgress, setUploadProgress] = useState(0);
+const [recentUploads, setRecentUploads] = useState([]);
 const fileInputRef = useRef();
 const searchInputRef = useRef();
   const [invoices, setInvoices] = useState([]);
@@ -666,13 +668,14 @@ useEffect(() => {
 
   const handleUpload = async () => {
     if (!files.length) return addToast('Please select one or more files', 'error');
-  
+
     setLoading(true);
-  
-    for (const file of files) {
+    setUploadProgress(0);
+
+    for (const [idx, file] of files.entries()) {
       const formData = new FormData();
       formData.append('invoiceFile', file);
-  
+
       try {
         const res = await fetch('http://localhost:3000/api/invoices/upload', {
           method: 'POST',
@@ -683,6 +686,10 @@ useEffect(() => {
         });
         
         const data = await res.json();
+
+        if (res.ok) {
+          setRecentUploads(prev => [{ name: file.name, time: new Date().toLocaleString() }, ...prev].slice(0, 5));
+        }
   
         setMessage((prev) => prev + `\n✅ ${data.inserted} invoice(s) submitted from ${file.name}`);
         addToast(`✅ Submitted ${data.inserted} invoice(s) from ${file.name}`);
@@ -721,6 +728,8 @@ useEffect(() => {
         console.error(`Submission failed for ${file.name}:`, err);
         setMessage((prev) => prev + `\n❌ Submission failed for ${file.name}`);
       }
+
+      setUploadProgress(Math.round(((idx + 1) / files.length) * 100));
     }
 
     addToast('📧 Email sent with summary and invoice list!');
@@ -1525,7 +1534,7 @@ useEffect(() => {
 
 <div className="flex flex-wrap gap-4 mb-6 items-start">
   <fieldset className="border border-gray-200 p-4 rounded flex flex-col gap-2">
-    <legend className="text-sm font-semibold px-2">Submit Invoice</legend>
+    <legend className="text-sm font-semibold px-2">Upload Invoice</legend>
     <div
       className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-indigo-50' : ''}`}
       onDragOver={(e) => e.preventDefault()}
@@ -1562,6 +1571,37 @@ useEffect(() => {
           <li key={idx}>{err}</li>
         ))}
       </ul>
+    )}
+
+    {uploadProgress > 0 && (
+      <div className="w-full bg-gray-200 h-2 rounded mt-2">
+        <div
+          className="bg-indigo-600 h-2 rounded"
+          style={{ width: `${uploadProgress}%` }}
+        ></div>
+      </div>
+    )}
+    {uploadProgress === 100 && (
+      <div className="text-green-600 text-xs mt-1">✅ Upload complete</div>
+    )}
+
+    <button
+      onClick={handleUpload}
+      disabled={!token || !files.length}
+      className="btn btn-primary text-sm mt-2 self-start disabled:opacity-60"
+    >
+      {loading ? 'Uploading...' : 'Upload Invoice'}
+    </button>
+
+    {recentUploads.length > 0 && (
+      <div className="mt-2 text-xs">
+        <strong>Recent Uploads:</strong>
+        <ul className="list-disc list-inside">
+          {recentUploads.map((u, i) => (
+            <li key={i}>{u.name} - {u.time}</li>
+          ))}
+        </ul>
+      </div>
     )}
   </fieldset>
 
