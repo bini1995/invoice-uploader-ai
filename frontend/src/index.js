@@ -6,7 +6,8 @@ import Reports from './Reports';
 import Archive from './Archive';
 import TeamManagement from './TeamManagement';
 import VendorManagement from './VendorManagement';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
@@ -22,17 +23,39 @@ if (apiBase) {
   });
 }
 const root = ReactDOM.createRoot(document.getElementById('root'));
+function PageWrapper({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
+        <Route path="/invoices" element={<PageWrapper><App /></PageWrapper>} />
+        <Route path="/insights" element={<PageWrapper><Reports /></PageWrapper>} />
+        <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
+        <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
+        <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />
+        <Route path="/" element={<Navigate to="/invoices" replace />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 root.render(
   <BrowserRouter>
-    <Routes>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/invoices" element={<App />} />
-      <Route path="/insights" element={<Reports />} />
-      <Route path="/settings" element={<TeamManagement />} />
-      <Route path="/archive" element={<Archive />} />
-      <Route path="/vendors" element={<VendorManagement />} />
-      <Route path="/" element={<Navigate to="/invoices" replace />} />
-    </Routes>
+    <AnimatedRoutes />
   </BrowserRouter>
 );
 

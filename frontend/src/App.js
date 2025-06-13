@@ -97,6 +97,7 @@ const searchInputRef = useRef();
   const [showChart, setShowChart] = useState(false);
   const [cashFlowData, setCashFlowData] = useState([]);
   const [cashFlowInterval, setCashFlowInterval] = useState('monthly');
+  const [loadingCharts, setLoadingCharts] = useState(false);
   const [timeline, setTimeline] = useState([]);
   const [showTimeline, setShowTimeline] = useState(false);
   const [timelineInvoice, setTimelineInvoice] = useState(null);
@@ -929,9 +930,12 @@ useEffect(() => {
 
   useEffect(() => {
     if (showChart && token) {
-      fetchCashFlowData(cashFlowInterval);
-      fetchTopVendors();
-      fetchTagReport();
+      setLoadingCharts(true);
+      Promise.all([
+        fetchCashFlowData(cashFlowInterval),
+        fetchTopVendors(),
+        fetchTagReport(),
+      ]).finally(() => setLoadingCharts(false));
     }
   }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, fetchCashFlowData, fetchTopVendors, fetchTagReport]);
 
@@ -2064,15 +2068,19 @@ useEffect(() => {
                           {showChart && (
                         <>
                       <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="vendor" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="total" fill="#3B82F6" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                        {loadingCharts ? (
+                          <Skeleton rows={1} className="h-full" height="h-full" />
+                        ) : (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartData}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="vendor" />
+                              <YAxis />
+                              <Tooltip />
+                              <Bar dataKey="total" fill="#3B82F6" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )}
                       </div>
                       <div className="flex items-center my-4 space-x-2">
                         <label className="text-sm">Interval:</label>
@@ -2086,18 +2094,22 @@ useEffect(() => {
                         </select>
                       </div>
                       <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={cashFlowData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis
-                              dataKey="period"
-                              tickFormatter={(v) => new Date(v).toLocaleDateString()}
-                            />
-                            <YAxis />
-                            <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
-                            <Line type="monotone" dataKey="total" stroke="#10B981" />
-                          </LineChart>
-                        </ResponsiveContainer>
+                        {loadingCharts ? (
+                          <Skeleton rows={1} className="h-full" height="h-full" />
+                        ) : (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={cashFlowData}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis
+                                dataKey="period"
+                                tickFormatter={(v) => new Date(v).toLocaleDateString()}
+                              />
+                              <YAxis />
+                              <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
+                              <Line type="monotone" dataKey="total" stroke="#10B981" />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        )}
                       </div>
 
                       <h3 className="text-lg font-medium mt-8 mb-2 text-gray-800">Top 5 Vendors This Quarter</h3>
@@ -2158,27 +2170,35 @@ useEffect(() => {
                         )}
                       </div>
                       <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={topVendors}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="vendor" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="total" fill="#6366F1" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                        {loadingCharts ? (
+                          <Skeleton rows={1} className="h-full" height="h-full" />
+                        ) : (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={topVendors}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="vendor" />
+                              <YAxis />
+                              <Tooltip />
+                              <Bar dataKey="total" fill="#6366F1" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )}
                       </div>
                       <h3 className="text-lg font-medium mt-8 mb-2 text-gray-800">Spending by Tag</h3>
                       <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={tagReport}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="tag" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="total" fill="#0ea5e9" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                        {loadingCharts ? (
+                          <Skeleton rows={1} className="h-full" height="h-full" />
+                        ) : (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={tagReport}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="tag" />
+                              <YAxis />
+                              <Tooltip />
+                              <Bar dataKey="total" fill="#0ea5e9" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )}
                       </div>
                       </>
                     )}
