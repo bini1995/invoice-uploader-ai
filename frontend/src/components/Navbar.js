@@ -34,7 +34,7 @@ export default function Navbar({
       <div className="max-w-4xl mx-auto flex justify-between items-center p-2">
         <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
           <ArchiveBoxIcon className="h-5 w-5" />
-          <span className="font-semibold text-sm">Invoice Uploader</span>
+          <span className="font-semibold text-sm">Invoice Uploader AI</span>
         </Link>
         <div className="flex items-center space-x-3 relative">
           <TenantSwitcher tenant={tenant} onChange={onTenantChange} />

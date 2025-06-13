@@ -43,7 +43,7 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, history }) 
       }`}
     >
       <div className="p-2 border-b flex justify-between items-center">
-        <h2 className="font-semibold">AI Assistant</h2>
+        <h2 className="text-lg font-semibold">AI Assistant</h2>
         <button onClick={onClose} title="Close">
           <XMarkIcon className="w-5 h-5" />
         </button>

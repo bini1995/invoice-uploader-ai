@@ -28,7 +28,7 @@ export default function LiveFeed({ token, tenant }) {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded">
-      <h2 className="font-bold mb-2">Live Feed</h2>
+      <h2 className="text-lg font-semibold mb-2">Live Feed</h2>
       <ul className="space-y-1 text-sm max-h-60 overflow-auto">
         {logs.map((log) => (
           <li key={log.id} className="border-b border-gray-200 dark:border-gray-700 pb-1">

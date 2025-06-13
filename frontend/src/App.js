@@ -1500,7 +1500,7 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-900 dark:text-gray-100">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-sm space-y-4">
-          <h2 className="text-xl font-bold mb-4">Login</h2>
+          <h2 className="text-lg font-semibold mb-4">Login</h2>
           {loginError && <p className="text-red-600 mb-2">{loginError}</p>}
           <label htmlFor="username" className="block text-sm font-medium">
             Username
@@ -1561,7 +1561,7 @@ useEffect(() => {
       {showTimeline && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-4 rounded w-96">
-            <h2 className="text-lg font-bold mb-2">Timeline for #{timelineInvoice}</h2>
+            <h2 className="text-lg font-semibold mb-2">Timeline for #{timelineInvoice}</h2>
             <ul className="text-sm max-h-60 overflow-y-auto">
               {timeline.map((t, i) => (
                 <li key={i}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
@@ -1745,7 +1745,10 @@ useEffect(() => {
 
       <main className="flex-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-1">
+            <DocumentArrowDownIcon className="w-6 h-6" />
+            <span>Invoice Uploader AI</span>
+          </h1>
           <LiveFeed token={token} tenant={tenant} />
         </div>
   
