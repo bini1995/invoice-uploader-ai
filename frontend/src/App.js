@@ -1558,7 +1558,7 @@ useEffect(() => {
 
       {token && (
         <aside
-          className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
+          className={`fixed top-16 bottom-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
             filterSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } md:translate-x-0 md:static md:shadow-none`}
         >
