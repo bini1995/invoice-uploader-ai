@@ -20,6 +20,7 @@ import Skeleton from './components/Skeleton';
 import ChatSidebar from './components/ChatSidebar';
 import GraphView from './components/GraphView';
 import ConfirmModal from './components/ConfirmModal';
+import InvoiceDetailModal from './components/InvoiceDetailModal';
 import SuggestionChips from './components/SuggestionChips';
 import Fuse from 'fuse.js';
 import {
@@ -99,6 +100,7 @@ const searchInputRef = useRef();
   const [timeline, setTimeline] = useState([]);
   const [showTimeline, setShowTimeline] = useState(false);
   const [timelineInvoice, setTimelineInvoice] = useState(null);
+  const [detailInvoice, setDetailInvoice] = useState(null);
   const [topVendors, setTopVendors] = useState([]);
   const [tagReport, setTagReport] = useState([]);
   const [filterType, setFilterType] = useState('none');
@@ -1541,6 +1543,12 @@ useEffect(() => {
           </div>
         </div>
       )}
+      <InvoiceDetailModal
+        open={!!detailInvoice}
+        invoice={detailInvoice}
+        onClose={() => setDetailInvoice(null)}
+        onUpdate={handleUpdateInvoice}
+      />
       <Navbar
         tenant={tenant}
         onTenantChange={setTenant}
@@ -2263,7 +2271,7 @@ useEffect(() => {
                       />
                     </td>
                     <td className="border px-4 py-2">{inv.id}</td>
-                    <td className="border px-4 py-2">
+                    <td className="border px-4 py-2 cursor-pointer" onClick={() => setDetailInvoice(inv)}>
                       <div className="flex flex-col items-center">
                         <span className="font-medium">{inv.invoice_number}</span>
                         <div className="flex space-x-1 mt-1">
@@ -2567,6 +2575,7 @@ useEffect(() => {
                   ) : sortedInvoices.map((inv) => (
                     <div
                     key={inv.id}
+                    onClick={() => setDetailInvoice(inv)}
                     className={`border rounded-lg p-4 shadow-sm flex flex-col space-y-2 ${
                       inv.archived ? 'bg-gray-100 text-gray-500 italic' : 'bg-white'
                     }`}
@@ -2590,7 +2599,7 @@ useEffect(() => {
                       <div className="mt-2 flex flex-wrap gap-2">
                       {!inv.archived && (
                         <button
-                          onClick={() => handleArchive(inv.id)}
+                          onClick={(e) => { e.stopPropagation(); handleArchive(inv.id); }}
                           className="bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"
                           title="Archive"
                         >
@@ -2599,7 +2608,7 @@ useEffect(() => {
                       )}
                       {role === 'admin' && (
                         <button
-                          onClick={() => handleDelete(inv.id)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(inv.id); }}
                           className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
                           title="Delete"
                         >
@@ -2609,21 +2618,21 @@ useEffect(() => {
                       {(role === 'approver' || role === 'admin') && (
                         <>
                           <button
-                            onClick={() => handleApprove(inv.id)}
+                            onClick={(e) => { e.stopPropagation(); handleApprove(inv.id); }}
                             className="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
                             title="Approve"
                           >
                             <CheckCircleIcon className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleReject(inv.id)}
+                            onClick={(e) => { e.stopPropagation(); handleReject(inv.id); }}
                             className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
                             title="Reject"
                           >
                             <XCircleIcon className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handlePaymentRequest(inv.id)}
+                            onClick={(e) => { e.stopPropagation(); handlePaymentRequest(inv.id); }}
                             className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
                             disabled={paymentRequestId === inv.id}
                           >
@@ -2647,11 +2656,12 @@ useEffect(() => {
                           type="text"
                           value={commentInputs[inv.id] || ''}
                           onChange={(e) => setCommentInputs((p) => ({ ...p, [inv.id]: e.target.value }))}
+                          onClick={(e) => e.stopPropagation()}
                           className="input text-xs flex-1 px-1"
                           placeholder="Add comment"
                         />
                         <button
-                          onClick={() => handleAddComment(inv.id)}
+                          onClick={(e) => { e.stopPropagation(); handleAddComment(inv.id); }}
                           className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded"
                         >
                           Post
