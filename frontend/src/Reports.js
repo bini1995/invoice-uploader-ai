@@ -65,10 +65,10 @@ function Reports() {
   useEffect(() => { if (token) loadRules(); }, [token]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-      <nav className="mb-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Reports</h1>
-        <Link to="/" className="text-indigo-600 underline">Back to App</Link>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 pt-16">
+      <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
+        <h1 className="text-xl font-bold">Reports</h1>
+        <Link to="/" className="underline">Back to App</Link>
       </nav>
       <div className="space-y-4 max-w-2xl">
         <div className="grid grid-cols-2 gap-2">
