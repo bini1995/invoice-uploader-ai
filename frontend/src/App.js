@@ -1596,7 +1596,7 @@ useEffect(() => {
         onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
       />
 
-      <div className="pt-16 md:flex md:min-h-screen md:gap-6">
+      <div className="pt-16 grid md:grid-cols-[250px_1fr] min-h-screen">
       {token && (
         <aside
           className={`fixed top-16 bottom-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
@@ -2258,7 +2258,7 @@ useEffect(() => {
                   viewMode === 'table' ? (
               <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded border">      
               <table className="min-w-full bg-white border border-gray-300 text-sm">
-              <thead className="bg-gray-200 text-gray-700 sticky top-0 z-10 shadow-sm">
+              <thead className="bg-gray-200 text-gray-700 sticky top-0 z-10 shadow-md">
                   <tr>
                     <th className="border px-4 py-2">
                       <input
@@ -2663,7 +2663,7 @@ useEffect(() => {
                     <div
                     key={inv.id}
                     onClick={() => setDetailInvoice(inv)}
-                    className={`border rounded-lg p-4 shadow-sm flex flex-col space-y-2 ${
+                    className={`border rounded-lg p-4 shadow-md flex flex-col space-y-2 ${
                       inv.archived ? 'bg-gray-100 text-gray-500 italic' : 'bg-white'
                     } ${
                       role === 'approver' && (inv.approval_status || 'Pending') === 'Pending'
