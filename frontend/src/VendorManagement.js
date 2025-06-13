@@ -77,6 +77,7 @@ function VendorManagement() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
