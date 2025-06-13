@@ -679,6 +679,7 @@ useEffect(() => {
 
     setLoading(true);
     setUploadProgress(0);
+    let hadError = false;
 
     for (const [idx, file] of files.entries()) {
       const formData = new FormData();
@@ -697,11 +698,14 @@ useEffect(() => {
 
         if (res.ok) {
           setRecentUploads(prev => [{ name: file.name, time: new Date().toLocaleString() }, ...prev].slice(0, 5));
+        } else {
+          hadError = true;
         }
   
         setMessage((prev) => prev + `\n✅ ${data.inserted} invoice(s) submitted from ${file.name}`);
         addToast(`✅ Submitted ${data.inserted} invoice(s) from ${file.name}`);
         if (data.errors?.length) {
+          hadError = true;
           setMessage((prev) => prev + `\n❌ ${data.errors.length} row(s) had issues in ${file.name}`);
           setErrors((prev) => [...prev, ...data.errors]);
   
@@ -735,12 +739,14 @@ useEffect(() => {
       } catch (err) {
         console.error(`Submission failed for ${file.name}:`, err);
         setMessage((prev) => prev + `\n❌ Submission failed for ${file.name}`);
+        hadError = true;
       }
 
       setUploadProgress(Math.round(((idx + 1) / files.length) * 100));
     }
 
     addToast('📧 Email sent with summary and invoice list!');
+    addToast(hadError ? '❌ Error processing file' : '✅ Upload complete', hadError ? 'error' : 'success');
   
     const updated = await fetch('http://localhost:3000/api/invoices');
     const updatedData = await updated.json();
@@ -1771,16 +1777,14 @@ useEffect(() => {
         ></div>
       </div>
     )}
-    {uploadProgress === 100 && (
-      <div className="text-green-600 text-xs mt-1">✅ Upload complete</div>
-    )}
 
     <button
       onClick={handleUpload}
       disabled={!token || !files.length}
-      className="btn btn-primary text-sm mt-2 self-start disabled:opacity-60"
+      className="btn btn-primary text-sm mt-2 self-start disabled:opacity-60 flex items-center space-x-1"
     >
-      {loading ? 'Uploading...' : 'Upload Invoice'}
+      {loading && <Spinner className="h-4 w-4" />}
+      <span>{loading ? 'Uploading...' : 'Upload Invoice'}</span>
     </button>
 
     {recentUploads.length > 0 && (

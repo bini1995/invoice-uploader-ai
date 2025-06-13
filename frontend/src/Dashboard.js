@@ -10,6 +10,7 @@ function Dashboard() {
   const [vendors, setVendors] = useState([]);
   const [cashFlow, setCashFlow] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,9 +18,26 @@ function Dashboard() {
     const headers = { Authorization: `Bearer ${token}` };
     setLoading(true);
     Promise.all([
-      fetch('http://localhost:3000/api/invoices/top-vendors', { headers }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => { if (ok) setVendors(d.topVendors || []); }),
-      fetch('http://localhost:3000/api/invoices/cash-flow?interval=monthly', { headers }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => { if (ok) setCashFlow(d.data || []); }),
-      fetch('http://localhost:3000/api/invoices/upload-heatmap', { headers }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => { if (ok) setHeatmap(d.heatmap || []); })
+      fetch('http://localhost:3000/api/invoices/top-vendors', { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) setVendors(d.topVendors || []);
+        }),
+      fetch('http://localhost:3000/api/invoices/cash-flow?interval=monthly', { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) setCashFlow(d.data || []);
+        }),
+      fetch('http://localhost:3000/api/invoices/upload-heatmap', { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) setHeatmap(d.heatmap || []);
+        }),
+      fetch('http://localhost:3000/api/invoices/quick-stats', { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) setStats(d);
+        }),
     ]).finally(() => setLoading(false));
   }, [token]);
 
@@ -40,6 +58,46 @@ function Dashboard() {
         <p className="text-center text-gray-600">Please log in from the main app.</p>
       ) : (
         <div className="space-y-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {loading ? (
+              <Skeleton rows={1} className="h-20 col-span-2 md:col-span-4" />
+            ) : (
+              <>
+                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    💵 Total Invoiced This Month
+                  </div>
+                  <div className="text-xl font-semibold">
+                    {stats?.totalInvoicedThisMonth?.toFixed(2) || 0}
+                  </div>
+                </div>
+                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    🧾 Invoices Pending
+                  </div>
+                  <div className="text-xl font-semibold">
+                    {stats?.invoicesPending || 0}
+                  </div>
+                </div>
+                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    ⚠️ Anomalies Found
+                  </div>
+                  <div className="text-xl font-semibold">
+                    {stats?.anomaliesFound || 0}
+                  </div>
+                </div>
+                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    🤖 AI Suggestions Available
+                  </div>
+                  <div className="text-xl font-semibold">
+                    {stats?.aiSuggestions || 0}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <div className="h-64">
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
