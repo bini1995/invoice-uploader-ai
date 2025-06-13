@@ -3,6 +3,7 @@ import {
   ChatBubbleLeftRightIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import SuggestionChips from './SuggestionChips';
 import {
   BarChart,
   Bar,
@@ -16,6 +17,15 @@ import {
 export default function ChatSidebar({ open, onClose, onAsk, onChart, history }) {
   const [question, setQuestion] = useState('');
   const [chartQ, setChartQ] = useState('');
+  const suggestions = [
+    'Find duplicate invoices',
+    'Summarize top vendors',
+    'Show anomalies',
+  ];
+
+  const handleSuggestion = (s) => {
+    onAsk(s);
+  };
 
   const submitAsk = () => {
     onAsk(question);
@@ -28,8 +38,8 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, history }) 
 
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-80 max-w-full bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
-        open ? 'translate-x-0' : 'translate-x-full'
+      className={`fixed bottom-4 right-4 w-80 h-96 max-w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg transform transition-transform z-30 ${
+        open ? 'translate-y-0' : 'translate-y-full'
       }`}
     >
       <div className="p-2 border-b flex justify-between items-center">
@@ -64,6 +74,7 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, history }) 
         ))}
       </div>
       <div className="p-2 space-y-2 border-t">
+        <SuggestionChips suggestions={suggestions} onClick={handleSuggestion} />
         <div className="flex space-x-1">
           <input
             value={question}

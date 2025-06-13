@@ -22,6 +22,7 @@ import GraphView from './components/GraphView';
 import ConfirmModal from './components/ConfirmModal';
 import InvoiceDetailModal from './components/InvoiceDetailModal';
 import SuggestionChips from './components/SuggestionChips';
+import PreviewModal from './components/PreviewModal';
 import Fuse from 'fuse.js';
 import {
   ArchiveBoxIcon,
@@ -38,6 +39,7 @@ import {
   LightBulbIcon,
   PlusCircleIcon,
   TagIcon,
+  EyeIcon,
   TrashIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline';
@@ -65,6 +67,7 @@ const [fileErrors, setFileErrors] = useState([]);
 const [dragActive, setDragActive] = useState(false);
 const [uploadProgress, setUploadProgress] = useState(0);
 const [recentUploads, setRecentUploads] = useState([]);
+const [previewModalData, setPreviewModalData] = useState(null);
 const fileInputRef = useRef();
 const searchInputRef = useRef();
   const [invoices, setInvoices] = useState([]);
@@ -649,6 +652,7 @@ useEffect(() => {
 
     for (const f of arr) {
       let rows = 'N/A';
+      let preview = null;
       const lower = f.name.toLowerCase();
       const ext = lower.substring(lower.lastIndexOf('.'));
 
@@ -657,6 +661,8 @@ useEffect(() => {
         const lines = text.trim().split(/\r?\n/);
         rows = Math.max(lines.length - 1, 0);
         const headers = lines[0].split(',');
+        const previewLines = lines.slice(1, 6).map((l) => l.split(','));
+        preview = [headers, ...previewLines];
         const required = ['invoice_number', 'date', 'amount', 'vendor'];
         const missing = required.filter((h) => !headers.includes(h));
         if (missing.length) {
@@ -666,7 +672,7 @@ useEffect(() => {
         errors.push(`${f.name} is not a CSV or PDF file`);
       }
 
-      previews.push({ file: f, name: f.name, size: f.size, rows });
+      previews.push({ file: f, name: f.name, size: f.size, rows, preview });
     }
 
     setFile(arr);
@@ -674,8 +680,18 @@ useEffect(() => {
     setFileErrors(errors);
   };
 
+  const openUploadPreview = () => {
+    if (filePreviews.length > 0) {
+      setPreviewModalData({ ...filePreviews[0], confirm: true });
+    } else {
+      addToast('Please select one or more files', 'error');
+    }
+  };
+
   const handleUpload = async () => {
     if (!files.length) return addToast('Please select one or more files', 'error');
+
+    setPreviewModalData(null);
 
     setLoading(true);
     setUploadProgress(0);
@@ -1553,6 +1569,12 @@ useEffect(() => {
           </div>
         </div>
       )}
+      <PreviewModal
+        open={!!previewModalData}
+        data={previewModalData}
+        onClose={() => setPreviewModalData(null)}
+        onConfirm={previewModalData?.confirm ? handleUpload : null}
+      />
       <InvoiceDetailModal
         open={!!detailInvoice}
         invoice={detailInvoice}
@@ -1731,6 +1753,20 @@ useEffect(() => {
 <div className="mb-6">
   <fieldset className="border border-gray-300 p-4 rounded-md flex flex-col gap-2">
     <legend className="text-sm font-semibold px-2">Upload Invoice</legend>
+    <ol className="flex space-x-4 text-sm text-gray-600 mb-2">
+      <li className="flex items-center space-x-1">
+        <ArrowUpTrayIcon className="w-4 h-4 text-indigo-500" />
+        <span>Select File</span>
+      </li>
+      <li className="flex items-center space-x-1">
+        <EyeIcon className="w-4 h-4 text-indigo-500" />
+        <span>Preview Rows</span>
+      </li>
+      <li className="flex items-center space-x-1">
+        <CheckCircleIcon className="w-4 h-4 text-indigo-500" />
+        <span>Confirm Upload</span>
+      </li>
+    </ol>
     <div
       className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-indigo-50' : ''}`}
       onDragOver={(e) => e.preventDefault()}
@@ -1757,6 +1793,14 @@ useEffect(() => {
             <div className="font-semibold">{f.name}</div>
             <div>Size: {(f.size / 1024).toFixed(1)} KB</div>
             <div>Rows: {f.rows}</div>
+            {f.preview && (
+              <button
+                onClick={() => setPreviewModalData(f)}
+                className="mt-1 text-indigo-700 underline"
+              >
+                Preview rows
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -1779,7 +1823,7 @@ useEffect(() => {
     )}
 
     <button
-      onClick={handleUpload}
+      onClick={openUploadPreview}
       disabled={!token || !files.length}
       className="btn btn-primary text-sm mt-2 self-start disabled:opacity-60 flex items-center space-x-1"
     >
