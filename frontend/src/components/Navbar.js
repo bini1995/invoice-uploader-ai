@@ -32,7 +32,7 @@ export default function Navbar({
   return (
     <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow z-20">
       <div className="max-w-4xl mx-auto flex justify-between items-center p-2">
-        <Link to="/" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
+        <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
           <ArchiveBoxIcon className="h-5 w-5" />
           <span className="font-semibold text-sm">Invoice Uploader</span>
         </Link>
@@ -68,11 +68,11 @@ export default function Navbar({
                     <HomeIcon className="h-5 w-5 mr-2" /> Dashboard
                   </Link>
                   <Link
-                    to="/reports"
+                    to="/insights"
                     className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setMenuOpen(false)}
                   >
-                    <DocumentChartBarIcon className="h-5 w-5 mr-2" /> Reports
+                    <DocumentChartBarIcon className="h-5 w-5 mr-2" /> Insights
                   </Link>
                   <Link
                     to="/archive"
@@ -83,11 +83,11 @@ export default function Navbar({
                   </Link>
                   {role === 'admin' && (
                     <Link
-                      to="/team"
+                      to="/settings"
                       className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setMenuOpen(false)}
                     >
-                      <UsersIcon className="h-5 w-5 mr-2" /> Team
+                      <UsersIcon className="h-5 w-5 mr-2" /> Settings
                     </Link>
                   )}
                 </div>
