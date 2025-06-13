@@ -22,6 +22,7 @@ const {
   getTopVendors,
   getSpendingByTag,
   getUploadHeatmap,
+  getQuickStats,
   exportDashboardPDF,
   checkRecurringInvoice,
   getRecurringInsights,
@@ -92,6 +93,7 @@ router.post('/cash-flow/scenario', authMiddleware, scenarioCashFlow);
 router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/spending-by-tag', authMiddleware, getSpendingByTag);
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
+router.get('/quick-stats', authMiddleware, getQuickStats);
 router.get('/recurring/insights', authMiddleware, getRecurringInsights);
 router.get('/vendor-profile/:vendor', authMiddleware, getVendorProfile);
 router.get('/vendor-bio/:vendor', authMiddleware, getVendorBio);

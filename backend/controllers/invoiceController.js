@@ -1048,6 +1048,65 @@ exports.getUploadHeatmap = async (req, res) => {
   }
 };
 
+// Quick stats for dashboard
+exports.getQuickStats = async (_req, res) => {
+  const client = await pool.connect();
+  try {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    const totalRes = await client.query(
+      `SELECT COALESCE(SUM(amount),0) AS total
+       FROM invoices
+       WHERE date >= $1 AND date < $2`,
+      [start, end]
+    );
+
+    const pendingRes = await client.query(
+      "SELECT COUNT(*) AS count FROM invoices WHERE approval_status = 'Pending'"
+    );
+
+    const flaggedRes = await client.query(
+      'SELECT COUNT(*) AS count FROM invoices WHERE flagged = TRUE'
+    );
+
+    const anomalyRes = await client.query(
+      `SELECT vendor, DATE_TRUNC('month', date) AS m, SUM(amount) AS total
+       FROM invoices
+       WHERE date >= $1
+       GROUP BY vendor, m
+       ORDER BY vendor, m`,
+      [new Date(now.getFullYear(), now.getMonth() - 6, 1)]
+    );
+
+    const data = {};
+    anomalyRes.rows.forEach((r) => {
+      if (!data[r.vendor]) data[r.vendor] = [];
+      data[r.vendor].push({ month: r.m, total: parseFloat(r.total) });
+    });
+    let anomalies = 0;
+    for (const rows of Object.values(data)) {
+      const totals = rows.map((r) => r.total);
+      const avg = totals.reduce((a, b) => a + b, 0) / totals.length;
+      const last = totals[totals.length - 1];
+      if (totals.length > 1 && last > avg * 1.5) anomalies++;
+    }
+
+    res.json({
+      totalInvoicedThisMonth: parseFloat(totalRes.rows[0].total) || 0,
+      invoicesPending: parseInt(pendingRes.rows[0].count, 10) || 0,
+      anomaliesFound: anomalies,
+      aiSuggestions: parseInt(flaggedRes.rows[0].count, 10) || 0,
+    });
+  } catch (err) {
+    console.error('Quick stats error:', err);
+    res.status(500).json({ message: 'Failed to fetch quick stats' });
+  } finally {
+    client.release();
+  }
+};
+
 exports.exportDashboardPDF = async (req, res) => {
   const client = await pool.connect();
   try {
@@ -1484,6 +1543,7 @@ module.exports = {
   getVendorBio: exports.getVendorBio,
   getVendorScorecards: exports.getVendorScorecards,
   getRelationshipGraph: exports.getRelationshipGraph,
+  getQuickStats: exports.getQuickStats,
   getUploadHeatmap: exports.getUploadHeatmap,
 };
 
