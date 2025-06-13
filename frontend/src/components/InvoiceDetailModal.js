@@ -33,7 +33,7 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate })
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96">
-        <h2 className="text-lg font-bold mb-2">Invoice #{invoice.invoice_number}</h2>
+        <h2 className="text-lg font-semibold mb-2">Invoice #{invoice.invoice_number}</h2>
         <div className="space-y-2 text-sm">
           <div>
             <span className="font-semibold mr-2">ID:</span>{invoice.id}

@@ -85,7 +85,7 @@ function Reports() {
           <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
         </div>
         <div>
-          <h2 className="font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
+          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
           <div className="flex space-x-2 items-center">
             <input type="number" value={threshold} onChange={e => setThreshold(e.target.value)} className="input w-32" />
             <button onClick={addAmountRule} className="btn btn-primary" title="Set Threshold">Set Threshold</button>
