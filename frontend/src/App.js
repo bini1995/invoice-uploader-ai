@@ -1599,9 +1599,9 @@ useEffect(() => {
       <div className="pt-16 grid md:grid-cols-[250px_1fr] min-h-screen">
       {token && (
         <aside
-          className={`fixed top-16 bottom-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
-            filterSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 md:static md:shadow-none md:border-r md:border-gray-200 md:flex-shrink-0`}
+          className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 ${
+            filterSidebarOpen ? '' : 'hidden md:block'
+          } md:fixed md:top-16 md:bottom-0 md:left-0 md:shadow-none md:border-r md:border-gray-200 md:flex-shrink-0`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
             <button
@@ -1754,8 +1754,8 @@ useEffect(() => {
 
 <div className="mb-6">
   <fieldset className="border border-gray-300 p-4 rounded-md flex flex-col gap-2">
-    <legend className="text-sm font-semibold px-2">Upload Invoice</legend>
-    <ol className="flex space-x-4 text-sm text-gray-600 mb-2">
+    <legend className="text-lg font-semibold px-2">Upload Invoice</legend>
+    <ol className="flex space-x-4 text-sm text-gray-500 mb-2">
       <li className="flex items-center space-x-1">
         <ArrowUpTrayIcon className="w-4 h-4 text-indigo-500" />
         <span>Select File</span>
@@ -1777,7 +1777,7 @@ useEffect(() => {
       onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
       onClick={() => fileInputRef.current.click()}
     >
-      <p className="text-sm text-gray-600">Drag & drop CSV/PDF here or click to select</p>
+      <p className="text-sm text-gray-500">Drag & drop CSV/PDF here or click to select</p>
       <input
         type="file"
         multiple
@@ -1827,9 +1827,13 @@ useEffect(() => {
     <button
       onClick={openUploadPreview}
       disabled={!token || !files.length}
-      className="btn btn-primary text-sm mt-2 self-start disabled:opacity-60 flex items-center space-x-1"
+      className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded flex items-center space-x-2 mt-2 disabled:opacity-60"
     >
-      {loading && <Spinner className="h-4 w-4" />}
+      {loading ? (
+        <Spinner className="h-4 w-4" />
+      ) : (
+        <ArrowUpTrayIcon className="h-5 w-5" />
+      )}
       <span>{loading ? 'Uploading...' : 'Upload Invoice'}</span>
     </button>
 
@@ -2089,7 +2093,7 @@ useEffect(() => {
                       </div>
 
 
-                <h2 className="text-lg font-medium mt-8 mb-2 text-gray-800">
+                <h2 className="text-lg font-semibold mt-8 mb-2 text-gray-800">
                   Invoice Totals by Vendor
                 </h2>
                 <div className="mb-4 flex flex-wrap gap-4">
@@ -2158,7 +2162,7 @@ useEffect(() => {
                         )}
                       </div>
 
-                      <h3 className="text-lg font-medium mt-8 mb-2 text-gray-800">Top 5 Vendors This Quarter</h3>
+                      <h3 className="text-lg font-semibold mt-8 mb-2 text-gray-800">Top 5 Vendors This Quarter</h3>
                       <div className="flex items-center my-2 space-x-2 text-sm">
                         <label>Filter:</label>
                         <select
@@ -2230,7 +2234,7 @@ useEffect(() => {
                           </ResponsiveContainer>
                         )}
                       </div>
-                      <h3 className="text-lg font-medium mt-8 mb-2 text-gray-800">Spending by Tag</h3>
+                      <h3 className="text-lg font-semibold mt-8 mb-2 text-gray-800">Spending by Tag</h3>
                       <div className="h-64">
                         {loadingCharts ? (
                           <Skeleton rows={1} className="h-full" height="h-full" />
@@ -2256,8 +2260,8 @@ useEffect(() => {
 
                 {viewMode !== 'graph' && (
                   viewMode === 'table' ? (
-              <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded border">      
-              <table className="min-w-full bg-white border border-gray-300 text-sm">
+              <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded-lg border">
+              <table className="min-w-full bg-white border border-gray-300 text-sm rounded-lg overflow-hidden">
               <thead className="bg-gray-200 text-gray-700 sticky top-0 z-10 shadow-md">
                   <tr>
                     <th className="border px-4 py-2">
@@ -2321,7 +2325,7 @@ useEffect(() => {
                 sortedInvoices.map((inv, idx) => (
                   <tr
                           key={inv.id}
-                          className={`text-center hover:bg-indigo-50 hover:shadow ${
+                          className={`text-center hover:bg-gray-100 hover:shadow ${
                             idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                           } ${
                             inv.archived ? '!bg-gray-200 text-gray-500 italic' : ''

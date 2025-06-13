@@ -77,7 +77,8 @@ function TeamManagement() {
           </select>
           <button onClick={addUser} className="bg-indigo-600 text-white px-3 py-1 rounded" title="Add User">Add User</button>
         </div>
-        <table className="w-full text-left border mt-4">
+        <div className="overflow-x-auto rounded-lg mt-4">
+        <table className="w-full text-left border rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700">
               <th className="p-2">Username</th>
@@ -87,7 +88,7 @@ function TeamManagement() {
           </thead>
           <tbody>
             {users.map(u => (
-              <tr key={u.id} className="border-t">
+              <tr key={u.id} className="border-t hover:bg-gray-100">
                 <td className="p-2">{u.username}</td>
                 <td className="p-2">
                   <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="input p-1">
@@ -103,6 +104,7 @@ function TeamManagement() {
             ))}
           </tbody>
         </table>
+        </div>
         <div>
           <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Activity Logs</h2>
           <ul className="max-h-64 overflow-y-auto text-sm">

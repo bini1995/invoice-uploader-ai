@@ -40,7 +40,8 @@ function VendorManagement() {
         <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Vendor Management</h1>
         <Link to="/" className="text-indigo-600 underline">Back to App</Link>
       </nav>
-      <table className="w-full text-left border">
+      <div className="overflow-x-auto rounded-lg">
+      <table className="w-full text-left border rounded-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700">
             <th className="p-2">Vendor</th>
@@ -52,7 +53,7 @@ function VendorManagement() {
         </thead>
         <tbody>
           {vendors.map(v => (
-            <tr key={v.vendor} className="border-t">
+            <tr key={v.vendor} className="border-t hover:bg-gray-100">
               <td className="p-2">{v.vendor}</td>
               <td className="p-2">{v.last_invoice ? new Date(v.last_invoice).toLocaleDateString() : '-'}</td>
               <td className="p-2">${v.total_spend.toFixed(2)}</td>

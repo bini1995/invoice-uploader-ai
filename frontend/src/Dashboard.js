@@ -131,8 +131,8 @@ function Dashboard() {
           </div>
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Suspicious Pattern Heatmap</h2>
-            <div className="overflow-x-auto">
-              <table className="table-fixed border-collapse">
+            <div className="overflow-x-auto rounded-lg">
+              <table className="table-fixed border-collapse rounded-lg overflow-hidden">
                 <thead>
                   <tr>
                     <th></th>

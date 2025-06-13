@@ -6,8 +6,8 @@ export default function PreviewModal({ open, onClose, onConfirm, data }) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96 max-w-full">
         <h2 className="text-lg font-bold mb-2">Preview {data.name}</h2>
-        <div className="overflow-auto max-h-60 border">
-          <table className="table-auto text-xs w-full">
+        <div className="overflow-x-auto max-h-60 border rounded-lg">
+          <table className="table-auto text-xs w-full rounded-lg overflow-hidden">
             <thead>
               <tr>
                 {data.preview[0].map((h, i) => (
@@ -19,7 +19,7 @@ export default function PreviewModal({ open, onClose, onConfirm, data }) {
             </thead>
             <tbody>
               {data.preview.slice(1).map((row, ri) => (
-                <tr key={ri}>
+                <tr key={ri} className="hover:bg-gray-100">
                   {row.map((cell, ci) => (
                     <td key={ci} className="px-1 py-0.5 border-b">
                       {cell}
