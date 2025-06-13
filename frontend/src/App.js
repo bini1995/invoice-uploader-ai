@@ -1603,12 +1603,12 @@ useEffect(() => {
         />
       )}
 
-      <div className="pt-16 grid grid-cols-1 md:grid-cols-[250px_1fr] md:gap-4 min-h-screen">
+      <div className="pt-16 flex flex-col md:flex-row md:gap-4 min-h-screen">
         {token && (
           <aside
-          className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 ${
+          className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
             filterSidebarOpen ? '' : 'hidden md:block'
-          } md:border-r md:border-gray-200 md:max-h-screen md:overflow-y-auto z-40`}
+          } md:border-r md:border-gray-200 dark:md:border-gray-700 md:max-h-screen md:overflow-y-auto z-40`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
             <button
@@ -1617,7 +1617,7 @@ useEffect(() => {
             >
               ✖
             </button>
-            <h2 className="text-lg font-semibold">Filters</h2>
+            <h2 className="text-xl font-semibold">Filters</h2>
             <div className="flex flex-col space-y-3 md:space-y-4">
               <div className="flex flex-col">
                 <label htmlFor="searchTerm" className="text-xs font-medium mb-1">Search</label>
@@ -1750,7 +1750,7 @@ useEffect(() => {
         </div>
       )}
 
-      <main className="flex-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
+      <main className="flex-1 w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-1">
             <DocumentArrowDownIcon className="w-6 h-6" />
@@ -1780,14 +1780,14 @@ useEffect(() => {
       </li>
     </ol>
     <div
-      className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-indigo-50' : ''}`}
+      className={`border-2 border-dashed rounded-md p-4 cursor-pointer ${dragActive ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500' : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600'}`}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
       onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
       onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
       onClick={() => fileInputRef.current.click()}
     >
-      <p className="text-sm text-gray-500">Drag & drop CSV/PDF here or click to select</p>
+      <p className="text-sm text-gray-500 dark:text-gray-300">Drag & drop CSV/PDF here or click to select</p>
       <input
         type="file"
         multiple
@@ -1826,9 +1826,9 @@ useEffect(() => {
     )}
 
     {uploadProgress > 0 && (
-      <div className="w-full bg-gray-200 h-2 rounded mt-2">
+      <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded mt-2">
         <div
-          className="bg-indigo-600 h-2 rounded"
+          className="bg-indigo-600 dark:bg-indigo-500 h-2 rounded"
           style={{ width: `${uploadProgress}%` }}
         ></div>
       </div>
@@ -1837,7 +1837,7 @@ useEffect(() => {
     <button
       onClick={openUploadPreview}
       disabled={!token || !files.length}
-      className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded flex items-center space-x-2 mt-2 disabled:opacity-60"
+      className="btn btn-primary w-full flex items-center justify-center space-x-2 mt-4 disabled:opacity-60"
     >
       {loading ? (
         <Spinner className="h-4 w-4" />
@@ -1896,7 +1896,7 @@ useEffect(() => {
           )}
 
           {vendorSummary && (
-            <div className="p-4 bg-purple-100 border border-purple-400 text-purple-800 rounded relative">
+            <div className="p-4 bg-indigo-100 border border-indigo-400 text-indigo-800 rounded relative">
               <strong>Vendor Insights:</strong>
               <button
                 onClick={() => handleCopy(vendorSummary)}
@@ -1995,7 +1995,7 @@ useEffect(() => {
                             <button
                               onClick={handleVendorSummary}
                               disabled={!token}
-                              className="btn bg-purple-600 hover:bg-purple-700 text-white text-sm flex items-center space-x-1 disabled:opacity-60"
+                              className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
                             >
                               <LightBulbIcon className="w-4 h-4" />
                               <span>{loadingVendor ? 'Loading...' : 'Vendor'}</span>
@@ -2555,7 +2555,7 @@ useEffect(() => {
                       )}
                       <button
                         onClick={() => handleSuggestVendor(inv)}
-                        className="bg-purple-600 text-white px-2 py-1 rounded hover:bg-purple-700 text-xs w-full"
+                        className="btn btn-primary text-xs w-full"
                         title="Suggest Vendor"
                       >
                         <LightBulbIcon className="w-4 h-4" />
