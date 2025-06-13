@@ -17,6 +17,7 @@ import Login from './Login';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
+import ChatSidebar from './components/ChatSidebar';
 import GraphView from './components/GraphView';
 import ConfirmModal from './components/ConfirmModal';
 import SuggestionChips from './components/SuggestionChips';
@@ -33,7 +34,6 @@ import {
   FlagIcon,
   DocumentArrowDownIcon,
   ChatBubbleLeftRightIcon,
-  ChartBarIcon,
   LightBulbIcon,
   PlusCircleIcon,
   TagIcon,
@@ -116,10 +116,8 @@ const searchInputRef = useRef();
   const [tagColors, setTagColors] = useState({});
   const [qualityScores, setQualityScores] = useState({});
   const [riskScores, setRiskScores] = useState({});
-  const [chartQuestion, setChartQuestion] = useState('');
-  const [chartDataAuto, setChartDataAuto] = useState([]);
-  const [chatQuestion, setChatQuestion] = useState('');
-  const [chatAnswer, setChatAnswer] = useState('');
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
   const [loadingVendor, setLoadingVendor] = useState(false);
   const [loadingInsights, setLoadingInsights] = useState(false);
   const [commentInputs, setCommentInputs] = useState({});
@@ -985,45 +983,45 @@ useEffect(() => {
     }
   };
 
-  const handleAssistantQuery = async () => {
-    if (!chatQuestion.trim()) return;
+  const handleAssistantQuery = async (question) => {
+    if (!question.trim()) return;
     try {
       const res = await fetch('http://localhost:3000/api/invoices/assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ question: chatQuestion }),
+        body: JSON.stringify({ question }),
       });
       const data = await res.json();
       if (res.ok) {
-        setChatAnswer(data.answer);
+        setChatHistory((h) => [...h, { type: 'chat', question, answer: data.answer }]);
       } else {
-        setChatAnswer(data.message || 'Error');
+        setChatHistory((h) => [...h, { type: 'chat', question, answer: data.message || 'Error' }]);
       }
     } catch (err) {
       console.error('Assistant query failed:', err);
-      setChatAnswer('Failed to get answer.');
+      setChatHistory((h) => [...h, { type: 'chat', question, answer: 'Failed to get answer.' }]);
     }
   };
 
-  const handleChartQuery = async () => {
-    if (!chartQuestion.trim()) return;
+  const handleChartQuery = async (question) => {
+    if (!question.trim()) return;
     try {
       const res = await fetch('http://localhost:3000/api/invoices/nl-chart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ question: chartQuestion }),
+        body: JSON.stringify({ question }),
       });
       const data = await res.json();
       if (res.ok) {
-        setChartDataAuto(data.rows);
+        setChatHistory((h) => [...h, { type: 'chart', question, chartData: data.rows }]);
       } else {
-        setChartDataAuto([]);
         addToast(data.message, 'error');
+        setChatHistory((h) => [...h, { type: 'chart', question, chartData: [] }]);
       }
     } catch (err) {
       console.error('Chart query failed:', err);
-      setChartDataAuto([]);
       addToast('Failed to run query', 'error');
+      setChatHistory((h) => [...h, { type: 'chart', question, chartData: [] }]);
     }
   };
   
@@ -1987,60 +1985,7 @@ useEffect(() => {
                           </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2">
-                          <input
-                            type="text"
-                            value={chatQuestion}
-                            onChange={(e) => setChatQuestion(e.target.value)}
-                            placeholder="Ask AI about invoices..."
-                            className="input flex-1 text-sm"
-                          />
-                          <button
-                            onClick={handleAssistantQuery}
-                            className="btn btn-primary text-sm flex items-center space-x-1"
-                            title="Ask"
-                          >
-                            <ChatBubbleLeftRightIcon className="w-4 h-4" />
-                            <span>Ask</span>
-                          </button>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <input
-                            type="text"
-                            value={chartQuestion}
-                            onChange={(e) => setChartQuestion(e.target.value)}
-                            placeholder="Ask for a chart..."
-                            className="input flex-1 text-sm"
-                          />
-                          <button
-                            onClick={handleChartQuery}
-                            className="btn bg-green-600 hover:bg-green-700 text-white text-sm flex items-center space-x-1"
-                            title="Chart"
-                          >
-                            <ChartBarIcon className="w-4 h-4" />
-                            <span>Chart</span>
-                          </button>
-                        </div>
                       </div>
-                        {chatAnswer && (
-                          <div className="mt-2 p-2 bg-gray-100 border rounded text-sm whitespace-pre-wrap w-full">
-                            {chatAnswer}
-                          </div>
-                        )}
-                        {chartDataAuto.length > 0 && (
-                          <div className="w-full h-64 mt-2">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart data={chartDataAuto}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey={Object.keys(chartDataAuto[0])[0]} />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey={Object.keys(chartDataAuto[0])[1]} fill="#10B981" />
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </div>
-                        )}
 
                       {vendorList.length > 0 && (
                           <div className="mb-4">
@@ -2773,6 +2718,24 @@ useEffect(() => {
           </div>
         )}
       </main>
+      {token && (
+        <>
+          <button
+            onClick={() => setAssistantOpen(true)}
+            className="fixed bottom-4 right-4 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-20"
+            title="AI Assistant"
+          >
+            <ChatBubbleLeftRightIcon className="w-6 h-6" />
+          </button>
+          <ChatSidebar
+            open={assistantOpen}
+            onClose={() => setAssistantOpen(false)}
+            onAsk={handleAssistantQuery}
+            onChart={handleChartQuery}
+            history={chatHistory}
+          />
+        </>
+      )}
       </div>
     </div>
   );

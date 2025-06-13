@@ -6,7 +6,7 @@ import Reports from './Reports';
 import Archive from './Archive';
 import TeamManagement from './TeamManagement';
 import VendorManagement from './VendorManagement';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
@@ -26,11 +26,12 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/reports" element={<Reports />} />
+      <Route path="/invoices" element={<App />} />
+      <Route path="/insights" element={<Reports />} />
+      <Route path="/settings" element={<TeamManagement />} />
       <Route path="/archive" element={<Archive />} />
-      <Route path="/team" element={<TeamManagement />} />
       <Route path="/vendors" element={<VendorManagement />} />
-      <Route path="/*" element={<App />} />
+      <Route path="/" element={<Navigate to="/invoices" replace />} />
     </Routes>
   </BrowserRouter>
 );
