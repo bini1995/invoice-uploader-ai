@@ -23,6 +23,7 @@ import ConfirmModal from './components/ConfirmModal';
 import InvoiceDetailModal from './components/InvoiceDetailModal';
 import SuggestionChips from './components/SuggestionChips';
 import PreviewModal from './components/PreviewModal';
+import VendorProfilePanel from './components/VendorProfilePanel';
 import Fuse from 'fuse.js';
 import {
   ArchiveBoxIcon,
@@ -107,6 +108,7 @@ const searchInputRef = useRef();
   const [detailInvoice, setDetailInvoice] = useState(null);
   const [topVendors, setTopVendors] = useState([]);
   const [tagReport, setTagReport] = useState([]);
+  const [vendorPanelVendor, setVendorPanelVendor] = useState(null);
   const [filterType, setFilterType] = useState('none');
   const [filterTag, setFilterTag] = useState('');
   const [filterStartDate, setFilterStartDate] = useState('');
@@ -2296,7 +2298,9 @@ useEffect(() => {
                     <th className="border px-4 py-2">Updated At</th>
                     <th className="border px-4 py-2">Quality</th>
                     <th className="border px-4 py-2">Risk</th>
-                    <th className="border px-4 py-2">Actions</th>
+                    {role !== 'viewer' && (
+                      <th className="border px-4 py-2">Actions</th>
+                    )}
                     
                   </tr>
                 </thead>
@@ -2325,6 +2329,10 @@ useEffect(() => {
                             recentInvoices.includes(inv.id) ? 'bg-green-100 border-green-400' : ''
                           } ${
                             selectedVendor && inv.vendor === selectedVendor ? 'bg-indigo-50 border-indigo-300' : ''
+                          } ${
+                            role === 'approver' && (inv.approval_status || 'Pending') === 'Pending'
+                              ? 'bg-yellow-100 dark:bg-yellow-900'
+                              : ''
                           }`}
                         >
                     <td className="border px-4 py-2">
@@ -2355,8 +2363,9 @@ useEffect(() => {
                       </div>
                     </td>
                     <td
-                      className="border px-4 py-2 cursor-pointer"
+                      className={`border px-4 py-2 ${role !== 'viewer' ? 'cursor-pointer' : ''}`}
                       onClick={() => {
+                        if (role === 'viewer') return;
                         setEditingInvoiceId(inv.id);
                         setEditingField('date');
                         setEditingValue(inv.date);
@@ -2384,8 +2393,9 @@ useEffect(() => {
                       )}
                     </td>
                     <td
-                      className="border px-4 py-2 cursor-pointer"
+                      className={`border px-4 py-2 ${role !== 'viewer' ? 'cursor-pointer' : ''}`}
                       onClick={() => {
+                        if (role === 'viewer') return;
                         setEditingInvoiceId(inv.id);
                         setEditingField('amount');
                         setEditingValue(inv.amount);
@@ -2415,8 +2425,9 @@ useEffect(() => {
                       )}
                     </td>
                     <td
-                      className="border px-4 py-2 cursor-pointer"
+                      className={`border px-4 py-2 ${role !== 'viewer' ? 'cursor-pointer' : ''}`}
                       onClick={() => {
+                        if (role === 'viewer') return;
                         setEditingInvoiceId(inv.id);
                         setEditingField('vendor');
                         setEditingValue(inv.vendor);
@@ -2434,14 +2445,21 @@ useEffect(() => {
                           className="input px-1 text-sm w-full"
                           autoFocus
                         />
-                        
+
                       ) : (
-                        <>
-                          {inv.vendor}
+                        <div className="flex items-center space-x-1">
+                          <span>{inv.vendor}</span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setVendorPanelVendor(inv.vendor); }}
+                            className="text-indigo-600 underline text-xs"
+                            title="Profile"
+                          >
+                            Info
+                          </button>
                           {updatedFields[`${inv.id}-vendor`] && (
-                            <span className="ml-2 text-green-600 text-xs font-semibold">✅</span>
+                            <span className="ml-1 text-green-600 text-xs font-semibold">✅</span>
                           )}
-                        </>
+                        </div>
                       )}
                     </td>
                     <td className="border px-4 py-2">
@@ -2452,6 +2470,7 @@ useEffect(() => {
                         value={inv.assignee || ''}
                         onChange={(e) => handleAssign(inv.id, e.target.value)}
                         className="border rounded px-1 text-sm"
+                        disabled={role === 'viewer'}
                       >
                         <option value="">Unassigned</option>
                         {teamMembers.map((m) => (
@@ -2480,6 +2499,7 @@ useEffect(() => {
                         {riskScores[inv.id] || 'Risk'}
                       </button>
                     </td>
+                    {role !== 'viewer' && (
                     <td className="border px-4 py-2 space-y-1 flex flex-col items-center">
                     {!inv.archived && (
                             <>
@@ -2539,13 +2559,15 @@ useEffect(() => {
                           onClick={(tag) => handleAddTag(inv.id, tag)}
                         />
                       )}
-                      <button
-                        onClick={() => handleFlagSuspicious(inv)}
-                        className="btn btn-warning text-xs w-full px-2 py-1"
-                        title="Flag"
-                      >
-                        <FlagIcon className="w-4 h-4" />
-                      </button>
+                      {role === 'admin' && (
+                        <button
+                          onClick={() => handleFlagSuspicious(inv)}
+                          className="btn btn-warning text-xs w-full px-2 py-1"
+                          title="Flag"
+                        >
+                          <FlagIcon className="w-4 h-4" />
+                        </button>
+                      )}
                         <button
                           onClick={() => handleViewTimeline(inv.id)}
                           className="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600 text-xs w-full"
@@ -2622,6 +2644,7 @@ useEffect(() => {
                         </>
                       )}
                     </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -2642,13 +2665,25 @@ useEffect(() => {
                     onClick={() => setDetailInvoice(inv)}
                     className={`border rounded-lg p-4 shadow-sm flex flex-col space-y-2 ${
                       inv.archived ? 'bg-gray-100 text-gray-500 italic' : 'bg-white'
+                    } ${
+                      role === 'approver' && (inv.approval_status || 'Pending') === 'Pending'
+                        ? 'bg-yellow-100 dark:bg-yellow-900'
+                        : ''
                     }`}
                   >
                   
                       <div className="text-sm font-semibold">#{inv.invoice_number} {duplicateFlags[inv.id] && <span className="text-yellow-500">⚠️</span>}</div>
                       <div className="text-sm">💰 {inv.amount}</div>
                       <div className="text-sm">📅 {new Date(inv.date).toLocaleDateString()}</div>
-                      <div className="text-sm">🏢 {inv.vendor}</div>
+                      <div className="text-sm">🏢 {inv.vendor}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setVendorPanelVendor(inv.vendor); }}
+                          className="ml-1 text-indigo-600 underline text-xs"
+                          title="Profile"
+                        >
+                          Info
+                        </button>
+                      </div>
                       <div className="flex flex-wrap gap-1 text-xs">
                         {inv.tags?.map((tag, i) => (
                           <span
@@ -2715,22 +2750,24 @@ useEffect(() => {
                       {inv.comments?.map((c, i) => (
                         <div key={i} className="text-xs bg-gray-100 rounded p-1">{c.text}</div>
                       ))}
-                      <div className="flex mt-1">
-                        <input
-                          type="text"
-                          value={commentInputs[inv.id] || ''}
-                          onChange={(e) => setCommentInputs((p) => ({ ...p, [inv.id]: e.target.value }))}
-                          onClick={(e) => e.stopPropagation()}
-                          className="input text-xs flex-1 px-1"
-                          placeholder="Add comment"
-                        />
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleAddComment(inv.id); }}
-                          className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded"
-                        >
-                          Post
-                        </button>
-                      </div>
+                      {role !== 'viewer' && (
+                        <div className="flex mt-1">
+                          <input
+                            type="text"
+                            value={commentInputs[inv.id] || ''}
+                            onChange={(e) => setCommentInputs((p) => ({ ...p, [inv.id]: e.target.value }))}
+                            onClick={(e) => e.stopPropagation()}
+                            className="input text-xs flex-1 px-1"
+                            placeholder="Add comment"
+                          />
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleAddComment(inv.id); }}
+                            className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded"
+                          >
+                            Post
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     </div>
@@ -2807,6 +2844,12 @@ useEffect(() => {
             onAsk={handleAssistantQuery}
             onChart={handleChartQuery}
             history={chatHistory}
+          />
+          <VendorProfilePanel
+            vendor={vendorPanelVendor}
+            open={!!vendorPanelVendor}
+            onClose={() => setVendorPanelVendor(null)}
+            token={token}
           />
         </>
       )}

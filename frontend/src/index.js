@@ -43,11 +43,11 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
         <Route path="/invoices" element={<PageWrapper><App /></PageWrapper>} />
-        <Route path="/insights" element={<PageWrapper><Reports /></PageWrapper>} />
+        <Route path="/analytics" element={<PageWrapper><Reports /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />
-        <Route path="/" element={<Navigate to="/invoices" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </AnimatePresence>
   );
