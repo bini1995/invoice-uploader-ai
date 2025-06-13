@@ -94,8 +94,8 @@ function Reports() {
             {rules.map((r, i) => <li key={i}>{r.flagReason}</li>)}
           </ul>
         </div>
-        <div>
-          <table className="min-w-full border text-sm">
+        <div className="overflow-x-auto rounded-lg">
+          <table className="min-w-full border text-sm rounded-lg overflow-hidden">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700">
                 <th className="px-2 py-1">#</th>
@@ -106,7 +106,7 @@ function Reports() {
             </thead>
             <tbody>
               {invoices.map(inv => (
-                <tr key={inv.id} className="border-t">
+                <tr key={inv.id} className="border-t hover:bg-gray-100">
                   <td className="px-2 py-1">{inv.invoice_number}</td>
                   <td className="px-2 py-1">{new Date(inv.date).toLocaleDateString()}</td>
                   <td className="px-2 py-1">{inv.vendor}</td>
