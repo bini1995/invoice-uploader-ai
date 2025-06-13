@@ -1566,12 +1566,12 @@ useEffect(() => {
         onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
       />
 
-      <div className="pt-16 md:flex">
+      <div className="pt-16 md:flex md:min-h-screen md:gap-6">
       {token && (
         <aside
           className={`fixed top-16 bottom-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform z-30 ${
             filterSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 md:static md:shadow-none`}
+          } md:translate-x-0 md:static md:shadow-none md:border-r md:border-gray-200 md:flex-shrink-0`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
             <button
@@ -1695,15 +1695,11 @@ useEffect(() => {
               <button
                 onClick={handleExport}
                 disabled={!token}
-                className={`px-4 py-2 rounded text-sm ${
-                  token
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                className={`btn btn-primary text-sm ${!token ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 Export Filtered Invoices
               </button>
-              <button onClick={handleResetFilters} className="text-sm text-indigo-600">
+              <button onClick={handleResetFilters} className="btn btn-secondary text-sm">
                 Reset Filters
               </button>
             </div>
@@ -1717,9 +1713,9 @@ useEffect(() => {
         </div>
       )}
 
-      <main className="flex-1 max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-6">
+      <main className="flex-1 bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Invoice Uploader</h1>
           <LiveFeed token={token} tenant={tenant} />
         </div>
   
@@ -1727,7 +1723,7 @@ useEffect(() => {
           <>
 
 <div className="mb-6">
-  <fieldset className="border border-gray-200 p-4 rounded flex flex-col gap-2">
+  <fieldset className="border border-gray-300 p-4 rounded-md flex flex-col gap-2">
     <legend className="text-sm font-semibold px-2">Upload Invoice</legend>
     <div
       className={`border-2 border-dashed p-4 rounded cursor-pointer ${dragActive ? 'bg-indigo-50' : ''}`}
@@ -1815,7 +1811,7 @@ useEffect(() => {
             </ul>
             <button
               onClick={handleSummarizeErrors}
-              className="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700"
+              className="mt-2 btn btn-warning text-sm"
             >
               Summarize Errors
             </button>
@@ -1969,7 +1965,7 @@ useEffect(() => {
                             </button>
                             <button
                               onClick={handleExportArchived}
-                              className="btn bg-yellow-600 hover:bg-yellow-700 text-white text-sm flex items-center space-x-1"
+                              className="btn btn-warning text-sm flex items-center space-x-1"
                             >
                               <ArchiveBoxIcon className="w-4 h-4" />
                               <span>Archived</span>
@@ -2497,7 +2493,7 @@ useEffect(() => {
                       )}
                       <button
                         onClick={() => handleFlagSuspicious(inv)}
-                        className="bg-yellow-600 text-white px-2 py-1 rounded hover:bg-yellow-700 text-xs w-full"
+                        className="btn btn-warning text-xs w-full px-2 py-1"
                         title="Flag"
                       >
                         <FlagIcon className="w-4 h-4" />

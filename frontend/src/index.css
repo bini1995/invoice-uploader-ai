@@ -46,7 +46,7 @@ code {
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-xl transition shadow-sm hover:shadow-md hover:-translate-y-0.5;
+    @apply px-4 py-2 rounded-md transition shadow-sm hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400;
   }
   .btn-primary {
     @apply bg-indigo-600 text-white hover:bg-indigo-700;
@@ -57,7 +57,10 @@ code {
   .btn-danger {
     @apply bg-red-500 text-white hover:bg-red-600;
   }
+  .btn-warning {
+    @apply bg-yellow-500 text-white hover:bg-yellow-600;
+  }
   .input {
-    @apply border border-gray-300 rounded px-3 py-2 text-sm;
+    @apply border border-gray-300 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none;
   }
 }
