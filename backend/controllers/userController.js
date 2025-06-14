@@ -11,28 +11,73 @@ const USERS = [
   },
   {
     id: 2,
-    username: 'viewer',
-    passwordHash: bcrypt.hashSync('viewerpass', 10),
-    role: 'viewer',
+    username: 'reviewer',
+    passwordHash: bcrypt.hashSync('reviewerpass', 10),
+    role: 'reviewer',
   },
   {
     id: 3,
-    username: 'approver',
-    passwordHash: bcrypt.hashSync('approverpass', 10),
-    role: 'approver',
+    username: 'finance',
+    passwordHash: bcrypt.hashSync('financepass', 10),
+    role: 'finance',
+  },
+  {
+    id: 4,
+    username: 'readonly',
+    passwordHash: bcrypt.hashSync('readonlypass', 10),
+    role: 'readonly',
   },
 ];
 
+const REFRESH_TOKENS = [];
+
 exports.login = (req, res) => {
   const { username, password } = req.body;
-  const user = USERS.find(u => u.username === username);
+  const user = USERS.find((u) => u.username === username);
 
   if (!user || !bcrypt.compareSync(password, user.passwordHash)) {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  const token = jwt.sign({ userId: user.id, role: user.role }, 'secretKey123', { expiresIn: '1h' });
-  res.json({ token, role: user.role });
+  const token = jwt.sign(
+    { userId: user.id, role: user.role },
+    'secretKey123',
+    { expiresIn: '15m' }
+  );
+  const refreshToken = jwt.sign(
+    { userId: user.id },
+    'refreshSecret123',
+    { expiresIn: '7d' }
+  );
+  REFRESH_TOKENS.push(refreshToken);
+  res.json({ token, refreshToken, role: user.role });
+};
+
+exports.refreshToken = (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken || !REFRESH_TOKENS.includes(refreshToken)) {
+    return res.status(401).json({ message: 'Invalid refresh token' });
+  }
+  try {
+    const decoded = jwt.verify(refreshToken, 'refreshSecret123');
+    const user = USERS.find((u) => u.id === decoded.userId);
+    if (!user) return res.status(401).json({ message: 'Invalid user' });
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      'secretKey123',
+      { expiresIn: '15m' }
+    );
+    res.json({ token, role: user.role });
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid refresh token' });
+  }
+};
+
+exports.logout = (req, res) => {
+  const { refreshToken } = req.body;
+  const idx = REFRESH_TOKENS.indexOf(refreshToken);
+  if (idx !== -1) REFRESH_TOKENS.splice(idx, 1);
+  res.json({ message: 'Logged out' });
 };
 
 exports.authMiddleware = (req, res, next) => {

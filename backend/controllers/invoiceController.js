@@ -143,6 +143,9 @@ exports.getAllInvoices = async (req, res) => {
   try {
     const includeArchived = req.query.includeArchived === 'true';
     const assignee = req.query.assignee;
+    const vendor = req.query.vendor;
+    const team = req.query.team;
+    const status = req.query.status;
     const tenantId = req.headers['x-tenant-id'] || req.query.tenant || 'default';
     const conditions = [];
     const params = [];
@@ -152,6 +155,18 @@ exports.getAllInvoices = async (req, res) => {
     if (assignee) {
       params.push(assignee);
       conditions.push(`assignee = $${params.length}`);
+    }
+    if (vendor) {
+      params.push(vendor);
+      conditions.push(`vendor = $${params.length}`);
+    }
+    if (team) {
+      params.push(team);
+      conditions.push(`department = $${params.length}`);
+    }
+    if (status) {
+      params.push(status);
+      conditions.push(`approval_status = $${params.length}`);
     }
     if (tenantId) {
       params.push(tenantId);
@@ -817,6 +832,30 @@ exports.updateInvoiceTags = async (req, res) => {
   }
 };
 
+// Flag or unflag invoice for internal review
+exports.setReviewFlag = async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { flag, notes } = req.body || {};
+  try {
+    const result = await pool.query(
+      'UPDATE invoices SET review_flag = $1, review_notes = $2 WHERE id = $3',
+      [flag === true, notes || '', id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+    await logActivity(
+      req.user?.userId,
+      flag ? 'flag_review' : 'unflag_review',
+      id
+    );
+    res.json({ message: 'Review flag updated' });
+  } catch (err) {
+    console.error('Review flag error:', err);
+    res.status(500).json({ message: 'Failed to update review flag' });
+  }
+};
+
 // ✅ Generate PDF for one invoice
 exports.generateInvoicePDF = (req, res) => {
   try {
@@ -1102,6 +1141,46 @@ exports.getQuickStats = async (_req, res) => {
   } catch (err) {
     console.error('Quick stats error:', err);
     res.status(500).json({ message: 'Failed to fetch quick stats' });
+  } finally {
+    client.release();
+  }
+};
+
+// Tenant dashboard summary with filters
+exports.getDashboardData = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { vendor, team, status, tenant } = req.query;
+    const conditions = [];
+    const params = [];
+    if (vendor) {
+      params.push(vendor);
+      conditions.push(`vendor = $${params.length}`);
+    }
+    if (team) {
+      params.push(team);
+      conditions.push(`department = $${params.length}`);
+    }
+    if (status) {
+      params.push(status);
+      conditions.push(`approval_status = $${params.length}`);
+    }
+    if (tenant) {
+      params.push(tenant);
+      conditions.push(`tenant_id = $${params.length}`);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const result = await client.query(
+      `SELECT COUNT(*) AS count, COALESCE(SUM(amount),0) AS total FROM invoices ${where}`,
+      params
+    );
+    res.json({
+      totalInvoices: parseInt(result.rows[0].count, 10) || 0,
+      totalAmount: parseFloat(result.rows[0].total) || 0,
+    });
+  } catch (err) {
+    console.error('Dashboard data error:', err);
+    res.status(500).json({ message: 'Failed to fetch dashboard data' });
   } finally {
     client.release();
   }
@@ -1591,5 +1670,7 @@ module.exports = {
   getRelationshipGraph: exports.getRelationshipGraph,
   getQuickStats: exports.getQuickStats,
   getUploadHeatmap: exports.getUploadHeatmap,
+  getDashboardData: exports.getDashboardData,
+  setReviewFlag: exports.setReviewFlag,
 };
 
