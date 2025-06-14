@@ -16,9 +16,9 @@ exports.summarizeUploadErrors = async (req, res) => {
     // ✅ Define errorText from the errors array
     const errorText = errors.join('\n');
 
-    const prompt = `You are a helpful assistant for a CSV invoice uploader tool. 
-Given the following upload validation errors, summarize them clearly and offer suggestions 
-to help the user fix them:\n\n${errorText}`;
+    const prompt = `You are a helpful assistant for a CSV invoice uploader tool.
+Given the following upload validation errors, provide a concise summary. Then list bullet points under "Possible Fixes" and, if relevant, a "Warnings" section.
+\n\n${errorText}`;
 
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
@@ -378,7 +378,16 @@ exports.nlChartQuery = async (req, res) => {
     }
 
     const result = await pool.query(sql);
-    res.json({ query: sql, rows: result.rows });
+    const cols = result.fields.map(f => f.name);
+    let chart;
+    if (cols.length === 2) {
+      const [labelCol, valueCol] = cols;
+      chart = {
+        labels: result.rows.map(r => r[labelCol]),
+        values: result.rows.map(r => Number(r[valueCol]))
+      };
+    }
+    res.json({ query: sql, rows: result.rows, chart });
   } catch (error) {
     console.error('Chart query error:', error.response?.data || error.message);
     res.status(500).json({ message: 'Failed to process chart query.' });

@@ -1273,7 +1273,52 @@ exports.explainFlaggedInvoice = async (req, res) => {
     const result = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Invoice not found' });
+}
+
+// Provide a short AI explanation of any invoice and note potential anomalies
+exports.explainInvoice = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
     }
+    const invoice = result.rows[0];
+    const avgRes = await pool.query('SELECT AVG(amount) AS avg FROM invoices WHERE vendor = $1 AND id <> $2', [invoice.vendor, id]);
+    const avg = parseFloat(avgRes.rows[0].avg) || 0;
+    const prompt = `Explain this invoice in simple terms. The vendor's historical average amount is $${avg.toFixed(2)}. Include an "anomaly_score" from 0-1 indicating how unusual this invoice appears.` +
+      `\n\n${JSON.stringify({ invoice_number: invoice.invoice_number, amount: invoice.amount, date: invoice.date, vendor: invoice.vendor, description: invoice.description })}`;
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You analyze invoices and spot anomalies.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+          'X-Title': 'invoice-uploader-ai',
+        },
+      }
+    );
+    const raw = response.data.choices?.[0]?.message?.content?.trim();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      data = { explanation: raw };
+    }
+    res.json({ explanation: data.explanation, anomaly_score: data.anomaly_score });
+  } catch (err) {
+    console.error('Invoice explanation error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to explain invoice' });
+  }
+};
     const invoice = result.rows[0];
     if (!invoice.flagged) {
       return res.status(400).json({ message: 'Invoice is not flagged' });
@@ -1539,6 +1584,7 @@ module.exports = {
   bulkRejectInvoices: exports.bulkRejectInvoices,
   exportPDFBundle: exports.exportPDFBundle,
   explainFlaggedInvoice: exports.explainFlaggedInvoice,
+  explainInvoice: exports.explainInvoice,
   bulkAutoCategorize: exports.bulkAutoCategorize,
   getVendorBio: exports.getVendorBio,
   getVendorScorecards: exports.getVendorScorecards,
