@@ -44,6 +44,7 @@ const {
   updatePrivateNotes,
   updateRetentionPolicy,
   explainFlaggedInvoice,
+  explainInvoice,
   bulkAutoCategorize,
   getVendorBio,
   getVendorScorecards,
@@ -64,7 +65,7 @@ const { setBudget, getBudgets, checkBudgetWarnings } = require('../controllers/b
 const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns } = require('../controllers/fraudController');
 const { vendorReply } = require('../controllers/vendorReplyController');
-const { paymentRequest } = require('../controllers/paymentRequestController');
+const { paymentRequest, paymentRequestPDF } = require('../controllers/paymentRequestController');
 const { scenarioCashFlow } = require('../controllers/scenarioController');
 
 
@@ -100,6 +101,7 @@ router.get('/vendor-bio/:vendor', authMiddleware, getVendorBio);
 router.get('/dashboard/pdf', authMiddleware, exportDashboardPDF);
 router.post('/flag-suspicious', authMiddleware, flagSuspiciousInvoice);
 router.get('/:id/flag-explanation', authMiddleware, explainFlaggedInvoice);
+router.get('/:id/explain', authMiddleware, explainInvoice);
 router.patch('/:id/archive', authMiddleware, archiveInvoice);
 router.post('/:id/unarchive', authMiddleware, unarchiveInvoice);
 router.post('/suggest-vendor', authMiddleware, handleSuggestion);
@@ -136,6 +138,7 @@ router.get('/graph', authMiddleware, getRelationshipGraph);
 // ✅ GET PDF download
 router.get('/:id/pdf', authMiddleware, generateInvoicePDF);
 router.get('/:id/payment-request', authMiddleware, paymentRequest);
+router.get('/:id/payment-request/pdf', authMiddleware, paymentRequestPDF);
 
 
 

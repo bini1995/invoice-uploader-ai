@@ -12,10 +12,15 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - See a clean display of parsed invoices
 - Get validation feedback for bad rows
 - AI-generated summaries of common CSV issues (via OpenAI)
+- AI-generated summaries of common CSV issues with "Possible Fixes" and "Warnings"
 - Query invoices using natural language (via OpenAI)
+- Natural language chart queries show spending trends instantly
 - AI-powered invoice quality scores with tips
+- AI-driven invoice explanations and anomaly spotting for any invoice
+- Auto-generated payment request PDFs and vendor follow-up drafts
 - User ratings on AI responses continuously improve future accuracy
 - Ask Me Anything assistant for financial questions
+- (e.g. "Which vendors had the most inconsistencies last month?")
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
 - Auto-routing invoices by vendor or tag
@@ -159,6 +164,8 @@ apply custom approval rules:
 - `POST /api/invoices/cash-flow/scenario` – recalculate cash flow under payment delay scenarios
 - `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
 - `GET /api/invoices/:id/payment-request` – download a JSON payload for a payment request form
+- `GET /api/invoices/:id/payment-request/pdf` – download a PDF payment request
+- `GET /api/invoices/:id/explain` – AI summary of an invoice with anomaly score
 - `POST /api/feedback` – submit a rating for an AI-generated result
 - `GET /api/feedback` – view average ratings by endpoint
 - `GET /api/invoices/vendor-scorecards` – view vendor responsiveness and payment metrics
