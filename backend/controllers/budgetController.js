@@ -73,3 +73,38 @@ exports.checkBudgetWarnings = async (req, res) => {
     res.status(500).json({ message: 'Failed to check budget warnings' });
   }
 };
+
+// Budget vs actual spend by department
+exports.getBudgetVsActual = async (req, res) => {
+  const period = req.query.period || 'monthly';
+  const now = new Date();
+  const start = period === 'quarterly'
+    ? new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1)
+    : new Date(now.getFullYear(), now.getMonth(), 1);
+  const end = period === 'quarterly'
+    ? new Date(start.getFullYear(), start.getMonth() + 3, 1)
+    : new Date(start.getFullYear(), start.getMonth() + 1, 1);
+  try {
+    // treat budgets with only a tag as department budgets
+    const budgetsRes = await pool.query(
+      'SELECT tag AS department, amount FROM budgets WHERE period = $1 AND vendor IS NULL AND tag IS NOT NULL',
+      [period]
+    );
+    const result = [];
+    for (const b of budgetsRes.rows) {
+      const spendRes = await pool.query(
+        'SELECT SUM(amount) AS sum FROM invoices WHERE department = $1 AND date >= $2 AND date < $3',
+        [b.department, start, end]
+      );
+      result.push({
+        department: b.department,
+        budget: parseFloat(b.amount),
+        spent: parseFloat(spendRes.rows[0].sum) || 0,
+      });
+    }
+    res.json({ data: result });
+  } catch (err) {
+    console.error('Budget vs actual error:', err);
+    res.status(500).json({ message: 'Failed to fetch budget vs actual' });
+  }
+};

@@ -1190,6 +1190,7 @@ exports.exportDashboardPDF = async (req, res) => {
   const client = await pool.connect();
   try {
     const { tag, startDate, endDate } = req.query;
+    const now = new Date();
     const params = [];
     const conditions = [];
 
@@ -1207,8 +1208,54 @@ exports.exportDashboardPDF = async (req, res) => {
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const query = `SELECT invoice_number, date, amount, vendor, tags FROM invoices ${where} ORDER BY date DESC`;
+    const rangeStart = startDate ? new Date(startDate) : new Date(now.getFullYear(), now.getMonth(), 1);
+    const rangeEnd = endDate ? new Date(endDate) : new Date(rangeStart.getFullYear(), rangeStart.getMonth() + 1, 1);
+    const query = `SELECT invoice_number, date, amount, vendor, tags, department FROM invoices ${where} ORDER BY date DESC`;
     const result = await client.query(query, params);
+
+    // summary stats
+    const total = result.rows.reduce((s, r) => s + parseFloat(r.amount), 0);
+    const topVendorsRes = await client.query(
+      `SELECT vendor, SUM(amount) AS total FROM invoices ${where} GROUP BY vendor ORDER BY total DESC LIMIT 5`,
+      params
+    );
+    const tagRes = await client.query(
+      `SELECT tag, SUM(amount) AS total FROM (SELECT jsonb_array_elements_text(tags) AS tag, amount FROM invoices ${where}) t GROUP BY tag ORDER BY total DESC LIMIT 5`,
+      params
+    );
+
+    const now = new Date();
+    const anomalyStart = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+    const anomalyRes = await client.query(
+      `SELECT vendor, DATE_TRUNC('month', date) AS m, SUM(amount) AS total FROM invoices WHERE date >= $1 GROUP BY vendor, m ORDER BY vendor, m`,
+      [anomalyStart]
+    );
+    const data = {};
+    anomalyRes.rows.forEach(r => {
+      if (!data[r.vendor]) data[r.vendor] = [];
+      data[r.vendor].push({ month: r.m, total: parseFloat(r.total) });
+    });
+    const anomalies = [];
+    for (const [vendor, rows] of Object.entries(data)) {
+      const totals = rows.map(r => r.total);
+      const avg = totals.reduce((a,b)=>a+b,0) / totals.length;
+      const last = totals[totals.length - 1];
+      if (totals.length > 1 && last > avg * 1.5) {
+        anomalies.push({ vendor, avg, last });
+      }
+    }
+
+    const budgetRes = await pool.query(
+      `SELECT tag AS department, amount FROM budgets WHERE period = 'monthly' AND vendor IS NULL AND tag IS NOT NULL`
+    );
+    const budgetData = [];
+    for (const b of budgetRes.rows) {
+      const r = await pool.query(
+        'SELECT SUM(amount) AS sum FROM invoices WHERE department = $1 AND date >= $2 AND date < $3',
+        [b.department, rangeStart, rangeEnd]
+      );
+      budgetData.push({ department: b.department, budget: parseFloat(b.amount), spent: parseFloat(r.rows[0].sum) || 0 });
+    }
 
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
@@ -1217,6 +1264,28 @@ exports.exportDashboardPDF = async (req, res) => {
 
     doc.fontSize(18).text('Invoice Dashboard', { align: 'center' });
     doc.moveDown();
+    doc.fontSize(12).text(`Total Spend: $${total.toFixed(2)}`);
+    doc.moveDown();
+    doc.fontSize(14).text('Top Vendors');
+    topVendorsRes.rows.forEach(v => {
+      doc.fontSize(12).text(`${v.vendor}: $${parseFloat(v.total).toFixed(2)}`);
+    });
+    doc.moveDown();
+    doc.fontSize(14).text('Top Categories');
+    tagRes.rows.forEach(t => {
+      doc.fontSize(12).text(`${t.tag}: $${parseFloat(t.total).toFixed(2)}`);
+    });
+    doc.moveDown();
+    doc.fontSize(14).text('Unusual Invoice Spikes');
+    anomalies.forEach(a => {
+      doc.fontSize(12).text(`${a.vendor}: avg $${a.avg.toFixed(2)} last $${a.last.toFixed(2)}`);
+    });
+    doc.moveDown();
+    doc.fontSize(14).text('Budget vs Actual');
+    budgetData.forEach(b => {
+      doc.fontSize(12).text(`${b.department}: budget $${b.budget.toFixed(2)} spent $${b.spent.toFixed(2)}`);
+    });
+    doc.addPage();
 
     result.rows.forEach(inv => {
       doc.fontSize(12).text(`Invoice #${inv.invoice_number}`);
@@ -1224,6 +1293,7 @@ exports.exportDashboardPDF = async (req, res) => {
       doc.text(`Vendor: ${inv.vendor}`);
       doc.text(`Amount: $${parseFloat(inv.amount).toFixed(2)}`);
       doc.text(`Tags: ${(inv.tags || []).join(', ')}`);
+      doc.text(`Department: ${inv.department || ''}`);
       doc.moveDown();
     });
 
