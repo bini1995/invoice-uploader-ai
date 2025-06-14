@@ -539,6 +539,14 @@ const handleBulkDelete = () => {
   };
   
   const handleUpdateInvoice = async (id, field, value) => {
+    if (!value) {
+      addToast('Field cannot be empty', 'error');
+      return;
+    }
+    if (field === 'amount' && isNaN(parseFloat(value))) {
+      addToast('Please enter a valid amount', 'error');
+      return;
+    }
     try {
       setUpdatingField(`${id}-${field}`);
       const res = await fetch(`http://localhost:3000/api/invoices/${id}/update`, {
@@ -680,6 +688,9 @@ useEffect(() => {
     setFile(arr);
     setFilePreviews(previews);
     setFileErrors(errors);
+    if (errors.length) {
+      addToast('Some files were invalid', 'error');
+    }
   };
 
   const openUploadPreview = () => {
@@ -1109,6 +1120,11 @@ useEffect(() => {
   };
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      setLoginError('Username and password are required');
+      addToast('Please enter username and password', 'error');
+      return;
+    }
     try {
       const res = await fetch('http://localhost:3000/api/invoices/login', {
         method: 'POST',
@@ -1674,9 +1690,10 @@ useEffect(() => {
               </div>
               <div className="flex flex-col">
                 <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
-                <input
+              <input
                   id="minAmount"
                   type="number"
+                  min="0"
                   value={minAmount}
                   onChange={(e) => setMinAmount(e.target.value)}
                   className="input"
@@ -1684,9 +1701,10 @@ useEffect(() => {
               </div>
               <div className="flex flex-col">
                 <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
-                <input
+              <input
                   id="maxAmount"
                   type="number"
+                  min="0"
                   value={maxAmount}
                   onChange={(e) => setMaxAmount(e.target.value)}
                   className="input"
@@ -1736,7 +1754,7 @@ useEffect(() => {
               >
                 Export Filtered Invoices
               </button>
-              <button onClick={handleResetFilters} className="btn btn-secondary text-sm">
+              <button onClick={handleResetFilters} className="btn btn-secondary text-sm" title="Reset Filters">
                 Reset Filters
               </button>
             </div>
@@ -1996,6 +2014,7 @@ useEffect(() => {
                               onClick={handleVendorSummary}
                               disabled={!token}
                               className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
+                              title="Vendor Insights"
                             >
                               <LightBulbIcon className="w-4 h-4" />
                               <span>{loadingVendor ? 'Loading...' : 'Vendor'}</span>
@@ -2004,6 +2023,7 @@ useEffect(() => {
                               onClick={handleMonthlyInsights}
                               disabled={!token}
                               className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
+                              title="Monthly Insights"
                             >
                               <ClockIcon className="w-4 h-4" />
                               <span>{loadingInsights ? 'Loading...' : 'Monthly'}</span>
@@ -2040,6 +2060,7 @@ useEffect(() => {
                             <button
                               onClick={handleResetFilters}
                               className="btn btn-secondary text-sm flex items-center space-x-1"
+                              title="Reset Filters"
                             >
                               <ArrowPathIcon className="w-4 h-4" />
                               <span>Reset</span>
@@ -2327,7 +2348,7 @@ useEffect(() => {
               ) : sortedInvoices.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="text-center py-10 text-gray-500 italic">
-                    💤 No invoices to display. Try submitting one or adjusting your filters.
+                    💤 No invoices found.
                   </td>
                 </tr>
               ) : (
