@@ -101,13 +101,14 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id, approval_status, department)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id, approval_status, department)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
           inv.amount,
           inv.vendor,
+          inv.tags || [],
           null,
           inv.flagged || false,
           inv.flag_reason,
@@ -842,6 +843,50 @@ exports.updateInvoiceTags = async (req, res) => {
   }
 };
 
+// Auto-categorize a single invoice with rules + AI
+exports.autoCategorizeInvoice = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const result = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+    let invoice = result.rows[0];
+    invoice = applyRules(invoice);
+    let tags = invoice.tags || [];
+    if (invoice.tags) {
+      tags = Array.from(new Set([...tags, ...(invoice.tags || [])]));
+    }
+    if ((!tags || tags.length === 0) && process.env.OPENROUTER_API_KEY) {
+      const prompt = `Suggest 1-3 concise categories for this invoice. Vendor: ${invoice.vendor}. Amount: $${invoice.amount}. Description: ${invoice.description || 'None'}.`;
+      const aiRes = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'openai/gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'You categorize invoices for bookkeeping.' },
+            { role: 'user', content: prompt },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const raw = aiRes.data.choices?.[0]?.message?.content?.trim() || '';
+      const aiTags = raw.split(/[,\n]/).map((t) => t.trim()).filter(Boolean);
+      tags = Array.from(new Set([...(tags || []), ...aiTags]));
+    }
+    await pool.query('UPDATE invoices SET tags = $1 WHERE id = $2', [tags, id]);
+    res.json({ id, tags });
+  } catch (err) {
+    console.error('Auto categorize error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to auto-categorize invoice' });
+  }
+};
+
 // Flag or unflag invoice for internal review
 exports.setReviewFlag = async (req, res) => {
   const id = parseInt(req.params.id);
@@ -1234,8 +1279,8 @@ exports.exportDashboardPDF = async (req, res) => {
       params
     );
 
-    const now = new Date();
-    const anomalyStart = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+    const nowDate = new Date();
+    const anomalyStart = new Date(nowDate.getFullYear(), nowDate.getMonth() - 6, 1);
     const anomalyRes = await client.query(
       `SELECT vendor, DATE_TRUNC('month', date) AS m, SUM(amount) AS total FROM invoices WHERE date >= $1 GROUP BY vendor, m ORDER BY vendor, m`,
       [anomalyStart]
@@ -1432,7 +1477,48 @@ exports.explainFlaggedInvoice = async (req, res) => {
     const result = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Invoice not found' });
-}
+    }
+    const invoice = result.rows[0];
+    if (!invoice.flagged) {
+      return res.status(400).json({ message: 'Invoice is not flagged' });
+    }
+    const avgRes = await pool.query(
+      'SELECT AVG(amount) AS avg FROM invoices WHERE vendor = $1 AND id <> $2',
+      [invoice.vendor, id]
+    );
+    const avg = parseFloat(avgRes.rows[0].avg) || 0;
+    const prompt = `You are a fraud detection assistant. Explain in one short paragraph why this invoice might be flagged. Invoice amount: $${invoice.amount}. Average historical amount for vendor ${invoice.vendor} is $${avg.toFixed(2)}. Flag reason: ${invoice.flag_reason || 'None'}. Return a JSON object with \"explanation\" and a \"confidence\" score between 0 and 1.`;
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You explain invoice flagging decisions.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+          'X-Title': 'invoice-uploader-ai',
+        },
+      }
+    );
+    const raw = response.data.choices?.[0]?.message?.content?.trim();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      data = { explanation: raw };
+    }
+    res.json({ explanation: data.explanation, confidence: data.confidence });
+  } catch (err) {
+    console.error('Flag explanation error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to generate flag explanation' });
+  }
+};
 
 // Provide a short AI explanation of any invoice and note potential anomalies
 exports.explainInvoice = async (req, res) => {
@@ -1476,44 +1562,6 @@ exports.explainInvoice = async (req, res) => {
   } catch (err) {
     console.error('Invoice explanation error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to explain invoice' });
-  }
-};
-    const invoice = result.rows[0];
-    if (!invoice.flagged) {
-      return res.status(400).json({ message: 'Invoice is not flagged' });
-    }
-    const avgRes = await pool.query('SELECT AVG(amount) AS avg FROM invoices WHERE vendor = $1 AND id <> $2', [invoice.vendor, id]);
-    const avg = parseFloat(avgRes.rows[0].avg) || 0;
-    const prompt = `You are a fraud detection assistant. Explain in one short paragraph why this invoice might be flagged. Invoice amount: $${invoice.amount}. Average historical amount for vendor ${invoice.vendor} is $${avg.toFixed(2)}. Flag reason: ${invoice.flag_reason || 'None'}. Return a JSON object with \"explanation\" and a \"confidence\" score between 0 and 1.`;
-    const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        model: 'openai/gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: 'You explain invoice flagging decisions.' },
-          { role: 'user', content: prompt },
-        ],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
-          'X-Title': 'invoice-uploader-ai',
-        },
-      }
-    );
-    const raw = response.data.choices?.[0]?.message?.content?.trim();
-    let data;
-    try {
-      data = JSON.parse(raw);
-    } catch (e) {
-      data = { explanation: raw };
-    }
-    res.json({ explanation: data.explanation, confidence: data.confidence });
-  } catch (err) {
-    console.error('Flag explanation error:', err.response?.data || err.message);
-    res.status(500).json({ message: 'Failed to generate flag explanation' });
   }
 };
 
@@ -1745,6 +1793,7 @@ module.exports = {
   explainFlaggedInvoice: exports.explainFlaggedInvoice,
   explainInvoice: exports.explainInvoice,
   bulkAutoCategorize: exports.bulkAutoCategorize,
+  autoCategorizeInvoice: exports.autoCategorizeInvoice,
   getVendorBio: exports.getVendorBio,
   getVendorScorecards: exports.getVendorScorecards,
   getRelationshipGraph: exports.getRelationshipGraph,
