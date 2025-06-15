@@ -47,6 +47,7 @@ const {
   explainFlaggedInvoice,
   explainInvoice,
   bulkAutoCategorize,
+  autoCategorizeInvoice,
   getVendorBio,
   getVendorScorecards,
   getRelationshipGraph,
@@ -122,6 +123,7 @@ router.patch('/bulk/approve', authMiddleware, authorizeRoles('reviewer','admin')
 router.patch('/bulk/reject', authMiddleware, authorizeRoles('reviewer','admin'), bulkRejectInvoices);
 router.post('/bulk/pdf', authMiddleware, exportPDFBundle);
 router.post('/bulk/auto-categorize', authMiddleware, bulkAutoCategorize);
+router.post('/:id/auto-categorize', authMiddleware, autoCategorizeInvoice);
 router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);
 router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRetentionPolicy);
 router.post('/suggest-tags', authMiddleware, suggestTags);

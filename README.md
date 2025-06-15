@@ -158,6 +158,14 @@ apply custom approval rules:
 - **Legal** – auto-approves and is meant for comments only.
 - **Ops** – invoices under $100 auto-approve, others need one manager step.
 
+### Categorization Rules
+
+Define your own invoice categorization logic. Add rules via `POST /api/analytics/rules` with fields like `vendor`, `descriptionContains`, `amountGreaterThan`, and a resulting `category` or `flagReason`. All rules are returned from `GET /api/analytics/rules`.
+
+Once rules are created you can automatically tag an invoice with
+`POST /api/invoices/:id/auto-categorize`. The AI model suggests categories such
+as "Marketing", "Legal", or "Recurring" when no rule matches.
+
 ### New Endpoints
 
 - `POST /api/invoices/budgets` – create/update a monthly or quarterly budget by vendor or tag
