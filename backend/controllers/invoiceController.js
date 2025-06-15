@@ -86,7 +86,7 @@ exports.uploadInvoice = async (req, res) => {
         amount: parseFloat(amount),
         vendor,
       });
-      const workflow = getWorkflowForDepartment(department, parseFloat(amount));
+      const workflow = await getWorkflowForDepartment(department, parseFloat(amount));
       validRows.push({
         ...withRules,
         department,
@@ -470,8 +470,10 @@ exports.approveInvoice = async (req, res) => {
       [status, nextStep, step, comment || '', id]
     );
     await logActivity(req.user?.userId, 'approve_invoice', id);
-    await sendSlackNotification(`Invoice ${id} approved.`);
-    await sendTeamsNotification(`Invoice ${id} approved.`);
+    const nextLabel = nextStep >= chain.length ? 'Completed' : `Next: ${chain[nextStep]}`;
+    const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
+    await sendSlackNotification(msg);
+    await sendTeamsNotification(msg);
     res.json({ message: 'Invoice approved', invoice: result.rows[0] });
   } catch (err) {
     console.error('Approve error:', err);
@@ -682,6 +684,10 @@ exports.bulkApproveInvoices = async (req, res) => {
          WHERE id = $5`,
         [status, nextStep, step, comment || '', id]
       );
+      const nextLabel = nextStep >= chain.length ? 'Completed' : `Next: ${chain[nextStep]}`;
+      const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
+      await sendSlackNotification(msg);
+      await sendTeamsNotification(msg);
     }
     await logActivity(req.user?.userId, 'bulk_approve');
     res.json({ message: 'Invoices approved' });

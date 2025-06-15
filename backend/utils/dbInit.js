@@ -50,6 +50,11 @@ async function initDb() {
       vendor TEXT PRIMARY KEY,
       notes TEXT
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS workflows (
+      department TEXT PRIMARY KEY,
+      approval_chain JSONB NOT NULL
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

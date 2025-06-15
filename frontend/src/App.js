@@ -25,6 +25,7 @@ import InvoiceDetailModal from './components/InvoiceDetailModal';
 import SuggestionChips from './components/SuggestionChips';
 import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
+import BulkSummary from './components/BulkSummary';
 import Fuse from 'fuse.js';
 import {
   ArchiveBoxIcon,
@@ -70,6 +71,7 @@ const [dragActive, setDragActive] = useState(false);
 const [uploadProgress, setUploadProgress] = useState(0);
 const [recentUploads, setRecentUploads] = useState([]);
 const [previewModalData, setPreviewModalData] = useState(null);
+const [bulkSummary, setBulkSummary] = useState(null);
 const fileInputRef = useRef();
 const searchInputRef = useRef();
   const [invoices, setInvoices] = useState([]);
@@ -797,6 +799,20 @@ useEffect(() => {
     const newIds = updatedData
       .filter(inv => !invoices.some(existing => existing.id === inv.id))
       .map(inv => inv.id);
+
+    if (newIds.length > 0) {
+      const newInvs = updatedData.filter(inv => newIds.includes(inv.id));
+      const valid = newInvs.length;
+      const flagged = newInvs.filter(inv => inv.flagged).length;
+      const total = newInvs.reduce((s, inv) => s + parseFloat(inv.amount || 0), 0);
+      const vendorTotals = {};
+      newInvs.forEach(inv => {
+        vendorTotals[inv.vendor] = (vendorTotals[inv.vendor] || 0) + parseFloat(inv.amount || 0);
+      });
+      const topVendors = Object.entries(vendorTotals).sort((a,b)=>b[1]-a[1]).slice(0,3).map(v=>v[0]);
+      const tags = Array.from(new Set(newInvs.flatMap(inv => inv.tags || [])));
+      setBulkSummary({ valid, flagged, total, topVendors, tags });
+    }
 
     // automatically fetch tag suggestions for newly uploaded invoices
     newIds.forEach((newId) => {
@@ -2900,6 +2916,11 @@ useEffect(() => {
             open={!!vendorPanelVendor}
             onClose={() => setVendorPanelVendor(null)}
             token={token}
+          />
+          <BulkSummary
+            open={!!bulkSummary}
+            summary={bulkSummary}
+            onClose={() => setBulkSummary(null)}
           />
         </>
       )}
