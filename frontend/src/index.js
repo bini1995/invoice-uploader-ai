@@ -6,6 +6,7 @@ import Reports from './Reports';
 import Archive from './Archive';
 import TeamManagement from './TeamManagement';
 import VendorManagement from './VendorManagement';
+import WorkflowPage from './WorkflowPage';
 import NotFound from './NotFound';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -49,6 +50,7 @@ function AnimatedRoutes() {
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />
+        <Route path="/workflow" element={<PageWrapper><WorkflowPage /></PageWrapper>} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
