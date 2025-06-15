@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_BASE_URL=http://localhost:3000
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: invoices
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:

@@ -1,29 +1,31 @@
 {
-    "name": "invoice-pipeline",
-    "version": "1.0.0",
-    "main": "app.js",
-    "scripts": {
-        "start": "PORT=3000 node app.js"
-    },
-    "dependencies": {
-        "archiver": "^5.3.2",
-        "axios": "^1.9.0",
-        "bcryptjs": "^3.0.2",
-        "cors": "^2.8.5",
-        "csv-stringify": "^6.5.2",
-        "dotenv": "^16.3.1",
-        "express": "^4.18.2",
-        "json2csv": "^6.0.0-alpha.2",
-        "csv-parser": "^3.0.0",
-        "jsonwebtoken": "^9.0.2",
-        "multer": "^1.4.5-lts.1",
-        "nodemailer": "^7.0.3",
-        "openai": "^4.97.0",
-        "pdf-parse": "^1.1.1",
-        "pdf2pic": "^3.2.0",
-        "pdfkit": "^0.17.1",
-        "pg": "^8.11.1",
-        "telnet": "^0.0.1",
-        "tesseract.js": "^4.0.2"
-    }
+  "name": "invoice-pipeline",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "PORT=3000 node app.js"
+  },
+  "dependencies": {
+    "archiver": "^5.3.2",
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "csv-stringify": "^6.5.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "json2csv": "^6.0.0-alpha.2",
+    "csv-parser": "^3.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.3",
+    "openai": "^4.97.0",
+    "pdf-parse": "^1.1.1",
+    "pdf2pic": "^3.2.0",
+    "pdfkit": "^0.17.1",
+    "pg": "^8.11.1",
+    "telnet": "^0.0.1",
+    "tesseract.js": "^4.0.2",
+    "@sentry/node": "^7.103.0",
+    "stripe": "^12.18.0"
+  }
 }
