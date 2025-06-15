@@ -43,3 +43,24 @@ exports.detectPatterns = async (req, res) => {
     res.status(500).json({ message: 'Failed to detect fraud patterns' });
   }
 };
+
+exports.fraudHeatmap = async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT EXTRACT(DOW FROM created_at) AS dow,
+             EXTRACT(HOUR FROM created_at) AS hour,
+             COUNT(*) FILTER (WHERE flagged) AS flagged_count
+      FROM invoices
+      GROUP BY dow, hour
+    `);
+    const heatmap = result.rows.map(r => ({
+      day: parseInt(r.dow, 10),
+      hour: parseInt(r.hour, 10),
+      flagged: parseInt(r.flagged_count, 10)
+    }));
+    res.json({ heatmap });
+  } catch (err) {
+    console.error('Fraud heatmap error:', err);
+    res.status(500).json({ message: 'Failed to build fraud heatmap' });
+  }
+};

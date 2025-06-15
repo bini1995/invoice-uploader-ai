@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
+import LanguageSelector from './LanguageSelector';
+import { useTranslation } from 'react-i18next';
 import {
   Bars3Icon,
   AdjustmentsHorizontalIcon,
@@ -28,16 +30,18 @@ export default function Navbar({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow z-20">
       <div className="max-w-4xl mx-auto flex justify-between items-center p-2">
         <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
           <ArchiveBoxIcon className="h-5 w-5" />
-          <span className="font-semibold text-sm">Invoice Uploader AI</span>
+          <span className="font-semibold text-sm">{t('title')}</span>
         </Link>
         <div className="flex items-center space-x-3 relative">
           <TenantSwitcher tenant={tenant} onChange={onTenantChange} />
+          <LanguageSelector />
           <NotificationBell notifications={notifications} onOpen={onNotificationsOpen} />
           {token && (
             <button

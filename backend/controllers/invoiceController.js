@@ -10,6 +10,8 @@ const { logActivity } = require('../utils/activityLogger');
 const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
 const { getWorkflowForDepartment } = require('../utils/workflows');
+const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
+const { broadcastMessage } = require('../utils/chatServer');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -362,6 +364,8 @@ Return a brief explanation.
       return res.status(200).json({ message: 'No insights returned.' });
     }
 
+    await sendSlackNotification(`Invoice ${invoice.invoice_number} flagged for review.`);
+    await sendTeamsNotification(`Invoice ${invoice.invoice_number} flagged for review.`);
     res.json({ insights: result });
   } catch (error) {
     console.error('AI suspicion check error:', error.response?.data || error.message);
@@ -465,6 +469,8 @@ exports.approveInvoice = async (req, res) => {
       [status, nextStep, step, comment || '', id]
     );
     await logActivity(req.user?.userId, 'approve_invoice', id);
+    await sendSlackNotification(`Invoice ${id} approved.`);
+    await sendTeamsNotification(`Invoice ${id} approved.`);
     res.json({ message: 'Invoice approved', invoice: result.rows[0] });
   } catch (err) {
     console.error('Approve error:', err);
@@ -490,6 +496,8 @@ exports.rejectInvoice = async (req, res) => {
       [step, comment || '', id]
     );
     await logActivity(req.user?.userId, 'reject_invoice', id);
+    await sendSlackNotification(`Invoice ${id} rejected.`);
+    await sendTeamsNotification(`Invoice ${id} rejected.`);
     res.json({ message: 'Invoice rejected', invoice: result.rows[0] });
   } catch (err) {
     console.error('Reject error:', err);
@@ -509,6 +517,8 @@ exports.addComment = async (req, res) => {
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
     await logActivity(req.user?.userId, 'add_comment', id);
+    const message = { text, user: req.user?.userId || 'anon', date: new Date().toISOString(), invoiceId: parseInt(id,10) };
+    broadcastMessage(id, message);
     res.json({ message: 'Comment added', comments: result.rows[0].comments });
   } catch (err) {
     console.error('Add comment error:', err);
