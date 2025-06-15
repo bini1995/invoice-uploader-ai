@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { logActivity } = require('../utils/activityLogger');
+const axios = require('axios');
 
 exports.listVendors = async (_req, res) => {
   try {
@@ -41,5 +42,22 @@ exports.updateVendorNotes = async (req, res) => {
   } catch (err) {
     console.error('Update vendor notes error:', err);
     res.status(500).json({ message: 'Failed to update notes' });
+  }
+};
+
+exports.getVendorInfo = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    const wiki = await axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(vendor)}`);
+    let description = wiki.data.extract || '';
+    let risk = 'unknown';
+    if (process.env.RISK_SCORE_URL) {
+      const r = await axios.get(`${process.env.RISK_SCORE_URL}?q=${encodeURIComponent(vendor)}`);
+      risk = r.data.risk || 'unknown';
+    }
+    res.json({ description, risk });
+  } catch (err) {
+    console.error('Vendor info error:', err.message);
+    res.status(500).json({ message: 'Failed to fetch vendor info' });
   }
 };

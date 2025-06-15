@@ -40,6 +40,12 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - "Why did AI say this?" links show confidence and reasoning
 - AI-powered bulk categorization of uploaded invoices
 - Hoverable vendor bios with website and industry info
+- AI fraud detection heatmaps (color-coded anomaly maps)
+- Automatic vendor bios + risk scores from public data
+- Real-time invoice chat thread with collaborators
+- Multi-language support (Spanish and French)
+- Browser extension for uploading invoices directly from Gmail
+- Slack/Teams notifications for approvals or flags
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
 - Real-time "Ops Mode" dashboard with a live feed of invoice activity
 - Multi-tenant support so agencies can switch between different client accounts

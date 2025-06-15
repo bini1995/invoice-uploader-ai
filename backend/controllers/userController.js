@@ -40,7 +40,7 @@ exports.login = (req, res) => {
   }
 
   const token = jwt.sign(
-    { userId: user.id, role: user.role },
+    { userId: user.id, role: user.role, username: user.username },
     'secretKey123',
     { expiresIn: '15m' }
   );
@@ -50,7 +50,7 @@ exports.login = (req, res) => {
     { expiresIn: '7d' }
   );
   REFRESH_TOKENS.push(refreshToken);
-  res.json({ token, refreshToken, role: user.role });
+  res.json({ token, refreshToken, role: user.role, username: user.username });
 };
 
 exports.refreshToken = (req, res) => {
@@ -63,11 +63,11 @@ exports.refreshToken = (req, res) => {
     const user = USERS.find((u) => u.id === decoded.userId);
     if (!user) return res.status(401).json({ message: 'Invalid user' });
     const token = jwt.sign(
-      { userId: user.id, role: user.role },
+      { userId: user.id, role: user.role, username: user.username },
       'secretKey123',
       { expiresIn: '15m' }
     );
-    res.json({ token, role: user.role });
+    res.json({ token, role: user.role, username: user.username });
   } catch (err) {
     res.status(401).json({ message: 'Invalid refresh token' });
   }

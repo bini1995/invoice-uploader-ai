@@ -1,5 +1,6 @@
 /* eslint-disable no-use-before-define */
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { io } from 'socket.io-client';
 import LiveFeed from './components/LiveFeed';
 import Navbar from './components/Navbar';
 import {
@@ -81,12 +82,13 @@ const searchInputRef = useRef();
   const [loading, setLoading] = useState(false);
   const [loadingInvoices, setLoadingInvoices] = useState(false);
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [role, setRole] = useState(localStorage.getItem('role') || '');
-  const [loginError, setLoginError] = useState('');
-  const [vendorSummary, setVendorSummary] = useState('');
-  const [monthlyInsights, setMonthlyInsights] = useState(null);
+const [password, setPassword] = useState('');
+const [token, setToken] = useState(localStorage.getItem('token') || '');
+const [role, setRole] = useState(localStorage.getItem('role') || '');
+const [loginError, setLoginError] = useState('');
+const [vendorSummary, setVendorSummary] = useState('');
+const [monthlyInsights, setMonthlyInsights] = useState(null);
+const socket = useMemo(() => io('http://localhost:3000'), []);
   const [vendorSuggestions, setVendorSuggestions] = useState({});
   const [suspicionFlags] = useState({});
   const [duplicateFlags, setDuplicateFlags] = useState({});
@@ -200,6 +202,7 @@ const searchInputRef = useRef();
 
         const data = await res.json();
         setInvoices(data);
+        data.forEach((inv) => socket.emit('joinInvoice', inv.id));
         localStorage.setItem('cachedInvoices', JSON.stringify(data));
         const vendors = Array.from(new Set(data.map((inv) => inv.vendor).filter(Boolean)));
         setVendorList(vendors);
@@ -652,6 +655,17 @@ useEffect(() => {
     const vendors = [...new Set(invoices.map(inv => inv.vendor))];
     setVendorList(vendors);
   }, [invoices]);
+
+  useEffect(() => {
+    socket.on('chatMessage', (m) => {
+      setInvoices((prev) => prev.map((inv) =>
+        inv.id === m.invoiceId
+          ? { ...inv, comments: [...(inv.comments || []), { text: m.text, user: m.user, date: m.date }] }
+          : inv
+      ));
+    });
+    return () => socket.off('chatMessage');
+  }, [socket]);
   
   
 
@@ -1462,6 +1476,7 @@ useEffect(() => {
         addToast('Comment added');
         setCommentInputs((prev) => ({ ...prev, [id]: '' }));
         fetchInvoices(showArchived, selectedAssignee);
+        socket.emit('chatMessage', { invoiceId: id, text, user: username });
       } else {
         addToast(data.message || 'Failed to add comment', 'error');
       }

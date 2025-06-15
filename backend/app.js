@@ -2,6 +2,7 @@
 
 const express = require('express');         // web server framework
 const cors = require('cors');
+const http = require('http');
 require('dotenv').config();                 // load environment variables
 const Sentry = require('@sentry/node');
 const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
@@ -12,8 +13,10 @@ const vendorRoutes = require('./routes/vendorRoutes');
 const billingRoutes = require('./routes/billingRoutes');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
 const { initDb } = require('./utils/dbInit');
+const { initChat } = require('./utils/chatServer');
 
 const app = express();                      // create the app
+const server = http.createServer(app);
 
 console.log('🟡 Starting server...');
 
@@ -42,8 +45,10 @@ app.use(Sentry.Handlers.errorHandler());
 
   console.log('🟢 Routes mounted');
 
+  initChat(server);
+
   const port = process.env.PORT || 3000;
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
   });
 })();

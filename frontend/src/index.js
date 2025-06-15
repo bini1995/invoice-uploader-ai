@@ -10,6 +10,7 @@ import NotFound from './NotFound';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
+import './i18n';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const savedTheme = localStorage.getItem('theme');

@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Invoice Uploader Gmail",
+  "version": "0.1",
+  "description": "Upload invoices directly from Gmail",
+  "permissions": ["activeTab", "scripting"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
