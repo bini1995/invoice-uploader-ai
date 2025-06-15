@@ -240,6 +240,17 @@ npm start
 
 The app registers a service worker so you can view and stage invoices even without a network connection. Any actions you take while offline are queued in local storage and automatically synced when the browser comes back online. Install the PWA from your browser's "Add to home screen" option for the best experience.
 
+### Docker Deployment
+
+Run the entire stack in Docker containers:
+
+```bash
+cp .env.example .env
+docker-compose up --build
+```
+
+The frontend is served on `http://localhost:3001` while the API runs on `http://localhost:3000`.
+
 ### Troubleshooting
 
 **`Module not found: Can't resolve 'react-router-dom'`**
