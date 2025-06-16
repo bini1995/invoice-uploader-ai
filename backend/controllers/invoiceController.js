@@ -11,6 +11,7 @@ const { logActivity } = require('../utils/activityLogger');
 const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
 const settings = require('../config/settings');
+const { submitHashToBlockchain } = require('../utils/blockchain');
 const { getWorkflowForDepartment } = require('../utils/workflows');
 const { getExchangeRate } = require('../utils/exchangeRates');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
@@ -65,6 +66,8 @@ exports.uploadInvoice = async (req, res) => {
     }
     const fileBuffer = fs.readFileSync(req.file.path);
     const integrityHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+    const bc = await submitHashToBlockchain(integrityHash);
+    const blockchainTx = bc.txId || null;
 
     const retention = req.body.retention || 'forever';
     let deleteAt = null;
@@ -149,8 +152,8 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -163,6 +166,7 @@ exports.uploadInvoice = async (req, res) => {
           JSON.stringify(approvalChain),
           currentStep,
           integrityHash,
+          blockchainTx,
           retention,
           deleteAt,
           tenantId,
