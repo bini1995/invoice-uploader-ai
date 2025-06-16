@@ -22,6 +22,8 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS delete_at TIMESTAMP");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS tenant_id TEXT DEFAULT 'default'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS department TEXT");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS expired BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS review_flag BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS review_notes TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'Pending'");
