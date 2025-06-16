@@ -66,6 +66,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Team member roles view with profile avatars
 - Shareable collaborator mode with comment-only or editor access
 - Manual or API-driven payment status sync
+- Multi-currency support with automatic VAT/GST calculations
 
 ## Setup Instructions
 

@@ -28,6 +28,14 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS next_retry TIMESTAMP");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS late_fee NUMERIC DEFAULT 0");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS original_amount NUMERIC");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS vat_amount NUMERIC");
+
+    await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
+    await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS activity_logs (
       id SERIAL PRIMARY KEY,
@@ -74,6 +82,8 @@ async function initDb() {
       id SERIAL PRIMARY KEY,
       vendor TEXT NOT NULL,
       amount NUMERIC NOT NULL,
+      currency TEXT DEFAULT 'USD',
+      vat_percent NUMERIC,
       description TEXT,
       interval_days INTEGER NOT NULL,
       next_run TIMESTAMP NOT NULL,
