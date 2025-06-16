@@ -9,6 +9,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 ## Features
 
 - Upload CSV invoice files
+- CSV import/export for invoices and vendors
 - See a clean display of parsed invoices
 - Get validation feedback for bad rows
 - AI-generated summaries of common CSV issues (via OpenAI)
@@ -40,10 +41,12 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Shared comment threads for team discussion
 - Approver reminders with escalation
 - Batch actions with bulk approval and PDF export
+- Bulk edit/delete/archive options for faster table management
 - AI explanations for why an invoice was flagged
 - Admin settings panel with auto-archive toggle, custom AI tone and upload limits
 - "Why did AI say this?" links show confidence and reasoning
 - AI-powered bulk categorization of uploaded invoices
+- AI-powered auto tagging with vendor/voucher recommendations
 - Predictive vendor behavior suggestions
 - Anomaly warnings before upload
 - Voice-to-upload for quick invoice creation
@@ -226,7 +229,14 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `GET /api/vendors` – list vendors with last invoice date and total spend
 - `PATCH /api/vendors/:vendor/notes` – update notes for a vendor
 - `GET /api/vendors/match?q=name` – fuzzy match vendor names
+- `GET /api/vendors/export` – download vendors as CSV
+- `POST /api/vendors/import` – import vendors from CSV
 - `PATCH /api/invoices/:id/payment-status` – update payment status
+- `POST /api/invoices/import-csv` – upload a CSV of invoices
+- `DELETE /api/invoices/bulk/delete` – delete multiple invoices
+- `PATCH /api/invoices/bulk/edit` – bulk update invoice fields
+- `POST /api/invoices/:id/auto-tag` – AI auto-tag from common categories
+- `POST /api/invoices/suggest-voucher` – recommend a voucher description
 - `POST /api/invoices/share` – generate a share link for selected invoices
 - `GET /api/invoices/shared/:token` – access a shared invoice view
 - `POST /api/payments/:id/link` – generate a payment link for an invoice

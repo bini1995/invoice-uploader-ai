@@ -30,6 +30,9 @@ const vendorPaymentMap = {
   zoom: 'Net 30',
 };
 
+// Predefined categories for AI tagging
+const CATEGORY_LIST = ['Office', 'Travel', 'Consulting', 'Marketing', 'Supplies'];
+
 
 exports.uploadInvoice = async (req, res) => {
   try {
@@ -421,6 +424,29 @@ exports.exportAllInvoices = async (req, res) => {
   } catch (error) {
     console.error('Export all invoices error:', error);
     res.status(500).json({ message: 'Failed to export invoices.' });
+  }
+};
+
+exports.importInvoicesCSV = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    const rows = await parseCSV(req.file.path);
+    const inserted = [];
+    for (const row of rows) {
+      const { invoice_number, date, amount, vendor } = row;
+      if (!invoice_number || !vendor) continue;
+      const result = await pool.query(
+        'INSERT INTO invoices (invoice_number, date, amount, vendor) VALUES ($1,$2,$3,$4) RETURNING id',
+        [invoice_number, row.date || date || new Date(), parseFloat(amount || 0), vendor]
+      );
+      inserted.push(result.rows[0].id);
+    }
+    res.json({ inserted });
+  } catch (err) {
+    console.error('Import invoices error:', err);
+    res.status(500).json({ message: 'Failed to import invoices' });
   }
 };
 
@@ -900,6 +926,45 @@ exports.bulkRejectInvoices = async (req, res) => {
   }
 };
 
+exports.bulkDeleteInvoices = async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: 'No invoice IDs provided' });
+  }
+  try {
+    await pool.query('DELETE FROM invoices WHERE id = ANY($1::int[])', [ids]);
+    await logActivity(req.user?.userId, 'bulk_delete');
+    res.json({ message: 'Invoices deleted' });
+  } catch (err) {
+    console.error('Bulk delete error:', err);
+    res.status(500).json({ message: 'Failed to delete invoices' });
+  }
+};
+
+exports.bulkUpdateInvoices = async (req, res) => {
+  const { ids, fields } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0 || !fields) {
+    return res.status(400).json({ message: 'Missing ids or fields' });
+  }
+  try {
+    const sets = [];
+    const values = [];
+    let idx = 1;
+    for (const [key, value] of Object.entries(fields)) {
+      sets.push(`${key} = $${idx++}`);
+      values.push(value);
+    }
+    values.push(ids);
+    const query = `UPDATE invoices SET ${sets.join(', ')} WHERE id = ANY($${idx}::int[])`;
+    await pool.query(query, values);
+    await logActivity(req.user?.userId, 'bulk_update');
+    res.json({ message: 'Invoices updated' });
+  } catch (err) {
+    console.error('Bulk update error:', err);
+    res.status(500).json({ message: 'Failed to update invoices' });
+  }
+};
+
 exports.exportPDFBundle = async (req, res) => {
   const { ids } = req.body;
   if (!Array.isArray(ids) || ids.length === 0) {
@@ -1066,6 +1131,45 @@ exports.autoCategorizeInvoice = async (req, res) => {
   } catch (err) {
     console.error('Auto categorize error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to auto-categorize invoice' });
+  }
+};
+
+// Auto-tag an invoice with predefined categories using AI
+exports.autoTagCategories = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const result = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+    const invoice = result.rows[0];
+    const prompt = `Choose 1-2 categories from [${CATEGORY_LIST.join(', ')}] for this invoice. Vendor: ${invoice.vendor}. Amount: $${invoice.amount}. Description: ${invoice.description || 'None'}. Respond with a comma separated list.`;
+    const aiRes = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You categorize invoices for bookkeeping.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const raw = aiRes.data.choices?.[0]?.message?.content || '';
+    const tags = raw
+      .split(/[,\n]/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    await pool.query('UPDATE invoices SET tags = $1 WHERE id = $2', [tags, id]);
+    res.json({ id, tags });
+  } catch (err) {
+    console.error('Auto tag error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to auto-tag invoice' });
   }
 };
 
@@ -1955,6 +2059,7 @@ module.exports = {
   searchInvoicesByVendor: exports.searchInvoicesByVendor,
   exportFilteredInvoicesCSV: exports.exportFilteredInvoicesCSV,
   exportAllInvoices: exports.exportAllInvoices,
+  importInvoicesCSV: exports.importInvoicesCSV,
   exportArchivedInvoicesCSV: exports.exportArchivedInvoicesCSV,
   archiveInvoice: exports.archiveInvoice,
   unarchiveInvoice: exports.unarchiveInvoice,
@@ -1981,11 +2086,14 @@ module.exports = {
   bulkAssignInvoices: exports.bulkAssignInvoices,
   bulkApproveInvoices: exports.bulkApproveInvoices,
   bulkRejectInvoices: exports.bulkRejectInvoices,
+  bulkDeleteInvoices: exports.bulkDeleteInvoices,
+  bulkUpdateInvoices: exports.bulkUpdateInvoices,
   exportPDFBundle: exports.exportPDFBundle,
   explainFlaggedInvoice: exports.explainFlaggedInvoice,
   explainInvoice: exports.explainInvoice,
   bulkAutoCategorize: exports.bulkAutoCategorize,
   autoCategorizeInvoice: exports.autoCategorizeInvoice,
+  autoTagCategories: exports.autoTagCategories,
   getVendorBio: exports.getVendorBio,
   getVendorScorecards: exports.getVendorScorecards,
   getRelationshipGraph: exports.getRelationshipGraph,

@@ -2,7 +2,7 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
-const { exportFilteredInvoices, exportAllInvoices } = require('../controllers/invoiceController');
+const { exportFilteredInvoices, exportAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
 
 const { login, refreshToken, logout, authMiddleware, authorizeRoles } = require('../controllers/userController');
 
@@ -42,6 +42,8 @@ const {
   bulkAssignInvoices,
   bulkApproveInvoices,
   bulkRejectInvoices,
+  bulkDeleteInvoices,
+  bulkUpdateInvoices,
   exportPDFBundle,
   updatePrivateNotes,
   updateRetentionPolicy,
@@ -49,6 +51,7 @@ const {
   explainInvoice,
   bulkAutoCategorize,
   autoCategorizeInvoice,
+  autoTagCategories,
   getVendorBio,
   getVendorScorecards,
   getRelationshipGraph,
@@ -64,7 +67,7 @@ const { invoiceQualityScore, assistantQuery, paymentRiskScore, paymentLikelihood
 const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
-const { suggestVendor } = require('../controllers/aiController');
+const { suggestVendor, suggestVoucher } = require('../controllers/aiController');
 const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/aiController");
 const { flagSuspiciousInvoice } = require('../controllers/invoiceController');
 const { getActivityLogs, getInvoiceTimeline, exportComplianceReport } = require('../controllers/activityController');
@@ -80,8 +83,10 @@ router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
 router.patch('/:id/payment-status', authMiddleware, authorizeRoles('finance','admin'), setPaymentStatus);
 router.post('/:id/mark-paid', authMiddleware, authorizeRoles('finance','admin'), markInvoicePaid);
 router.post('/suggest-vendor', suggestVendor);
+router.post('/suggest-voucher', suggestVoucher);
 router.post('/send-email', sendSummaryEmail);
 router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoice);
+router.post('/import-csv', authMiddleware, authorizeRoles('admin'), upload.single('file'), importInvoicesCSV);
 router.post('/voice-upload', authMiddleware, authorizeRoles('admin'), voiceUpload);
 router.get('/', getAllInvoices);
 router.delete('/clear', authMiddleware, authorizeRoles('admin'), clearAllInvoices);
@@ -129,9 +134,12 @@ router.patch('/bulk/archive', authMiddleware, authorizeRoles('admin'), bulkArchi
 router.patch('/bulk/assign', authMiddleware, authorizeRoles('admin'), bulkAssignInvoices);
 router.patch('/bulk/approve', authMiddleware, authorizeRoles('reviewer','admin'), bulkApproveInvoices);
 router.patch('/bulk/reject', authMiddleware, authorizeRoles('reviewer','admin'), bulkRejectInvoices);
+router.delete('/bulk/delete', authMiddleware, authorizeRoles('admin'), bulkDeleteInvoices);
+router.patch('/bulk/edit', authMiddleware, authorizeRoles('admin'), bulkUpdateInvoices);
 router.post('/bulk/pdf', authMiddleware, exportPDFBundle);
 router.post('/bulk/auto-categorize', authMiddleware, bulkAutoCategorize);
 router.post('/:id/auto-categorize', authMiddleware, autoCategorizeInvoice);
+router.post('/:id/auto-tag', authMiddleware, autoTagCategories);
 router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);
 router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRetentionPolicy);
 router.post('/suggest-tags', authMiddleware, suggestTags);
