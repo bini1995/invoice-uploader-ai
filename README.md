@@ -54,6 +54,9 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Real-time invoice chat thread with collaborators
 - Multi-language support (Spanish and French)
 - Browser extension for uploading invoices directly from Gmail
+- Fully responsive mobile layout and installable PWA
+- Capture invoice photos on mobile with built-in OCR
+- Supplier portal for vendors to upload invoices, update banking info and check payments
 - Slack/Teams notifications for approvals or flags
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
 - Real-time "Ops Mode" dashboard with a live feed of invoice activity

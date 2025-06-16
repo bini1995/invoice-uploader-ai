@@ -3,6 +3,7 @@ const pool = require('../config/db');
 const path = require('path');
 const { parseCSV } = require('../utils/csvParser');
 const { parsePDF } = require('../utils/pdfParser');
+const { parseImage } = require('../utils/imageParser');
 const openai = require("../config/openai"); // ✅ re-use the config
 const axios = require('axios');
 const { applyRules } = require('../utils/rulesEngine');
@@ -45,11 +46,17 @@ exports.uploadInvoice = async (req, res) => {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: `PDF exceeds ${settings.pdfSizeLimitMB}MB limit` });
     }
+    if ((ext === '.png' || ext === '.jpg' || ext === '.jpeg') && req.file.size > settings.pdfSizeLimitMB * 1024 * 1024) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: `Image exceeds ${settings.pdfSizeLimitMB}MB limit` });
+    }
     let invoices;
     if (ext === '.csv') {
       invoices = await parseCSV(req.file.path);
     } else if (ext === '.pdf') {
       invoices = await parsePDF(req.file.path);
+    } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
+      invoices = await parseImage(req.file.path);
     } else {
       return res.status(400).json({ message: 'Unsupported file type' });
     }
