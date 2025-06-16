@@ -4,6 +4,7 @@ import {
   HomeIcon,
   DocumentChartBarIcon,
   Cog6ToothIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline';
 
 export default function SidebarNav({ notifications = [] }) {
@@ -35,6 +36,13 @@ export default function SidebarNav({ notifications = [] }) {
             >
               <DocumentChartBarIcon className="w-5 h-5 mr-2" />
               <span>Reports</span>
+            </Link>
+            <Link
+              to="/builder"
+              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/builder' ? 'font-semibold' : ''}`}
+            >
+              <WrenchScrewdriverIcon className="w-5 h-5 mr-2" />
+              <span>Builder</span>
             </Link>
             <Link
               to="/settings"
