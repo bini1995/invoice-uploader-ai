@@ -17,6 +17,7 @@ const { getExchangeRate } = require('../utils/exchangeRates');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 const { broadcastMessage } = require('../utils/chatServer');
 const { recordInvoiceVersion } = require('../utils/versionLogger');
+const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/assignment');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -725,11 +726,14 @@ exports.assignInvoice = async (req, res) => {
 };
 
 async function autoAssignInvoice(invoiceId, vendor, tags = []) {
-  let assignee = null;
-  if (vendor && vendor.toLowerCase().includes('figma')) {
+  let assignee = await getAssigneeFromVendorHistory(vendor);
+  if (!assignee) {
+    assignee = getAssigneeFromTags(tags);
+  }
+  if (!assignee && vendor && vendor.toLowerCase().includes('figma')) {
     assignee = 'Design Team';
   }
-  if (tags.map(t => t.toLowerCase()).includes('marketing')) {
+  if (!assignee && tags.map((t) => t.toLowerCase()).includes('marketing')) {
     assignee = 'Alice';
   }
   if (assignee) {

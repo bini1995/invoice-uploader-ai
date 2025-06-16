@@ -29,6 +29,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Detailed logs show who made each change
 - Invoice version history with one-click restore
 - Auto-routing invoices by vendor or tag
+- Smart auto-assignment routes invoices to the usual owner using vendor history
 - Budget threshold warnings
 - Anomaly detection dashboard
 - Fraud pattern detection for suspicious vendor activity
