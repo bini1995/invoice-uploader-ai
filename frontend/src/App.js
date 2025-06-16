@@ -763,12 +763,13 @@ useEffect(() => {
 
         if (res.ok) {
           setRecentUploads(prev => [{ name: file.name, time: new Date().toLocaleString() }, ...prev].slice(0, 5));
+          setMessage((prev) => prev + `\n✅ ${data.inserted} invoice(s) submitted from ${file.name}`);
+          addToast(`✅ Submitted ${data.inserted} invoice(s) from ${file.name}`);
         } else {
           hadError = true;
+          addToast(data.message || 'Upload failed', 'error');
+          continue;
         }
-  
-        setMessage((prev) => prev + `\n✅ ${data.inserted} invoice(s) submitted from ${file.name}`);
-        addToast(`✅ Submitted ${data.inserted} invoice(s) from ${file.name}`);
         if (data.errors?.length) {
           hadError = true;
           setMessage((prev) => prev + `\n❌ ${data.errors.length} row(s) had issues in ${file.name}`);
