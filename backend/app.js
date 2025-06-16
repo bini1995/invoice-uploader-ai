@@ -20,6 +20,7 @@ const poRoutes = require('./routes/poRoutes');
 const integrationRoutes = require('./routes/integrationRoutes');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
+const { sendApprovalReminders } = require('./controllers/reminderController');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
@@ -64,6 +65,8 @@ app.use(Sentry.Handlers.errorHandler());
   setInterval(processFailedPayments, 60 * 60 * 1000);
   sendPaymentReminders();
   setInterval(sendPaymentReminders, 24 * 60 * 60 * 1000);
+  sendApprovalReminders();
+  setInterval(sendApprovalReminders, 24 * 60 * 60 * 1000);
 
   console.log('🟢 Routes mounted');
 

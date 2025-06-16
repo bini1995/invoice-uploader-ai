@@ -44,6 +44,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Private notes on invoices
 - Shared comment threads for team discussion
 - Approver reminders with escalation
+- Smart reminders for overdue invoices and pending approvals (email, Slack/Teams & in-app)
 - Batch actions with bulk approval and PDF export
 - Bulk edit/delete/archive options for faster table management
 - AI explanations for why an invoice was flagged
@@ -88,6 +89,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 cd backend
 npm install
 cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
+# Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
 npm start
 ```
 
