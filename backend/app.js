@@ -11,6 +11,7 @@ const analyticsRoutes = require('./routes/analyticsRoutes');
 const userRoutes = require('./routes/userRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
 const billingRoutes = require('./routes/billingRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const workflowRoutes = require('./routes/workflowRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
@@ -33,6 +34,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/settings', settingsRoutes);
 
