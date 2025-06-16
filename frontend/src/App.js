@@ -1686,6 +1686,9 @@ useEffect(() => {
         setDarkMode={setDarkMode}
         token={token}
         onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
+        onUpload={() => fileInputRef.current?.click()}
+        search={searchTerm}
+        onSearchChange={setSearchTerm}
       />
 
       {filterSidebarOpen && (
@@ -1696,7 +1699,6 @@ useEffect(() => {
       )}
 
       <div className="pt-16 flex flex-col md:flex-row md:gap-4 min-h-screen">
-        <SidebarNav notifications={notifications} />
         {token && (
           <aside
           className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
@@ -1704,6 +1706,7 @@ useEffect(() => {
           } md:border-r md:border-gray-200 dark:md:border-gray-700 md:max-h-screen md:overflow-y-auto z-40`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
+            <SidebarNav notifications={notifications} />
             <button
               className="md:hidden text-right w-full"
               onClick={() => setFilterSidebarOpen(false)}
@@ -1712,17 +1715,7 @@ useEffect(() => {
             </button>
             <h2 className="text-xl font-semibold">Filters</h2>
             <div className="flex flex-col space-y-3 md:space-y-4">
-              <div className="flex flex-col">
-                <label htmlFor="searchTerm" className="text-xs font-medium mb-1">Search</label>
-                <input
-                  id="searchTerm"
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  ref={searchInputRef}
-                  className="input"
-                />
-              </div>
+              {/* Search moved to global toolbar */}
               <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm">
                 <input
                   id="archivedToggle"
@@ -1824,13 +1817,6 @@ useEffect(() => {
                   </button>
                 </div>
               )}
-              <button
-                onClick={handleExport}
-                disabled={!token}
-                className={`btn btn-primary text-sm ${!token ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                Export Filtered Invoices
-              </button>
               <button onClick={handleResetFilters} className="btn btn-secondary text-sm" title="Reset Filters">
                 Reset Filters
               </button>
@@ -2075,7 +2061,7 @@ useEffect(() => {
 
                      {/* Upload/Export Action Buttons */}
                       <div className="flex flex-col mt-6 mb-2 gap-2">
-                        <div className="flex flex-wrap items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-gray-800 p-2 rounded shadow">
                           {role === 'admin' && (
                             <button
                               onClick={handleUpload}
@@ -2109,6 +2095,14 @@ useEffect(() => {
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 border-l pl-4">
+                            <button
+                              onClick={handleExport}
+                              disabled={!token}
+                              className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
+                            >
+                              <ArrowDownTrayIcon className="w-4 h-4" />
+                              <span>Filtered CSV</span>
+                            </button>
                             <button
                               onClick={handleExportAll}
                               disabled={!token}

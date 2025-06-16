@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
 import LanguageSelector from './LanguageSelector';
@@ -11,6 +11,7 @@ import {
   HomeIcon,
   DocumentChartBarIcon,
   ArchiveBoxIcon,
+  ArrowUpTrayIcon,
   UsersIcon,
   UserCircleIcon,
   QuestionMarkCircleIcon,
@@ -28,23 +29,50 @@ export default function Navbar({
   setDarkMode,
   token,
   onToggleFilters,
+  onUpload,
+  search,
+  onSearchChange,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const { t } = useTranslation();
+  const location = useLocation();
+
+  const crumbs = location.pathname
+    .split('/')
+    .filter(Boolean)
+    .map((c) => c[0].toUpperCase() + c.slice(1));
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow z-20">
-      <div className="max-w-4xl mx-auto flex justify-between items-center p-2">
-        <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
-          <ArchiveBoxIcon className="h-5 w-5" />
-          <span className="font-semibold text-sm">{t('title')}</span>
-        </Link>
+      <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
+        <div className="flex items-center space-x-2">
+          <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
+            <ArchiveBoxIcon className="h-5 w-5" />
+            <span className="font-semibold text-sm">{t('title')}</span>
+          </Link>
+          {crumbs.length > 0 && (
+            <span className="text-xs opacity-80">/ {crumbs.join(' / ')}</span>
+          )}
+        </div>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          placeholder="Search..."
+          className="input text-gray-800 dark:text-gray-100 h-7 text-sm"
+        />
         <div className="flex items-center space-x-3 relative">
           <TenantSwitcher tenant={tenant} onChange={onTenantChange} />
           <LanguageSelector />
           <NotificationBell notifications={notifications} onOpen={onNotificationsOpen} />
+          {token && (
+            <button onClick={onUpload} className="btn btn-primary text-xs flex items-center space-x-1">
+              <ArrowUpTrayIcon className="w-4 h-4" />
+              <span>Upload</span>
+            </button>
+          )}
           {token && (
             <button
               onClick={onToggleFilters}
