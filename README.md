@@ -199,6 +199,8 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `PATCH /api/invoices/:id/payment-status` – update payment status
 - `POST /api/invoices/share` – generate a share link for selected invoices
 - `GET /api/invoices/shared/:token` – access a shared invoice view
+- `POST /api/payments/:id/link` – generate a payment link for an invoice
+- `POST /api/payments/stripe/webhook` – Stripe webhook endpoint for status updates
 
 ### Vendor Reply Drafts
 

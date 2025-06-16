@@ -22,6 +22,7 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS review_flag BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS review_notes TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'Pending'");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_link TEXT");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS activity_logs (
       id SERIAL PRIMARY KEY,
