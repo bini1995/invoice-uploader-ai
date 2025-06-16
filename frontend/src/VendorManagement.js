@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Skeleton from './components/Skeleton';
 import { Link } from 'react-router-dom';
+import SidebarNav from './components/SidebarNav';
 
 function VendorManagement() {
   const token = localStorage.getItem('token') || '';
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notesInput, setNotesInput] = useState({});
+  const [notifications] = useState(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
@@ -39,7 +44,9 @@ function VendorManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 pt-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      <SidebarNav notifications={notifications} />
+      <div className="flex-1 p-4 pt-16">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
         <h1 className="text-xl font-bold">Vendor Management</h1>
         <Link to="/" className="underline">Back to App</Link>

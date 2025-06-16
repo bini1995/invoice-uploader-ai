@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { io } from 'socket.io-client';
 import LiveFeed from './components/LiveFeed';
 import Navbar from './components/Navbar';
+import SidebarNav from './components/SidebarNav';
 import {
   BarChart,
   Bar,
@@ -143,7 +144,10 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [downloadingId, setDownloadingId] = useState(null);
   const [paymentRequestId, setPaymentRequestId] = useState(null);
   const [toasts, setToasts] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [tagInputs, setTagInputs] = useState({});
@@ -193,6 +197,10 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     const n = { id: Date.now(), text, read: false };
     setNotifications((prev) => [n, ...prev]);
   };
+
+  useEffect(() => {
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+  }, [notifications]);
 
   const markNotificationsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
@@ -1663,6 +1671,7 @@ useEffect(() => {
       )}
 
       <div className="pt-16 flex flex-col md:flex-row md:gap-4 min-h-screen">
+        <SidebarNav notifications={notifications} />
         {token && (
           <aside
           className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${

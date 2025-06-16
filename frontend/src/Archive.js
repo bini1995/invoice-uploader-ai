@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Skeleton from './components/Skeleton';
 import { Link } from 'react-router-dom';
+import SidebarNav from './components/SidebarNav';
 
 function Archive() {
   const token = localStorage.getItem('token') || '';
@@ -10,6 +11,10 @@ function Archive() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [priorityOnly, setPriorityOnly] = useState(false);
+  const [notifications] = useState(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     if (!token) return;
@@ -53,7 +58,9 @@ function Archive() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 pt-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      <SidebarNav notifications={notifications} />
+      <div className="flex-1 p-4 pt-16">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
         <h1 className="text-3xl font-bold">Invoice Archive</h1>
         <Link to="/" className="underline">Back to App</Link>
