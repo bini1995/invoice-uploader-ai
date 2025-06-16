@@ -133,7 +133,10 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [qualityScores, setQualityScores] = useState({});
   const [riskScores, setRiskScores] = useState({});
   const [assistantOpen, setAssistantOpen] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
+  const [chatHistory, setChatHistory] = useState(() => {
+    const saved = localStorage.getItem('chatHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [loadingVendor, setLoadingVendor] = useState(false);
   const [loadingInsights, setLoadingInsights] = useState(false);
   const [loadingAssistant, setLoadingAssistant] = useState(false);
@@ -205,6 +208,10 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   useEffect(() => {
     localStorage.setItem('notifications', JSON.stringify(notifications));
   }, [notifications]);
+
+  useEffect(() => {
+    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+  }, [chatHistory]);
 
   const markNotificationsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
