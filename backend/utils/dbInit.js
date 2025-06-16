@@ -35,6 +35,15 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS vat_amount NUMERIC");
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS invoice_versions (
+      id SERIAL PRIMARY KEY,
+      invoice_id INTEGER REFERENCES invoices(id) ON DELETE CASCADE,
+      editor_id INTEGER,
+      editor_name TEXT,
+      diff JSONB,
+      snapshot JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
     await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
     await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
 

@@ -59,6 +59,8 @@ const {
   setPaymentStatus,
   shareInvoices,
   getSharedInvoices,
+  getInvoiceVersions,
+  restoreInvoiceVersion,
 } = require('../controllers/invoiceController');
 
 
@@ -171,6 +173,8 @@ router.get('/:id/payment-request', authMiddleware, paymentRequest);
 router.get('/:id/payment-request/pdf', authMiddleware, paymentRequestPDF);
 router.post('/share', authMiddleware, authorizeRoles('admin','reviewer'), shareInvoices);
 router.get('/shared/:token', getSharedInvoices);
+router.get('/:id/versions', authMiddleware, getInvoiceVersions);
+router.post('/:id/versions/:versionId/restore', authMiddleware, authorizeRoles('admin'), restoreInvoiceVersion);
 router.post('/:id/blockchain-hash', authMiddleware, authorizeRoles('admin'), require('../controllers/blockchainController').recordHash);
 router.get('/:id/blockchain-status', authMiddleware, require('../controllers/blockchainController').verifyHash);
 
