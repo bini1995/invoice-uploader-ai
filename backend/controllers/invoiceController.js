@@ -1361,7 +1361,7 @@ exports.getQuickStats = async (_req, res) => {
 exports.getDashboardData = async (req, res) => {
   const client = await pool.connect();
   try {
-    const { vendor, team, status, tenant } = req.query;
+    const { vendor, team, status, tenant, startDate, endDate } = req.query;
     const conditions = [];
     const params = [];
     if (vendor) {
@@ -1379,6 +1379,14 @@ exports.getDashboardData = async (req, res) => {
     if (tenant) {
       params.push(tenant);
       conditions.push(`tenant_id = $${params.length}`);
+    }
+    if (startDate) {
+      params.push(startDate);
+      conditions.push(`date >= $${params.length}`);
+    }
+    if (endDate) {
+      params.push(endDate);
+      conditions.push(`date <= $${params.length}`);
     }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
     const result = await client.query(

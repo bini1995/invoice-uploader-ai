@@ -33,6 +33,9 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Linked invoice relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
 - Analytics and reports page with filtering and PDF export
+- Trend reports for monthly spend and aging invoices
+- Customizable dashboards with date filters and export options
+- ML predictions highlight cash-flow problem areas
 - Private notes on invoices
 - Shared comment threads for team discussion
 - Approver reminders with escalation
