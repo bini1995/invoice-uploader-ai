@@ -11,6 +11,7 @@ const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
 const settings = require('../config/settings');
 const { getWorkflowForDepartment } = require('../utils/workflows');
+const { getExchangeRate } = require('../utils/exchangeRates');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 const { broadcastMessage } = require('../utils/chatServer');
 
@@ -72,6 +73,8 @@ exports.uploadInvoice = async (req, res) => {
       const invoice_number = inv.invoice_number?.trim();
       const date = inv.date?.trim();
       const amount = inv.amount?.trim();
+      const currency = inv.currency?.trim() || req.body.currency || settings.defaultCurrency;
+      const vatPercent = parseFloat(inv.vat_percent || req.body.vat_percent || settings.defaultVatPercent || 0);
       const vendor = inv.vendor?.trim();
 
       if (!invoice_number || !date || !amount || !vendor) {
@@ -90,16 +93,25 @@ exports.uploadInvoice = async (req, res) => {
       }
 
       const department = inv.department?.trim() || req.body.department;
+      const exchangeRate = await getExchangeRate(currency);
+      const originalAmount = parseFloat(amount);
+      const convertedAmount = parseFloat((originalAmount * exchangeRate).toFixed(2));
+      const vatAmount = parseFloat(((originalAmount * vatPercent) / 100).toFixed(2));
       const withRules = applyRules({
         invoice_number,
         date: new Date(date),
-        amount: parseFloat(amount),
+        amount: convertedAmount,
         vendor,
       });
       const workflow = await getWorkflowForDepartment(department, parseFloat(amount));
       validRows.push({
         ...withRules,
         department,
+        original_amount: originalAmount,
+        currency,
+        exchange_rate: exchangeRate,
+        vat_percent: vatPercent,
+        vat_amount: vatAmount,
         approval_chain: workflow.approvalChain,
         autoApprove: workflow.autoApprove,
       });
@@ -127,8 +139,8 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id, approval_status, department)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -146,6 +158,11 @@ exports.uploadInvoice = async (req, res) => {
           tenantId,
           approvalStatus,
           inv.department || null,
+          inv.original_amount,
+          inv.currency,
+          inv.exchange_rate,
+          inv.vat_percent,
+          inv.vat_amount,
         ]
       );
       const newId = insertRes.rows[0].id;
@@ -764,7 +781,7 @@ exports.updateInvoiceField = async (req, res) => {
   const { id } = req.params;
   const { field, value } = req.body;
 
-  if (!['amount', 'vendor', 'date', 'priority'].includes(field)) {
+  if (!['amount', 'vendor', 'date', 'priority', 'currency', 'vat_percent', 'vat_amount'].includes(field)) {
     return res.status(400).json({ message: 'Invalid field to update.' });
   }
 
