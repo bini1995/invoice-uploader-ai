@@ -626,6 +626,32 @@ exports.setPaymentStatus = async (req, res) => {
   }
 };
 
+exports.setFlaggedStatus = async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { flagged } = req.body || {};
+  try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    const result = await pool.query('UPDATE invoices SET flagged = $1 WHERE id = $2 RETURNING *', [flagged === true, id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Invoice not found' });
+    }
+    await logActivity(
+      req.user?.userId,
+      flagged ? 'flag_invoice' : 'unflag_invoice',
+      id,
+      req.user?.username
+    );
+    const after = result.rows[0];
+    if (before.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after, req.user?.userId, req.user?.username);
+    }
+    res.json({ message: 'Flag status updated', invoice: after });
+  } catch (err) {
+    console.error('Flag status error:', err);
+    res.status(500).json({ message: 'Failed to update flag status' });
+  }
+};
+
 exports.shareInvoices = async (req, res) => {
   const { invoiceIds, role } = req.body;
   if (!Array.isArray(invoiceIds) || invoiceIds.length === 0) {
@@ -2241,6 +2267,7 @@ module.exports = {
   getUploadHeatmap: exports.getUploadHeatmap,
   getDashboardData: exports.getDashboardData,
   setReviewFlag: exports.setReviewFlag,
+  setFlaggedStatus: exports.setFlaggedStatus,
   setPaymentStatus: exports.setPaymentStatus,
   shareInvoices: exports.shareInvoices,
   getSharedInvoices: exports.getSharedInvoices,
