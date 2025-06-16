@@ -1,6 +1,7 @@
 const openai = require('../config/openai');
 const nodemailer = require('nodemailer');
 const pool = require('../config/db');
+const settings = require('../config/settings');
 require('dotenv').config();
 
 /**
@@ -49,7 +50,9 @@ exports.vendorReply = async (req, res) => {
       return res.json({ message: 'Email sent successfully.' });
     }
 
-    const prompt = `Write a short, professional email to vendor ${inv.vendor} letting them know their invoice number ${inv.invoice_number} dated ${inv.date.toISOString().split('T')[0]} for $${inv.amount} was ${status}. Reason: ${why}. Offer guidance on how to correct and resubmit.`;
+    const tone = (req.body.tone || settings.emailTone || 'professional').toLowerCase();
+    const toneText = tone === 'friendly' ? 'friendly' : tone === 'assertive' ? 'assertive' : 'professional';
+    const prompt = `Write a short, ${toneText} email to vendor ${inv.vendor} letting them know their invoice number ${inv.invoice_number} dated ${inv.date.toISOString().split('T')[0]} for $${inv.amount} was ${status}. Reason: ${why}. Offer guidance on how to correct and resubmit.`;
 
     const completion = await openai.chat.completions.create({
       model: 'openai/gpt-3.5-turbo',

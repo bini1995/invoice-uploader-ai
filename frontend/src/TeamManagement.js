@@ -12,6 +12,10 @@ function TeamManagement() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [newRole, setNewRole] = useState('viewer');
+  const [autoArchive, setAutoArchive] = useState(true);
+  const [emailTone, setEmailTone] = useState('professional');
+  const [csvLimit, setCsvLimit] = useState(5);
+  const [pdfLimit, setPdfLimit] = useState(10);
   const [notifications] = useState(() => {
     const saved = localStorage.getItem('notifications');
     return saved ? JSON.parse(saved) : [];
@@ -31,10 +35,21 @@ function TeamManagement() {
     if (res.ok) setLogs(data);
   };
 
+  const fetchSettings = async () => {
+    const res = await fetch('http://localhost:3000/api/settings', { headers });
+    const data = await res.json();
+    if (res.ok) {
+      setAutoArchive(data.autoArchive);
+      setEmailTone(data.emailTone);
+      setCsvLimit(data.csvSizeLimitMB);
+      setPdfLimit(data.pdfSizeLimitMB);
+    }
+  };
+
   useEffect(() => {
     if (token) {
       setLoading(true);
-      Promise.all([fetchUsers(), fetchLogs()]).finally(() => setLoading(false));
+      Promise.all([fetchUsers(), fetchLogs(), fetchSettings()]).finally(() => setLoading(false));
     }
   }, [token]);
 
@@ -62,6 +77,19 @@ function TeamManagement() {
       body: JSON.stringify({ role })
     });
     fetchUsers();
+  };
+
+  const saveSettings = async () => {
+    await fetch('http://localhost:3000/api/settings', {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({
+        autoArchive,
+        emailTone,
+        csvSizeLimitMB: Number(csvLimit),
+        pdfSizeLimitMB: Number(pdfLimit),
+      })
+    });
   };
 
   if (role !== 'admin') {
@@ -95,6 +123,7 @@ function TeamManagement() {
         <table className="w-full text-left border rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700">
+              <th className="p-2">Avatar</th>
               <th className="p-2">Username</th>
               <th className="p-2">Role</th>
               <th className="p-2">Actions</th>
@@ -108,6 +137,13 @@ function TeamManagement() {
             ) : (
               users.map(u => (
                 <tr key={u.id} className="border-t hover:bg-gray-100">
+                  <td className="p-2">
+                    <img
+                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${u.username}`}
+                      alt={u.username}
+                      className="h-6 w-6 rounded-full"
+                    />
+                  </td>
                   <td className="p-2">{u.username}</td>
                   <td className="p-2">
                     <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="input p-1">
@@ -136,6 +172,27 @@ function TeamManagement() {
               ))
             )}
           </ul>
+        </div>
+        <div className="border rounded p-4 space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Settings</h2>
+          <label className="flex items-center space-x-2">
+            <input type="checkbox" checked={autoArchive} onChange={e => setAutoArchive(e.target.checked)} />
+            <span>Auto-archive old invoices</span>
+          </label>
+          <label className="block">Email tone
+            <select value={emailTone} onChange={e => setEmailTone(e.target.value)} className="input w-full mt-1">
+              <option value="professional">Professional</option>
+              <option value="friendly">Friendly</option>
+              <option value="assertive">Assertive</option>
+            </select>
+          </label>
+          <label className="block">CSV size limit (MB)
+            <input type="number" className="input w-full mt-1" value={csvLimit} onChange={e => setCsvLimit(e.target.value)} />
+          </label>
+          <label className="block">PDF size limit (MB)
+            <input type="number" className="input w-full mt-1" value={pdfLimit} onChange={e => setPdfLimit(e.target.value)} />
+          </label>
+          <button onClick={saveSettings} className="bg-indigo-600 text-white px-3 py-1 rounded">Save Settings</button>
         </div>
       </div>
     </div>

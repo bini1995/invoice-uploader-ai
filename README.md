@@ -37,6 +37,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Approver reminders with escalation
 - Batch actions with bulk approval and PDF export
 - AI explanations for why an invoice was flagged
+- Admin settings panel with auto-archive toggle, custom AI tone and upload limits
 - "Why did AI say this?" links show confidence and reasoning
 - AI-powered bulk categorization of uploaded invoices
 - Predictive vendor behavior suggestions
@@ -58,6 +59,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
 - Vendor management page with notes and spending totals per vendor
 - Smart vendor matching for inconsistent spellings
+- Team member roles view with profile avatars
 - Shareable collaborator mode with comment-only or editor access
 - Manual or API-driven payment status sync
 

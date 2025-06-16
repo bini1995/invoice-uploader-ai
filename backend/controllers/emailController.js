@@ -1,8 +1,10 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const settings = require('../config/settings');
 
 exports.sendSummaryEmail = async (req, res) => {
   const { aiSummary, invoices } = req.body;
+  const tone = (req.body.tone || settings.emailTone || 'professional').toLowerCase();
 
   if (!aiSummary || !Array.isArray(invoices)) {
     return res.status(400).json({ message: 'Missing AI summary or invoice list.' });
@@ -12,15 +14,7 @@ exports.sendSummaryEmail = async (req, res) => {
     `• ${inv.invoice_number} - $${inv.amount} from ${inv.vendor} on ${inv.date}`
   ).join('\n');
 
-  const emailContent = `
-    Invoice Summary Report
-
-    AI Summary:
-    ${aiSummary}
-
-    Uploaded Invoices:
-    ${invoiceList}
-  `;
+  const emailContent = `Invoice Summary Report\n\nAI Summary (${tone} tone):\n${aiSummary}\n\nUploaded Invoices:\n${invoiceList}`;
 
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',

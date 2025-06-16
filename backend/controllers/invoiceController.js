@@ -9,6 +9,7 @@ const { applyRules } = require('../utils/rulesEngine');
 const { logActivity } = require('../utils/activityLogger');
 const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
+const settings = require('../config/settings');
 const { getWorkflowForDepartment } = require('../utils/workflows');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 const { broadcastMessage } = require('../utils/chatServer');
@@ -35,6 +36,14 @@ exports.uploadInvoice = async (req, res) => {
     }
 
     const ext = path.extname(req.file.originalname).toLowerCase();
+    if (ext === '.csv' && req.file.size > settings.csvSizeLimitMB * 1024 * 1024) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: `CSV exceeds ${settings.csvSizeLimitMB}MB limit` });
+    }
+    if (ext === '.pdf' && req.file.size > settings.pdfSizeLimitMB * 1024 * 1024) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: `PDF exceeds ${settings.pdfSizeLimitMB}MB limit` });
+    }
     let invoices;
     if (ext === '.csv') {
       invoices = await parseCSV(req.file.path);
@@ -1480,6 +1489,7 @@ exports.exportDashboardPDF = async (req, res) => {
 
 // Automatically archive invoices older than 90 days unless marked priority
 exports.autoArchiveOldInvoices = async () => {
+  if (!settings.autoArchive) return;
   try {
     const result = await pool.query(`
       UPDATE invoices
