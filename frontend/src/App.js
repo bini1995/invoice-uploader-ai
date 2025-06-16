@@ -26,6 +26,8 @@ import SuggestionChips from './components/SuggestionChips';
 import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import BulkSummary from './components/BulkSummary';
+import FloatingActionPanel from './components/FloatingActionPanel';
+import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
 import {
   ArchiveBoxIcon,
@@ -38,7 +40,6 @@ import {
   CurrencyDollarIcon,
   FlagIcon,
   DocumentArrowDownIcon,
-  ChatBubbleLeftRightIcon,
   LightBulbIcon,
   PlusCircleIcon,
   TagIcon,
@@ -2378,8 +2379,14 @@ useEffect(() => {
                 </tr>
               ) : sortedInvoices.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-10 text-gray-500 italic">
-                    💤 No invoices found.
+                  <td colSpan="7" className="py-10">
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center text-gray-500 italic"
+                    >
+                      📄 No invoices yet — upload one to get started
+                    </motion.div>
                   </td>
                 </tr>
               ) : (
@@ -2897,13 +2904,10 @@ useEffect(() => {
       </main>
       {token && (
         <>
-          <button
-            onClick={() => setAssistantOpen(true)}
-            className="fixed bottom-4 right-4 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-20"
-            title="AI Assistant"
-          >
-            <ChatBubbleLeftRightIcon className="w-6 h-6" />
-          </button>
+          <FloatingActionPanel
+            onUpload={openUploadPreview}
+            onAsk={() => setAssistantOpen(true)}
+          />
           <ChatSidebar
             open={assistantOpen}
             onClose={() => setAssistantOpen(false)}
