@@ -128,6 +128,8 @@ exports.uploadInvoice = async (req, res) => {
       const originalAmount = parseFloat(amount);
       const convertedAmount = parseFloat((originalAmount * exchangeRate).toFixed(2));
       const vatAmount = parseFloat(((originalAmount * vatPercent) / 100).toFixed(2));
+      const expiresAt = inv.expires_at || req.body.expires_at ||
+        (req.body.expiration_days ? new Date(new Date(date).getTime() + parseInt(req.body.expiration_days) * 24 * 60 * 60 * 1000) : null);
       const withRules = applyRules({
         invoice_number,
         date: new Date(date),
@@ -143,6 +145,7 @@ exports.uploadInvoice = async (req, res) => {
         exchange_rate: exchangeRate,
         vat_percent: vatPercent,
         vat_amount: vatAmount,
+        expires_at: expiresAt,
         content_hash: contentHash,
         approval_chain: workflow.approvalChain,
         autoApprove: workflow.autoApprove,
@@ -171,8 +174,8 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -197,6 +200,8 @@ exports.uploadInvoice = async (req, res) => {
           inv.exchange_rate,
           inv.vat_percent,
           inv.vat_amount,
+          inv.expires_at,
+          false,
         ]
       );
       const newId = insertRes.rows[0].id;
@@ -917,7 +922,7 @@ exports.updateInvoiceField = async (req, res) => {
   const { id } = req.params;
   const { field, value } = req.body;
 
-  if (!['amount', 'vendor', 'date', 'priority', 'currency', 'vat_percent', 'vat_amount'].includes(field)) {
+  if (!['amount', 'vendor', 'date', 'priority', 'currency', 'vat_percent', 'vat_amount', 'expires_at', 'expired'].includes(field)) {
     return res.status(400).json({ message: 'Invalid field to update.' });
   }
 
@@ -1803,6 +1808,20 @@ exports.autoDeleteExpiredInvoices = async () => {
   }
 };
 
+exports.autoCloseExpiredInvoices = async () => {
+  try {
+    const result = await pool.query(
+      `UPDATE invoices SET expired = TRUE, approval_status = 'Closed', flagged = TRUE, flag_reason = 'Expired'
+       WHERE expires_at IS NOT NULL AND expires_at < NOW() AND expired = FALSE`
+    );
+    if (result.rowCount > 0) {
+      console.log(`\uD83D\uDD12 Auto-closed ${result.rowCount} expired invoices`);
+    }
+  } catch (err) {
+    console.error('Auto-close error:', err);
+  }
+};
+
 exports.checkRecurringInvoice = async (req, res) => {
   const { id } = req.params;
   try {
@@ -2196,6 +2215,7 @@ module.exports = {
   getVendorProfile: exports.getVendorProfile,
   autoArchiveOldInvoices: exports.autoArchiveOldInvoices,
   autoDeleteExpiredInvoices: exports.autoDeleteExpiredInvoices,
+  autoCloseExpiredInvoices: exports.autoCloseExpiredInvoices,
   updatePrivateNotes: exports.updatePrivateNotes,
   updateRetentionPolicy: exports.updateRetentionPolicy,
   bulkArchiveInvoices: exports.bulkArchiveInvoices,

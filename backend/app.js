@@ -21,7 +21,7 @@ const integrationRoutes = require('./routes/integrationRoutes');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { sendApprovalReminders } = require('./controllers/reminderController');
-const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
+const { autoArchiveOldInvoices, autoDeleteExpiredInvoices, autoCloseExpiredInvoices } = require('./controllers/invoiceController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
 
@@ -59,6 +59,8 @@ app.use(Sentry.Handlers.errorHandler());
   setInterval(autoArchiveOldInvoices, 24 * 60 * 60 * 1000); // every 24h
   autoDeleteExpiredInvoices();
   setInterval(autoDeleteExpiredInvoices, 24 * 60 * 60 * 1000);
+  autoCloseExpiredInvoices();
+  setInterval(autoCloseExpiredInvoices, 24 * 60 * 60 * 1000);
   runRecurringInvoices();
   setInterval(runRecurringInvoices, 24 * 60 * 60 * 1000);
   processFailedPayments();

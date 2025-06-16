@@ -50,6 +50,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Bulk edit/delete/archive options for faster table management
 - AI explanations for why an invoice was flagged
 - Admin settings panel with auto-archive toggle, custom AI tone and upload limits
+- Invoice expiration auto-closes past-due invoices or flags them for review
 - "Why did AI say this?" links show confidence and reasoning
 - AI-powered bulk categorization of uploaded invoices
 - AI-powered auto tagging with vendor/voucher recommendations
@@ -124,6 +125,8 @@ ALTER TABLE invoices ADD COLUMN retention_policy TEXT DEFAULT 'forever';
 ALTER TABLE invoices ADD COLUMN delete_at TIMESTAMP;
 ALTER TABLE invoices ADD COLUMN tenant_id TEXT DEFAULT 'default';
 ALTER TABLE invoices ADD COLUMN department TEXT;
+ALTER TABLE invoices ADD COLUMN expires_at TIMESTAMP;
+ALTER TABLE invoices ADD COLUMN expired BOOLEAN DEFAULT FALSE;
 ```
 
 Create an `activity_logs` table for the audit trail:
@@ -193,6 +196,8 @@ unless they are marked as `priority`.
 Invoices also store a SHA256 `integrity_hash` generated at upload time. You can
 set a retention policy (`6m`, `2y`, or `forever`) on upload or later. A daily
 job deletes invoices once their `delete_at` date passes.
+Invoices can also include an `expires_at` date. Any invoice past this
+deadline is automatically marked `expired` and flagged for admin review.
 
 ### Department Workflows
 
