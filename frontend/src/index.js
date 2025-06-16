@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import Dashboard from './Dashboard';
+import DashboardBuilder from './DashboardBuilder';
 import Reports from './Reports';
 import Archive from './Archive';
 import TeamManagement from './TeamManagement';
@@ -51,6 +52,7 @@ function AnimatedRoutes() {
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />
         <Route path="/workflow" element={<PageWrapper><WorkflowPage /></PageWrapper>} />
+        <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
