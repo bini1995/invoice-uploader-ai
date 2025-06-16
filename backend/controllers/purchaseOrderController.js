@@ -29,6 +29,7 @@ exports.uploadPOs = async (req, res) => {
     res.json({ message: 'POs uploaded', inserted: rows.length });
   } catch (err) {
     console.error('PO upload error:', err);
+    await sendSlackNotification?.(`PO upload failed: ${err.message}`);
     res.status(500).json({ message: 'Failed to upload POs' });
   }
 };
@@ -39,6 +40,7 @@ exports.getPOs = async (_req, res) => {
     res.json({ purchase_orders: result.rows });
   } catch (err) {
     console.error('Get POs error:', err);
+    await sendSlackNotification?.(`Fetching POs failed: ${err.message}`);
     res.status(500).json({ message: 'Failed to fetch POs' });
   }
 };

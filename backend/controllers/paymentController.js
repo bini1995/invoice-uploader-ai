@@ -1,6 +1,8 @@
 const pool = require('../config/db');
 const axios = require('axios');
+const nodemailer = require('nodemailer');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { sendSlackNotification } = require('../utils/notify');
 
 async function createPaymentLink(req, res) {
   const { id } = req.params;
@@ -78,12 +80,14 @@ async function processFailedPayments() {
           "UPDATE invoices SET retry_count = retry_count + 1, next_retry = $1, payment_status = 'Retrying' WHERE id = $2",
           [new Date(now.getTime() + 24 * 60 * 60 * 1000), inv.id]
         );
+        await sendSlackNotification?.(`Retrying payment for invoice ${inv.id} (attempt ${inv.retry_count + 1})`);
       } else if (parseFloat(inv.late_fee) === 0) {
         const fee = Number(inv.amount) * 0.02;
         await pool.query(
           'UPDATE invoices SET late_fee = $1, amount = amount + $1 WHERE id = $2',
           [fee, inv.id]
         );
+        await sendSlackNotification?.(`Late fee applied to invoice ${inv.id}`);
       }
     }
   } catch (err) {
@@ -91,4 +95,58 @@ async function processFailedPayments() {
   }
 }
 
-module.exports = { createPaymentLink, stripeWebhook, processFailedPayments };
+async function sendPaymentReminders() {
+  try {
+    const now = new Date();
+    const upcoming = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const { rows } = await pool.query(
+      `SELECT id, invoice_number, vendor, due_date, amount
+       FROM invoices
+       WHERE payment_status != 'Paid'
+         AND due_date IS NOT NULL
+         AND due_date <= $1`,
+      [upcoming]
+    );
+    if (!rows.length) return;
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    for (const inv of rows) {
+      const overdue = new Date(inv.due_date) < now;
+      const subject = overdue
+        ? `Overdue invoice ${inv.invoice_number}`
+        : `Invoice ${inv.invoice_number} due soon`;
+      const text = overdue
+        ? `Invoice ${inv.invoice_number} from ${inv.vendor} for $${inv.amount} was due on ${inv.due_date} and remains unpaid.`
+        : `Invoice ${inv.invoice_number} from ${inv.vendor} for $${inv.amount} is due on ${inv.due_date}.`;
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: process.env.EMAIL_TO,
+          subject,
+          text,
+        });
+        await sendSlackNotification?.(`Payment reminder sent: ${subject}`);
+      } catch (err) {
+        console.error('Reminder email error:', err);
+      }
+    }
+  } catch (err) {
+    console.error('Payment reminder error:', err);
+  }
+}
+
+module.exports = {
+  createPaymentLink,
+  stripeWebhook,
+  processFailedPayments,
+  sendPaymentReminders,
+};

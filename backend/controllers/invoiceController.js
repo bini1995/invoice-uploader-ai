@@ -181,6 +181,7 @@ exports.uploadInvoice = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    await sendSlackNotification?.(`Invoice upload failed: ${err.message}`);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -219,6 +220,7 @@ exports.voiceUpload = async (req, res) => {
     doc.end();
   } catch (err) {
     console.error('Voice upload error:', err);
+    await sendSlackNotification?.(`Voice upload failed: ${err.message}`);
     res.status(500).json({ message: 'Failed to process voice upload' });
   }
 };
