@@ -71,6 +71,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Slack/Teams notifications for approvals or flags
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
 - Real-time "Ops Mode" dashboard with a live feed of invoice activity
+- Live Invoice Feed shows uploads, flags and approvals in real time
 - Multi-tenant support so agencies can switch between different client accounts
 - Polite vendor notification emails for flagged or rejected invoices
 - Scenario planning to test payment delays

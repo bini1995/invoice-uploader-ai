@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { io } from 'socket.io-client';
 
 export default function LiveFeed({ token, tenant }) {
   const [logs, setLogs] = useState([]);
+  const socket = useMemo(() => io('http://localhost:3000'), []);
 
   useEffect(() => {
     let isMounted = true;
@@ -25,6 +27,13 @@ export default function LiveFeed({ token, tenant }) {
       clearInterval(id);
     };
   }, [token, tenant]);
+
+  useEffect(() => {
+    socket.on('activity', (log) => {
+      setLogs((prev) => [log, ...prev].slice(0, 20));
+    });
+    return () => socket.off('activity');
+  }, [socket]);
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded">

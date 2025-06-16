@@ -20,4 +20,10 @@ function broadcastNotification(message) {
   }
 }
 
-module.exports = { initChat, broadcastMessage, broadcastNotification };
+function broadcastActivity(log) {
+  if (io) {
+    io.emit('activity', log);
+  }
+}
+
+module.exports = { initChat, broadcastMessage, broadcastNotification, broadcastActivity };
