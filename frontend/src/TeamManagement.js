@@ -139,6 +139,7 @@ function TeamManagement() {
         </div>
       </div>
     </div>
+    </div>
   );
 }
 

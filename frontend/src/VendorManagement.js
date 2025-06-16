@@ -96,6 +96,7 @@ function VendorManagement() {
       </table>
       </div>
     </div>
+    </div>
   );
 }
 
