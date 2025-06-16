@@ -8,13 +8,21 @@ export default function ThemePicker({ darkMode, setDarkMode }) {
   const [font, setFont] = useState(() => localStorage.getItem('fontFamily') || 'Inter');
 
   useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const applySystem = () => setDarkMode(mq.matches);
+
     if (mode === 'system') {
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setDarkMode(isDark);
+      applySystem();
+      mq.addEventListener('change', applySystem);
     } else {
       setDarkMode(mode === 'dark');
     }
+
     localStorage.setItem('themeMode', mode);
+
+    return () => {
+      mq.removeEventListener('change', applySystem);
+    };
   }, [mode, setDarkMode]);
 
   useEffect(() => {
