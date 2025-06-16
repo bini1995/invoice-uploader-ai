@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Skeleton from './components/Skeleton';
 import { Link } from 'react-router-dom';
 import SidebarNav from './components/SidebarNav';
+import HelpTooltip from './components/HelpTooltip';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
@@ -85,7 +86,12 @@ function Reports() {
       <SidebarNav notifications={notifications} />
       <div className="flex-1 p-4 pt-16">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
-        <h1 className="text-xl font-bold">Reports</h1>
+        <h1 className="text-xl font-bold flex items-center gap-1">
+          Reports
+          <span className="relative group cursor-help">❓
+            <span className="hidden group-hover:block absolute z-10"><HelpTooltip topic="reports" token={token} /></span>
+          </span>
+        </h1>
         <Link to="/invoices" className="underline">Back to App</Link>
       </nav>
       <div className="space-y-4 max-w-2xl">
