@@ -28,6 +28,7 @@ import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import BulkSummary from './components/BulkSummary';
 import FloatingActionPanel from './components/FloatingActionPanel';
+import TourModal from './components/TourModal';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
 import {
@@ -74,6 +75,7 @@ const [uploadProgress, setUploadProgress] = useState(0);
 const [recentUploads, setRecentUploads] = useState([]);
 const [previewModalData, setPreviewModalData] = useState(null);
 const [bulkSummary, setBulkSummary] = useState(null);
+const [showTour, setShowTour] = useState(() => !localStorage.getItem('seenTour'));
 const fileInputRef = useRef();
 const searchInputRef = useRef();
   const [invoices, setInvoices] = useState([]);
@@ -136,6 +138,7 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [loadingInsights, setLoadingInsights] = useState(false);
   const [loadingAssistant, setLoadingAssistant] = useState(false);
   const [commentInputs, setCommentInputs] = useState({});
+  const [expandedRows, setExpandedRows] = useState([]);
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
   const [viewMode, setViewMode] = useState(() => {
@@ -2489,7 +2492,10 @@ useEffect(() => {
                               : ''
                           }`}
                         >
-                    <td className="border px-4 py-2">
+                    <td className="border px-4 py-2 flex items-center space-x-1">
+                      <button onClick={() => setExpandedRows((r) => r.includes(inv.id) ? r.filter(i => i !== inv.id) : [...r, inv.id])} className="text-xs">
+                        {expandedRows.includes(inv.id) ? '▼' : '▶'}
+                      </button>
                       <input
                         type="checkbox"
                         checked={selectedInvoices.includes(inv.id)}
@@ -2797,9 +2803,22 @@ useEffect(() => {
                           </button>
                         </>
                       )}
-                    </td>
-                    )}
+                  </td>
+                  )}
                   </tr>
+                  {expandedRows.includes(inv.id) && (
+                    <tr className="bg-gray-50">
+                      <td colSpan={role !== 'viewer' ? 13 : 12} className="p-2 text-left">
+                        {inv.comments?.length ? (
+                          inv.comments.map((c, i) => (
+                            <div key={i} className="text-xs mb-1">{c.text}</div>
+                          ))
+                        ) : (
+                          <em className="text-xs text-gray-500">No comments</em>
+                        )}
+                      </td>
+                    </tr>
+                  )}
                 ))
               )}
             </tbody>
@@ -2825,7 +2844,7 @@ useEffect(() => {
                         : ''
                     }`}
                   >
-                  
+                      <img src="/logo192.png" alt="preview" className="w-full h-32 object-contain rounded" />
                       <div className="text-sm font-semibold">#{inv.invoice_number} {duplicateFlags[inv.id] && <span className="text-yellow-500">⚠️</span>}</div>
                       <div className="text-sm">💰 {inv.amount}</div>
                       <div className="text-sm">📅 {new Date(inv.date).toLocaleDateString()}</div>
@@ -3008,6 +3027,10 @@ useEffect(() => {
             open={!!bulkSummary}
             summary={bulkSummary}
             onClose={() => setBulkSummary(null)}
+          />
+          <TourModal
+            open={showTour}
+            onClose={() => { setShowTour(false); localStorage.setItem('seenTour','1'); }}
           />
         </>
       )}
