@@ -2,6 +2,7 @@
 const axios = require('axios');
 require('dotenv').config();
 const pool = require("../config/db");
+const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 
 console.log('🔧 AI Controller loaded');
 
@@ -280,6 +281,64 @@ exports.paymentRiskScore = async (req, res) => {
   } catch (error) {
     console.error('Risk score error:', error.response?.data || error.message);
     res.status(500).json({ message: 'Failed to evaluate payment risk.' });
+  }
+};
+
+async function computePaymentLikelihood(vendor) {
+  const result = await pool.query(
+    'SELECT paid FROM invoices WHERE LOWER(vendor) = LOWER($1)',
+    [vendor]
+  );
+  const paidCount = result.rows.filter(r => r.paid).length;
+  const total = result.rows.length || 1;
+  const prompt = `Vendor "${vendor}" has paid ${paidCount} of ${total} invoices. Predict the likelihood (0-100) that the next invoice will be paid on time. Respond with just a number.`;
+  const aiRes = await axios.post(
+    'https://openrouter.ai/api/v1/chat/completions',
+    {
+      model: 'openai/gpt-3.5-turbo',
+      messages: [
+        { role: 'system', content: 'You estimate payment likelihood.' },
+        { role: 'user', content: prompt },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+        'X-Title': 'invoice-uploader-ai',
+      },
+    }
+  );
+  const raw = aiRes.data.choices?.[0]?.message?.content || '';
+  const match = raw.match(/\d+/);
+  return match ? parseInt(match[0], 10) : Math.round((paidCount / total) * 100);
+}
+
+exports.paymentLikelihood = async (req, res) => {
+  try {
+    const { vendor } = req.body;
+    if (!vendor) return res.status(400).json({ message: 'Missing vendor.' });
+    const likelihood = await computePaymentLikelihood(vendor);
+    res.json({ likelihood });
+  } catch (error) {
+    console.error('Payment likelihood error:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to predict payment likelihood.' });
+  }
+};
+
+exports.alertHighRiskInvoices = async () => {
+  try {
+    const { rows } = await pool.query("SELECT id, vendor FROM invoices WHERE paid = false");
+    for (const inv of rows) {
+      const likelihood = await computePaymentLikelihood(inv.vendor);
+      if (likelihood < 50) {
+        sendSlackNotification?.(`Invoice ${inv.id} from ${inv.vendor} likely unpaid (${likelihood}%).`);
+        sendTeamsNotification?.(`Invoice ${inv.id} from ${inv.vendor} likely unpaid (${likelihood}%).`);
+      }
+    }
+  } catch (err) {
+    console.error('High risk alert error:', err);
   }
 };
 

@@ -65,4 +65,30 @@ async function stripeWebhook(req, res) {
   res.json({ received: true });
 }
 
-module.exports = { createPaymentLink, stripeWebhook };
+async function processFailedPayments() {
+  try {
+    const now = new Date();
+    const { rows } = await pool.query(
+      "SELECT id, amount, retry_count, next_retry, late_fee FROM invoices WHERE payment_status = 'Failed'"
+    );
+    for (const inv of rows) {
+      if (inv.next_retry && new Date(inv.next_retry) > now) continue;
+      if (inv.retry_count < 3) {
+        await pool.query(
+          "UPDATE invoices SET retry_count = retry_count + 1, next_retry = $1, payment_status = 'Retrying' WHERE id = $2",
+          [new Date(now.getTime() + 24 * 60 * 60 * 1000), inv.id]
+        );
+      } else if (parseFloat(inv.late_fee) === 0) {
+        const fee = Number(inv.amount) * 0.02;
+        await pool.query(
+          'UPDATE invoices SET late_fee = $1, amount = amount + $1 WHERE id = $2',
+          [fee, inv.id]
+        );
+      }
+    }
+  } catch (err) {
+    console.error('Payment retry error:', err);
+  }
+}
+
+module.exports = { createPaymentLink, stripeWebhook, processFailedPayments };

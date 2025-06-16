@@ -14,6 +14,9 @@ const billingRoutes = require('./routes/billingRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const workflowRoutes = require('./routes/workflowRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const recurringRoutes = require('./routes/recurringRoutes');
+const { runRecurringInvoices } = require('./controllers/recurringController');
+const { processFailedPayments } = require('./controllers/paymentController');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
@@ -37,6 +40,7 @@ app.use('/api/billing', billingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/recurring', recurringRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
@@ -48,6 +52,10 @@ app.use(Sentry.Handlers.errorHandler());
   setInterval(autoArchiveOldInvoices, 24 * 60 * 60 * 1000); // every 24h
   autoDeleteExpiredInvoices();
   setInterval(autoDeleteExpiredInvoices, 24 * 60 * 60 * 1000);
+  runRecurringInvoices();
+  setInterval(runRecurringInvoices, 24 * 60 * 60 * 1000);
+  processFailedPayments();
+  setInterval(processFailedPayments, 60 * 60 * 1000);
 
   console.log('🟢 Routes mounted');
 

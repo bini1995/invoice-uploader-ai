@@ -60,7 +60,7 @@ const {
 
 
 const { summarizeUploadErrors } = require('../controllers/aiController');
-const { invoiceQualityScore, assistantQuery, paymentRiskScore, nlChartQuery, suggestTagColors } = require('../controllers/aiController');
+const { invoiceQualityScore, assistantQuery, paymentRiskScore, paymentLikelihood, nlChartQuery, suggestTagColors } = require('../controllers/aiController');
 const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
@@ -92,6 +92,7 @@ router.post('/nl-search', authMiddleware, naturalLanguageSearch);
 router.post('/nl-chart', authMiddleware, nlChartQuery);
 router.post('/quality-score', authMiddleware, invoiceQualityScore);
 router.post('/payment-risk', authMiddleware, paymentRiskScore);
+router.post('/payment-likelihood', authMiddleware, paymentLikelihood);
 router.post('/assistant', authMiddleware, assistantQuery);
 router.post('/summarize-errors', summarizeUploadErrors);
 router.post('/login', login);
