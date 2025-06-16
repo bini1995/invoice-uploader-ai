@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Skeleton from './components/Skeleton';
@@ -98,70 +99,82 @@ function Dashboard() {
               <Skeleton rows={1} className="h-20 col-span-2 md:col-span-4" />
             ) : (
               <>
-                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                <motion.div
+                  whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }}
+                  className="p-4 bg-white dark:bg-gray-800 rounded shadow transition"
+                >
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     💵 Total Invoiced This Month
                   </div>
                   <div className="text-xl font-semibold">
                     {stats?.totalInvoicedThisMonth?.toFixed(2) || 0}
                   </div>
-                </div>
-                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }} className="p-4 bg-white dark:bg-gray-800 rounded shadow transition">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     🧾 Invoices Pending
                   </div>
                   <div className="text-xl font-semibold">
                     {stats?.invoicesPending || 0}
                   </div>
-                </div>
-                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }} className="p-4 bg-white dark:bg-gray-800 rounded shadow transition">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     ⚠️ Anomalies Found
                   </div>
                   <div className="text-xl font-semibold">
                     {stats?.anomaliesFound || 0}
                   </div>
-                </div>
-                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }} className="p-4 bg-white dark:bg-gray-800 rounded shadow transition">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     🤖 AI Suggestions Available
                   </div>
                   <div className="text-xl font-semibold">
                     {stats?.aiSuggestions || 0}
                   </div>
-                </div>
+                </motion.div>
               </>
             )}
           </div>
+          {vendors.length === 0 && !loading && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-gray-500 italic py-10">
+              📄 No invoices yet — upload one to get started
+            </motion.div>
+          )}
           <div className="h-64">
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={vendors} dataKey="total" nameKey="vendor" outerRadius={80}>
-                    {vendors.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={vendors} dataKey="total" nameKey="vendor" outerRadius={80}>
+                      {vendors.map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </motion.div>
             )}
           </div>
           <div className="h-64">
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={cashFlow}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="period" tickFormatter={(v) => new Date(v).toLocaleDateString()} />
-                  <YAxis />
-                  <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
-                  <Bar dataKey="total" fill="#3b82f6" />
-                </BarChart>
-              </ResponsiveContainer>
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={cashFlow}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="period" tickFormatter={(v) => new Date(v).toLocaleDateString()} />
+                    <YAxis />
+                    <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
+                    <Bar dataKey="total" fill="#3b82f6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </motion.div>
             )}
           </div>
           <div>
@@ -208,16 +221,18 @@ function Dashboard() {
             {loading ? (
               <Skeleton rows={1} className="h-64" />
             ) : (
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie data={categories} dataKey="total" nameKey="tag" outerRadius={80}>
-                    {categories.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie data={categories} dataKey="total" nameKey="tag" outerRadius={80}>
+                      {categories.map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </motion.div>
             )}
           </div>
           <div>
@@ -233,16 +248,18 @@ function Dashboard() {
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={budget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="department" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="spent" fill="#3b82f6" name="Spent" />
-                  <Bar dataKey="budget" fill="#ef4444" name="Budget" />
-                </BarChart>
-              </ResponsiveContainer>
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={budget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="department" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="spent" fill="#3b82f6" name="Spent" />
+                    <Bar dataKey="budget" fill="#ef4444" name="Budget" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </motion.div>
             )}
           </div>
           <VendorProfilePanel vendor={selectedVendor} open={!!selectedVendor} onClose={() => setSelectedVendor(null)} token={token} />

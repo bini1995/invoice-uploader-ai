@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
 import LanguageSelector from './LanguageSelector';
+import ThemePicker from './ThemePicker';
 import { useTranslation } from 'react-i18next';
 import {
   Bars3Icon,
@@ -12,8 +13,6 @@ import {
   ArchiveBoxIcon,
   UsersIcon,
   UserCircleIcon,
-  SunIcon,
-  MoonIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Navbar({
@@ -103,13 +102,7 @@ export default function Navbar({
                   )}
                 </div>
               )}
-              <button
-                onClick={() => setDarkMode((d) => !d)}
-                className={`focus:outline-none transform transition-transform duration-300 ${darkMode ? 'rotate-180' : ''}`}
-                title={darkMode ? 'Light Mode' : 'Dark Mode'}
-              >
-                {darkMode ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
-              </button>
+              <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} />
               <div className="relative">
                 <button
                   onClick={() => setUserOpen((o) => !o)}
