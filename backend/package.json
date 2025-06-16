@@ -27,6 +27,7 @@
     "socket.io": "^4.8.1",
     "stripe": "^12.18.0",
     "telnet": "^0.0.1",
-    "tesseract.js": "^4.0.2"
+    "tesseract.js": "^4.0.2",
+    "fast-levenshtein": "^2.0.6"
   }
 }

@@ -421,6 +421,61 @@ exports.markInvoicePaid = async (req, res) => {
   }
 };
 
+exports.setPaymentStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const allowed = ['Paid', 'Scheduled', 'Declined', 'Pending'];
+  if (!allowed.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status' });
+  }
+  try {
+    const result = await pool.query(
+      'UPDATE invoices SET payment_status = $1, paid = ($1 = \"Paid\") WHERE id = $2 RETURNING *',
+      [status, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Invoice not found.' });
+    }
+    res.json({ message: `Status set to ${status}.`, invoice: result.rows[0] });
+  } catch (err) {
+    console.error('Status update error:', err);
+    res.status(500).json({ message: 'Failed to update payment status.' });
+  }
+};
+
+exports.shareInvoices = async (req, res) => {
+  const { invoiceIds, role } = req.body;
+  if (!Array.isArray(invoiceIds) || invoiceIds.length === 0) {
+    return res.status(400).json({ message: 'invoiceIds array required' });
+  }
+  const mode = role === 'editor' ? 'editor' : 'comment';
+  const token = crypto.randomBytes(16).toString('hex');
+  try {
+    await pool.query(
+      'INSERT INTO shared_views (token, invoice_ids, role) VALUES ($1,$2,$3)',
+      [token, invoiceIds, mode]
+    );
+    res.json({ url: `/api/invoices/shared/${token}` });
+  } catch (err) {
+    console.error('Share error:', err);
+    res.status(500).json({ message: 'Failed to create share' });
+  }
+};
+
+exports.getSharedInvoices = async (req, res) => {
+  const { token } = req.params;
+  try {
+    const share = await pool.query('SELECT invoice_ids, role FROM shared_views WHERE token = $1', [token]);
+    if (share.rows.length === 0) return res.status(404).json({ message: 'Invalid token' });
+    const { invoice_ids, role } = share.rows[0];
+    const result = await pool.query('SELECT * FROM invoices WHERE id = ANY($1)', [invoice_ids]);
+    res.json({ invoices: result.rows, role });
+  } catch (err) {
+    console.error('Get share error:', err);
+    res.status(500).json({ message: 'Failed to fetch shared invoices' });
+  }
+};
+
 exports.assignInvoice = async (req, res) => {
   const { id } = req.params;
   const { assignee } = req.body;
@@ -1807,5 +1862,8 @@ module.exports = {
   getUploadHeatmap: exports.getUploadHeatmap,
   getDashboardData: exports.getDashboardData,
   setReviewFlag: exports.setReviewFlag,
+  setPaymentStatus: exports.setPaymentStatus,
+  shareInvoices: exports.shareInvoices,
+  getSharedInvoices: exports.getSharedInvoices,
 };
 
