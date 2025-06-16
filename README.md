@@ -27,6 +27,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Activity log of invoice actions
 - Downloadable audit history per vendor or invoice
 - Detailed logs show who made each change
+- Invoice version history with one-click restore
 - Auto-routing invoices by vendor or tag
 - Budget threshold warnings
 - Anomaly detection dashboard
@@ -244,6 +245,8 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `POST /api/invoices/suggest-voucher` – recommend a voucher description
 - `POST /api/invoices/share` – generate a share link for selected invoices
 - `GET /api/invoices/shared/:token` – access a shared invoice view
+- `GET /api/invoices/:id/versions` – list prior versions of an invoice
+- `POST /api/invoices/:id/versions/:versionId/restore` – restore a previous version
 - `POST /api/payments/:id/link` – generate a payment link for an invoice
 - `POST /api/payments/stripe/webhook` – Stripe webhook endpoint for status updates
 - `POST /api/pos/upload` – upload a CSV of purchase orders

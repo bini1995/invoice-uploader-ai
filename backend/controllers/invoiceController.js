@@ -16,6 +16,7 @@ const { getWorkflowForDepartment } = require('../utils/workflows');
 const { getExchangeRate } = require('../utils/exchangeRates');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 const { broadcastMessage } = require('../utils/chatServer');
+const { recordInvoiceVersion } = require('../utils/versionLogger');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -516,7 +517,12 @@ Return a brief explanation.
 exports.archiveInvoice = async (req, res) => {
   const { id } = req.params;
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     await pool.query('UPDATE invoices SET archived = TRUE WHERE id = $1', [id]);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ message: 'Invoice archived.' });
   } catch (err) {
     console.error('Archive error:', err);
@@ -528,6 +534,7 @@ exports.unarchiveInvoice = async (req, res) => {
   const { id } = req.params;
 
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     const result = await pool.query(
       'UPDATE invoices SET archived = false WHERE id = $1 RETURNING *',
       [id]
@@ -536,7 +543,10 @@ exports.unarchiveInvoice = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Invoice not found' });
     }
-
+    const after = result.rows[0];
+    if (before.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after, req.user?.userId, req.user?.username);
+    }
     res.json({ message: 'Invoice unarchived successfully', invoice: result.rows[0] });
   } catch (error) {
     console.error('Unarchive error:', error);
@@ -549,9 +559,14 @@ exports.markInvoicePaid = async (req, res) => {
   const { paid } = req.body;
 
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     const result = await pool.query('UPDATE invoices SET paid = $1 WHERE id = $2 RETURNING *', [paid, id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Invoice not found.' });
+    }
+    const after = result.rows[0];
+    if (before.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after, req.user?.userId, req.user?.username);
     }
     res.json({ message: `Invoice marked as ${paid ? 'paid' : 'unpaid'}.`, invoice: result.rows[0] });
   } catch (err) {
@@ -568,12 +583,16 @@ exports.setPaymentStatus = async (req, res) => {
     return res.status(400).json({ message: 'Invalid status' });
   }
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     const result = await pool.query(
       'UPDATE invoices SET payment_status = $1, paid = ($1 = \"Paid\") WHERE id = $2 RETURNING *',
       [status, id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Invoice not found.' });
+    }
+    if (before.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], result.rows[0], req.user?.userId, req.user?.username);
     }
     res.json({ message: `Status set to ${status}.`, invoice: result.rows[0] });
   } catch (err) {
@@ -615,11 +634,65 @@ exports.getSharedInvoices = async (req, res) => {
   }
 };
 
+exports.getInvoiceVersions = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT id, editor_name, diff, created_at FROM invoice_versions WHERE invoice_id = $1 ORDER BY created_at DESC',
+      [id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch versions error:', err);
+    res.status(500).json({ message: 'Failed to fetch versions' });
+  }
+};
+
+exports.restoreInvoiceVersion = async (req, res) => {
+  const { id, versionId } = req.params;
+  try {
+    const verRes = await pool.query(
+      'SELECT snapshot FROM invoice_versions WHERE id = $1 AND invoice_id = $2',
+      [versionId, id]
+    );
+    if (verRes.rows.length === 0) {
+      return res.status(404).json({ message: 'Version not found' });
+    }
+    const snapshot = verRes.rows[0].snapshot;
+    const keys = Object.keys(snapshot || {});
+    if (keys.length === 0) return res.status(400).json({ message: 'Invalid snapshot' });
+    const sets = [];
+    const values = [];
+    let idx = 1;
+    for (const key of keys) {
+      sets.push(`${key} = $${idx}`);
+      values.push(snapshot[key]);
+      idx++;
+    }
+    values.push(id);
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    await pool.query(`UPDATE invoices SET ${sets.join(', ')} WHERE id = $${idx}`, values);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
+    res.json({ message: 'Invoice restored', invoice: after.rows[0] });
+  } catch (err) {
+    console.error('Restore version error:', err);
+    res.status(500).json({ message: 'Failed to restore version' });
+  }
+};
+
 exports.assignInvoice = async (req, res) => {
   const { id } = req.params;
   const { assignee } = req.body;
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     await pool.query('UPDATE invoices SET assignee = $1 WHERE id = $2', [assignee, id]);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ message: `Invoice assigned to ${assignee || 'nobody'}.` });
   } catch (err) {
     console.error('Assign error:', err);
@@ -648,7 +721,7 @@ exports.approveInvoice = async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body || {};
   try {
-    const invRes = await pool.query('SELECT approval_chain, current_step FROM invoices WHERE id = $1', [id]);
+    const invRes = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     if (invRes.rows.length === 0) return res.status(404).json({ message: 'Invoice not found' });
     const invoice = invRes.rows[0];
     const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
@@ -666,6 +739,7 @@ exports.approveInvoice = async (req, res) => {
        WHERE id = $5 RETURNING approval_status, approval_history, current_step`,
       [status, nextStep, step, comment || '', id]
     );
+    await recordInvoiceVersion(id, invoice, { ...invoice, ...result.rows[0], current_step: nextStep, approval_status: status }, req.user?.userId, req.user?.username);
     await logActivity(req.user?.userId, 'approve_invoice', id, req.user?.username);
     const nextLabel = nextStep >= chain.length ? 'Completed' : `Next: ${chain[nextStep]}`;
     const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
@@ -682,7 +756,7 @@ exports.rejectInvoice = async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body || {};
   try {
-    const invRes = await pool.query('SELECT approval_chain, current_step FROM invoices WHERE id = $1', [id]);
+    const invRes = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     if (invRes.rows.length === 0) return res.status(404).json({ message: 'Invoice not found' });
     const invoice = invRes.rows[0];
     const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
@@ -698,6 +772,7 @@ exports.rejectInvoice = async (req, res) => {
        WHERE id = $3 RETURNING approval_status, approval_history`,
       [step, comment || '', id]
     );
+    await recordInvoiceVersion(id, invoice, { ...invoice, ...result.rows[0], current_step: -1, approval_status: 'Rejected' }, req.user?.userId, req.user?.username);
     await logActivity(req.user?.userId, 'reject_invoice', id, req.user?.username);
     await sendSlackNotification(`Invoice ${id} rejected.`);
     await sendTeamsNotification(`Invoice ${id} rejected.`);
@@ -733,8 +808,13 @@ exports.updatePrivateNotes = async (req, res) => {
   const { id } = req.params;
   const { notes } = req.body;
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     await pool.query('UPDATE invoices SET private_notes = $1 WHERE id = $2', [notes || '', id]);
     await logActivity(req.user?.userId, 'update_notes', id, req.user?.username);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ message: 'Notes updated' });
   } catch (err) {
     console.error('Update notes error:', err);
@@ -823,10 +903,12 @@ exports.updateInvoiceField = async (req, res) => {
   }
 
   try {
-    await pool.query(
-      `UPDATE invoices SET ${field} = $1 WHERE id = $2`,
-      [value, id]
-    );
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    await pool.query(`UPDATE invoices SET ${field} = $1 WHERE id = $2`, [value, id]);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ message: `Invoice ${field} updated successfully.` });
   } catch (err) {
     console.error('Update invoice error:', err);
@@ -1079,6 +1161,7 @@ exports.updateInvoiceTags = async (req, res) => {
   }
 
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     const result = await pool.query(
       'UPDATE invoices SET tags = $1 WHERE id = $2 RETURNING id, vendor',
       [tags, id]
@@ -1087,6 +1170,10 @@ exports.updateInvoiceTags = async (req, res) => {
       return res.status(404).json({ message: 'Invoice not found' });
     }
     await autoAssignInvoice(id, result.rows[0].vendor, tags);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ message: 'Tags updated', tags });
   } catch (err) {
     console.error('Failed to save tags:', err);
@@ -1182,6 +1269,7 @@ exports.setReviewFlag = async (req, res) => {
   const id = parseInt(req.params.id);
   const { flag, notes } = req.body || {};
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     const result = await pool.query(
       'UPDATE invoices SET review_flag = $1, review_notes = $2 WHERE id = $3',
       [flag === true, notes || '', id]
@@ -1195,6 +1283,10 @@ exports.setReviewFlag = async (req, res) => {
       id,
       req.user?.username
     );
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ message: 'Review flag updated' });
   } catch (err) {
     console.error('Review flag error:', err);
@@ -2109,5 +2201,7 @@ module.exports = {
   setPaymentStatus: exports.setPaymentStatus,
   shareInvoices: exports.shareInvoices,
   getSharedInvoices: exports.getSharedInvoices,
+  getInvoiceVersions: exports.getInvoiceVersions,
+  restoreInvoiceVersion: exports.restoreInvoiceVersion,
 };
 
