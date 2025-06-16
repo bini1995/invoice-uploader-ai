@@ -12,6 +12,8 @@ import {
   DocumentChartBarIcon,
   ArchiveBoxIcon,
   ArrowUpTrayIcon,
+  SunIcon,
+  MoonIcon,
   UsersIcon,
   UserCircleIcon,
   QuestionMarkCircleIcon,
@@ -76,8 +78,9 @@ export default function Navbar({
           {token && (
             <button
               onClick={onToggleFilters}
-              className="focus:outline-none"
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
               title="Filters"
+              aria-label="Toggle filters"
             >
               <AdjustmentsHorizontalIcon className="h-6 w-6" />
             </button>
@@ -85,7 +88,7 @@ export default function Navbar({
           {token && (
             <>
               <button
-                className="focus:outline-none"
+                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
                 onClick={() => setMenuOpen((o) => !o)}
                 title="Menu"
                 aria-label="Menu"
@@ -137,12 +140,25 @@ export default function Navbar({
                 <QuestionMarkCircleIcon className="h-6 w-6 cursor-help" />
                 {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
               </div>
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                aria-label="Toggle dark mode"
+                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {darkMode ? (
+                  <SunIcon className="h-6 w-6" />
+                ) : (
+                  <MoonIcon className="h-6 w-6" />
+                )}
+              </button>
               <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} />
               <div className="relative">
                 <button
                   onClick={() => setUserOpen((o) => !o)}
-                  className="flex items-center space-x-1 focus:outline-none"
+                  className="flex items-center space-x-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
                   title="Account"
+                  aria-label="Account"
                 >
                   <UserCircleIcon className="h-6 w-6" />
                   <span className="text-sm">Bini</span>

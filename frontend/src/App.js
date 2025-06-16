@@ -134,6 +134,7 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [chatHistory, setChatHistory] = useState([]);
   const [loadingVendor, setLoadingVendor] = useState(false);
   const [loadingInsights, setLoadingInsights] = useState(false);
+  const [loadingAssistant, setLoadingAssistant] = useState(false);
   const [commentInputs, setCommentInputs] = useState({});
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
@@ -1082,6 +1083,7 @@ useEffect(() => {
   const handleAssistantQuery = async (question) => {
     if (!question.trim()) return;
     try {
+      setLoadingAssistant(true);
       const res = await fetch('http://localhost:3000/api/invoices/assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -1090,18 +1092,24 @@ useEffect(() => {
       const data = await res.json();
       if (res.ok) {
         setChatHistory((h) => [...h, { type: 'chat', question, answer: data.answer }]);
+        addToast('✅ Response ready');
       } else {
+        addToast(data.message || 'Error', 'error');
         setChatHistory((h) => [...h, { type: 'chat', question, answer: data.message || 'Error' }]);
       }
     } catch (err) {
       console.error('Assistant query failed:', err);
+      addToast('Failed to get answer', 'error');
       setChatHistory((h) => [...h, { type: 'chat', question, answer: 'Failed to get answer.' }]);
+    } finally {
+      setLoadingAssistant(false);
     }
   };
 
   const handleBillingQuery = async (question) => {
     if (!question.trim()) return;
     try {
+      setLoadingAssistant(true);
       const res = await fetch('http://localhost:3000/api/invoices/billing-query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -1110,18 +1118,24 @@ useEffect(() => {
       const data = await res.json();
       if (res.ok) {
         setChatHistory((h) => [...h, { type: 'chat', question, answer: JSON.stringify(data.rows) }]);
+        addToast('✅ Billing results ready');
       } else {
+        addToast(data.message || 'Error', 'error');
         setChatHistory((h) => [...h, { type: 'chat', question, answer: data.message || 'Error' }]);
       }
     } catch (err) {
       console.error('Billing query failed:', err);
+      addToast('Failed to get answer', 'error');
       setChatHistory((h) => [...h, { type: 'chat', question, answer: 'Failed to get answer.' }]);
+    } finally {
+      setLoadingAssistant(false);
     }
   };
 
   const handleChartQuery = async (question) => {
     if (!question.trim()) return;
     try {
+      setLoadingAssistant(true);
       const res = await fetch('http://localhost:3000/api/invoices/nl-chart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -1130,6 +1144,7 @@ useEffect(() => {
       const data = await res.json();
       if (res.ok) {
         setChatHistory((h) => [...h, { type: 'chart', question, chartData: data.rows }]);
+        addToast('✅ Chart ready');
       } else {
         addToast(data.message, 'error');
         setChatHistory((h) => [...h, { type: 'chart', question, chartData: [] }]);
@@ -1138,6 +1153,8 @@ useEffect(() => {
       console.error('Chart query failed:', err);
       addToast('Failed to run query', 'error');
       setChatHistory((h) => [...h, { type: 'chart', question, chartData: [] }]);
+    } finally {
+      setLoadingAssistant(false);
     }
   };
   
@@ -2979,6 +2996,7 @@ useEffect(() => {
             onChart={handleChartQuery}
             onBilling={handleBillingQuery}
             history={chatHistory}
+            loading={loadingAssistant}
           />
           <VendorProfilePanel
             vendor={vendorPanelVendor}

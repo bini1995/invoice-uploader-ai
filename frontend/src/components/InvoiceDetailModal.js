@@ -98,7 +98,14 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate })
           ) : (
             <button onClick={() => setEditMode(true)} className="bg-indigo-600 text-white px-3 py-1 rounded" title="Edit">Edit</button>
           )}
-          <button onClick={onClose} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700" title="Close">Close</button>
+          <button
+            onClick={onClose}
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            title="Close"
+            aria-label="Close details"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
