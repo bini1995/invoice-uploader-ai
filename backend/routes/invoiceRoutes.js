@@ -8,6 +8,7 @@ const { login, refreshToken, logout, authMiddleware, authorizeRoles } = require(
 
 const {
   uploadInvoice,
+  voiceUpload,
   getAllInvoices,
   clearAllInvoices,
   deleteInvoiceById,
@@ -64,7 +65,7 @@ const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
 const { suggestVendor } = require('../controllers/aiController');
-const { naturalLanguageQuery } = require("../controllers/aiController");
+const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/aiController");
 const { flagSuspiciousInvoice } = require('../controllers/invoiceController');
 const { getActivityLogs, getInvoiceTimeline, exportComplianceReport } = require('../controllers/activityController');
 const { setBudget, getBudgets, checkBudgetWarnings, getBudgetVsActual } = require('../controllers/budgetController');
@@ -81,11 +82,13 @@ router.post('/:id/mark-paid', authMiddleware, authorizeRoles('finance','admin'),
 router.post('/suggest-vendor', suggestVendor);
 router.post('/send-email', sendSummaryEmail);
 router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoice);
+router.post('/voice-upload', authMiddleware, authorizeRoles('admin'), voiceUpload);
 router.get('/', getAllInvoices);
 router.delete('/clear', authMiddleware, authorizeRoles('admin'), clearAllInvoices);
 router.delete('/:id', authMiddleware, authorizeRoles('admin'), deleteInvoiceById);
 router.get('/search', searchInvoicesByVendor);
 router.post('/nl-query', authMiddleware, naturalLanguageQuery);
+router.post('/nl-search', authMiddleware, naturalLanguageSearch);
 router.post('/nl-chart', authMiddleware, nlChartQuery);
 router.post('/quality-score', authMiddleware, invoiceQualityScore);
 router.post('/payment-risk', authMiddleware, paymentRiskScore);

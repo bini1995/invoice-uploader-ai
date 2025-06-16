@@ -178,6 +178,8 @@ exports.naturalLanguageQuery = async (req, res) => {
   }
 };
 
+exports.naturalLanguageSearch = exports.naturalLanguageQuery;
+
 // Invoice quality scoring
 exports.invoiceQualityScore = async (req, res) => {
   try {
