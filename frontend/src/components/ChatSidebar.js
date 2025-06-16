@@ -3,6 +3,7 @@ import {
   ChatBubbleLeftRightIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import Spinner from './Spinner';
 import SuggestionChips from './SuggestionChips';
 import {
   BarChart,
@@ -14,7 +15,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 
-export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, history }) {
+export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, history, loading }) {
   const [question, setQuestion] = useState('');
   const [chartQ, setChartQ] = useState('');
   const [billingQ, setBillingQ] = useState('');
@@ -43,13 +44,21 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="chat-title"
       className={`fixed bottom-4 right-4 w-80 h-96 max-w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg transform transition-transform z-30 ${
         open ? 'translate-y-0' : 'translate-y-full'
       }`}
     >
       <div className="p-2 border-b flex justify-between items-center">
-        <h2 className="text-lg font-semibold">AI Assistant</h2>
-        <button onClick={onClose} title="Close">
+        <h2 id="chat-title" className="text-lg font-semibold">AI Assistant</h2>
+        <button
+          onClick={onClose}
+          title="Close"
+          aria-label="Close chat"
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+        >
           <XMarkIcon className="w-5 h-5" />
         </button>
       </div>
@@ -80,14 +89,28 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
       </div>
       <div className="p-2 space-y-2 border-t">
         <SuggestionChips suggestions={suggestions} onClick={handleSuggestion} />
+        {loading && (
+          <div className="flex justify-center py-2">
+            <Spinner className="h-4 w-4" />
+          </div>
+        )}
         <div className="flex space-x-1">
           <input
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && submitAsk()}
             placeholder="Ask AI..."
+            aria-label="Ask AI"
             className="input flex-1 text-sm"
+            disabled={loading}
           />
-          <button onClick={submitAsk} className="btn btn-primary text-sm" title="Ask">
+          <button
+            onClick={submitAsk}
+            className="btn btn-primary text-sm"
+            title="Ask"
+            aria-label="Submit question"
+            disabled={loading}
+          >
             <ChatBubbleLeftRightIcon className="w-4 h-4" />
           </button>
         </div>
@@ -95,13 +118,18 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
           <input
             value={chartQ}
             onChange={(e) => setChartQ(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && submitChart()}
             placeholder="Chart query..."
+            aria-label="Chart query"
             className="input flex-1 text-sm"
+            disabled={loading}
           />
           <button
             onClick={submitChart}
             className="btn bg-green-600 hover:bg-green-700 text-white text-sm"
             title="Chart"
+            aria-label="Submit chart query"
+            disabled={loading}
           >
             Chart
           </button>
@@ -110,13 +138,18 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
           <input
             value={billingQ}
             onChange={(e) => setBillingQ(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && submitBilling()}
             placeholder="Billing question..."
+            aria-label="Billing question"
             className="input flex-1 text-sm"
+            disabled={loading}
           />
           <button
             onClick={submitBilling}
             className="btn bg-indigo-500 hover:bg-indigo-600 text-white text-sm"
             title="Billing"
+            aria-label="Submit billing question"
+            disabled={loading}
           >
             Billing
           </button>

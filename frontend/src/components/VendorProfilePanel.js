@@ -36,7 +36,14 @@ export default function VendorProfilePanel({ vendor, open, onClose, token }) {
         <div className="p-4 space-y-2 h-full overflow-y-auto">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold">{vendor}</h2>
-            <button onClick={onClose} className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700" title="Close">Close</button>
+            <button
+              onClick={onClose}
+              className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              title="Close"
+              aria-label="Close profile"
+            >
+              Close
+            </button>
           </div>
           {loading ? (
             <p className="text-sm">Loading...</p>

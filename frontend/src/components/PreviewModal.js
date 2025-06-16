@@ -42,8 +42,9 @@ export default function PreviewModal({ open, onClose, onConfirm, data }) {
           )}
           <button
             onClick={onClose}
-            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm"
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             title="Close"
+            aria-label="Close preview"
           >
             Close
           </button>

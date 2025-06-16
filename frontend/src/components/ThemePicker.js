@@ -44,7 +44,12 @@ export default function ThemePicker({ darkMode, setDarkMode }) {
 
   return (
     <div className="relative">
-      <button onClick={() => setOpen(o => !o)} className="focus:outline-none" title="Theme Picker">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+        title="Theme Picker"
+        aria-label="Theme Picker"
+      >
         <PaintBrushIcon className="h-6 w-6" />
       </button>
       {open && (
