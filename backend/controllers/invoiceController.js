@@ -106,6 +106,23 @@ exports.uploadInvoice = async (req, res) => {
         return;
       }
 
+      const contentHash = crypto
+        .createHash('sha256')
+        .update(`${invoice_number}|${amount}|${vendor}`)
+        .digest('hex');
+      try {
+        const dupRes = await pool.query(
+          'SELECT id FROM invoices WHERE content_hash = $1 OR (invoice_number = $2 AND vendor = $3 AND amount = $4) LIMIT 1',
+          [contentHash, invoice_number, vendor, amount]
+        );
+        if (dupRes.rows.length) {
+          warnings.push(`Row ${rowNum}: Possible duplicate of invoice ID ${dupRes.rows[0].id}`);
+          continue;
+        }
+      } catch (dupErr) {
+        console.error('Duplicate check failed:', dupErr.message);
+      }
+
       const department = inv.department?.trim() || req.body.department;
       const exchangeRate = await getExchangeRate(currency);
       const originalAmount = parseFloat(amount);
@@ -126,6 +143,7 @@ exports.uploadInvoice = async (req, res) => {
         exchange_rate: exchangeRate,
         vat_percent: vatPercent,
         vat_amount: vatAmount,
+        content_hash: contentHash,
         approval_chain: workflow.approvalChain,
         autoApprove: workflow.autoApprove,
       });
@@ -153,8 +171,8 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -167,6 +185,7 @@ exports.uploadInvoice = async (req, res) => {
           JSON.stringify(approvalChain),
           currentStep,
           integrityHash,
+          inv.content_hash,
           blockchainTx,
           retention,
           deleteAt,
