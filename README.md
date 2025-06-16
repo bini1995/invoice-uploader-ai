@@ -98,6 +98,7 @@ ALTER TABLE invoices ADD COLUMN current_step INTEGER DEFAULT 0;
 ALTER TABLE invoices ADD COLUMN payment_terms TEXT;
 ALTER TABLE invoices ADD COLUMN private_notes TEXT;
 ALTER TABLE invoices ADD COLUMN due_date DATE;
+ALTER TABLE invoices ADD COLUMN po_id INTEGER;
 ALTER TABLE invoices ADD COLUMN integrity_hash TEXT;
 ALTER TABLE invoices ADD COLUMN retention_policy TEXT DEFAULT 'forever';
 ALTER TABLE invoices ADD COLUMN delete_at TIMESTAMP;
@@ -150,6 +151,20 @@ CREATE TABLE feedback (
 );
 ```
 
+Create a `purchase_orders` table to track POs:
+
+```sql
+CREATE TABLE purchase_orders (
+  id SERIAL PRIMARY KEY,
+  po_number TEXT UNIQUE,
+  vendor TEXT NOT NULL,
+  amount NUMERIC NOT NULL,
+  matched_invoice_id INTEGER,
+  status TEXT DEFAULT 'Open',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
 ### Auto-Archive Rule
 
 The backend automatically archives invoices older than 90 days
@@ -167,6 +182,13 @@ apply custom approval rules:
 - **Finance** – requires two separate approvals.
 - **Legal** – auto-approves and is meant for comments only.
 - **Ops** – invoices under $100 auto-approve, others need one manager step.
+
+### Purchase Order Matching
+
+Upload purchase orders separately and the backend will automatically match new invoices
+by vendor and amount. Invoices without a matching PO are flagged for manual review
+and trigger Slack/Teams alerts. Approved invoices must follow the defined multi-level
+workflow based on the `approval_chain`.
 
 ### Categorization Rules
 
@@ -202,6 +224,8 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `GET /api/invoices/shared/:token` – access a shared invoice view
 - `POST /api/payments/:id/link` – generate a payment link for an invoice
 - `POST /api/payments/stripe/webhook` – Stripe webhook endpoint for status updates
+- `POST /api/pos/upload` – upload a CSV of purchase orders
+- `GET /api/pos` – list all purchase orders
 
 ### Vendor Reply Drafts
 

@@ -14,6 +14,7 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_terms TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS private_notes TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS due_date DATE");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS po_id INTEGER");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS integrity_hash TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS retention_policy TEXT DEFAULT 'forever'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS delete_at TIMESTAMP");
@@ -77,6 +78,16 @@ async function initDb() {
       interval_days INTEGER NOT NULL,
       next_run TIMESTAMP NOT NULL,
       user_id INTEGER
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS purchase_orders (
+      id SERIAL PRIMARY KEY,
+      po_number TEXT UNIQUE,
+      vendor TEXT NOT NULL,
+      amount NUMERIC NOT NULL,
+      matched_invoice_id INTEGER,
+      status TEXT DEFAULT 'Open',
+      created_at TIMESTAMP DEFAULT NOW()
     )`);
   } catch (err) {
     console.error('Database init error:', err);

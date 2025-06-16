@@ -150,6 +150,24 @@ exports.uploadInvoice = async (req, res) => {
       );
       const newId = insertRes.rows[0].id;
       await autoAssignInvoice(newId, inv.vendor, inv.tags || []);
+
+      try {
+        const poRes = await pool.query(
+          'SELECT id FROM purchase_orders WHERE vendor = $1 AND amount = $2 AND matched_invoice_id IS NULL LIMIT 1',
+          [inv.vendor, inv.amount]
+        );
+        if (poRes.rows.length) {
+          const poId = poRes.rows[0].id;
+          await pool.query('UPDATE purchase_orders SET matched_invoice_id = $1, status = $2 WHERE id = $3', [newId, 'Matched', poId]);
+          await pool.query('UPDATE invoices SET po_id = $1 WHERE id = $2', [poId, newId]);
+        } else {
+          await pool.query('UPDATE invoices SET flagged = TRUE, flag_reason = $1 WHERE id = $2', ['No matching PO', newId]);
+          await sendSlackNotification(`Invoice ${inv.invoice_number} missing matching PO`);
+          await sendTeamsNotification(`Invoice ${inv.invoice_number} missing matching PO`);
+        }
+      } catch (poErr) {
+        console.error('PO match error:', poErr.message);
+      }
     }
 
     fs.unlinkSync(req.file.path); // cleanup uploaded file
@@ -579,6 +597,9 @@ exports.approveInvoice = async (req, res) => {
     const invoice = invRes.rows[0];
     const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
     const step = chain[invoice.current_step] || 'Unknown';
+    if (req.user?.role !== 'admin' && req.user?.role !== step.toLowerCase()) {
+      return res.status(403).json({ message: `Only ${step} may approve at this step` });
+    }
     const nextStep = invoice.current_step + 1;
     const status = nextStep >= chain.length ? 'Approved' : 'In Progress';
 
@@ -610,6 +631,9 @@ exports.rejectInvoice = async (req, res) => {
     const invoice = invRes.rows[0];
     const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
     const step = chain[invoice.current_step] || 'Unknown';
+    if (req.user?.role !== 'admin' && req.user?.role !== step.toLowerCase()) {
+      return res.status(403).json({ message: `Only ${step} may reject at this step` });
+    }
 
     const result = await pool.query(
       `UPDATE invoices SET approval_status = 'Rejected',
@@ -796,6 +820,9 @@ exports.bulkApproveInvoices = async (req, res) => {
       const invoice = invRes.rows[0];
       const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
       const step = chain[invoice.current_step] || 'Unknown';
+      if (req.user?.role !== 'admin' && req.user?.role !== step.toLowerCase()) {
+        continue;
+      }
       const nextStep = invoice.current_step + 1;
       const status = nextStep >= chain.length ? 'Approved' : 'In Progress';
       await pool.query(
@@ -829,6 +856,9 @@ exports.bulkRejectInvoices = async (req, res) => {
       const invoice = invRes.rows[0];
       const chain = invoice.approval_chain || ['Manager','Finance','CFO'];
       const step = chain[invoice.current_step] || 'Unknown';
+      if (req.user?.role !== 'admin' && req.user?.role !== step.toLowerCase()) {
+        continue;
+      }
       await pool.query(
         `UPDATE invoices SET approval_status = 'Rejected', current_step = -1,
          approval_history = coalesce(approval_history, '[]'::jsonb) || jsonb_build_array(jsonb_build_object('step',$1,'status','Rejected','date', NOW(),'comment',$2))
