@@ -55,8 +55,9 @@ exports.uploadInvoice = async (req, res) => {
     }
     const validRows = [];
     const errors = [];
+    const warnings = [];
 
-    invoices.forEach((inv, index) => {
+    for (const [index, inv] of invoices.entries()) {
       const rowNum = index + 1;
 
       const invoice_number = inv.invoice_number?.trim();
@@ -93,7 +94,23 @@ exports.uploadInvoice = async (req, res) => {
         approval_chain: workflow.approvalChain,
         autoApprove: workflow.autoApprove,
       });
-    });
+
+      try {
+        const start = new Date(new Date(date).getFullYear(), new Date(date).getMonth(), 1);
+        const end = new Date(new Date(date).getFullYear(), new Date(date).getMonth() + 1, 1);
+        const spendRes = await pool.query(
+          'SELECT SUM(amount) AS total FROM invoices WHERE vendor = $1 AND date >= $2 AND date < $3',
+          [vendor, start, end]
+        );
+        const current = parseFloat(spendRes.rows[0].total || 0);
+        const newTotal = current + parseFloat(amount);
+        if (newTotal > 10000) {
+          warnings.push(`Vendor ${vendor} has charged $${newTotal.toFixed(2)} this month`);
+        }
+      } catch (e) {
+        console.error('Warning check failed:', e.message);
+      }
+    }
 
     const tenantId = req.headers['x-tenant-id'] || 'default';
     for (const inv of validRows) {
@@ -133,10 +150,49 @@ exports.uploadInvoice = async (req, res) => {
       message: 'Upload complete',
       inserted: validRows.length,
       errors,
+      warnings,
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.voiceUpload = async (req, res) => {
+  try {
+    const { text } = req.body || {};
+    if (!text) return res.status(400).json({ message: 'No voice text provided' });
+
+    const match = text.match(/for\s+(.+?),\s*\$([0-9,.]+),\s*(.+)/i);
+    if (!match) {
+      return res.status(400).json({ message: 'Could not parse voice text' });
+    }
+
+    const vendor = match[1].trim();
+    const amount = parseFloat(match[2].replace(/,/g, ''));
+    const date = new Date(match[3].trim());
+    const invoice_number = `VOICE-${Date.now()}`;
+
+    const csv = `invoice_number,date,amount,vendor\n${invoice_number},${date
+      .toISOString()
+      .split('T')[0]},${amount},${vendor}\n`;
+
+    const doc = new PDFDocument();
+    const chunks = [];
+    doc.on('data', (c) => chunks.push(c));
+    doc.on('end', () => {
+      const pdf = Buffer.concat(chunks).toString('base64');
+      res.json({ invoice_number, vendor, amount, date: date.toISOString(), csv, pdf });
+    });
+    doc.fontSize(18).text(`Invoice #${invoice_number}`, { align: 'center' });
+    doc.moveDown();
+    doc.fontSize(12).text(`Vendor: ${vendor}`);
+    doc.text(`Date: ${date.toISOString().split('T')[0]}`);
+    doc.text(`Amount: $${amount.toFixed(2)}`);
+    doc.end();
+  } catch (err) {
+    console.error('Voice upload error:', err);
+    res.status(500).json({ message: 'Failed to process voice upload' });
   }
 };
 
@@ -1818,6 +1874,7 @@ module.exports = {
   updateInvoiceField: exports.updateInvoiceField,
   // ✅ Add all others you want to expose:
   uploadInvoice: exports.uploadInvoice,
+  voiceUpload: exports.voiceUpload,
   getAllInvoices: exports.getAllInvoices,
   clearAllInvoices: exports.clearAllInvoices,
   deleteInvoiceById: exports.deleteInvoiceById,

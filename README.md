@@ -39,6 +39,10 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - AI explanations for why an invoice was flagged
 - "Why did AI say this?" links show confidence and reasoning
 - AI-powered bulk categorization of uploaded invoices
+- Predictive vendor behavior suggestions
+- Anomaly warnings before upload
+- Voice-to-upload for quick invoice creation
+- Natural language invoice search
 - Hoverable vendor bios with website and industry info
 - AI fraud detection heatmaps (color-coded anomaly maps)
 - Automatic vendor bios + risk scores from public data

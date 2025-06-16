@@ -82,3 +82,35 @@ exports.matchVendors = async (req, res) => {
     res.status(500).json({ message: 'Failed to match vendors' });
   }
 };
+
+exports.predictVendorBehavior = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT date, amount FROM invoices WHERE LOWER(vendor)=LOWER($1) ORDER BY date',
+      [vendor]
+    );
+    if (result.rows.length < 2) {
+      return res.json({ message: 'Not enough data to predict' });
+    }
+    const dates = result.rows.map((r) => new Date(r.date));
+    const amounts = result.rows.map((r) => parseFloat(r.amount));
+    const intervals = [];
+    for (let i = 1; i < dates.length; i++) {
+      intervals.push((dates[i] - dates[i - 1]) / (24 * 60 * 60 * 1000));
+    }
+    const avgInterval =
+      intervals.reduce((a, b) => a + b, 0) / intervals.length;
+    const avgAmount = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+    const nextDate = new Date(
+      dates[dates.length - 1].getTime() + avgInterval * 24 * 60 * 60 * 1000
+    );
+    res.json({
+      predicted_date: nextDate.toISOString().split('T')[0],
+      predicted_amount: parseFloat(avgAmount.toFixed(2)),
+    });
+  } catch (err) {
+    console.error('Vendor prediction error:', err);
+    res.status(500).json({ message: 'Failed to predict vendor behavior' });
+  }
+};
