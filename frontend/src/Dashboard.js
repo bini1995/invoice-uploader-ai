@@ -94,7 +94,7 @@ function Dashboard() {
         <h1 className="text-xl font-bold">AI Dashboard</h1>
         <div className="space-x-2">
           <button onClick={handleExportPDF} className="underline mr-2">Export PDF</button>
-          <Link to="/" className="underline">Back to App</Link>
+          <Link to="/invoices" className="underline">Back to App</Link>
         </div>
       </nav>
       {!token ? (

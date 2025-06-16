@@ -63,7 +63,7 @@ function Archive() {
       <div className="flex-1 p-4 pt-16">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
         <h1 className="text-3xl font-bold">Invoice Archive</h1>
-        <Link to="/" className="underline">Back to App</Link>
+        <Link to="/invoices" className="underline">Back to App</Link>
       </nav>
       <div className="space-y-4">
         <div className="flex flex-wrap items-end space-x-2">
