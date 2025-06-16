@@ -16,6 +16,7 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS due_date DATE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS po_id INTEGER");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS integrity_hash TEXT");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS content_hash TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS blockchain_tx TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS retention_policy TEXT DEFAULT 'forever'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS delete_at TIMESTAMP");

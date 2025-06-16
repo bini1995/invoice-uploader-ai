@@ -34,6 +34,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Fraud pattern detection for suspicious vendor activity
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications
+- Invoice duplication prevention using content hashes
 - Recurring billing templates with automated sending and payment retries
 - Linked invoice relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
@@ -118,6 +119,7 @@ ALTER TABLE invoices ADD COLUMN private_notes TEXT;
 ALTER TABLE invoices ADD COLUMN due_date DATE;
 ALTER TABLE invoices ADD COLUMN po_id INTEGER;
 ALTER TABLE invoices ADD COLUMN integrity_hash TEXT;
+ALTER TABLE invoices ADD COLUMN content_hash TEXT;
 ALTER TABLE invoices ADD COLUMN retention_policy TEXT DEFAULT 'forever';
 ALTER TABLE invoices ADD COLUMN delete_at TIMESTAMP;
 ALTER TABLE invoices ADD COLUMN tenant_id TEXT DEFAULT 'default';
