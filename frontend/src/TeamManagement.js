@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Skeleton from './components/Skeleton';
 import { Link } from 'react-router-dom';
 
 function TeamManagement() {
@@ -6,6 +7,7 @@ function TeamManagement() {
   const role = localStorage.getItem('role') || '';
   const [users, setUsers] = useState([]);
   const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [newRole, setNewRole] = useState('viewer');
@@ -24,7 +26,12 @@ function TeamManagement() {
     if (res.ok) setLogs(data);
   };
 
-  useEffect(() => { if (token) { fetchUsers(); fetchLogs(); } }, [token]);
+  useEffect(() => {
+    if (token) {
+      setLoading(true);
+      Promise.all([fetchUsers(), fetchLogs()]).finally(() => setLoading(false));
+    }
+  }, [token]);
 
   const addUser = async () => {
     await fetch('http://localhost:3000/api/users', {
@@ -87,30 +94,40 @@ function TeamManagement() {
             </tr>
           </thead>
           <tbody>
-            {users.map(u => (
-              <tr key={u.id} className="border-t hover:bg-gray-100">
-                <td className="p-2">{u.username}</td>
-                <td className="p-2">
-                  <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="input p-1">
-                    <option value="viewer">viewer</option>
-                    <option value="approver">approver</option>
-                    <option value="admin">admin</option>
-                  </select>
-                </td>
-                <td className="p-2">
-                  <button onClick={() => deleteUser(u.id)} className="text-red-600" title="Remove">Remove</button>
-                </td>
+            {loading ? (
+              <tr>
+                <td colSpan="3" className="p-4"><Skeleton rows={5} height="h-4" /></td>
               </tr>
-            ))}
+            ) : (
+              users.map(u => (
+                <tr key={u.id} className="border-t hover:bg-gray-100">
+                  <td className="p-2">{u.username}</td>
+                  <td className="p-2">
+                    <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="input p-1">
+                      <option value="viewer">viewer</option>
+                      <option value="approver">approver</option>
+                      <option value="admin">admin</option>
+                    </select>
+                  </td>
+                  <td className="p-2">
+                    <button onClick={() => deleteUser(u.id)} className="text-red-600" title="Remove">Remove</button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
         </div>
         <div>
           <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Activity Logs</h2>
           <ul className="max-h-64 overflow-y-auto text-sm">
-            {logs.map(log => (
-              <li key={log.id}>{new Date(log.created_at).toLocaleString()} - {log.action} (user {log.user_id})</li>
-            ))}
+            {loading ? (
+              <Skeleton rows={3} height="h-4" />
+            ) : (
+              logs.map(log => (
+                <li key={log.id}>{new Date(log.created_at).toLocaleString()} - {log.action} (user {log.user_id})</li>
+              ))
+            )}
           </ul>
         </div>
       </div>

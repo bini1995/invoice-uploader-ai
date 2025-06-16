@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import Skeleton from './components/Skeleton';
 import { Link } from 'react-router-dom';
 
 function VendorManagement() {
   const token = localStorage.getItem('token') || '';
   const [vendors, setVendors] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [notesInput, setNotesInput] = useState({});
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
   const fetchVendors = async () => {
+    setLoading(true);
     const res = await fetch('http://localhost:3000/api/vendors', { headers });
     const data = await res.json();
     if (res.ok) setVendors(data.vendors || []);
+    setLoading(false);
   };
 
   useEffect(() => { if (token) fetchVendors(); }, [token]);
@@ -52,29 +56,35 @@ function VendorManagement() {
           </tr>
         </thead>
         <tbody>
-          {vendors.map(v => (
-            <tr key={v.vendor} className="border-t hover:bg-gray-100">
-              <td className="p-2">{v.vendor}</td>
-              <td className="p-2">{v.last_invoice ? new Date(v.last_invoice).toLocaleDateString() : '-'}</td>
-              <td className="p-2">${v.total_spend.toFixed(2)}</td>
-              <td className="p-2">
-                <textarea
-                  className="input w-full p-1"
-                  value={notesInput[v.vendor] ?? v.notes}
-                  onChange={e => setNotesInput({ ...notesInput, [v.vendor]: e.target.value })}
-                />
-              </td>
-              <td className="p-2">
-                <button
-                  onClick={() => saveNotes(v.vendor)}
-                  className="bg-indigo-600 text-white px-3 py-1 rounded"
-                  title="Save"
-                >
-                  Save
-                </button>
-              </td>
+          {loading ? (
+            <tr>
+              <td colSpan="5" className="p-4"><Skeleton rows={5} height="h-4" /></td>
             </tr>
-          ))}
+          ) : (
+            vendors.map(v => (
+              <tr key={v.vendor} className="border-t hover:bg-gray-100">
+                <td className="p-2">{v.vendor}</td>
+                <td className="p-2">{v.last_invoice ? new Date(v.last_invoice).toLocaleDateString() : '-'}</td>
+                <td className="p-2">${v.total_spend.toFixed(2)}</td>
+                <td className="p-2">
+                  <textarea
+                    className="input w-full p-1"
+                    value={notesInput[v.vendor] ?? v.notes}
+                    onChange={e => setNotesInput({ ...notesInput, [v.vendor]: e.target.value })}
+                  />
+                </td>
+                <td className="p-2">
+                  <button
+                    onClick={() => saveNotes(v.vendor)}
+                    className="bg-indigo-600 text-white px-3 py-1 rounded"
+                    title="Save"
+                  >
+                    Save
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
       </div>

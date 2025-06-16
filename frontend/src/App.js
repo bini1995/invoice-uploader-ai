@@ -156,6 +156,17 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [selectedPreset, setSelectedPreset] = useState('');
   const [presetName, setPresetName] = useState('');
 
+  const activeFilters = useMemo(() => {
+    const filters = [];
+    if (searchTerm) filters.push(`Search: ${searchTerm}`);
+    if (selectedVendor) filters.push(`Vendor: ${selectedVendor}`);
+    if (selectedAssignee) filters.push(`Assignee: ${selectedAssignee}`);
+    if (minAmount) filters.push(`Min: ${minAmount}`);
+    if (maxAmount) filters.push(`Max: ${maxAmount}`);
+    if (showArchived) filters.push('Archived');
+    return filters;
+  }, [searchTerm, selectedVendor, selectedAssignee, minAmount, maxAmount, showArchived]);
+
 
   const addToast = (
     text,
@@ -2320,12 +2331,36 @@ useEffect(() => {
                   <span>Total Amount: <strong>${totalAmount}</strong></span>
                 </div>
                 <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded border">
+                  <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b p-2 flex flex-wrap items-center gap-2">
+                    {activeFilters.map((f, idx) => (
+                      <span key={idx} className="bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 rounded">
+                        {f}
+                      </span>
+                    ))}
+                    {filterPresets.length > 0 && (
+                      <select
+                        value={selectedPreset}
+                        onChange={(e) => {
+                          setSelectedPreset(e.target.value);
+                          handleApplyPreset(e.target.value);
+                        }}
+                        className="input text-xs ml-auto"
+                      >
+                        <option value="">Presets</option>
+                        {filterPresets.map((p) => (
+                          <option key={p.name} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
 
                 {viewMode !== 'graph' && (
                   viewMode === 'table' ? (
               <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded-lg border">
               <table className="min-w-full bg-white border border-gray-300 text-sm rounded-lg overflow-hidden">
-              <thead className="bg-gray-200 text-gray-700 sticky top-0 z-10 shadow-md">
+              <thead className="bg-gray-200 text-gray-700 sticky top-8 z-10 shadow-md">
                   <tr>
                     <th className="border px-4 py-2">
                       <input

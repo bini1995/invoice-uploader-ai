@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Skeleton from './components/Skeleton';
 import { Link } from 'react-router-dom';
 
 function Reports() {
@@ -9,10 +10,13 @@ function Reports() {
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
   const [invoices, setInvoices] = useState([]);
+  const [loadingReport, setLoadingReport] = useState(false);
+  const [loadingRules, setLoadingRules] = useState(true);
   const [threshold, setThreshold] = useState(5000);
   const [rules, setRules] = useState([]);
 
   const fetchReport = async () => {
+    setLoadingReport(true);
     const params = new URLSearchParams();
     if (vendor) params.append('vendor', vendor);
     if (startDate) params.append('startDate', startDate);
@@ -24,6 +28,7 @@ function Reports() {
     });
     const data = await res.json();
     if (res.ok) setInvoices(data.invoices || []);
+    setLoadingReport(false);
   };
 
   const exportPDF = async () => {
@@ -51,6 +56,7 @@ function Reports() {
     });
     const data = await res.json();
     if (res.ok) setRules(data.rules || []);
+    setLoadingRules(false);
   };
 
   const addAmountRule = async () => {
@@ -62,7 +68,12 @@ function Reports() {
     loadRules();
   };
 
-  useEffect(() => { if (token) loadRules(); }, [token]);
+  useEffect(() => {
+    if (token) {
+      setLoadingRules(true);
+      loadRules();
+    }
+  }, [token]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 pt-16">
@@ -91,7 +102,11 @@ function Reports() {
             <button onClick={addAmountRule} className="btn btn-primary" title="Set Threshold">Set Threshold</button>
           </div>
           <ul className="list-disc pl-5 mt-2 text-gray-700 dark:text-gray-300">
-            {rules.map((r, i) => <li key={i}>{r.flagReason}</li>)}
+            {loadingRules ? (
+              <Skeleton rows={2} height="h-4" />
+            ) : (
+              rules.map((r, i) => <li key={i}>{r.flagReason}</li>)
+            )}
           </ul>
         </div>
         <div className="overflow-x-auto rounded-lg">
@@ -105,14 +120,20 @@ function Reports() {
               </tr>
             </thead>
             <tbody>
-              {invoices.map(inv => (
-                <tr key={inv.id} className="border-t hover:bg-gray-100">
-                  <td className="px-2 py-1">{inv.invoice_number}</td>
-                  <td className="px-2 py-1">{new Date(inv.date).toLocaleDateString()}</td>
-                  <td className="px-2 py-1">{inv.vendor}</td>
-                  <td className="px-2 py-1">${inv.amount}</td>
+              {loadingReport ? (
+                <tr>
+                  <td colSpan="4" className="p-4"><Skeleton rows={5} height="h-4" /></td>
                 </tr>
-              ))}
+              ) : (
+                invoices.map(inv => (
+                  <tr key={inv.id} className="border-t hover:bg-gray-100">
+                    <td className="px-2 py-1">{inv.invoice_number}</td>
+                    <td className="px-2 py-1">{new Date(inv.date).toLocaleDateString()}</td>
+                    <td className="px-2 py-1">{inv.vendor}</td>
+                    <td className="px-2 py-1">${inv.amount}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
