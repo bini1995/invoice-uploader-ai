@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Skeleton from './components/Skeleton';
 import VendorProfilePanel from './components/VendorProfilePanel';
+import SidebarNav from './components/SidebarNav';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
@@ -18,6 +19,10 @@ function Dashboard() {
   const [budget, setBudget] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [notifications] = useState(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     if (!token) return;
@@ -82,7 +87,9 @@ function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 pt-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      <SidebarNav notifications={notifications} />
+      <div className="flex-1 p-4 pt-16">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
         <h1 className="text-xl font-bold">AI Dashboard</h1>
         <div className="space-x-2">
@@ -265,6 +272,7 @@ function Dashboard() {
           <VendorProfilePanel vendor={selectedVendor} open={!!selectedVendor} onClose={() => setSelectedVendor(null)} token={token} />
         </div>
       )}
+      </div>
     </div>
   );
 }

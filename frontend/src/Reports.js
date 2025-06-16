@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Skeleton from './components/Skeleton';
 import { Link } from 'react-router-dom';
+import SidebarNav from './components/SidebarNav';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
@@ -14,6 +15,10 @@ function Reports() {
   const [loadingRules, setLoadingRules] = useState(true);
   const [threshold, setThreshold] = useState(5000);
   const [rules, setRules] = useState([]);
+  const [notifications] = useState(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const fetchReport = async () => {
     setLoadingReport(true);
@@ -76,7 +81,9 @@ function Reports() {
   }, [token]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 pt-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      <SidebarNav notifications={notifications} />
+      <div className="flex-1 p-4 pt-16">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
         <h1 className="text-xl font-bold">Reports</h1>
         <Link to="/" className="underline">Back to App</Link>

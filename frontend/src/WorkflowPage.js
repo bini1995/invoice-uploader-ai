@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import WorkflowBuilder from './components/WorkflowBuilder';
+import SidebarNav from './components/SidebarNav';
 
 export default function WorkflowPage() {
   const token = localStorage.getItem('token') || '';
   const [steps, setSteps] = useState(['Finance', 'Manager', 'Legal']);
+  const [notifications] = useState(() => {
+    const saved = localStorage.getItem('notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     fetch('http://localhost:3000/api/workflows', {
@@ -26,9 +31,12 @@ export default function WorkflowPage() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">Workflow Builder</h1>
-      <WorkflowBuilder steps={steps} onChange={save} />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      <SidebarNav notifications={notifications} />
+      <div className="flex-1 p-4">
+        <h1 className="text-xl font-semibold mb-4">Workflow Builder</h1>
+        <WorkflowBuilder steps={steps} onChange={save} />
+      </div>
     </div>
   );
 }
