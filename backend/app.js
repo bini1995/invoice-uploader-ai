@@ -17,6 +17,7 @@ const workflowRoutes = require('./routes/workflowRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const recurringRoutes = require('./routes/recurringRoutes');
 const poRoutes = require('./routes/poRoutes');
+const integrationRoutes = require('./routes/integrationRoutes');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices } = require('./controllers/invoiceController');
@@ -45,6 +46,7 @@ app.use('/api/pos', poRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/recurring', recurringRoutes);
+app.use('/api/integrations', integrationRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 

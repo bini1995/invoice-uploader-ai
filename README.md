@@ -76,6 +76,8 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Shareable collaborator mode with comment-only or editor access
 - Manual or API-driven payment status sync
 - Multi-currency support with automatic VAT/GST calculations
+- Automation marketplace integrations (Zapier/Make) for Slack, QuickBooks and Google Sheets via `/api/integrations`
+- Blockchain-backed invoice validation with PDF hashing for tamper-proof records
 
 ## Setup Instructions
 
