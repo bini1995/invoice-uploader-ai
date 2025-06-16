@@ -56,6 +56,7 @@ const {
   getVendorScorecards,
   getRelationshipGraph,
   setReviewFlag,
+  setFlaggedStatus,
   setPaymentStatus,
   shareInvoices,
   getSharedInvoices,
@@ -150,6 +151,7 @@ router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/suggest-tag-colors', authMiddleware, suggestTagColors);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.patch('/:id/review-flag', authMiddleware, authorizeRoles('admin','reviewer'), setReviewFlag);
+router.patch('/:id/flag', authMiddleware, authorizeRoles('reviewer','admin'), setFlaggedStatus);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
 router.get('/logs/export', authMiddleware, authorizeRoles('admin'), exportComplianceReport);
 router.get('/logs/invoice/:id/export', authMiddleware, authorizeRoles('admin'), exportInvoiceHistory);
