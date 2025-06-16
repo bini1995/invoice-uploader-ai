@@ -692,6 +692,13 @@ useEffect(() => {
     });
     return () => socket.off('chatMessage');
   }, [socket]);
+
+  useEffect(() => {
+    socket.on('notification', (n) => {
+      if (n && n.text) addNotification(n.text);
+    });
+    return () => socket.off('notification');
+  }, [socket]);
   
   
 

@@ -2,7 +2,8 @@ const pool = require('../config/db');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { sendSlackNotification } = require('../utils/notify');
+const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
+const { broadcastNotification } = require('../utils/chatServer');
 
 async function createPaymentLink(req, res) {
   const { id } = req.params;
@@ -98,7 +99,8 @@ async function processFailedPayments() {
 async function sendPaymentReminders() {
   try {
     const now = new Date();
-    const upcoming = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const leadDays = parseInt(process.env.DUE_REMINDER_DAYS || '3', 10);
+    const upcoming = new Date(now.getTime() + leadDays * 24 * 60 * 60 * 1000);
     const { rows } = await pool.query(
       `SELECT id, invoice_number, vendor, due_date, amount
        FROM invoices
@@ -135,6 +137,8 @@ async function sendPaymentReminders() {
           text,
         });
         await sendSlackNotification?.(`Payment reminder sent: ${subject}`);
+        await sendTeamsNotification?.(`Payment reminder sent: ${subject}`);
+        broadcastNotification?.(subject);
       } catch (err) {
         console.error('Reminder email error:', err);
       }
