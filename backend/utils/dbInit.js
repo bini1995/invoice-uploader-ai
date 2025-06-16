@@ -40,10 +40,15 @@ async function initDb() {
     await pool.query(`CREATE TABLE IF NOT EXISTS activity_logs (
       id SERIAL PRIMARY KEY,
       user_id INTEGER,
+      username TEXT,
       action TEXT NOT NULL,
       invoice_id INTEGER,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(
+      "ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS username TEXT"
+    );
 
     await pool.query(`CREATE TABLE IF NOT EXISTS budgets (
       id SERIAL PRIMARY KEY,

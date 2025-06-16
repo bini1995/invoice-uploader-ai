@@ -39,7 +39,7 @@ exports.updateVendorNotes = async (req, res) => {
        ON CONFLICT (vendor) DO UPDATE SET notes = EXCLUDED.notes`,
       [vendor, notes || '']
     );
-    await logActivity(req.user?.userId, 'update_vendor_notes');
+    await logActivity(req.user?.userId, 'update_vendor_notes', null, req.user?.username);
     res.json({ message: 'Notes updated' });
   } catch (err) {
     console.error('Update vendor notes error:', err);

@@ -14,9 +14,10 @@ import {
   CartesianGrid,
 } from 'recharts';
 
-export default function ChatSidebar({ open, onClose, onAsk, onChart, history }) {
+export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, history }) {
   const [question, setQuestion] = useState('');
   const [chartQ, setChartQ] = useState('');
+  const [billingQ, setBillingQ] = useState('');
   const suggestions = [
     'Find duplicate invoices',
     'Summarize top vendors',
@@ -34,6 +35,10 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, history }) 
   const submitChart = () => {
     onChart(chartQ);
     setChartQ('');
+  };
+  const submitBilling = () => {
+    onBilling(billingQ);
+    setBillingQ('');
   };
 
   return (
@@ -99,6 +104,21 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, history }) 
             title="Chart"
           >
             Chart
+          </button>
+        </div>
+        <div className="flex space-x-1">
+          <input
+            value={billingQ}
+            onChange={(e) => setBillingQ(e.target.value)}
+            placeholder="Billing question..."
+            className="input flex-1 text-sm"
+          />
+          <button
+            onClick={submitBilling}
+            className="btn bg-indigo-500 hover:bg-indigo-600 text-white text-sm"
+            title="Billing"
+          >
+            Billing
           </button>
         </div>
       </div>

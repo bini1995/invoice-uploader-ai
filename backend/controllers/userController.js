@@ -121,7 +121,7 @@ exports.addUser = (req, res) => {
   const passwordHash = bcrypt.hashSync(password, 10);
   const user = { id, username, passwordHash, role };
   USERS.push(user);
-  logActivity(req.user?.userId, 'add_user');
+  logActivity(req.user?.userId, 'add_user', null, req.user?.username);
   res.json({ id, username, role });
 };
 
@@ -132,7 +132,7 @@ exports.deleteUser = (req, res) => {
     return res.status(404).json({ message: 'User not found' });
   }
   USERS.splice(idx, 1);
-  logActivity(req.user?.userId, 'delete_user');
+  logActivity(req.user?.userId, 'delete_user', null, req.user?.username);
   res.json({ message: 'User deleted' });
 };
 
@@ -144,6 +144,6 @@ exports.updateUserRole = (req, res) => {
     return res.status(404).json({ message: 'User not found' });
   }
   user.role = role;
-  logActivity(req.user?.userId, 'update_user_role');
+  logActivity(req.user?.userId, 'update_user_role', null, req.user?.username);
   res.json({ id: user.id, username: user.username, role: user.role });
 };

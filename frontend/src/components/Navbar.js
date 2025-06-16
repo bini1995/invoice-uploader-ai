@@ -13,7 +13,9 @@ import {
   ArchiveBoxIcon,
   UsersIcon,
   UserCircleIcon,
+  QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
+import HelpTooltip from './HelpTooltip';
 
 export default function Navbar({
   tenant,
@@ -29,6 +31,7 @@ export default function Navbar({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -102,6 +105,10 @@ export default function Navbar({
                   )}
                 </div>
               )}
+              <div className="relative" onMouseEnter={() => setHelpOpen(true)} onMouseLeave={() => setHelpOpen(false)}>
+                <QuestionMarkCircleIcon className="h-6 w-6 cursor-help" />
+                {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
+              </div>
               <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} />
               <div className="relative">
                 <button

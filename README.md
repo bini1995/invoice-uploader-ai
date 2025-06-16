@@ -21,9 +21,12 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Auto-generated payment request PDFs and vendor follow-up drafts
 - User ratings on AI responses continuously improve future accuracy
 - Ask Me Anything assistant for financial questions
+- AI assistant can answer billing support queries
 - (e.g. "Which vendors had the most inconsistencies last month?")
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
+- Downloadable audit history per vendor or invoice
+- Detailed logs show who made each change
 - Auto-routing invoices by vendor or tag
 - Budget threshold warnings
 - Anomaly detection dashboard
