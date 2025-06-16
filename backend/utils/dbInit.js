@@ -24,6 +24,10 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'Pending'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_link TEXT");
 
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS retry_count INTEGER DEFAULT 0");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS next_retry TIMESTAMP");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS late_fee NUMERIC DEFAULT 0");
+
     await pool.query(`CREATE TABLE IF NOT EXISTS activity_logs (
       id SERIAL PRIMARY KEY,
       user_id INTEGER,
@@ -63,6 +67,16 @@ async function initDb() {
       invoice_ids INTEGER[] NOT NULL,
       role TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS recurring_templates (
+      id SERIAL PRIMARY KEY,
+      vendor TEXT NOT NULL,
+      amount NUMERIC NOT NULL,
+      description TEXT,
+      interval_days INTEGER NOT NULL,
+      next_run TIMESTAMP NOT NULL,
+      user_id INTEGER
     )`);
   } catch (err) {
     console.error('Database init error:', err);

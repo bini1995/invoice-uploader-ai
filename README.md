@@ -29,6 +29,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Fraud pattern detection for suspicious vendor activity
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications
+- Recurring billing templates with automated sending and payment retries
 - Linked invoice relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
 - Analytics and reports page with filtering and PDF export
@@ -250,6 +251,10 @@ Example response:
 ```json
 { "vendor": "Acme", "amount": 199.99, "due_date": "2025-06-01" }
 ```
+
+### Recurring & Automated Billing
+
+Create recurring templates that automatically generate new invoices on a schedule. Failed payments are retried up to three times and a 2% late fee is applied after the final attempt. The AI layer predicts payment likelihood and sends Slack/Teams alerts for invoices with a low chance of payment.
 
 ### Feedback Loop
 
