@@ -52,6 +52,9 @@ const {
   getVendorScorecards,
   getRelationshipGraph,
   setReviewFlag,
+  setPaymentStatus,
+  shareInvoices,
+  getSharedInvoices,
 } = require('../controllers/invoiceController');
 
 
@@ -73,6 +76,7 @@ const { scenarioCashFlow } = require('../controllers/scenarioController');
 
 
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
+router.patch('/:id/payment-status', authMiddleware, authorizeRoles('finance','admin'), setPaymentStatus);
 router.post('/:id/mark-paid', authMiddleware, authorizeRoles('finance','admin'), markInvoicePaid);
 router.post('/suggest-vendor', suggestVendor);
 router.post('/send-email', sendSummaryEmail);
@@ -149,6 +153,8 @@ router.get('/graph', authMiddleware, getRelationshipGraph);
 router.get('/:id/pdf', authMiddleware, generateInvoicePDF);
 router.get('/:id/payment-request', authMiddleware, paymentRequest);
 router.get('/:id/payment-request/pdf', authMiddleware, paymentRequestPDF);
+router.post('/share', authMiddleware, authorizeRoles('admin','reviewer'), shareInvoices);
+router.get('/shared/:token', getSharedInvoices);
 
 
 

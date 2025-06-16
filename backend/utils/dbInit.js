@@ -21,6 +21,7 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS department TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS review_flag BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS review_notes TEXT");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'Pending'");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS activity_logs (
       id SERIAL PRIMARY KEY,
@@ -54,6 +55,13 @@ async function initDb() {
     await pool.query(`CREATE TABLE IF NOT EXISTS workflows (
       department TEXT PRIMARY KEY,
       approval_chain JSONB NOT NULL
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS shared_views (
+      token TEXT PRIMARY KEY,
+      invoice_ids INTEGER[] NOT NULL,
+      role TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
     )`);
   } catch (err) {
     console.error('Database init error:', err);

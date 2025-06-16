@@ -61,3 +61,24 @@ exports.getVendorInfo = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch vendor info' });
   }
 };
+
+const levenshtein = require('fast-levenshtein');
+
+exports.matchVendors = async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.status(400).json({ message: 'Query parameter q required' });
+  try {
+    const result = await pool.query('SELECT DISTINCT vendor FROM invoices');
+    const threshold = Math.max(2, Math.floor(q.length * 0.4));
+    const matches = result.rows
+      .map(r => r.vendor)
+      .map(v => ({ vendor: v, distance: levenshtein.get(v.toLowerCase(), q.toLowerCase()) }))
+      .filter(v => v.distance <= threshold)
+      .sort((a, b) => a.distance - b.distance)
+      .map(v => v.vendor);
+    res.json({ matches });
+  } catch (err) {
+    console.error('Vendor match error:', err);
+    res.status(500).json({ message: 'Failed to match vendors' });
+  }
+};

@@ -53,6 +53,9 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Scenario planning to test payment delays
 - Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
 - Vendor management page with notes and spending totals per vendor
+- Smart vendor matching for inconsistent spellings
+- Shareable collaborator mode with comment-only or editor access
+- Manual or API-driven payment status sync
 
 ## Setup Instructions
 
@@ -186,6 +189,10 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `GET /api/invoices/graph` – network graph data linking vendors and duplicate invoices
 - `GET /api/vendors` – list vendors with last invoice date and total spend
 - `PATCH /api/vendors/:vendor/notes` – update notes for a vendor
+- `GET /api/vendors/match?q=name` – fuzzy match vendor names
+- `PATCH /api/invoices/:id/payment-status` – update payment status
+- `POST /api/invoices/share` – generate a share link for selected invoices
+- `GET /api/invoices/shared/:token` – access a shared invoice view
 
 ### Vendor Reply Drafts
 
