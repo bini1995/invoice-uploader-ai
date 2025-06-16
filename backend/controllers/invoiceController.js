@@ -198,7 +198,7 @@ exports.uploadInvoice = async (req, res) => {
     }
 
     fs.unlinkSync(req.file.path); // cleanup uploaded file
-    await logActivity(req.user?.userId, 'upload_invoice');
+    await logActivity(req.user?.userId, 'upload_invoice', null, req.user?.username);
 
     res.json({
       message: 'Upload complete',
@@ -307,7 +307,7 @@ exports.getAllInvoices = async (req, res) => {
 exports.clearAllInvoices = async (req, res) => {
   try {
     await pool.query('DELETE FROM invoices');
-    await logActivity(req.user?.userId, 'clear_invoices');
+    await logActivity(req.user?.userId, 'clear_invoices', null, req.user?.username);
     res.json({ message: 'All invoices deleted successfully.' });
   } catch (err) {
     console.error('Error deleting invoices:', err);
@@ -349,7 +349,7 @@ exports.deleteInvoiceById = async (req, res) => {
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Invoice not found' });
     }
-    await logActivity(req.user?.userId, 'delete_invoice', id);
+    await logActivity(req.user?.userId, 'delete_invoice', id, req.user?.username);
     res.json({ message: 'Invoice deleted' });
   } catch (err) {
     console.error(err);
@@ -662,7 +662,7 @@ exports.approveInvoice = async (req, res) => {
        WHERE id = $5 RETURNING approval_status, approval_history, current_step`,
       [status, nextStep, step, comment || '', id]
     );
-    await logActivity(req.user?.userId, 'approve_invoice', id);
+    await logActivity(req.user?.userId, 'approve_invoice', id, req.user?.username);
     const nextLabel = nextStep >= chain.length ? 'Completed' : `Next: ${chain[nextStep]}`;
     const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
     await sendSlackNotification(msg);
@@ -694,7 +694,7 @@ exports.rejectInvoice = async (req, res) => {
        WHERE id = $3 RETURNING approval_status, approval_history`,
       [step, comment || '', id]
     );
-    await logActivity(req.user?.userId, 'reject_invoice', id);
+    await logActivity(req.user?.userId, 'reject_invoice', id, req.user?.username);
     await sendSlackNotification(`Invoice ${id} rejected.`);
     await sendTeamsNotification(`Invoice ${id} rejected.`);
     res.json({ message: 'Invoice rejected', invoice: result.rows[0] });
@@ -715,7 +715,7 @@ exports.addComment = async (req, res) => {
       [text, id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Invoice not found' });
-    await logActivity(req.user?.userId, 'add_comment', id);
+    await logActivity(req.user?.userId, 'add_comment', id, req.user?.username);
     const message = { text, user: req.user?.userId || 'anon', date: new Date().toISOString(), invoiceId: parseInt(id,10) };
     broadcastMessage(id, message);
     res.json({ message: 'Comment added', comments: result.rows[0].comments });
@@ -730,7 +730,7 @@ exports.updatePrivateNotes = async (req, res) => {
   const { notes } = req.body;
   try {
     await pool.query('UPDATE invoices SET private_notes = $1 WHERE id = $2', [notes || '', id]);
-    await logActivity(req.user?.userId, 'update_notes', id);
+    await logActivity(req.user?.userId, 'update_notes', id, req.user?.username);
     res.json({ message: 'Notes updated' });
   } catch (err) {
     console.error('Update notes error:', err);
@@ -752,7 +752,7 @@ exports.updateRetentionPolicy = async (req, res) => {
       'UPDATE invoices SET retention_policy = $1, delete_at = $2 WHERE id = $3',
       [retention || 'forever', deleteAt, id]
     );
-    await logActivity(req.user?.userId, 'update_retention', id);
+    await logActivity(req.user?.userId, 'update_retention', id, req.user?.username);
     res.json({ message: 'Retention policy updated' });
   } catch (err) {
     console.error('Retention update error:', err);
@@ -837,7 +837,7 @@ exports.bulkArchiveInvoices = async (req, res) => {
   }
   try {
     await pool.query('UPDATE invoices SET archived = TRUE WHERE id = ANY($1::int[])', [ids]);
-    await logActivity(req.user?.userId, 'bulk_archive');
+    await logActivity(req.user?.userId, 'bulk_archive', null, req.user?.username);
     res.json({ message: 'Invoices archived' });
   } catch (err) {
     console.error('Bulk archive error:', err);
@@ -852,7 +852,7 @@ exports.bulkAssignInvoices = async (req, res) => {
   }
   try {
     await pool.query('UPDATE invoices SET assignee = $1 WHERE id = ANY($2::int[])', [assignee || null, ids]);
-    await logActivity(req.user?.userId, 'bulk_assign');
+    await logActivity(req.user?.userId, 'bulk_assign', null, req.user?.username);
     res.json({ message: 'Invoices assigned' });
   } catch (err) {
     console.error('Bulk assign error:', err);
@@ -888,7 +888,7 @@ exports.bulkApproveInvoices = async (req, res) => {
       await sendSlackNotification(msg);
       await sendTeamsNotification(msg);
     }
-    await logActivity(req.user?.userId, 'bulk_approve');
+    await logActivity(req.user?.userId, 'bulk_approve', null, req.user?.username);
     res.json({ message: 'Invoices approved' });
   } catch (err) {
     console.error('Bulk approve error:', err);
@@ -918,7 +918,7 @@ exports.bulkRejectInvoices = async (req, res) => {
         [step, comment || '', id]
       );
     }
-    await logActivity(req.user?.userId, 'bulk_reject');
+    await logActivity(req.user?.userId, 'bulk_reject', null, req.user?.username);
     res.json({ message: 'Invoices rejected' });
   } catch (err) {
     console.error('Bulk reject error:', err);
@@ -933,7 +933,7 @@ exports.bulkDeleteInvoices = async (req, res) => {
   }
   try {
     await pool.query('DELETE FROM invoices WHERE id = ANY($1::int[])', [ids]);
-    await logActivity(req.user?.userId, 'bulk_delete');
+    await logActivity(req.user?.userId, 'bulk_delete', null, req.user?.username);
     res.json({ message: 'Invoices deleted' });
   } catch (err) {
     console.error('Bulk delete error:', err);
@@ -957,7 +957,7 @@ exports.bulkUpdateInvoices = async (req, res) => {
     values.push(ids);
     const query = `UPDATE invoices SET ${sets.join(', ')} WHERE id = ANY($${idx}::int[])`;
     await pool.query(query, values);
-    await logActivity(req.user?.userId, 'bulk_update');
+    await logActivity(req.user?.userId, 'bulk_update', null, req.user?.username);
     res.json({ message: 'Invoices updated' });
   } catch (err) {
     console.error('Bulk update error:', err);
@@ -1188,7 +1188,8 @@ exports.setReviewFlag = async (req, res) => {
     await logActivity(
       req.user?.userId,
       flag ? 'flag_review' : 'unflag_review',
-      id
+      id,
+      req.user?.username
     );
     res.json({ message: 'Review flag updated' });
   } catch (err) {

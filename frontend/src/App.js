@@ -1099,6 +1099,26 @@ useEffect(() => {
     }
   };
 
+  const handleBillingQuery = async (question) => {
+    if (!question.trim()) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/billing-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ question }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setChatHistory((h) => [...h, { type: 'chat', question, answer: JSON.stringify(data.rows) }]);
+      } else {
+        setChatHistory((h) => [...h, { type: 'chat', question, answer: data.message || 'Error' }]);
+      }
+    } catch (err) {
+      console.error('Billing query failed:', err);
+      setChatHistory((h) => [...h, { type: 'chat', question, answer: 'Failed to get answer.' }]);
+    }
+  };
+
   const handleChartQuery = async (question) => {
     if (!question.trim()) return;
     try {
@@ -2963,6 +2983,7 @@ useEffect(() => {
             onClose={() => setAssistantOpen(false)}
             onAsk={handleAssistantQuery}
             onChart={handleChartQuery}
+            onBilling={handleBillingQuery}
             history={chatHistory}
           />
           <VendorProfilePanel

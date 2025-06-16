@@ -63,14 +63,14 @@ const {
 
 
 const { summarizeUploadErrors } = require('../controllers/aiController');
-const { invoiceQualityScore, assistantQuery, paymentRiskScore, paymentLikelihood, nlChartQuery, suggestTagColors } = require('../controllers/aiController');
+const { invoiceQualityScore, assistantQuery, billingQuery, onboardingHelp, paymentRiskScore, paymentLikelihood, nlChartQuery, suggestTagColors } = require('../controllers/aiController');
 const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
 const { suggestVendor, suggestVoucher } = require('../controllers/aiController');
 const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/aiController");
 const { flagSuspiciousInvoice } = require('../controllers/invoiceController');
-const { getActivityLogs, getInvoiceTimeline, exportComplianceReport } = require('../controllers/activityController');
+const { getActivityLogs, getInvoiceTimeline, exportComplianceReport, exportInvoiceHistory, exportVendorHistory } = require('../controllers/activityController');
 const { setBudget, getBudgets, checkBudgetWarnings, getBudgetVsActual } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns, fraudHeatmap } = require('../controllers/fraudController');
@@ -99,6 +99,8 @@ router.post('/quality-score', authMiddleware, invoiceQualityScore);
 router.post('/payment-risk', authMiddleware, paymentRiskScore);
 router.post('/payment-likelihood', authMiddleware, paymentLikelihood);
 router.post('/assistant', authMiddleware, assistantQuery);
+router.post('/billing-query', authMiddleware, billingQuery);
+router.get('/help/onboarding', authMiddleware, onboardingHelp);
 router.post('/summarize-errors', summarizeUploadErrors);
 router.post('/login', login);
 router.post('/refresh', refreshToken);
@@ -148,6 +150,8 @@ router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.patch('/:id/review-flag', authMiddleware, authorizeRoles('admin','reviewer'), setReviewFlag);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
 router.get('/logs/export', authMiddleware, authorizeRoles('admin'), exportComplianceReport);
+router.get('/logs/invoice/:id/export', authMiddleware, authorizeRoles('admin'), exportInvoiceHistory);
+router.get('/logs/vendor/:vendor/export', authMiddleware, authorizeRoles('admin'), exportVendorHistory);
 router.get('/:id/timeline', authMiddleware, getInvoiceTimeline);
 router.post('/budgets', authMiddleware, authorizeRoles('admin'), setBudget);
 router.get('/budgets', authMiddleware, authorizeRoles('admin'), getBudgets);

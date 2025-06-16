@@ -69,3 +69,40 @@ exports.exportComplianceReport = async (_req, res) => {
     res.status(500).json({ message: 'Failed to export compliance report' });
   }
 };
+
+exports.exportInvoiceHistory = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const logs = await pool.query(
+      'SELECT * FROM activity_logs WHERE invoice_id = $1 ORDER BY created_at',
+      [id]
+    );
+    const parser = new Parser();
+    const csv = parser.parse(logs.rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="invoice_${id}_history.csv"`);
+    res.send(csv);
+  } catch (err) {
+    console.error('Invoice history export error:', err);
+    res.status(500).json({ message: 'Failed to export invoice history' });
+  }
+};
+
+exports.exportVendorHistory = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    const logs = await pool.query(
+      `SELECT a.* FROM activity_logs a JOIN invoices i ON a.invoice_id = i.id
+       WHERE LOWER(i.vendor) = LOWER($1) ORDER BY a.created_at`,
+      [vendor]
+    );
+    const parser = new Parser();
+    const csv = parser.parse(logs.rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="vendor_${vendor}_history.csv"`);
+    res.send(csv);
+  } catch (err) {
+    console.error('Vendor history export error:', err);
+    res.status(500).json({ message: 'Failed to export vendor history' });
+  }
+};
