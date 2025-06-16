@@ -7,7 +7,7 @@ export default function SidebarNav({ notifications = [] }) {
   const unread = notifications.filter(n => !n.read).length;
 
   return (
-    <aside className="bg-white dark:bg-gray-800 shadow-lg w-48 md:w-56 p-4 space-y-2">
+    <aside className="hidden sm:block bg-white dark:bg-gray-800 shadow-lg w-48 md:w-56 p-4 space-y-2">
       <button
         onClick={() => setOpen(!open)}
         className="w-full text-left font-semibold mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"

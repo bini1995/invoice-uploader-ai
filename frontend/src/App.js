@@ -714,8 +714,12 @@ useEffect(() => {
         if (missing.length) {
           errors.push(`${f.name} missing: ${missing.join(', ')}`);
         }
-      } else if (ext !== '.pdf') {
-        errors.push(`${f.name} is not a CSV or PDF file`);
+      } else if (ext === '.pdf') {
+        // handled server-side; rows remain N/A
+      } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
+        // image uploads use OCR on the backend
+      } else {
+        errors.push(`${f.name} is not a CSV, PDF or image file`);
       }
 
       previews.push({ file: f, name: f.name, size: f.size, rows, preview });
@@ -1858,11 +1862,12 @@ useEffect(() => {
       onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
       onClick={() => fileInputRef.current.click()}
     >
-      <p className="text-sm text-gray-500 dark:text-gray-300">Drag & drop CSV/PDF here or click to select</p>
+      <p className="text-sm text-gray-500 dark:text-gray-300">Drag & drop CSV/PDF/Image here or tap to select or capture</p>
       <input
         type="file"
         multiple
-        accept=".csv,.pdf"
+        accept=".csv,.pdf,.png,.jpg,.jpeg"
+        capture="environment"
         ref={fileInputRef}
         disabled={!token}
         onChange={(e) => handleFiles(e.target.files)}
