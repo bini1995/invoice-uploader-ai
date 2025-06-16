@@ -152,3 +152,62 @@ exports.importVendorsCSV = async (req, res) => {
     res.status(500).json({ message: 'Failed to import vendors' });
   }
 };
+
+// Deep vendor behavior analytics
+exports.getBehaviorFlags = async (_req, res) => {
+  try {
+    const now = new Date();
+    const budgetRes = await pool.query(
+      "SELECT vendor, amount FROM budgets WHERE period='monthly' AND vendor IS NOT NULL"
+    );
+    const flagged = {};
+    for (const b of budgetRes.rows) {
+      let exceed = 0;
+      for (let i = 1; i <= 3; i++) {
+        const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+        const r = await pool.query(
+          'SELECT SUM(amount) AS total FROM invoices WHERE vendor=$1 AND date >= $2 AND date < $3',
+          [b.vendor, start, end]
+        );
+        const total = parseFloat(r.rows[0].total) || 0;
+        if (total > parseFloat(b.amount)) exceed++;
+      }
+      if (exceed >= 2) flagged[b.vendor] = ['budget_exceeded'];
+    }
+
+    const payRes = await pool.query(
+      `SELECT vendor, COUNT(*) AS cnt, AVG(GREATEST(0, EXTRACT(DAY FROM NOW() - due_date))) AS avg_late
+       FROM invoices
+       WHERE due_date IS NOT NULL AND due_date < NOW() AND payment_status != 'Paid'
+       GROUP BY vendor`
+    );
+    payRes.rows.forEach((r) => {
+      if (parseInt(r.cnt, 10) >= 3 || parseFloat(r.avg_late) > 15) {
+        flagged[r.vendor] = flagged[r.vendor]
+          ? [...flagged[r.vendor], 'payment_delay']
+          : ['payment_delay'];
+      }
+    });
+
+    const bankRes = await pool.query(
+      `SELECT username AS vendor, COUNT(*) AS changes
+       FROM activity_logs
+       WHERE action='change_bank_info' AND created_at >= NOW() - INTERVAL '6 months'
+       GROUP BY username`
+    );
+    bankRes.rows.forEach((r) => {
+      if (parseInt(r.changes, 10) > 1) {
+        flagged[r.vendor] = flagged[r.vendor]
+          ? [...flagged[r.vendor], 'bank_changes']
+          : ['bank_changes'];
+      }
+    });
+
+    const flags = Object.entries(flagged).map(([vendor, reasons]) => ({ vendor, reasons }));
+    res.json({ flags });
+  } catch (err) {
+    console.error('Behavior flags error:', err);
+    res.status(500).json({ message: 'Failed to analyze vendor behavior' });
+  }
+};

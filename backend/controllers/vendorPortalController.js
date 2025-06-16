@@ -5,6 +5,7 @@ const pool = require('../config/db');
 const { parseCSV } = require('../utils/csvParser');
 const { parsePDF } = require('../utils/pdfParser');
 const { parseImage } = require('../utils/imageParser');
+const { logActivity } = require('../utils/activityLogger');
 
 const VENDORS = [
   { id: 1, name: 'Acme', password: 'acme123' },
@@ -45,8 +46,13 @@ exports.listInvoices = async (req, res) => {
   }
 };
 
-exports.updateBankInfo = (req, res) => {
+exports.updateBankInfo = async (req, res) => {
   BANK_INFO[req.vendor] = req.body.bank || '';
+  try {
+    await logActivity(null, 'change_bank_info', null, req.vendor);
+  } catch (err) {
+    console.error('Bank info log error:', err);
+  }
   res.json({ message: 'Bank info updated' });
 };
 
