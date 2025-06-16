@@ -1,6 +1,8 @@
 const pool = require('../config/db');
 const { logActivity } = require('../utils/activityLogger');
 const axios = require('axios');
+const { parse } = require('json2csv');
+const { parseCSV } = require('../utils/csvParser');
 
 exports.listVendors = async (_req, res) => {
   try {
@@ -112,5 +114,41 @@ exports.predictVendorBehavior = async (req, res) => {
   } catch (err) {
     console.error('Vendor prediction error:', err);
     res.status(500).json({ message: 'Failed to predict vendor behavior' });
+  }
+};
+
+exports.exportVendorsCSV = async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT vendor, notes FROM vendor_notes');
+    const csv = parse(result.rows, { fields: ['vendor', 'notes'] });
+    res.header('Content-Type', 'text/csv');
+    res.attachment('vendors.csv');
+    return res.send(csv);
+  } catch (err) {
+    console.error('Vendor export error:', err);
+    res.status(500).json({ message: 'Failed to export vendors' });
+  }
+};
+
+exports.importVendorsCSV = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    const rows = await parseCSV(req.file.path);
+    for (const row of rows) {
+      const vendor = row.vendor || row.name;
+      if (!vendor) continue;
+      await pool.query(
+        `INSERT INTO vendor_notes (vendor, notes)
+         VALUES ($1, $2)
+         ON CONFLICT (vendor) DO UPDATE SET notes = EXCLUDED.notes`,
+        [vendor, row.notes || '']
+      );
+    }
+    res.json({ imported: rows.length });
+  } catch (err) {
+    console.error('Vendor import error:', err);
+    res.status(500).json({ message: 'Failed to import vendors' });
   }
 };

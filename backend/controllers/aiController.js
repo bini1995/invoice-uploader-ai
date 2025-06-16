@@ -133,6 +133,49 @@ exports.suggestVendor = async (req, res) => {
   }
 };
 
+exports.suggestVoucher = async (req, res) => {
+  try {
+    const { vendor, amount } = req.body || {};
+    if (!vendor && !amount) {
+      return res.status(400).json({ message: 'Missing vendor or amount.' });
+    }
+
+    const prompt = `Given vendor "${vendor || 'Unknown'}" and amount "$${amount ||
+      'Unknown'}", suggest a likely expense voucher name or number (e.g., Office,
+      Travel, Consulting).`;
+
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You guess voucher categories.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+          'X-Title': 'invoice-uploader-ai',
+        },
+      }
+    );
+
+    const suggestion = response.data.choices[0]?.message?.content?.trim();
+    res.json({ suggestion });
+  } catch (error) {
+    console.error(
+      'AI voucher suggestion error:',
+      error.response?.data || error.message
+    );
+    res
+      .status(500)
+      .json({ message: 'Failed to generate voucher suggestion.' });
+  }
+};
+
 
 // Natural language invoice query -> SQL
 exports.naturalLanguageQuery = async (req, res) => {
