@@ -30,65 +30,65 @@ export default function SidebarNav({ notifications = [] }) {
           <nav className="space-y-1 text-sm">
             <Link
               to="/dashboard"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/dashboard' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/dashboard' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <HomeIcon className="w-5 h-5 mr-2" />
+              <HomeIcon className="w-5 h-5" />
               <span>Dashboard</span>
             </Link>
             <Link
               to="/invoices"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/invoices' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/invoices' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <DocumentIcon className="w-5 h-5 mr-2" />
+              <DocumentIcon className="w-5 h-5" />
               <span>Invoices</span>
             </Link>
             <Link
               to="/vendors"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/vendors' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/vendors' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <UsersIcon className="w-5 h-5 mr-2" />
+              <UsersIcon className="w-5 h-5" />
               <span>Vendors</span>
             </Link>
             <Link
               to="/analytics"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/analytics' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/analytics' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <DocumentChartBarIcon className="w-5 h-5 mr-2" />
+              <DocumentChartBarIcon className="w-5 h-5" />
               <span>Reports</span>
             </Link>
             <Link
               to="/audit"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/audit' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/audit' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <DocumentMagnifyingGlassIcon className="w-5 h-5 mr-2" />
+              <DocumentMagnifyingGlassIcon className="w-5 h-5" />
               <span>Audit</span>
             </Link>
             <Link
               to="/builder"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/builder' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/builder' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <WrenchScrewdriverIcon className="w-5 h-5 mr-2" />
+              <WrenchScrewdriverIcon className="w-5 h-5" />
               <span>Builder</span>
             </Link>
             <Link
               to="/board"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/board' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/board' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <Squares2X2Icon className="w-5 h-5 mr-2" />
+              <Squares2X2Icon className="w-5 h-5" />
               <span>Board</span>
             </Link>
             <Link
               to="/archive"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/archive' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/archive' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <ArchiveBoxIcon className="w-5 h-5 mr-2" />
+              <ArchiveBoxIcon className="w-5 h-5" />
               <span>Archive</span>
             </Link>
             <Link
               to="/settings"
-              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/settings' ? 'font-semibold' : ''}`}
+              className={`nav-link ${location.pathname === '/settings' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
-              <Cog6ToothIcon className="w-5 h-5 mr-2" />
+              <Cog6ToothIcon className="w-5 h-5" />
               <span>Settings</span>
             </Link>
           </nav>
