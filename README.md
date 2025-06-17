@@ -36,6 +36,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications
 - Invoice duplication prevention using content hashes
+- Invoice similarity detection to flag lookalike invoices
 - Recurring billing templates with automated sending and payment retries
 - Linked invoice relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
@@ -75,6 +76,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Live Invoice Feed shows uploads, flags and approvals in real time
 - Multi-tenant support so agencies can switch between different client accounts
 - Polite vendor notification emails for flagged or rejected invoices
+- Smart Email Drafting Engine 2.0 learns from past messages
 - Scenario planning to test payment delays
 - Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
 - Vendor management page with notes and spending totals per vendor

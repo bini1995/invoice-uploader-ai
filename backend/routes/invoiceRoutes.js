@@ -62,6 +62,7 @@ const {
   getSharedInvoices,
   getInvoiceVersions,
   restoreInvoiceVersion,
+  checkInvoiceSimilarity,
 } = require('../controllers/invoiceController');
 
 
@@ -69,6 +70,7 @@ const { summarizeUploadErrors } = require('../controllers/aiController');
 const { invoiceQualityScore, assistantQuery, billingQuery, onboardingHelp, paymentRiskScore, paymentLikelihood, nlChartQuery, suggestTagColors, paymentBehaviorByVendor } = require('../controllers/aiController');
 const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
+const { smartDraftEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
 const { suggestVendor, suggestVoucher } = require('../controllers/aiController');
 const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/aiController");
@@ -88,6 +90,7 @@ router.post('/:id/mark-paid', authMiddleware, authorizeRoles('finance','admin'),
 router.post('/suggest-vendor', suggestVendor);
 router.post('/suggest-voucher', suggestVoucher);
 router.post('/send-email', sendSummaryEmail);
+router.post('/draft-smart-email', authMiddleware, smartDraftEmail);
 router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoice);
 router.post('/import-csv', authMiddleware, authorizeRoles('admin'), upload.single('file'), importInvoicesCSV);
 router.post('/voice-upload', authMiddleware, authorizeRoles('admin'), voiceUpload);
@@ -125,6 +128,7 @@ router.get('/vendor-profile/:vendor', authMiddleware, getVendorProfile);
 router.get('/vendor-bio/:vendor', authMiddleware, getVendorBio);
 router.get('/dashboard/pdf', authMiddleware, exportDashboardPDF);
 router.post('/flag-suspicious', authMiddleware, flagSuspiciousInvoice);
+router.post('/check-similarity', authMiddleware, checkInvoiceSimilarity);
 router.get('/:id/flag-explanation', authMiddleware, explainFlaggedInvoice);
 router.get('/:id/explain', authMiddleware, explainInvoice);
 router.patch('/:id/archive', authMiddleware, archiveInvoice);
