@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import TagEditor from './TagEditor';
 
-export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate }) {
+export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ invoice_number: '', date: '', amount: '', vendor: '' });
+  const [timeline, setTimeline] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState('');
 
   useEffect(() => {
     if (invoice) {
@@ -12,8 +16,17 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate })
         amount: invoice.amount || '',
         vendor: invoice.vendor || '',
       });
+      setComments(invoice.comments || []);
+      if (token) {
+        fetch(`http://localhost:3000/api/invoices/${invoice.id}/timeline`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => res.json())
+          .then((data) => setTimeline(data))
+          .catch((err) => console.error('Timeline fetch failed:', err));
+      }
     }
-  }, [invoice]);
+  }, [invoice, token]);
 
   if (!open || !invoice) return null;
 
@@ -28,6 +41,24 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate })
       }
     });
     setEditMode(false);
+  };
+
+  const handleAddComment = async () => {
+    if (!commentInput) return;
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${invoice.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ text: commentInput }),
+      });
+      const data = await res.json();
+      if (res.ok && data.comments) {
+        setComments(data.comments);
+        setCommentInput('');
+      }
+    } catch (e) {
+      console.error('Add comment error:', e);
+    }
   };
 
   return (
@@ -87,6 +118,56 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate })
           <div>
             <span className="font-semibold mr-2">Updated:</span>
             {invoice.updated_at ? new Date(invoice.updated_at).toLocaleString() : ''}
+          </div>
+          <div>
+            <span className="font-semibold mr-2">Tags:</span>
+            <TagEditor
+              tags={invoice.tags || []}
+              onAddTag={async (tag) => {
+                await fetch(`http://localhost:3000/api/invoices/${invoice.id}/tags`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({ tag }),
+                }).then(() => {});
+              }}
+              onRemoveTag={async (tag) => {
+                const newTags = (invoice.tags || []).filter((t) => t !== tag);
+                await fetch(`http://localhost:3000/api/invoices/${invoice.id}/update-tags`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({ tags: newTags }),
+                }).then(() => {});
+              }}
+            />
+          </div>
+        </div>
+        <div className="mt-3">
+          <h3 className="font-semibold text-sm mb-1">Status History</h3>
+          <ul className="text-xs max-h-32 overflow-y-auto space-y-1">
+            {invoice.approval_history?.map((h, i) => (
+              <li key={i}>{new Date(h.date).toLocaleString()} - {h.step} {h.status}</li>
+            ))}
+            {timeline.map((t, i) => (
+              <li key={`tl-${i}`}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="mt-3">
+          <h3 className="font-semibold text-sm mb-1">Comments</h3>
+          <div className="space-y-1 max-h-32 overflow-y-auto text-xs mb-2">
+            {comments.length ? comments.map((c, i) => (
+              <div key={i} className="bg-gray-100 rounded p-1">{c.text}</div>
+            )) : <em className="text-gray-500">No comments</em>}
+          </div>
+          <div className="flex">
+            <input
+              type="text"
+              value={commentInput}
+              onChange={(e) => setCommentInput(e.target.value)}
+              className="input text-xs flex-1 px-1"
+              placeholder="Add comment"
+            />
+            <button onClick={handleAddComment} className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded">Post</button>
           </div>
         </div>
         <div className="mt-4 flex justify-end space-x-2">
