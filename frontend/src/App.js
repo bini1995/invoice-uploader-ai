@@ -24,6 +24,7 @@ import ChatSidebar from './components/ChatSidebar';
 import GraphView from './components/GraphView';
 import ConfirmModal from './components/ConfirmModal';
 import InvoiceDetailModal from './components/InvoiceDetailModal';
+import TagEditor from './components/TagEditor';
 import SuggestionChips from './components/SuggestionChips';
 import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
@@ -165,7 +166,6 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   });
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
-  const [tagInputs, setTagInputs] = useState({});
   const [confirmData, setConfirmData] = useState(null);
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
   const [filterPresets, setFilterPresets] = useState(() => {
@@ -1466,6 +1466,10 @@ useEffect(() => {
     }
   };
 
+  const openInvoiceDetails = (inv) => {
+    setDetailInvoice(inv);
+  };
+
   const handleQualityScore = async (invoice) => {
     try {
       const res = await fetch('http://localhost:3000/api/invoices/quality-score', {
@@ -1599,6 +1603,24 @@ useEffect(() => {
     } catch (err) {
       console.error(err);
       addToast('❌ Failed to add tag', 'error');
+    }
+  };
+
+  const handleRemoveTag = async (invoiceId, tag) => {
+    try {
+      const invoice = invoices.find((inv) => inv.id === invoiceId);
+      const newTags = (invoice?.tags || []).filter((t) => t !== tag);
+      const res = await fetch(`http://localhost:3000/api/invoices/${invoiceId}/update-tags`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ tags: newTags }),
+      });
+      if (!res.ok) throw new Error('Failed to update tags');
+      addToast('✅ Tag updated');
+      fetchInvoices(showArchived, selectedAssignee);
+    } catch (err) {
+      console.error(err);
+      addToast('❌ Failed to update tags', 'error');
     }
   };
 
@@ -1825,6 +1847,7 @@ useEffect(() => {
         invoice={detailInvoice}
         onClose={() => setDetailInvoice(null)}
         onUpdate={handleUpdateInvoice}
+        token={token}
       />
       <Navbar
         tenant={tenant}
@@ -2592,6 +2615,7 @@ useEffect(() => {
                         <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
                       )}
                     </th>
+                    <th className="border px-4 py-2">Tags</th>
                     <th className="border px-4 py-2">Created At</th>
                     <th className="border px-4 py-2">Assignee</th>
                     <th className="border px-4 py-2">Status</th>
@@ -2608,11 +2632,11 @@ useEffect(() => {
               <tbody>
               {loadingInvoices ? (
                 <tr>
-                  <td colSpan="7" className="py-6"><Skeleton rows={5} height="h-4" /></td>
+                  <td colSpan={role !== 'viewer' ? 14 : 13} className="py-6"><Skeleton rows={5} height="h-4" /></td>
                 </tr>
               ) : sortedInvoices.length === 0 ? (
                 <tr>
-                  <td colSpan="7">
+                  <td colSpan={role !== 'viewer' ? 14 : 13}>
                     <EmptyState />
                   </td>
                 </tr>
@@ -2646,7 +2670,7 @@ useEffect(() => {
                       />
                     </td>
                     <td className="border px-4 py-2">{inv.id}</td>
-                    <td className="border px-4 py-2 cursor-pointer" onClick={() => setSnapshotInvoice(inv)}>
+                    <td className="border px-4 py-2 cursor-pointer" onClick={() => openInvoiceDetails(inv)}>
                       <div className="flex flex-col items-center">
                         <span className="font-medium">{inv.invoice_number}</span>
                         <div className="flex space-x-1 mt-1">
@@ -2764,6 +2788,14 @@ useEffect(() => {
                           )}
                         </div>
                       )}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <TagEditor
+                        tags={inv.tags || []}
+                        colorMap={tagColors}
+                        onAddTag={(tag) => handleAddTag(inv.id, tag)}
+                        onRemoveTag={(tag) => handleRemoveTag(inv.id, tag)}
+                      />
                     </td>
                     <td className="border px-4 py-2">
                       {inv.created_at ? new Date(inv.created_at).toLocaleString() : '—'}
@@ -2912,22 +2944,6 @@ useEffect(() => {
                           🚩 {suspicionFlags[inv.id]}
                         </div>
                       )}
-                      <input
-                        type="text"
-                        value={tagInputs[inv.id] || ''}
-                        onChange={(e) =>
-                          setTagInputs((prev) => ({ ...prev, [inv.id]: e.target.value }))
-                        }
-                        placeholder="Add tag"
-                        className="input text-xs w-full"
-                      />
-                      <button
-                        onClick={() => handleAddTag(inv.id, tagInputs[inv.id])}
-                        className="bg-green-600 text-white px-2 py-1 mt-1 rounded hover:bg-green-700 text-xs w-full"
-                        title="Add Tag"
-                      >
-                        <PlusCircleIcon className="w-4 h-4" />
-                      </button>
                       {(role === 'approver' || role === 'admin') && (
                         <>
                           <button
@@ -2951,7 +2967,7 @@ useEffect(() => {
                   </tr>
                   {expandedRows.includes(inv.id) && (
                     <tr className="bg-gray-50">
-                      <td colSpan={role !== 'viewer' ? 13 : 12} className="p-2 text-left">
+                      <td colSpan={role !== 'viewer' ? 14 : 13} className="p-2 text-left">
                         {inv.comments?.length ? (
                           inv.comments.map((c, i) => (
                             <div key={i} className="text-xs mb-1">{c.text}</div>
@@ -2979,7 +2995,7 @@ useEffect(() => {
                   ) : sortedInvoices.map((inv) => (
                     <div
                     key={inv.id}
-                    onClick={() => setSnapshotInvoice(inv)}
+                    onClick={() => openInvoiceDetails(inv)}
                     className={`border rounded-lg p-4 shadow-md flex flex-col space-y-2 ${
                       inv.archived ? 'bg-gray-100 text-gray-500 italic' : 'bg-white'
                     } ${
@@ -3001,17 +3017,12 @@ useEffect(() => {
                           Info
                         </button>
                       </div>
-                      <div className="flex flex-wrap gap-1 text-xs">
-                        {inv.tags?.map((tag, i) => (
-                          <span
-                            key={i}
-                            className="px-2 py-0.5 rounded text-white"
-                            style={{ backgroundColor: tagColors[tag] || '#6366f1' }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                      <TagEditor
+                        tags={inv.tags || []}
+                        colorMap={tagColors}
+                        onAddTag={(tag) => handleAddTag(inv.id, tag)}
+                        onRemoveTag={(tag) => handleRemoveTag(inv.id, tag)}
+                      />
                       <div className="mt-2 flex flex-wrap gap-2">
                       {!inv.archived && (
                         <button
