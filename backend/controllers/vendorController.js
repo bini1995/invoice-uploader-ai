@@ -211,3 +211,47 @@ exports.getBehaviorFlags = async (_req, res) => {
     res.status(500).json({ message: 'Failed to analyze vendor behavior' });
   }
 };
+
+// Detailed vendor profile with invoices and analytics
+exports.getVendorAnalytics = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    const invoicesRes = await pool.query(
+      'SELECT * FROM invoices WHERE LOWER(vendor)=LOWER($1) ORDER BY date DESC',
+      [vendor]
+    );
+    const spendRes = await pool.query(
+      `SELECT DATE_TRUNC('month', date) AS month, SUM(amount) AS total
+       FROM invoices WHERE LOWER(vendor)=LOWER($1)
+       GROUP BY month ORDER BY month`,
+      [vendor]
+    );
+    const payRes = await pool.query(
+      `SELECT EXTRACT(EPOCH FROM (updated_at - date))/86400 AS days
+       FROM invoices WHERE LOWER(vendor)=LOWER($1) AND paid=TRUE AND updated_at IS NOT NULL`,
+      [vendor]
+    );
+    const avgPay = payRes.rows.length
+      ? payRes.rows.reduce((a, b) => a + parseFloat(b.days), 0) / payRes.rows.length
+      : null;
+    const riskRes = await pool.query(
+      `SELECT COUNT(*) FILTER (WHERE due_date < NOW() AND paid=FALSE) AS overdue, COUNT(*) AS total
+       FROM invoices WHERE LOWER(vendor)=LOWER($1)`,
+      [vendor]
+    );
+    const overdue = parseInt(riskRes.rows[0].overdue, 10);
+    const total = parseInt(riskRes.rows[0].total, 10) || 1;
+    const risk = Math.round((overdue / total) * 100);
+    const quality = 100 - risk;
+    res.json({
+      invoices: invoicesRes.rows,
+      avg_payment_time: avgPay,
+      spend: spendRes.rows.map(r => ({ month: r.month, total: parseFloat(r.total) })),
+      risk_score: risk,
+      quality_score: quality,
+    });
+  } catch (err) {
+    console.error('Vendor analytics error:', err);
+    res.status(500).json({ message: 'Failed to fetch vendor profile' });
+  }
+};

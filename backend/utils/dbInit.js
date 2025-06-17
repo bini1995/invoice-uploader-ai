@@ -9,6 +9,7 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS priority BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS flagged BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS flag_reason TEXT");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS category TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS approval_chain JSONB DEFAULT '[\"Manager\",\"Finance\",\"CFO\"]'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS current_step INTEGER DEFAULT 0");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_terms TEXT");

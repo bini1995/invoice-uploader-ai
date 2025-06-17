@@ -20,6 +20,7 @@ const { recordInvoiceVersion } = require('../utils/versionLogger');
 const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/assignment');
 const { encrypt } = require('../utils/encryption');
 const levenshtein = require('fast-levenshtein');
+const { categorizeInvoice } = require('../utils/categorize');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -166,8 +167,10 @@ exports.uploadInvoice = async (req, res) => {
         vendor,
       });
       const workflow = await getWorkflowForDepartment(department, parseFloat(amount));
+      const category = categorizeInvoice({ vendor, description: inv.description });
       validRows.push({
         ...withRules,
+        category,
         department,
         original_amount: originalAmount,
         currency,
@@ -203,14 +206,15 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, category, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
           inv.amount,
           inv.vendor,
           inv.tags || [],
+          inv.category || null,
           null,
           inv.flagged || false,
           inv.flag_reason,
@@ -1479,8 +1483,9 @@ exports.autoCategorizeInvoice = async (req, res) => {
       const aiTags = raw.split(/[,\n]/).map((t) => t.trim()).filter(Boolean);
       tags = Array.from(new Set([...(tags || []), ...aiTags]));
     }
-    await pool.query('UPDATE invoices SET tags = $1 WHERE id = $2', [tags, id]);
-    res.json({ id, tags });
+    const category = tags[0] || categorizeInvoice(invoice);
+    await pool.query('UPDATE invoices SET tags = $1, category = $2 WHERE id = $3', [tags, category, id]);
+    res.json({ id, tags, category });
   } catch (err) {
     console.error('Auto categorize error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to auto-categorize invoice' });
