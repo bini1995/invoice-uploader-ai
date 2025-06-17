@@ -60,6 +60,7 @@ export default function Navbar({
           )}
         </div>
         <input
+          id="searchInput"
           type="text"
           value={search}
           onChange={(e) => onSearchChange?.(e.target.value)}
@@ -78,6 +79,7 @@ export default function Navbar({
           )}
           {token && (
             <button
+              id="filterToggle"
               onClick={onToggleFilters}
               className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
               title="Filters"
