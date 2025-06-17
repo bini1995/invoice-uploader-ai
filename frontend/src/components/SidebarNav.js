@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   HomeIcon,
+  DocumentIcon,
+  UsersIcon,
   DocumentChartBarIcon,
   Cog6ToothIcon,
   WrenchScrewdriverIcon,
   Squares2X2Icon,
+  ArchiveBoxIcon,
 } from '@heroicons/react/24/outline';
 
 export default function SidebarNav({ notifications = [] }) {
@@ -32,6 +35,20 @@ export default function SidebarNav({ notifications = [] }) {
               <span>Dashboard</span>
             </Link>
             <Link
+              to="/invoices"
+              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/invoices' ? 'font-semibold' : ''}`}
+            >
+              <DocumentIcon className="w-5 h-5 mr-2" />
+              <span>Invoices</span>
+            </Link>
+            <Link
+              to="/vendors"
+              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/vendors' ? 'font-semibold' : ''}`}
+            >
+              <UsersIcon className="w-5 h-5 mr-2" />
+              <span>Vendors</span>
+            </Link>
+            <Link
               to="/analytics"
               className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/analytics' ? 'font-semibold' : ''}`}
             >
@@ -51,6 +68,13 @@ export default function SidebarNav({ notifications = [] }) {
             >
               <Squares2X2Icon className="w-5 h-5 mr-2" />
               <span>Board</span>
+            </Link>
+            <Link
+              to="/archive"
+              className={`nav-link flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${location.pathname === '/archive' ? 'font-semibold' : ''}`}
+            >
+              <ArchiveBoxIcon className="w-5 h-5 mr-2" />
+              <span>Archive</span>
             </Link>
             <Link
               to="/settings"

@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import SidebarNav from './components/SidebarNav';
+import MainLayout from './components/MainLayout';
 
 export default function Board() {
   const token = localStorage.getItem('token') || '';
   const [columns, setColumns] = useState({ pending: [], approved: [], flagged: [] });
-  const [notifications] = useState(() => {
-    const saved = localStorage.getItem('notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const fetchData = async () => {
     if (!token) return;
@@ -73,18 +69,15 @@ export default function Board() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      <SidebarNav notifications={notifications} />
-      <div className="flex-1 p-4">
-        <h1 className="text-xl font-semibold mb-4">Approval Board</h1>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex space-x-4 overflow-x-auto">
+    <MainLayout title="Approval Board">
+      <h1 className="text-xl font-semibold mb-4">Approval Board</h1>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex space-x-4 overflow-x-auto">
             {renderColumn('pending', 'Pending', columns.pending)}
             {renderColumn('approved', 'Approved', columns.approved)}
             {renderColumn('flagged', 'Flagged', columns.flagged)}
-          </div>
-        </DragDropContext>
-      </div>
-    </div>
+        </div>
+      </DragDropContext>
+    </MainLayout>
   );
 }
