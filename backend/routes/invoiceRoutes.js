@@ -26,6 +26,8 @@ const {
   getUploadHeatmap,
   getQuickStats,
   getDashboardData,
+  shareDashboard,
+  getSharedDashboard,
   exportDashboardPDF,
   checkRecurringInvoice,
   getRecurringInsights,
@@ -129,6 +131,8 @@ router.get('/recurring/insights', authMiddleware, getRecurringInsights);
 router.get('/vendor-profile/:vendor', authMiddleware, getVendorProfile);
 router.get('/vendor-bio/:vendor', authMiddleware, getVendorBio);
 router.get('/dashboard/pdf', authMiddleware, exportDashboardPDF);
+router.post('/dashboard/share', authMiddleware, authorizeRoles('admin','reviewer'), shareDashboard);
+router.get('/dashboard/shared/:token', getSharedDashboard);
 router.post('/flag-suspicious', authMiddleware, flagSuspiciousInvoice);
 router.post('/check-similarity', authMiddleware, checkInvoiceSimilarity);
 router.get('/:id/flag-explanation', authMiddleware, explainFlaggedInvoice);

@@ -43,6 +43,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Analytics and reports page with filtering and PDF export
 - Trend reports for monthly spend and aging invoices
 - Customizable dashboards with date filters and export options
+- Public shareable dashboards accessible via secure link
 - ML predictions highlight cash-flow problem areas
 - Private notes on invoices
 - Shared comment threads for team discussion
@@ -261,6 +262,8 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `POST /api/invoices/suggest-voucher` – recommend a voucher description
 - `POST /api/invoices/share` – generate a share link for selected invoices
 - `GET /api/invoices/shared/:token` – access a shared invoice view
+- `POST /api/invoices/dashboard/share` – generate a public dashboard link
+- `GET /api/invoices/dashboard/shared/:token` – view a restricted dashboard
 - `GET /api/invoices/:id/versions` – list prior versions of an invoice
 - `POST /api/invoices/:id/versions/:versionId/restore` – restore a previous version
 - `POST /api/payments/:id/link` – generate a payment link for an invoice

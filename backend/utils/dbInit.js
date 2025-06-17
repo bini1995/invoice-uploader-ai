@@ -96,6 +96,12 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS shared_dashboards (
+      token TEXT PRIMARY KEY,
+      filters JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(`CREATE TABLE IF NOT EXISTS recurring_templates (
       id SERIAL PRIMARY KEY,
       vendor TEXT NOT NULL,

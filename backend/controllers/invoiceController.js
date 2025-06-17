@@ -731,6 +731,21 @@ exports.shareInvoices = async (req, res) => {
   }
 };
 
+exports.shareDashboard = async (req, res) => {
+  const { filters } = req.body;
+  const token = crypto.randomBytes(16).toString('hex');
+  try {
+    await pool.query(
+      'INSERT INTO shared_dashboards (token, filters) VALUES ($1,$2)',
+      [token, filters || {}]
+    );
+    res.json({ url: `/api/invoices/dashboard/shared/${token}` });
+  } catch (err) {
+    console.error('Share dashboard error:', err);
+    res.status(500).json({ message: 'Failed to create dashboard share' });
+  }
+};
+
 exports.getSharedInvoices = async (req, res) => {
   const { token } = req.params;
   try {
@@ -742,6 +757,96 @@ exports.getSharedInvoices = async (req, res) => {
   } catch (err) {
     console.error('Get share error:', err);
     res.status(500).json({ message: 'Failed to fetch shared invoices' });
+  }
+};
+
+exports.getSharedDashboard = async (req, res) => {
+  const { token } = req.params;
+  const client = await pool.connect();
+  try {
+    const share = await pool.query('SELECT filters FROM shared_dashboards WHERE token = $1', [token]);
+    if (share.rows.length === 0) return res.status(404).json({ message: 'Invalid token' });
+    const { filters } = share.rows[0];
+    const { vendor, team, status, tenant, startDate, endDate } = filters || {};
+    const conditions = [];
+    const params = [];
+    if (vendor) {
+      params.push(vendor);
+      conditions.push(`vendor = $${params.length}`);
+    }
+    if (team) {
+      params.push(team);
+      conditions.push(`department = $${params.length}`);
+    }
+    if (status) {
+      params.push(status);
+      conditions.push(`approval_status = $${params.length}`);
+    }
+    if (tenant) {
+      params.push(tenant);
+      conditions.push(`tenant_id = $${params.length}`);
+    }
+    if (startDate) {
+      params.push(startDate);
+      conditions.push(`date >= $${params.length}`);
+    }
+    if (endDate) {
+      params.push(endDate);
+      conditions.push(`date <= $${params.length}`);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const summary = await client.query(
+      `SELECT COUNT(*) AS count, COALESCE(SUM(amount),0) AS total FROM invoices${where}`,
+      params
+    );
+
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    const totalRes = await client.query(
+      `SELECT COALESCE(SUM(amount),0) AS total FROM invoices WHERE date >= $1 AND date < $2`,
+      [start, end]
+    );
+
+    const pendingRes = await client.query(
+      "SELECT COUNT(*) AS count FROM invoices WHERE approval_status = 'Pending'"
+    );
+
+    const flaggedRes = await client.query(
+      'SELECT COUNT(*) AS count FROM invoices WHERE flagged = TRUE'
+    );
+
+    const anomalyRes = await client.query(
+      `SELECT vendor, DATE_TRUNC('month', date) AS m, SUM(amount) AS total FROM invoices WHERE date >= $1 GROUP BY vendor, m ORDER BY vendor, m`,
+      [new Date(now.getFullYear(), now.getMonth() - 6, 1)]
+    );
+    const data = {};
+    anomalyRes.rows.forEach((r) => {
+      if (!data[r.vendor]) data[r.vendor] = [];
+      data[r.vendor].push({ month: r.m, total: parseFloat(r.total) });
+    });
+    let anomalies = 0;
+    for (const rows of Object.values(data)) {
+      const totals = rows.map((r) => r.total);
+      const avg = totals.reduce((a, b) => a + b, 0) / totals.length;
+      const last = totals[totals.length - 1];
+      if (totals.length > 1 && last > avg * 1.5) anomalies++;
+    }
+
+    res.json({
+      totalInvoices: parseInt(summary.rows[0].count, 10) || 0,
+      totalAmount: parseFloat(summary.rows[0].total) || 0,
+      totalInvoicedThisMonth: parseFloat(totalRes.rows[0].total) || 0,
+      invoicesPending: parseInt(pendingRes.rows[0].count, 10) || 0,
+      anomaliesFound: anomalies,
+      aiSuggestions: parseInt(flaggedRes.rows[0].count, 10) || 0,
+    });
+  } catch (err) {
+    console.error('Get shared dashboard error:', err);
+    res.status(500).json({ message: 'Failed to fetch shared dashboard' });
+  } finally {
+    client.release();
   }
 };
 
@@ -2356,6 +2461,8 @@ module.exports = {
   setReviewFlag: exports.setReviewFlag,
   setFlaggedStatus: exports.setFlaggedStatus,
   setPaymentStatus: exports.setPaymentStatus,
+  shareDashboard: exports.shareDashboard,
+  getSharedDashboard: exports.getSharedDashboard,
   shareInvoices: exports.shareInvoices,
   getSharedInvoices: exports.getSharedInvoices,
   getInvoiceVersions: exports.getInvoiceVersions,
