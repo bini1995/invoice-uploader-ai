@@ -5,7 +5,7 @@ exports.getSettings = (_req, res) => {
 };
 
 exports.updateSettings = (req, res) => {
-  const allowed = ['autoArchive', 'emailTone', 'csvSizeLimitMB', 'pdfSizeLimitMB'];
+  const allowed = ['autoArchive', 'emailTone', 'csvSizeLimitMB', 'pdfSizeLimitMB', 'defaultRetention'];
   for (const key of allowed) {
     if (req.body[key] !== undefined) {
       settings[key] = req.body[key];

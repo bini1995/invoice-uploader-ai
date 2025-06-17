@@ -16,6 +16,7 @@ function TeamManagement() {
   const [emailTone, setEmailTone] = useState('professional');
   const [csvLimit, setCsvLimit] = useState(5);
   const [pdfLimit, setPdfLimit] = useState(10);
+  const [defaultRetention, setDefaultRetention] = useState('forever');
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
@@ -39,6 +40,7 @@ function TeamManagement() {
       setEmailTone(data.emailTone);
       setCsvLimit(data.csvSizeLimitMB);
       setPdfLimit(data.pdfSizeLimitMB);
+      if (data.defaultRetention) setDefaultRetention(data.defaultRetention);
     }
   };
 
@@ -84,6 +86,7 @@ function TeamManagement() {
         emailTone,
         csvSizeLimitMB: Number(csvLimit),
         pdfSizeLimitMB: Number(pdfLimit),
+        defaultRetention,
       })
     });
   };
@@ -181,6 +184,13 @@ function TeamManagement() {
           </label>
           <label className="block">PDF size limit (MB)
             <input type="number" className="input w-full mt-1" value={pdfLimit} onChange={e => setPdfLimit(e.target.value)} />
+          </label>
+          <label className="block">Default retention
+            <select value={defaultRetention} onChange={e=>setDefaultRetention(e.target.value)} className="input w-full mt-1">
+              <option value="3mo">3 months</option>
+              <option value="1yr">1 year</option>
+              <option value="forever">Forever</option>
+            </select>
           </label>
           <button onClick={saveSettings} className="bg-indigo-600 text-white px-3 py-1 rounded">Save Settings</button>
         </div>

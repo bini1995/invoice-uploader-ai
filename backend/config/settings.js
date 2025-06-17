@@ -5,4 +5,5 @@ module.exports = {
   pdfSizeLimitMB: 10,
   defaultCurrency: 'USD',
   defaultVatPercent: 0,
+  defaultRetention: 'forever',
 };
