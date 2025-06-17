@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Skeleton from './components/Skeleton';
-import { Link } from 'react-router-dom';
-import SidebarNav from './components/SidebarNav';
 import HelpTooltip from './components/HelpTooltip';
+import MainLayout from './components/MainLayout';
 
 function VendorManagement() {
   const token = localStorage.getItem('token') || '';
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notesInput, setNotesInput] = useState({});
-  const [notifications] = useState(() => {
-    const saved = localStorage.getItem('notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
@@ -45,18 +40,7 @@ function VendorManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      <SidebarNav notifications={notifications} />
-      <div className="flex-1 p-4 pt-16">
-      <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
-        <h1 className="text-xl font-bold flex items-center gap-1">
-          Vendor Management
-          <span className="relative group cursor-help">❓
-            <span className="hidden group-hover:block absolute z-10"><HelpTooltip topic="vendors" token={token} /></span>
-          </span>
-        </h1>
-        <Link to="/invoices" className="underline">Back to App</Link>
-      </nav>
+    <MainLayout title="Vendor Management" helpTopic="vendors">
       <div className="overflow-x-auto rounded-lg">
       <table className="w-full text-left border rounded-lg overflow-hidden">
         <thead>
@@ -101,8 +85,7 @@ function VendorManagement() {
         </tbody>
       </table>
       </div>
-    </div>
-    </div>
+    </MainLayout>
   );
 }
 

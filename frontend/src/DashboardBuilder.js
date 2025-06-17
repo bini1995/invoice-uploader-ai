@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
-import SidebarNav from './components/SidebarNav';
+import MainLayout from './components/MainLayout';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
@@ -16,10 +16,6 @@ export default function DashboardBuilder() {
   const [vendors, setVendors] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
   const [timeline, setTimeline] = useState([]);
-  const [notifications] = useState(() => {
-    const saved = localStorage.getItem('notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   useEffect(() => {
     const headers = { Authorization: `Bearer ${token}` };
@@ -66,10 +62,8 @@ export default function DashboardBuilder() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      <SidebarNav notifications={notifications} />
-      <div className="flex-1 p-4">
-        <h1 className="text-xl font-semibold mb-4">Dashboard Builder</h1>
+    <MainLayout title="Dashboard Builder">
+      <h1 className="text-xl font-semibold mb-4">Dashboard Builder</h1>
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="widgets">
             {(provided) => (
@@ -145,7 +139,7 @@ export default function DashboardBuilder() {
           </Droppable>
         </DragDropContext>
       </div>
-    </div>
+    </MainLayout>
   );
 }
 

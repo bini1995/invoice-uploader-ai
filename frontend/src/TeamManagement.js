@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Skeleton from './components/Skeleton';
-import { Link } from 'react-router-dom';
-import SidebarNav from './components/SidebarNav';
 import HelpTooltip from './components/HelpTooltip';
+import MainLayout from './components/MainLayout';
 
 function TeamManagement() {
   const token = localStorage.getItem('token') || '';
@@ -17,10 +16,6 @@ function TeamManagement() {
   const [emailTone, setEmailTone] = useState('professional');
   const [csvLimit, setCsvLimit] = useState(5);
   const [pdfLimit, setPdfLimit] = useState(10);
-  const [notifications] = useState(() => {
-    const saved = localStorage.getItem('notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
@@ -102,18 +97,7 @@ function TeamManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      <SidebarNav notifications={notifications} />
-      <div className="flex-1 p-4 pt-16">
-      <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-4 z-20">
-        <h1 className="text-xl font-bold flex items-center gap-1">
-          Team Management
-          <span className="relative group cursor-help">❓
-            <span className="hidden group-hover:block absolute z-10"><HelpTooltip topic="team" token={token} /></span>
-          </span>
-        </h1>
-        <Link to="/invoices" className="underline">Back to App</Link>
-      </nav>
+    <MainLayout title="Team Management" helpTopic="team">
       <div className="space-y-6 max-w-xl">
         <div className="space-y-2">
           <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" className="input w-full" />
@@ -201,8 +185,7 @@ function TeamManagement() {
           <button onClick={saveSettings} className="bg-indigo-600 text-white px-3 py-1 rounded">Save Settings</button>
         </div>
       </div>
-    </div>
-    </div>
+    </MainLayout>
   );
 }
 
