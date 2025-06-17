@@ -18,6 +18,7 @@ const settingsRoutes = require('./routes/settingsRoutes');
 const recurringRoutes = require('./routes/recurringRoutes');
 const poRoutes = require('./routes/poRoutes');
 const integrationRoutes = require('./routes/integrationRoutes');
+const featureRoutes = require('./routes/featureRoutes');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { sendApprovalReminders } = require('./controllers/reminderController');
@@ -48,6 +49,7 @@ app.use('/api/workflows', workflowRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/recurring', recurringRoutes);
 app.use('/api/integrations', integrationRoutes);
+app.use('/api/features', featureRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 

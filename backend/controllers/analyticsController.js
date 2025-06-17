@@ -170,3 +170,34 @@ exports.predictCashFlowRisk = async (_req, res) => {
     res.status(500).json({ message: 'Failed to predict cash flow' });
   }
 };
+
+exports.getApprovalStats = async (req, res) => {
+  const userId = req.user?.userId;
+  if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+  try {
+    const result = await pool.query(
+      `SELECT DATE(created_at) AS d, COUNT(*) AS c
+       FROM activity_logs
+       WHERE user_id = $1
+         AND action IN ('approve_invoice','bulk_approve')
+         AND created_at >= NOW() - INTERVAL '7 days'
+       GROUP BY d`,
+      [userId]
+    );
+    const total = result.rows.reduce((t, r) => t + parseInt(r.c, 10), 0);
+    let streak = 0;
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+      const dateStr = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i)
+        .toISOString()
+        .slice(0, 10);
+      const found = result.rows.find((r) => r.d.toISOString().slice(0, 10) === dateStr);
+      if (found) streak += 1;
+      else break;
+    }
+    res.json({ total, streak });
+  } catch (err) {
+    console.error('Approval stats error:', err);
+    res.status(500).json({ message: 'Failed to fetch approval stats' });
+  }
+};

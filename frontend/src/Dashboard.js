@@ -13,6 +13,7 @@ function Dashboard() {
   const [cashFlow, setCashFlow] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
   const [stats, setStats] = useState(null);
+  const [approvalStats, setApprovalStats] = useState(null);
   const [categories, setCategories] = useState([]);
   const [anomalies, setAnomalies] = useState([]);
   const [budget, setBudget] = useState([]);
@@ -58,6 +59,11 @@ function Dashboard() {
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setStats(d);
+        }),
+      fetch('http://localhost:3000/api/analytics/approvals/stats', { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) setApprovalStats(d);
         }),
     ]).finally(() => setLoading(false));
   }, [token]);
@@ -145,6 +151,11 @@ function Dashboard() {
               </>
             )}
           </div>
+          {approvalStats && (
+            <div className="text-center text-sm text-gray-700 dark:text-gray-300">
+              🎉 You've approved {approvalStats.total} invoices this week! Streak: {approvalStats.streak} days
+            </div>
+          )}
           {vendors.length === 0 && !loading && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-gray-500 italic py-10">
               📄 No invoices yet — upload one to get started

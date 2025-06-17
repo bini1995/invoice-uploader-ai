@@ -124,6 +124,12 @@ async function initDb() {
       status TEXT DEFAULT 'Open',
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS feature_requests (
+      id SERIAL PRIMARY KEY,
+      text TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }
