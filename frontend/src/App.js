@@ -1853,7 +1853,7 @@ useEffect(() => {
           <aside
           className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
             filterSidebarOpen ? '' : 'hidden md:block'
-          } md:border-r md:border-gray-200 dark:md:border-gray-700 md:max-h-screen md:overflow-y-auto md:sticky md:top-16 z-40`}
+          } border-r border-gray-200 dark:border-gray-700 max-h-screen overflow-y-auto sticky top-16 z-40`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
             <SidebarNav notifications={notifications} />
@@ -1864,9 +1864,9 @@ useEffect(() => {
               ✖
             </button>
             <h2 className="text-xl font-semibold">Filters</h2>
-            <div className="flex flex-col space-y-3 md:space-y-4">
+            <div className="flex flex-col space-y-4">
               {/* Search moved to global toolbar */}
-              <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm">
+              <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm mb-4">
                 <input
                   id="archivedToggle"
                   type="checkbox"
@@ -1876,7 +1876,7 @@ useEffect(() => {
                 />
                 <span>Show Archived</span>
               </label>
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-4">
                 <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Vendor</label>
                 <select
                   id="vendorSelect"
@@ -1892,7 +1892,7 @@ useEffect(() => {
                   ))}
                 </select>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col mb-4">
                 <label htmlFor="assigneeSelect" className="text-xs font-medium mb-1">Assignee</label>
                 <select
                   id="assigneeSelect"
@@ -1908,29 +1908,32 @@ useEffect(() => {
                   ))}
                 </select>
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
-              <input
-                  id="minAmount"
-                  type="number"
-                  min="0"
-                  value={minAmount}
-                  onChange={(e) => setMinAmount(e.target.value)}
-                  className="input"
-                />
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
-              <input
-                  id="maxAmount"
-                  type="number"
-                  min="0"
-                  value={maxAmount}
-                  onChange={(e) => setMaxAmount(e.target.value)}
-                  className="input"
-                />
-              </div>
-              <div className="flex space-x-2">
+              <fieldset className="flex flex-col mb-4 p-2 border border-gray-200 dark:border-gray-700 rounded">
+                <legend className="text-xs font-medium mb-2">Amount Range</legend>
+                <div className="flex flex-col mb-2">
+                  <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
+                  <input
+                    id="minAmount"
+                    type="number"
+                    min="0"
+                    value={minAmount}
+                    onChange={(e) => setMinAmount(e.target.value)}
+                    className="input"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
+                  <input
+                    id="maxAmount"
+                    type="number"
+                    min="0"
+                    value={maxAmount}
+                    onChange={(e) => setMaxAmount(e.target.value)}
+                    className="input"
+                  />
+                </div>
+              </fieldset>
+              <div className="flex space-x-2 mb-4">
                 <input
                   type="text"
                   value={presetName}
@@ -1946,7 +1949,7 @@ useEffect(() => {
                 </button>
               </div>
               {filterPresets.length > 0 && (
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 mb-4">
                   <select
                     value={selectedPreset}
                     onChange={(e) => setSelectedPreset(e.target.value)}
@@ -1967,7 +1970,7 @@ useEffect(() => {
                   </button>
                 </div>
               )}
-              <button onClick={handleResetFilters} className="btn btn-secondary text-sm" title="Reset Filters">
+              <button onClick={handleResetFilters} className="btn btn-secondary text-sm mt-2" title="Reset Filters">
                 Reset Filters
               </button>
             </div>
