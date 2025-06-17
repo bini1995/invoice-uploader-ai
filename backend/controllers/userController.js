@@ -22,6 +22,12 @@ const USERS = [
     role: 'finance',
   },
   {
+    id: 5,
+    username: 'legal',
+    passwordHash: bcrypt.hashSync('legalpass', 10),
+    role: 'legal',
+  },
+  {
     id: 4,
     username: 'readonly',
     passwordHash: bcrypt.hashSync('readonlypass', 10),

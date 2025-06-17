@@ -4,7 +4,34 @@ const archiver = require('archiver');
 
 exports.getActivityLogs = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM activity_logs ORDER BY created_at DESC');
+    const { start, end, vendor, action } = req.query;
+    let query = 'SELECT a.* FROM activity_logs a';
+    const params = [];
+    const conditions = [];
+    let joinInvoices = false;
+    if (vendor || req.user?.role === 'legal') joinInvoices = true;
+    if (joinInvoices) query += ' JOIN invoices i ON a.invoice_id = i.id';
+    if (vendor) {
+      params.push(vendor);
+      conditions.push(`LOWER(i.vendor) = LOWER($${params.length})`);
+    }
+    if (action) {
+      params.push(action);
+      conditions.push(`a.action = $${params.length}`);
+    }
+    if (start) {
+      params.push(start);
+      conditions.push(`a.created_at >= $${params.length}`);
+    }
+    if (end) {
+      params.push(end);
+      conditions.push(`a.created_at <= $${params.length}`);
+    }
+    if (req.user?.role === 'legal') {
+      conditions.push('i.flagged = TRUE');
+    }
+    const where = conditions.length ? ' WHERE ' + conditions.join(' AND ') : '';
+    const result = await pool.query(`${query}${where} ORDER BY a.created_at DESC`, params);
     res.json(result.rows);
   } catch (err) {
     console.error('Log fetch error:', err);

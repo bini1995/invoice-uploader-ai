@@ -18,6 +18,7 @@ const { sendSlackNotification, sendTeamsNotification } = require('../utils/notif
 const { broadcastMessage } = require('../utils/chatServer');
 const { recordInvoiceVersion } = require('../utils/versionLogger');
 const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/assignment');
+const { encrypt } = require('../utils/encryption');
 const levenshtein = require('fast-levenshtein');
 
 // Basic vendor -> tag mapping for quick suggestions
@@ -72,9 +73,15 @@ exports.uploadInvoice = async (req, res) => {
     const bc = await submitHashToBlockchain(integrityHash);
     const blockchainTx = bc.txId || null;
 
-    const retention = req.body.retention || 'forever';
+    const encryptUploads = process.env.UPLOAD_ENCRYPTION_KEY && (req.body.encrypt === 'true' || req.headers['x-encrypt'] === 'true');
+
+    const retention = req.body.retention || settings.defaultRetention || 'forever';
     let deleteAt = null;
-    if (retention === '6m') {
+    if (retention === '3mo') {
+      deleteAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+    } else if (retention === '1yr') {
+      deleteAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+    } else if (retention === '6m') {
       deleteAt = new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
     } else if (retention === '2y') {
       deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);
@@ -196,8 +203,8 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
@@ -224,6 +231,7 @@ exports.uploadInvoice = async (req, res) => {
           inv.vat_amount,
           inv.expires_at,
           false,
+          encryptUploads ? encrypt(JSON.stringify(inv), process.env.UPLOAD_ENCRYPTION_KEY) : null,
         ]
       );
       const newId = insertRes.rows[0].id;
@@ -354,6 +362,9 @@ exports.getAllInvoices = async (req, res) => {
     const tenantId = req.headers['x-tenant-id'] || req.query.tenant || 'default';
     const conditions = [];
     const params = [];
+    if (req.user?.role === 'legal') {
+      conditions.push('flagged = true');
+    }
     if (!includeArchived) {
       conditions.push('archived = false');
     }
@@ -523,13 +534,15 @@ exports.importInvoicesCSV = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
     const rows = await parseCSV(req.file.path);
+    const encryptUploads = process.env.UPLOAD_ENCRYPTION_KEY && (req.body.encrypt === 'true' || req.headers['x-encrypt'] === 'true');
     const inserted = [];
     for (const row of rows) {
       const { invoice_number, date, amount, vendor } = row;
       if (!invoice_number || !vendor) continue;
       const result = await pool.query(
-        'INSERT INTO invoices (invoice_number, date, amount, vendor) VALUES ($1,$2,$3,$4) RETURNING id',
-        [invoice_number, row.date || date || new Date(), parseFloat(amount || 0), vendor]
+        'INSERT INTO invoices (invoice_number, date, amount, vendor, encrypted_payload) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+        [invoice_number, row.date || date || new Date(), parseFloat(amount || 0), vendor,
+          encryptUploads ? encrypt(JSON.stringify(row), process.env.UPLOAD_ENCRYPTION_KEY) : null]
       );
       inserted.push(result.rows[0].id);
     }
@@ -1071,7 +1084,11 @@ exports.updateRetentionPolicy = async (req, res) => {
   const { id } = req.params;
   const { retention } = req.body;
   let deleteAt = null;
-  if (retention === '6m') {
+  if (retention === '3mo') {
+    deleteAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+  } else if (retention === '1yr') {
+    deleteAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+  } else if (retention === '6m') {
     deleteAt = new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
   } else if (retention === '2y') {
     deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);

@@ -5,6 +5,7 @@ import Dashboard from './Dashboard';
 import SharedDashboard from './SharedDashboard';
 import DashboardBuilder from './DashboardBuilder';
 import Reports from './Reports';
+import AuditDashboard from './AuditDashboard';
 import Archive from './Archive';
 import TeamManagement from './TeamManagement';
 import VendorManagement from './VendorManagement';
@@ -51,6 +52,7 @@ function AnimatedRoutes() {
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
         <Route path="/invoices" element={<PageWrapper><App /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><Reports /></PageWrapper>} />
+        <Route path="/audit" element={<PageWrapper><AuditDashboard /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />

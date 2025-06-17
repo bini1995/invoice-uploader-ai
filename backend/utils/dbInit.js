@@ -33,6 +33,7 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS next_retry TIMESTAMP");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS late_fee NUMERIC DEFAULT 0");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS encrypted_payload TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS original_amount NUMERIC");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
