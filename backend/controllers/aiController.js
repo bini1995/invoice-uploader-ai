@@ -370,6 +370,29 @@ exports.paymentLikelihood = async (req, res) => {
   }
 };
 
+exports.paymentBehaviorByVendor = async (req, res) => {
+  try {
+    const { vendor, invoice_date } = req.body;
+    if (!vendor) return res.status(400).json({ message: 'Missing vendor.' });
+    const result = await pool.query(
+      'SELECT date, updated_at, paid FROM invoices WHERE LOWER(vendor) = LOWER($1)',
+      [vendor]
+    );
+    const delays = result.rows
+      .filter(r => r.paid && r.updated_at)
+      .map(r => (new Date(r.updated_at) - new Date(r.date)) / (1000 * 60 * 60 * 24));
+    const avg = delays.length ? delays.reduce((a,b) => a + b, 0) / delays.length : 30;
+    const variance = delays.reduce((s,d) => s + Math.pow(d - avg,2), 0) / (delays.length || 1);
+    const confidence = Math.max(0, Math.min(1, delays.length / (result.rows.length || 1) * (1 - Math.sqrt(variance)/(avg || 1))));
+    const baseDate = invoice_date ? new Date(invoice_date) : new Date();
+    const expected = new Date(baseDate.getTime() + avg * 24 * 60 * 60 * 1000);
+    res.json({ expected_payment_date: expected.toISOString().split('T')[0], confidence: Number((confidence * 100).toFixed(1)) });
+  } catch (error) {
+    console.error('Payment behavior error:', error.message);
+    res.status(500).json({ message: 'Failed to predict payment behavior.' });
+  }
+};
+
 exports.alertHighRiskInvoices = async () => {
   try {
     const { rows } = await pool.query("SELECT id, vendor FROM invoices WHERE paid = false");

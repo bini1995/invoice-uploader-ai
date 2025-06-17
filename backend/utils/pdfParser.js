@@ -2,6 +2,7 @@ const fs = require('fs');
 const pdfParse = require('pdf-parse');
 const { fromPath } = require('pdf2pic');
 const { createWorker } = require('tesseract.js');
+const openai = require('../config/openai');
 
 async function ocrImage(path) {
   const worker = await createWorker();
@@ -45,6 +46,40 @@ exports.parsePDF = async (filePath) => {
       amount: parseFloat(match[3].replace(/,/g, '')),
       vendor: match[4]
     });
+  }
+
+  if (invoices.length === 0) {
+    try {
+      const prompt = `Extract invoice_number, date, amount and vendor from this text and return a JSON array.\n\n${text}`;
+      const response = await openai.chat.completions.create({
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You parse invoices from OCR text.' },
+          { role: 'user', content: prompt }
+        ]
+      });
+      const raw = response.choices?.[0]?.message?.content?.trim();
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [data];
+    } catch (err) {
+      console.error('AI OCR parse error:', err.message);
+    }
+  } else {
+    try {
+      const prompt = `Fix formatting for the following invoice JSON array. Ensure dates are YYYY-MM-DD and amounts are numbers.\n\n${JSON.stringify(invoices)}`;
+      const response = await openai.chat.completions.create({
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You clean and standardize invoice data.' },
+          { role: 'user', content: prompt }
+        ]
+      });
+      const raw = response.choices?.[0]?.message?.content?.trim();
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : invoices;
+    } catch (err) {
+      console.error('AI format correction error:', err.message);
+    }
   }
   return invoices;
 };

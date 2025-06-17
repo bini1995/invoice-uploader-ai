@@ -67,6 +67,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Browser extension for uploading invoices directly from Gmail
 - Fully responsive mobile layout and installable PWA
 - Capture invoice photos on mobile with built-in OCR
+- PDF Invoice OCR with AI formatting correction
 - Supplier portal for vendors to upload invoices, update banking info and check payments
 - Slack/Teams notifications for approvals or flags
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
@@ -233,6 +234,7 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
 - `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
 - `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor
+- `POST /api/invoices/payment-behavior` – predict expected payment date and confidence
 - `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
 - `POST /api/invoices/cash-flow/scenario` – recalculate cash flow under payment delay scenarios
 - `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
