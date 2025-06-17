@@ -31,6 +31,7 @@ import FloatingActionPanel from './components/FloatingActionPanel';
 import InvoiceSnapshotView from './components/InvoiceSnapshotView';
 import TourModal from './components/TourModal';
 import ProgressBar from './components/ProgressBar';
+import FeatureWidget from './components/FeatureWidget';
 import { Button } from './components/ui/Button';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
@@ -137,6 +138,7 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [qualityScores, setQualityScores] = useState({});
   const [riskScores, setRiskScores] = useState({});
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const [featureOpen, setFeatureOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState(() => {
     const saved = localStorage.getItem('chatHistory');
     return saved ? JSON.parse(saved) : [];
@@ -3133,6 +3135,7 @@ useEffect(() => {
             onUpload={openUploadPreview}
             onAsk={() => setAssistantOpen(true)}
             onVoice={startVoiceUpload}
+            onFeature={() => setFeatureOpen(true)}
           />
           <ChatSidebar
             open={assistantOpen}
@@ -3159,6 +3162,7 @@ useEffect(() => {
             open={showTour}
             onClose={() => { setShowTour(false); localStorage.setItem('seenTour','1'); }}
           />
+          <FeatureWidget open={featureOpen} onClose={() => setFeatureOpen(false)} />
         </>
       )}
       </div>

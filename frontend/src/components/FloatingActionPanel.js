@@ -1,7 +1,6 @@
 import React from 'react';
-import { ChatBubbleLeftRightIcon, ArrowUpTrayIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
-
-export default function FloatingActionPanel({ onUpload, onAsk, onVoice }) {
+import { ChatBubbleLeftRightIcon, ArrowUpTrayIcon, MicrophoneIcon, LightBulbIcon } from '@heroicons/react/24/outline';
+export default function FloatingActionPanel({ onUpload, onAsk, onVoice, onFeature }) {
   return (
     <div className="fixed bottom-4 right-4 flex flex-col items-end space-y-2 z-30">
       <button
@@ -22,6 +21,17 @@ export default function FloatingActionPanel({ onUpload, onAsk, onVoice }) {
         <ChatBubbleLeftRightIcon className="w-6 h-6" />
         <span className="text-xs mt-1">Ask AI</span>
       </button>
+      {onFeature && (
+        <button
+          onClick={onFeature}
+          className="p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white flex flex-col items-center"
+          title="Suggest Feature"
+          aria-label="Suggest feature"
+        >
+          <LightBulbIcon className="w-6 h-6" />
+          <span className="text-xs mt-1">Suggest</span>
+        </button>
+      )}
       {onVoice && (
         <button
           onClick={onVoice}

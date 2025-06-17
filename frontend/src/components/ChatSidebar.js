@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Spinner from './Spinner';
 import SuggestionChips from './SuggestionChips';
+import FeedbackButtons from './FeedbackButtons';
 import {
   BarChart,
   Bar,
@@ -73,7 +74,10 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
               {item.type === 'chart' ? 'Chart:' : 'Q:'} {item.question}
             </div>
             {item.type === 'chat' && (
-              <div className="mt-1 whitespace-pre-wrap">{item.answer}</div>
+              <div className="mt-1 whitespace-pre-wrap">
+                {item.answer}
+                <FeedbackButtons endpoint="chat" />
+              </div>
             )}
             {item.type === 'chart' && item.chartData && item.chartData.length > 0 && (
               <div className="h-32 mt-1">
@@ -86,6 +90,7 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
                     <Bar dataKey={Object.keys(item.chartData[0])[1]} fill="#10B981" />
                   </BarChart>
                 </ResponsiveContainer>
+                <FeedbackButtons endpoint="chart" />
               </div>
             )}
           </div>
