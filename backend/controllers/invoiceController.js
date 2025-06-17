@@ -303,6 +303,45 @@ exports.voiceUpload = async (req, res) => {
   }
 };
 
+exports.conversationalUpload = async (req, res) => {
+  try {
+    const { text } = req.body || {};
+    if (!text) return res.status(400).json({ message: 'No text provided' });
+
+    const amountMatch = text.match(/\$([0-9,.]+)/);
+    const vendorMatch = text.match(/invoice for ([^,]+?)(?: due|$)/i);
+    const dueMatch = text.match(/due (.+)$/i);
+
+    const amount = amountMatch ? parseFloat(amountMatch[1].replace(/,/g, '')) : null;
+    const vendor = vendorMatch ? vendorMatch[1].trim() : null;
+    let dueDate = null;
+    if (dueMatch) {
+      const chrono = require('chrono-node');
+      const parsed = chrono.parseDate(dueMatch[1]);
+      if (parsed) {
+        dueDate = parsed.toISOString().split('T')[0];
+      }
+    }
+
+    if (!amount || !vendor || !dueDate) {
+      return res.status(400).json({ message: 'Could not parse invoice command' });
+    }
+
+    const invoice_number = `CONV-${Date.now()}`;
+    const date = new Date().toISOString().split('T')[0];
+
+    const result = await pool.query(
+      'INSERT INTO invoices (invoice_number, date, amount, vendor, due_date) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+      [invoice_number, date, amount, vendor, dueDate]
+    );
+
+    res.json({ id: result.rows[0].id, invoice_number, vendor, amount, due_date: dueDate });
+  } catch (err) {
+    console.error('Conversational upload error:', err);
+    res.status(500).json({ message: 'Failed to create invoice from text' });
+  }
+};
+
 // Get all invoices
 exports.getAllInvoices = async (req, res) => {
   const client = await pool.connect();
@@ -2265,6 +2304,7 @@ module.exports = {
   // ✅ Add all others you want to expose:
   uploadInvoice: exports.uploadInvoice,
   voiceUpload: exports.voiceUpload,
+  conversationalUpload: exports.conversationalUpload,
   getAllInvoices: exports.getAllInvoices,
   clearAllInvoices: exports.clearAllInvoices,
   deleteInvoiceById: exports.deleteInvoiceById,
