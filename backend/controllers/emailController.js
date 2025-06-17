@@ -44,3 +44,30 @@ exports.sendSummaryEmail = async (req, res) => {
     res.status(500).json({ message: 'Failed to send email.' });
   }
 };
+
+const openai = require('../config/openai');
+const { getTrainingSamples } = require('../utils/emailTrainer');
+
+exports.smartDraftEmail = async (req, res) => {
+  const { prompt } = req.body || {};
+  if (!prompt) return res.status(400).json({ message: 'Prompt is required' });
+  try {
+    const samples = getTrainingSamples();
+    const systemMsg = samples
+      ? `Use the following past communications as style guidance:\n\n${samples}`
+      : 'Use a friendly professional tone.';
+    const completion = await openai.chat.completions.create({
+      model: 'openai/gpt-3.5-turbo',
+      messages: [
+        { role: 'system', content: systemMsg },
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.7,
+    });
+    const draft = completion.choices[0].message.content;
+    res.json({ draft });
+  } catch (err) {
+    console.error('Smart draft error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to generate email draft' });
+  }
+};

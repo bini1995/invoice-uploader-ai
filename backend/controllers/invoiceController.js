@@ -18,6 +18,7 @@ const { sendSlackNotification, sendTeamsNotification } = require('../utils/notif
 const { broadcastMessage } = require('../utils/chatServer');
 const { recordInvoiceVersion } = require('../utils/versionLogger');
 const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/assignment');
+const levenshtein = require('fast-levenshtein');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -122,6 +123,26 @@ exports.uploadInvoice = async (req, res) => {
         }
       } catch (dupErr) {
         console.error('Duplicate check failed:', dupErr.message);
+      }
+
+      // Similarity detection against recent invoices from the same vendor
+      try {
+        const { rows: recent } = await pool.query(
+          'SELECT id, invoice_number, amount, vendor FROM invoices WHERE vendor = $1 ORDER BY id DESC LIMIT 20',
+          [vendor]
+        );
+        const newStr = `${invoice_number}|${amount}|${vendor}`.toLowerCase();
+        for (const r of recent) {
+          const oldStr = `${r.invoice_number}|${r.amount}|${r.vendor}`.toLowerCase();
+          const distance = levenshtein.get(newStr, oldStr);
+          const similarity = 1 - distance / Math.max(newStr.length, oldStr.length);
+          if (similarity > 0.8) {
+            warnings.push(`Row ${rowNum}: ${invoice_number} is ${Math.round(similarity * 100)}% similar to invoice ID ${r.id}`);
+            break;
+          }
+        }
+      } catch (simErr) {
+        console.error('Similarity check failed:', simErr.message);
       }
 
       const department = inv.department?.trim() || req.body.department;
@@ -731,6 +752,32 @@ exports.restoreInvoiceVersion = async (req, res) => {
   } catch (err) {
     console.error('Restore version error:', err);
     res.status(500).json({ message: 'Failed to restore version' });
+  }
+};
+
+exports.checkInvoiceSimilarity = async (req, res) => {
+  const { invoice_number, vendor, amount } = req.body || {};
+  if (!invoice_number || !vendor || !amount) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, invoice_number, amount, vendor FROM invoices ORDER BY id DESC LIMIT 50'
+    );
+    const base = `${invoice_number}|${amount}|${vendor}`.toLowerCase();
+    const matches = rows
+      .map(r => {
+        const str = `${r.invoice_number}|${r.amount}|${r.vendor}`.toLowerCase();
+        const distance = levenshtein.get(base, str);
+        const similarity = 1 - distance / Math.max(base.length, str.length);
+        return { id: r.id, similarity };
+      })
+      .filter(m => m.similarity > 0.8)
+      .sort((a, b) => b.similarity - a.similarity);
+    res.json({ matches });
+  } catch (err) {
+    console.error('Similarity detection error:', err);
+    res.status(500).json({ message: 'Failed to check similarity' });
   }
 };
 
@@ -2273,5 +2320,6 @@ module.exports = {
   getSharedInvoices: exports.getSharedInvoices,
   getInvoiceVersions: exports.getInvoiceVersions,
   restoreInvoiceVersion: exports.restoreInvoiceVersion,
+  checkInvoiceSimilarity: exports.checkInvoiceSimilarity,
 };
 
