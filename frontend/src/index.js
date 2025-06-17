@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import Dashboard from './Dashboard';
+import SharedDashboard from './SharedDashboard';
 import DashboardBuilder from './DashboardBuilder';
 import Reports from './Reports';
 import Archive from './Archive';
@@ -47,6 +48,7 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
+        <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
         <Route path="/invoices" element={<PageWrapper><App /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><Reports /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />

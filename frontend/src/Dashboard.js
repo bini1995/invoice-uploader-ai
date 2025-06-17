@@ -74,6 +74,17 @@ function Dashboard() {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleShare = async () => {
+    const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+    const res = await fetch('http://localhost:3000/api/invoices/dashboard/share', { method: 'POST', headers, body: JSON.stringify({}) });
+    if (res.ok) {
+      const { url } = await res.json();
+      const full = `http://localhost:3001/dashboard/shared/${url.split('/').pop()}`;
+      try { await navigator.clipboard.writeText(full); } catch (_) {}
+      alert('Share link copied to clipboard');
+    }
+  };
+
   const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
   let max = 0;
   heatmap.forEach(({ day, hour, count }) => {
@@ -85,6 +96,7 @@ function Dashboard() {
     <MainLayout title="AI Dashboard">
       <div className="mb-4 text-right">
         <button onClick={handleExportPDF} className="underline mr-2">Export PDF</button>
+        <button onClick={handleShare} className="underline">Share Link</button>
       </div>
       {!token ? (
         <p className="text-center text-gray-600">Please log in from the main app.</p>
