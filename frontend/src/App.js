@@ -31,7 +31,7 @@ import VendorProfilePanel from './components/VendorProfilePanel';
 import BulkSummary from './components/BulkSummary';
 import FloatingActionPanel from './components/FloatingActionPanel';
 import InvoiceSnapshotView from './components/InvoiceSnapshotView';
-import TourModal from './components/TourModal';
+import Joyride from 'react-joyride';
 import ProgressBar from './components/ProgressBar';
 import FeatureWidget from './components/FeatureWidget';
 import { Button } from './components/ui/Button';
@@ -82,6 +82,20 @@ const [recentUploads, setRecentUploads] = useState([]);
 const [previewModalData, setPreviewModalData] = useState(null);
 const [bulkSummary, setBulkSummary] = useState(null);
 const [showTour, setShowTour] = useState(() => !localStorage.getItem('seenTour'));
+const tourSteps = [
+  {
+    target: '#uploadArea',
+    content: 'Upload invoices here',
+  },
+  {
+    target: '#searchInput',
+    content: 'Search invoices',
+  },
+  {
+    target: '#filterToggle',
+    content: 'Toggle filter sidebar',
+  },
+];
 const fileInputRef = useRef();
 const searchInputRef = useRef();
   const [invoices, setInvoices] = useState([]);
@@ -170,7 +184,49 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
   const [filterPresets, setFilterPresets] = useState(() => {
     const saved = localStorage.getItem('filterPresets');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) return JSON.parse(saved);
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      .toISOString()
+      .slice(0, 10);
+    const end = new Date(now.getFullYear(), now.getMonth(), 0)
+      .toISOString()
+      .slice(0, 10);
+    return [
+      {
+        name: 'Last Month',
+        searchTerm: '',
+        selectedVendor: '',
+        selectedAssignee: '',
+        minAmount: '',
+        maxAmount: '',
+        filterStartDate: start,
+        filterEndDate: end,
+        showArchived: false,
+      },
+      {
+        name: 'Over $500',
+        searchTerm: '',
+        selectedVendor: '',
+        selectedAssignee: '',
+        minAmount: '500',
+        maxAmount: '',
+        filterStartDate: '',
+        filterEndDate: '',
+        showArchived: false,
+      },
+      {
+        name: 'Unassigned',
+        searchTerm: '',
+        selectedVendor: '',
+        selectedAssignee: 'unassigned',
+        minAmount: '',
+        maxAmount: '',
+        filterStartDate: '',
+        filterEndDate: '',
+        showArchived: false,
+      },
+    ];
   });
   const [selectedPreset, setSelectedPreset] = useState('');
   const [presetName, setPresetName] = useState('');
@@ -179,12 +235,17 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     const filters = [];
     if (searchTerm) filters.push(`Search: ${searchTerm}`);
     if (selectedVendor) filters.push(`Vendor: ${selectedVendor}`);
-    if (selectedAssignee) filters.push(`Assignee: ${selectedAssignee}`);
+    if (selectedAssignee)
+      filters.push(
+        `Assignee: ${selectedAssignee === 'unassigned' ? 'Unassigned' : selectedAssignee}`
+      );
     if (minAmount) filters.push(`Min: ${minAmount}`);
     if (maxAmount) filters.push(`Max: ${maxAmount}`);
+    if (filterStartDate) filters.push(`From: ${filterStartDate}`);
+    if (filterEndDate) filters.push(`To: ${filterEndDate}`);
     if (showArchived) filters.push('Archived');
     return filters;
-  }, [searchTerm, selectedVendor, selectedAssignee, minAmount, maxAmount, showArchived]);
+  }, [searchTerm, selectedVendor, selectedAssignee, minAmount, maxAmount, filterStartDate, filterEndDate, showArchived]);
 
 
   const addToast = (
@@ -501,7 +562,13 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
 
   const filteredInvoices = searchResults
   .filter((inv) => !selectedVendor || inv.vendor === selectedVendor)
-  .filter((inv) => !selectedAssignee || inv.assignee === selectedAssignee)
+  .filter((inv) =>
+    !selectedAssignee
+      ? true
+      : selectedAssignee === 'unassigned'
+      ? !inv.assignee
+      : inv.assignee === selectedAssignee
+  )
   .filter((inv) => {
     const amount = parseFloat(inv.amount);
     const min = parseFloat(minAmount);
@@ -510,6 +577,9 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     if (isNaN(amount)) return false;
     if (minAmount && amount < min) return false;
     if (maxAmount && amount > max) return false;
+
+    if (filterStartDate && new Date(inv.date) < new Date(filterStartDate)) return false;
+    if (filterEndDate && new Date(inv.date) > new Date(filterEndDate)) return false;
 
     return true;
   });
@@ -1375,8 +1445,12 @@ useEffect(() => {
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedVendor('');
+    setSelectedAssignee('');
     setMinAmount('');
     setMaxAmount('');
+    setFilterStartDate('');
+    setFilterEndDate('');
+    setShowArchived(false);
   };
 
   const handleSavePreset = () => {
@@ -1387,6 +1461,8 @@ useEffect(() => {
       selectedAssignee,
       minAmount,
       maxAmount,
+      filterStartDate,
+      filterEndDate,
       showArchived,
     };
     const updated = [
@@ -1406,6 +1482,8 @@ useEffect(() => {
       setSelectedAssignee(preset.selectedAssignee);
       setMinAmount(preset.minAmount);
       setMaxAmount(preset.maxAmount);
+      setFilterStartDate(preset.filterStartDate || '');
+      setFilterEndDate(preset.filterEndDate || '');
       setShowArchived(preset.showArchived);
     }
   };
@@ -1925,6 +2003,7 @@ useEffect(() => {
                   className="input"
                 >
                   <option value="">All Assignees</option>
+                  <option value="unassigned">Unassigned</option>
                   {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
                     <option key={idx} value={person}>
                       {person}
@@ -1953,6 +2032,29 @@ useEffect(() => {
                     min="0"
                     value={maxAmount}
                     onChange={(e) => setMaxAmount(e.target.value)}
+                    className="input"
+                  />
+                </div>
+              </fieldset>
+              <fieldset className="flex flex-col mb-4 p-2 border border-gray-200 dark:border-gray-700 rounded">
+                <legend className="text-xs font-medium mb-2">Date Range</legend>
+                <div className="flex flex-col mb-2">
+                  <label htmlFor="startDate" className="text-xs font-medium mb-1">Start Date</label>
+                  <input
+                    id="startDate"
+                    type="date"
+                    value={filterStartDate}
+                    onChange={(e) => setFilterStartDate(e.target.value)}
+                    className="input"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="endDate" className="text-xs font-medium mb-1">End Date</label>
+                  <input
+                    id="endDate"
+                    type="date"
+                    value={filterEndDate}
+                    onChange={(e) => setFilterEndDate(e.target.value)}
                     className="input"
                   />
                 </div>
@@ -2038,6 +2140,7 @@ useEffect(() => {
       </li>
     </ol>
     <motion.div
+      id="uploadArea"
       className={`border-2 border-dashed rounded-md p-4 cursor-pointer ${dragActive ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500' : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600'}`}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
@@ -2065,10 +2168,25 @@ useEffect(() => {
             <div className="font-semibold">{f.name}</div>
             <div>Size: {(f.size / 1024).toFixed(1)} KB</div>
             <div>Rows: {f.rows}</div>
+            {f.file && f.file.type.startsWith('image') && (
+              <img
+                src={URL.createObjectURL(f.file)}
+                alt={f.name}
+                className="mt-1 w-16 h-16 object-cover rounded"
+              />
+            )}
+            {f.file && f.file.type === 'application/pdf' && (
+              <embed
+                src={URL.createObjectURL(f.file)}
+                type="application/pdf"
+                className="mt-1 w-16 h-16"
+              />
+            )}
             {f.preview && (
               <button
                 onClick={() => setPreviewModalData(f)}
                 className="mt-1 text-indigo-700 underline"
+                title="Preview rows"
               >
                 Preview rows
               </button>
@@ -3186,9 +3304,18 @@ useEffect(() => {
             summary={bulkSummary}
             onClose={() => setBulkSummary(null)}
           />
-          <TourModal
-            open={showTour}
-            onClose={() => { setShowTour(false); localStorage.setItem('seenTour','1'); }}
+          <Joyride
+            steps={tourSteps}
+            run={showTour}
+            showSkipButton
+            continuous
+            styles={{ options: { zIndex: 10000 } }}
+            callback={(data) => {
+              if (['finished', 'skipped'].includes(data.status)) {
+                setShowTour(false);
+                localStorage.setItem('seenTour', '1');
+              }
+            }}
           />
           <FeatureWidget open={featureOpen} onClose={() => setFeatureOpen(false)} />
         </>
