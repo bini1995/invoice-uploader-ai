@@ -28,6 +28,7 @@ import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import BulkSummary from './components/BulkSummary';
 import FloatingActionPanel from './components/FloatingActionPanel';
+import InvoiceSnapshotView from './components/InvoiceSnapshotView';
 import TourModal from './components/TourModal';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
@@ -114,6 +115,7 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   const [showTimeline, setShowTimeline] = useState(false);
   const [timelineInvoice, setTimelineInvoice] = useState(null);
   const [detailInvoice, setDetailInvoice] = useState(null);
+  const [snapshotInvoice, setSnapshotInvoice] = useState(null);
   const [topVendors, setTopVendors] = useState([]);
   const [tagReport, setTagReport] = useState([]);
   const [vendorPanelVendor, setVendorPanelVendor] = useState(null);
@@ -150,6 +152,7 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
 
   const [downloadingId, setDownloadingId] = useState(null);
   const [paymentRequestId, setPaymentRequestId] = useState(null);
+  const [highlightIndex, setHighlightIndex] = useState(-1);
   const [toasts, setToasts] = useState([]);
   const [notifications, setNotifications] = useState(() => {
     const saved = localStorage.getItem('notifications');
@@ -475,28 +478,6 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     };
   }, [tenant, token, syncPendingActions]);
 
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
-      if (e.key === 'a' || e.key === 'A') {
-        if (selectedInvoices.length) handleBulkArchive();
-      }
-      if (e.key === 'f' || e.key === 'F') {
-        if (selectedInvoices.length) {
-          selectedInvoices.forEach((id) => {
-            const inv = invoices.find((i) => i.id === id);
-            if (inv) handleFlagSuspicious(inv);
-          });
-        }
-      }
-      if (e.key === '/') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [selectedInvoices, invoices, handleBulkArchive, handleFlagSuspicious]);
 
   
 
@@ -540,8 +521,52 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     return 0;
   });
 
+  useEffect(() => {
+    if (sortedInvoices.length > 0) {
+      setHighlightIndex(0);
+    } else {
+      setHighlightIndex(-1);
+    }
+  }, [sortedInvoices.length]);
+
 
   const allSelected = selectedInvoices.length === sortedInvoices.length && sortedInvoices.length > 0;
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (e.key === 'a' || e.key === 'A') {
+        if (selectedInvoices.length) handleBulkArchive();
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        if (selectedInvoices.length) {
+          selectedInvoices.forEach((id) => {
+            const inv = invoices.find((i) => i.id === id);
+            if (inv) handleFlagSuspicious(inv);
+          });
+        }
+      }
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setHighlightIndex((i) => Math.min(sortedInvoices.length - 1, i + 1));
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setHighlightIndex((i) => Math.max(0, i - 1));
+      }
+      if (e.key === 'Enter') {
+        if (highlightIndex >= 0 && highlightIndex < sortedInvoices.length) {
+          setSnapshotInvoice(sortedInvoices[highlightIndex]);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [selectedInvoices, invoices, handleBulkArchive, handleFlagSuspicious, sortedInvoices, highlightIndex]);
 
 
   const toggleSelectInvoice = (id) => {
@@ -922,6 +947,39 @@ useEffect(() => {
     finally {
       setLoadingVendor(false);
     }
+  };
+
+  const startVoiceUpload = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      addToast('Voice recognition not supported', 'error');
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.onresult = async (event) => {
+      const text = Array.from(event.results).map((r) => r[0].transcript).join(' ');
+      try {
+        const res = await fetch('http://localhost:3000/api/invoices/voice-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          addToast('Voice invoice created');
+          fetchInvoices(showArchived, selectedAssignee);
+        } else {
+          addToast(data.message || 'Voice upload failed', 'error');
+        }
+      } catch (err) {
+        console.error('Voice upload error:', err);
+        addToast('Voice upload failed', 'error');
+      }
+    };
+    recognition.onerror = () => addToast('Voice recognition error', 'error');
+    recognition.start();
   };
 
   const handleSummarizeErrors = async () => {
@@ -1580,6 +1638,28 @@ useEffect(() => {
       addToast('Failed to add comment', 'error');
     }
   };
+
+  const addCommentFromSnapshot = async (id, text) => {
+    if (!text) return;
+    try {
+      const res = await fetch(`http://localhost:3000/api/invoices/${id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Comment added');
+        fetchInvoices(showArchived, selectedAssignee);
+        socket.emit('chatMessage', { invoiceId: id, text, user: username });
+      } else {
+        addToast(data.message || 'Failed to add comment', 'error');
+      }
+    } catch (err) {
+      console.error('Comment error:', err);
+      addToast('Failed to add comment', 'error');
+    }
+  };
   
 
   const handleExportArchived = async () => {
@@ -1702,6 +1782,14 @@ useEffect(() => {
         data={previewModalData}
         onClose={() => setPreviewModalData(null)}
         onConfirm={previewModalData?.confirm ? handleUpload : null}
+      />
+      <InvoiceSnapshotView
+        open={!!snapshotInvoice}
+        invoice={snapshotInvoice}
+        onClose={() => setSnapshotInvoice(null)}
+        token={token}
+        tenant={tenant}
+        onAddComment={addCommentFromSnapshot}
       />
       <InvoiceDetailModal
         open={!!detailInvoice}
@@ -2490,8 +2578,8 @@ useEffect(() => {
               ) : (
                 
                 sortedInvoices.map((inv, idx) => (
+                  <React.Fragment key={inv.id}>
                   <tr
-                          key={inv.id}
                           className={`text-center hover:bg-gray-100 hover:shadow ${
                             idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                           } ${
@@ -2504,7 +2592,7 @@ useEffect(() => {
                             role === 'approver' && (inv.approval_status || 'Pending') === 'Pending'
                               ? 'bg-yellow-100 dark:bg-yellow-900'
                               : ''
-                          }`}
+                          } ${highlightIndex === idx ? 'ring-2 ring-indigo-500' : ''}`}
                         >
                     <td className="border px-4 py-2 flex items-center space-x-1">
                       <button onClick={() => setExpandedRows((r) => r.includes(inv.id) ? r.filter(i => i !== inv.id) : [...r, inv.id])} className="text-xs">
@@ -2517,7 +2605,7 @@ useEffect(() => {
                       />
                     </td>
                     <td className="border px-4 py-2">{inv.id}</td>
-                    <td className="border px-4 py-2 cursor-pointer" onClick={() => setDetailInvoice(inv)}>
+                    <td className="border px-4 py-2 cursor-pointer" onClick={() => setSnapshotInvoice(inv)}>
                       <div className="flex flex-col items-center">
                         <span className="font-medium">{inv.invoice_number}</span>
                         <div className="flex space-x-1 mt-1">
@@ -2833,6 +2921,7 @@ useEffect(() => {
                       </td>
                     </tr>
                   )}
+                  </React.Fragment>
                 ))
               )}
             </tbody>
@@ -2849,7 +2938,7 @@ useEffect(() => {
                   ) : sortedInvoices.map((inv) => (
                     <div
                     key={inv.id}
-                    onClick={() => setDetailInvoice(inv)}
+                    onClick={() => setSnapshotInvoice(inv)}
                     className={`border rounded-lg p-4 shadow-md flex flex-col space-y-2 ${
                       inv.archived ? 'bg-gray-100 text-gray-500 italic' : 'bg-white'
                     } ${
@@ -3021,6 +3110,7 @@ useEffect(() => {
           <FloatingActionPanel
             onUpload={openUploadPreview}
             onAsk={() => setAssistantOpen(true)}
+            onVoice={startVoiceUpload}
           />
           <ChatSidebar
             open={assistantOpen}
