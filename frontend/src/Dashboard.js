@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Skeleton from './components/Skeleton';
+import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import MainLayout from './components/MainLayout';
 
@@ -156,11 +157,7 @@ function Dashboard() {
               🎉 You've approved {approvalStats.total} invoices this week! Streak: {approvalStats.streak} days
             </div>
           )}
-          {vendors.length === 0 && !loading && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-gray-500 italic py-10">
-              📄 No invoices yet — upload one to get started
-            </motion.div>
-          )}
+          {vendors.length === 0 && !loading && <EmptyState />}
           <div className="h-64">
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
