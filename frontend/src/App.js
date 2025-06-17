@@ -19,6 +19,7 @@ import Login from './Login';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
+import EmptyState from './components/EmptyState';
 import ChatSidebar from './components/ChatSidebar';
 import GraphView from './components/GraphView';
 import ConfirmModal from './components/ConfirmModal';
@@ -2611,14 +2612,8 @@ useEffect(() => {
                 </tr>
               ) : sortedInvoices.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="py-10">
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-center text-gray-500 italic"
-                    >
-                      📄 No invoices yet — upload one to get started
-                    </motion.div>
+                  <td colSpan="7">
+                    <EmptyState />
                   </td>
                 </tr>
               ) : (
