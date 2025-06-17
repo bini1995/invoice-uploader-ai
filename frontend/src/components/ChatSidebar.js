@@ -15,7 +15,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 
-export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, history, loading }) {
+export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, onUpload, history, loading }) {
   const [question, setQuestion] = useState('');
   const [chartQ, setChartQ] = useState('');
   const [billingQ, setBillingQ] = useState('');
@@ -30,7 +30,11 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
   };
 
   const submitAsk = () => {
-    onAsk(question);
+    if (/upload .*invoice/i.test(question)) {
+      onUpload?.(question);
+    } else {
+      onAsk(question);
+    }
     setQuestion('');
   };
   const submitChart = () => {

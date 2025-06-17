@@ -982,6 +982,30 @@ useEffect(() => {
     recognition.start();
   };
 
+  const handleConversationalUpload = async (text) => {
+    if (!text.trim()) return;
+    try {
+      setLoadingAssistant(true);
+      const res = await fetch('http://localhost:3000/api/invoices/nl-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        addToast('Invoice created');
+        fetchInvoices(showArchived, selectedAssignee);
+      } else {
+        addToast(data.message || 'Upload failed', 'error');
+      }
+    } catch (err) {
+      console.error('Conversational upload error:', err);
+      addToast('Upload failed', 'error');
+    } finally {
+      setLoadingAssistant(false);
+    }
+  };
+
   const handleSummarizeErrors = async () => {
     if (!errors.length) return;
     try {
@@ -3116,6 +3140,7 @@ useEffect(() => {
             open={assistantOpen}
             onClose={() => setAssistantOpen(false)}
             onAsk={handleAssistantQuery}
+            onUpload={handleConversationalUpload}
             onChart={handleChartQuery}
             onBilling={handleBillingQuery}
             history={chatHistory}
