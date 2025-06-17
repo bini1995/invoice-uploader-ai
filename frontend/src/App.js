@@ -30,6 +30,8 @@ import BulkSummary from './components/BulkSummary';
 import FloatingActionPanel from './components/FloatingActionPanel';
 import InvoiceSnapshotView from './components/InvoiceSnapshotView';
 import TourModal from './components/TourModal';
+import ProgressBar from './components/ProgressBar';
+import { Button } from './components/ui/Button';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
 import {
@@ -1849,7 +1851,7 @@ useEffect(() => {
           <aside
           className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
             filterSidebarOpen ? '' : 'hidden md:block'
-          } md:border-r md:border-gray-200 dark:md:border-gray-700 md:max-h-screen md:overflow-y-auto z-40`}
+          } md:border-r md:border-gray-200 dark:md:border-gray-700 md:max-h-screen md:overflow-y-auto md:sticky md:top-16 z-40`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
             <SidebarNav notifications={notifications} />
@@ -2006,13 +2008,14 @@ useEffect(() => {
         <span>Confirm Upload</span>
       </li>
     </ol>
-    <div
+    <motion.div
       className={`border-2 border-dashed rounded-md p-4 cursor-pointer ${dragActive ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500' : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600'}`}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
       onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
       onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
       onClick={() => fileInputRef.current.click()}
+      whileHover={{ scale: 1.02 }}
     >
       <p className="text-sm text-gray-500 dark:text-gray-300">Drag & drop CSV/PDF/Image here or tap to select or capture</p>
       <input
@@ -2025,7 +2028,7 @@ useEffect(() => {
         onChange={(e) => handleFiles(e.target.files)}
         className="hidden"
       />
-    </div>
+    </motion.div>
     {filePreviews.length > 0 && (
       <div className="flex flex-wrap gap-2 mt-2">
         {filePreviews.map((f, idx) => (
@@ -2054,18 +2057,13 @@ useEffect(() => {
     )}
 
     {uploadProgress > 0 && (
-      <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded mt-2">
-        <div
-          className="bg-indigo-600 dark:bg-indigo-500 h-2 rounded"
-          style={{ width: `${uploadProgress}%` }}
-        ></div>
-      </div>
+      <ProgressBar value={uploadProgress} />
     )}
 
-    <button
+    <Button
       onClick={openUploadPreview}
       disabled={!token || !files.length}
-      className="btn btn-primary w-full flex items-center justify-center space-x-2 mt-4 disabled:opacity-60"
+      className="w-full flex items-center justify-center space-x-2 mt-4"
     >
       {loading ? (
         <Spinner className="h-4 w-4" />
@@ -2073,7 +2071,7 @@ useEffect(() => {
         <ArrowUpTrayIcon className="h-5 w-5" />
       )}
       <span>{loading ? 'Uploading...' : 'Upload Invoice'}</span>
-    </button>
+    </Button>
 
     {recentUploads.length > 0 && (
       <div className="mt-2 text-xs">
