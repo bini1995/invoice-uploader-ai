@@ -1993,9 +1993,9 @@ useEffect(() => {
         {token ? (
           <>
 
-<div className="mb-6">
-  <fieldset className="border border-gray-300 p-4 rounded-md flex flex-col gap-2">
-    <legend className="text-lg font-semibold px-2">Upload Invoice</legend>
+<div className="mt-6 mb-6">
+  <fieldset className="border border-gray-300 p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 flex flex-col gap-4">
+    <legend className="text-xl font-bold px-2">Upload Invoice</legend>
     <ol className="flex space-x-4 text-sm text-gray-500 mb-2">
       <li className="flex items-center space-x-1">
         <ArrowUpTrayIcon className="w-4 h-4 text-indigo-500" />
@@ -2206,92 +2206,111 @@ useEffect(() => {
                       )}
 
                      {/* Upload/Export Action Buttons */}
-                      <div className="flex flex-col mt-6 mb-2 gap-2">
-                        <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-gray-800 p-2 rounded shadow">
+                      <div className="flex flex-col mt-6 gap-4">
+                        <h2 className="text-xl font-bold">Actions</h2>
+                        <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl shadow-lg bg-white dark:bg-gray-800">
                           {role === 'admin' && (
-                            <button
+                            <Button
                               onClick={handleUpload}
                               disabled={!token}
-                              className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                             >
                               <ArrowUpTrayIcon className="w-4 h-4" />
                               <span>{loading ? 'Submitting...' : 'Submit'}</span>
-                            </button>
+                            </Button>
                           )}
 
                           <div className="flex flex-wrap items-center gap-2 border-l pl-4">
-                            <button
+                            <Button
                               onClick={handleVendorSummary}
                               disabled={!token}
-                              className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                               title="Vendor Insights"
                             >
                               <LightBulbIcon className="w-4 h-4" />
                               <span>{loadingVendor ? 'Loading...' : 'Vendor'}</span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={handleMonthlyInsights}
                               disabled={!token}
-                              className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                               title="Monthly Insights"
                             >
                               <ClockIcon className="w-4 h-4" />
                               <span>{loadingInsights ? 'Loading...' : 'Monthly'}</span>
-                            </button>
+                            </Button>
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 border-l pl-4">
-                            <button
+                            <Button
                               onClick={handleExport}
                               disabled={!token}
-                              className="btn btn-primary text-sm flex items-center space-x-1 disabled:opacity-60"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                             >
                               <ArrowDownTrayIcon className="w-4 h-4" />
                               <span>Filtered CSV</span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={handleExportAll}
                               disabled={!token}
-                              className="btn btn-primary bg-green-600 hover:bg-green-700 text-sm flex items-center space-x-1 disabled:opacity-60"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                             >
                               <ArrowDownTrayIcon className="w-4 h-4" />
                               <span>All CSV</span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={handleExportDashboardPDF}
                               disabled={!token}
-                              className="btn btn-primary bg-green-700 hover:bg-green-800 text-sm flex items-center space-x-1 disabled:opacity-60"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                             >
                               <DocumentArrowDownIcon className="w-4 h-4" />
                               <span>Dashboard</span>
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={handleExportArchived}
-                              className="btn btn-warning text-sm flex items-center space-x-1"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                             >
                               <ArchiveBoxIcon className="w-4 h-4" />
                               <span>Archived</span>
-                            </button>
+                            </Button>
                           </div>
 
                           <div className="flex flex-wrap items-center gap-2 border-l pl-4">
-                            <button
+                            <Button
                               onClick={handleResetFilters}
-                              className="btn btn-secondary text-sm flex items-center space-x-1"
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center space-x-1"
                               title="Reset Filters"
                             >
                               <ArrowPathIcon className="w-4 h-4" />
                               <span>Reset</span>
-                            </button>
+                            </Button>
                             {role === 'admin' && (
-                              <button
+                              <Button
                                 onClick={handleClearAll}
                                 disabled={!token}
-                                className="btn btn-danger text-sm flex items-center space-x-1 disabled:opacity-60"
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center space-x-1 text-red-600"
                               >
                                 <TrashIcon className="w-4 h-4" />
                                 <span>Clear</span>
-                              </button>
+                              </Button>
                             )}
                           </div>
                         </div>
