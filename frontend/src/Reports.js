@@ -134,7 +134,6 @@ function Reports() {
             </tbody>
           </table>
         </div>
-        </div>
       </div>
     </MainLayout>
   );
