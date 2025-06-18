@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 
@@ -8,7 +8,10 @@ function VendorManagement() {
   const [loading, setLoading] = useState(true);
   const [notesInput, setNotesInput] = useState({});
 
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  const headers = useMemo(
+    () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }),
+    [token]
+  );
 
   const fetchVendors = useCallback(async () => {
     setLoading(true);
@@ -16,7 +19,7 @@ function VendorManagement() {
     const data = await res.json();
     if (res.ok) setVendors(data.vendors || []);
     setLoading(false);
-  }, [token]);
+  }, [headers]);
 
   useEffect(() => { if (token) fetchVendors(); }, [fetchVendors, token]);
 
