@@ -387,3 +387,15 @@ npm install
 ```
 
 This installs `react-router-dom` along with the rest of the packages.
+
+**`SyntaxError: Error parsing .../ajv/package.json`**
+
+If you see this error when running `npm start`, your dependencies may have been
+installed using a newer Node version. Use Node 18 and reinstall:
+
+```bash
+nvm use 18
+cd frontend
+rm -rf node_modules package-lock.json
+npm install --legacy-peer-deps
+```
