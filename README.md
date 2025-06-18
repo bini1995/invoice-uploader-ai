@@ -10,7 +10,21 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 ## Requirements
 - Node.js 18.x LTS
 
-Using the recommended Node version avoids build errors such as "TypeError: memoize is not a function" when starting the frontend.
+The project relies on Node 18. Using newer versions (e.g. Node 20) can lead to runtime errors such as `TypeError: memorize is not a function` when starting the frontend.
+
+If you use [nvm](https://github.com/nvm-sh/nvm) you can run:
+
+```bash
+nvm install 18
+nvm use 18
+```
+
+After switching Node versions, reinstall the dependencies inside the `frontend` folder:
+
+```bash
+cd frontend
+npm install --legacy-peer-deps
+```
 
 ## Features
 
