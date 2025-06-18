@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
-import HelpTooltip from './components/HelpTooltip';
 import MainLayout from './components/MainLayout';
 
 function Reports() {
@@ -51,14 +50,14 @@ function Reports() {
     window.URL.revokeObjectURL(url);
   };
 
-  const loadRules = async () => {
+  const loadRules = useCallback(async () => {
     const res = await fetch('http://localhost:3000/api/analytics/rules', {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
     if (res.ok) setRules(data.rules || []);
     setLoadingRules(false);
-  };
+  }, [token]);
 
   const addAmountRule = async () => {
     await fetch('http://localhost:3000/api/analytics/rules', {
@@ -74,7 +73,7 @@ function Reports() {
       setLoadingRules(true);
       loadRules();
     }
-  }, [token]);
+  }, [loadRules, token]);
 
   return (
     <MainLayout title="Reports" helpTopic="reports">

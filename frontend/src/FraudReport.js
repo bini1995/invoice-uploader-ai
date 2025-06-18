@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 
@@ -8,7 +8,7 @@ function FraudReport() {
   const [loading, setLoading] = useState(true);
   const [explanations, setExplanations] = useState({});
 
-  const fetchFlagged = async () => {
+  const fetchFlagged = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     const res = await fetch('http://localhost:3000/api/invoices/fraud/flagged', {
@@ -17,7 +17,7 @@ function FraudReport() {
     const data = await res.json();
     if (res.ok) setInvoices(data.invoices || []);
     setLoading(false);
-  };
+  }, [token]);
 
   const loadExplanation = async (id) => {
     const res = await fetch(`http://localhost:3000/api/invoices/${id}/flag-explanation`, {
@@ -29,7 +29,7 @@ function FraudReport() {
     }
   };
 
-  useEffect(() => { fetchFlagged(); }, [token]);
+  useEffect(() => { fetchFlagged(); }, [fetchFlagged]);
 
   return (
     <MainLayout title="Fraud Reports" helpTopic="fraud">

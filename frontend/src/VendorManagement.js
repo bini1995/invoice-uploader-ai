@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
-import HelpTooltip from './components/HelpTooltip';
 import MainLayout from './components/MainLayout';
 
 function VendorManagement() {
@@ -11,15 +10,15 @@ function VendorManagement() {
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
-  const fetchVendors = async () => {
+  const fetchVendors = useCallback(async () => {
     setLoading(true);
     const res = await fetch('http://localhost:3000/api/vendors', { headers });
     const data = await res.json();
     if (res.ok) setVendors(data.vendors || []);
     setLoading(false);
-  };
+  }, [token]);
 
-  useEffect(() => { if (token) fetchVendors(); }, [token]);
+  useEffect(() => { if (token) fetchVendors(); }, [fetchVendors, token]);
 
   const saveNotes = async (vendor) => {
     const notes = notesInput[vendor] ?? '';

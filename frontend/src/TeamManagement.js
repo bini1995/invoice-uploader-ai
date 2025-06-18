@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
-import HelpTooltip from './components/HelpTooltip';
 import MainLayout from './components/MainLayout';
 
 function TeamManagement() {
@@ -20,19 +19,19 @@ function TeamManagement() {
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     const res = await fetch('http://localhost:3000/api/users', { headers });
     const data = await res.json();
     if (res.ok) setUsers(data);
-  };
+  }, [token]);
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     const res = await fetch('http://localhost:3000/api/invoices/logs', { headers });
     const data = await res.json();
     if (res.ok) setLogs(data);
-  };
+  }, [token]);
 
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async () => {
     const res = await fetch('http://localhost:3000/api/settings', { headers });
     const data = await res.json();
     if (res.ok) {
@@ -42,14 +41,14 @@ function TeamManagement() {
       setPdfLimit(data.pdfSizeLimitMB);
       if (data.defaultRetention) setDefaultRetention(data.defaultRetention);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (token) {
       setLoading(true);
       Promise.all([fetchUsers(), fetchLogs(), fetchSettings()]).finally(() => setLoading(false));
     }
-  }, [token]);
+  }, [fetchUsers, fetchLogs, fetchSettings, token]);
 
   const addUser = async () => {
     await fetch('http://localhost:3000/api/users', {

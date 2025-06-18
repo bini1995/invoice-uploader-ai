@@ -14,7 +14,7 @@ import WorkflowPage from './WorkflowPage';
 import Board from './Board';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import './i18n';
