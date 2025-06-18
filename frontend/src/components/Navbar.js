@@ -78,7 +78,7 @@ export default function Navbar({
               <span>Upload</span>
             </button>
           )}
-          {token && (
+          {token && onToggleFilters && (
             <button
               id="filterToggle"
               onClick={onToggleFilters}

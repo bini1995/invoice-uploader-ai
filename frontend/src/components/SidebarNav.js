@@ -17,6 +17,7 @@ export default function SidebarNav({ notifications = [] }) {
   const location = useLocation();
   const [open, setOpen] = useState(true);
   const unread = notifications.filter(n => !n.read).length;
+  const role = localStorage.getItem('role') || '';
 
   return (
     <aside className="hidden sm:block bg-white dark:bg-gray-800 shadow-lg w-64 p-4 space-y-2">
@@ -92,13 +93,15 @@ export default function SidebarNav({ notifications = [] }) {
               <ArchiveBoxIcon className="w-5 h-5" />
               <span>Archive</span>
             </Link>
-            <Link
-              to="/settings"
-              className={`nav-link ${location.pathname === '/settings' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
-            >
-              <Cog6ToothIcon className="w-5 h-5" />
-              <span>Settings</span>
-            </Link>
+            {role === 'admin' && (
+              <Link
+                to="/settings"
+                className={`nav-link ${location.pathname === '/settings' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
+              >
+                <Cog6ToothIcon className="w-5 h-5" />
+                <span>Settings</span>
+              </Link>
+            )}
           </nav>
         )}
       <div className="mt-4 relative">
