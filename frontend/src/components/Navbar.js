@@ -18,6 +18,7 @@ import {
   UserCircleIcon,
   QuestionMarkCircleIcon,
   Squares2X2Icon,
+  FlagIcon,
 } from '@heroicons/react/24/outline';
 import HelpTooltip from './HelpTooltip';
 
@@ -134,6 +135,13 @@ export default function Navbar({
                     onClick={() => setMenuOpen(false)}
                   >
                     <Squares2X2Icon className="h-5 w-5 mr-2" /> Board
+                  </Link>
+                  <Link
+                    to="/fraud"
+                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <FlagIcon className="h-5 w-5 mr-2" /> Fraud
                   </Link>
                   {role === 'admin' && (
                     <Link

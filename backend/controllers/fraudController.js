@@ -64,3 +64,15 @@ exports.fraudHeatmap = async (_req, res) => {
     res.status(500).json({ message: 'Failed to build fraud heatmap' });
   }
 };
+
+exports.flaggedInvoices = async (_req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, invoice_number, vendor, amount, date, flag_reason FROM invoices WHERE flagged = true ORDER BY id DESC'
+    );
+    res.json({ invoices: result.rows });
+  } catch (err) {
+    console.error('Flagged invoices fetch error:', err);
+    res.status(500).json({ message: 'Failed to fetch flagged invoices' });
+  }
+};
