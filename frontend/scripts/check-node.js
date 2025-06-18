@@ -1,5 +1,5 @@
 const semver = require('semver');
-const required = '>=18 <19';
+const required = '>=18 <21';
 if (!semver.satisfies(process.version, required)) {
   console.error(`\nError: Node.js ${required} required. Current ${process.version}.\n`);
   process.exit(1);

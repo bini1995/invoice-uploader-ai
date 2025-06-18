@@ -138,7 +138,6 @@ export default function DashboardBuilder() {
             )}
           </Droppable>
         </DragDropContext>
-      </div>
     </MainLayout>
   );
 }
