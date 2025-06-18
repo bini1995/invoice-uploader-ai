@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 
@@ -17,19 +17,22 @@ function TeamManagement() {
   const [pdfLimit, setPdfLimit] = useState(10);
   const [defaultRetention, setDefaultRetention] = useState('forever');
 
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  const headers = useMemo(
+    () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }),
+    [token]
+  );
 
   const fetchUsers = useCallback(async () => {
     const res = await fetch('http://localhost:3000/api/users', { headers });
     const data = await res.json();
     if (res.ok) setUsers(data);
-  }, [token]);
+  }, [headers]);
 
   const fetchLogs = useCallback(async () => {
     const res = await fetch('http://localhost:3000/api/invoices/logs', { headers });
     const data = await res.json();
     if (res.ok) setLogs(data);
-  }, [token]);
+  }, [headers]);
 
   const fetchSettings = useCallback(async () => {
     const res = await fetch('http://localhost:3000/api/settings', { headers });
@@ -41,7 +44,7 @@ function TeamManagement() {
       setPdfLimit(data.pdfSizeLimitMB);
       if (data.defaultRetention) setDefaultRetention(data.defaultRetention);
     }
-  }, [token]);
+  }, [headers]);
 
   useEffect(() => {
     if (token) {
