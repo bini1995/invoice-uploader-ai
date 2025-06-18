@@ -6,6 +6,12 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - **Express + PostgreSQL** (backend)
 - **OpenAI API** for natural language error feedback
 
+
+## Requirements
+- Node.js 18.x LTS
+
+Using the recommended Node version avoids build errors such as "TypeError: memoize is not a function" when starting the frontend.
+
 ## Features
 
 - Upload CSV invoice files
