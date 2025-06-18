@@ -3,8 +3,8 @@ import React from 'react';
 export default function PreviewModal({ open, onClose, onConfirm, data }) {
   if (!open || !data) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96 max-w-full">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 ease-in-out">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96 max-w-full transition-all duration-300 ease-in-out">
         <h2 className="text-lg font-semibold mb-2">Preview {data.name}</h2>
         <div className="overflow-x-auto max-h-60 border rounded-lg">
           <table className="table-auto text-xs w-full rounded-lg overflow-hidden">
@@ -34,7 +34,7 @@ export default function PreviewModal({ open, onClose, onConfirm, data }) {
           {onConfirm && (
             <button
               onClick={onConfirm}
-              className="px-3 py-1 rounded bg-indigo-600 text-white text-sm"
+              className="px-3 py-1 rounded bg-indigo-600 text-white text-sm transition-all duration-300 ease-in-out"
               title="Upload"
             >
               Upload
@@ -42,7 +42,7 @@ export default function PreviewModal({ open, onClose, onConfirm, data }) {
           )}
           <button
             onClick={onClose}
-            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all duration-300 ease-in-out"
             title="Close"
             aria-label="Close preview"
           >

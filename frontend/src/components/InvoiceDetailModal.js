@@ -62,8 +62,8 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 ease-in-out">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96 transition-all duration-300 ease-in-out">
         <h2 className="text-lg font-semibold mb-2">Invoice #{invoice.invoice_number}</h2>
         <div className="space-y-2 text-sm">
           <div>
@@ -173,15 +173,15 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
         <div className="mt-4 flex justify-end space-x-2">
           {editMode ? (
             <>
-              <button onClick={handleSave} className="bg-indigo-600 text-white px-3 py-1 rounded" title="Save">Save</button>
-              <button onClick={() => setEditMode(false)} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700" title="Cancel">Cancel</button>
+              <button onClick={handleSave} className="bg-indigo-600 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out" title="Save">Save</button>
+              <button onClick={() => setEditMode(false)} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out" title="Cancel">Cancel</button>
             </>
           ) : (
-            <button onClick={() => setEditMode(true)} className="bg-indigo-600 text-white px-3 py-1 rounded" title="Edit">Edit</button>
+            <button onClick={() => setEditMode(true)} className="bg-indigo-600 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out" title="Edit">Edit</button>
           )}
           <button
             onClick={onClose}
-            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all duration-300 ease-in-out"
             title="Close"
             aria-label="Close details"
           >
