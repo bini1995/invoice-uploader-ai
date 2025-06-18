@@ -13,6 +13,7 @@ import VendorManagement from './VendorManagement';
 import WorkflowPage from './WorkflowPage';
 import Board from './Board';
 import NotFound from './NotFound';
+import LandingPage from './LandingPage';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -61,7 +62,7 @@ function AnimatedRoutes() {
         <Route path="/workflow" element={<PageWrapper><WorkflowPage /></PageWrapper>} />
         <Route path="/board" element={<PageWrapper><Board /></PageWrapper>} />
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
