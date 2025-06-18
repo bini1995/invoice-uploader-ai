@@ -64,6 +64,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 - Natural language invoice search
 - Hoverable vendor bios with website and industry info
 - AI fraud detection heatmaps (color-coded anomaly maps)
+- Fraud detection reports listing flagged invoices with reasons
 - Automatic vendor bios + risk scores from public data
 - Real-time invoice chat thread with collaborators
 - Multi-language support (Spanish and French)
@@ -235,6 +236,7 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `POST /api/invoices/budgets` – create/update a monthly or quarterly budget by vendor or tag
 - `GET /api/invoices/budgets/warnings` – check if spending has exceeded 90% of a budget
 - `GET /api/invoices/anomalies` – list vendors with unusual spending spikes
+- `GET /api/invoices/fraud/flagged` – list flagged invoices with reasons
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
 - `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
 - `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor

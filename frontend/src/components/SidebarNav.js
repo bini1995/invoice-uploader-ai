@@ -10,6 +10,7 @@ import {
   WrenchScrewdriverIcon,
   Squares2X2Icon,
   ArchiveBoxIcon,
+  FlagIcon,
 } from '@heroicons/react/24/outline';
 
 export default function SidebarNav({ notifications = [] }) {
@@ -76,6 +77,13 @@ export default function SidebarNav({ notifications = [] }) {
             >
               <Squares2X2Icon className="w-5 h-5" />
               <span>Board</span>
+            </Link>
+            <Link
+              to="/fraud"
+              className={`nav-link ${location.pathname === '/fraud' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
+            >
+              <FlagIcon className="w-5 h-5" />
+              <span>Fraud</span>
             </Link>
             <Link
               to="/archive"

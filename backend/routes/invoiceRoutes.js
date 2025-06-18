@@ -175,6 +175,7 @@ router.get('/budgets/department-report', authMiddleware, getBudgetVsActual);
 router.get('/anomalies', authMiddleware, getAnomalies);
 router.get('/fraud/patterns', authMiddleware, authorizeRoles('admin'), detectPatterns);
 router.get('/fraud/heatmap', authMiddleware, authorizeRoles('admin'), fraudHeatmap);
+router.get('/fraud/flagged', authMiddleware, authorizeRoles('admin','reviewer'), require('../controllers/fraudController').flaggedInvoices);
 router.get('/:id/check-recurring', authMiddleware, checkRecurringInvoice);
 router.get('/vendor-scorecards', authMiddleware, getVendorScorecards);
 router.get('/graph', authMiddleware, getRelationshipGraph);
