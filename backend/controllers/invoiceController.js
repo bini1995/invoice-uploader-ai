@@ -39,6 +39,40 @@ const vendorPaymentMap = {
 // Predefined categories for AI tagging
 const CATEGORY_LIST = ['Office', 'Travel', 'Consulting', 'Marketing', 'Supplies'];
 
+async function aiDuplicateCheck(filename, invoice_number, amount, vendor, flags) {
+  if (!process.env.OPENROUTER_API_KEY) return { flag: false };
+  try {
+    const prompt = `Filename similar: ${flags.similarFile}; Duplicate combo: ${flags.dupCombo}; Off-hours: ${flags.offHours}. Invoice #: ${invoice_number}, Amount: $${amount}, Vendor: ${vendor}. Should this be flagged? Respond with JSON {"flag":true|false,"reason":"reason"}`;
+    const resp = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You detect duplicate or suspicious invoices.' },
+          { role: 'user', content: prompt }
+        ]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    const txt = resp.data.choices?.[0]?.message?.content?.trim();
+    if (!txt) return { flag: false };
+    try {
+      return JSON.parse(txt);
+    } catch {
+      const flag = /yes|true|1/i.test(txt);
+      return { flag, reason: txt };
+    }
+  } catch (err) {
+    console.error('AI duplicate check error:', err.response?.data || err.message);
+    return { flag: false };
+  }
+}
+
 
 exports.uploadInvoice = async (req, res) => {
   try {
@@ -168,6 +202,25 @@ exports.uploadInvoice = async (req, res) => {
       });
       const workflow = await getWorkflowForDepartment(department, parseFloat(amount));
       const category = categorizeInvoice({ vendor, description: inv.description });
+
+      const flags = { similarFile: false, dupCombo: false, offHours: false };
+      try {
+        const { rows: files } = await pool.query('SELECT file_name FROM invoices WHERE file_name IS NOT NULL ORDER BY id DESC LIMIT 50');
+        const fname = req.file.originalname.toLowerCase();
+        for (const f of files) {
+          const prev = f.file_name?.toLowerCase();
+          if (!prev) continue;
+          const d = levenshtein.get(fname, prev);
+          if (1 - d / Math.max(fname.length, prev.length) > 0.8) { flags.similarFile = true; break; }
+        }
+      } catch (e) { console.error('Filename similarity check failed:', e.message); }
+      try {
+        const dup = await pool.query('SELECT id FROM invoices WHERE invoice_number = $1 AND amount = $2 LIMIT 1', [invoice_number, amount]);
+        if (dup.rows.length) flags.dupCombo = true;
+      } catch (e) { console.error('Dup combo check failed:', e.message); }
+      flags.offHours = new Date().getHours() < 7 || new Date().getHours() > 19;
+      const aiRes = await aiDuplicateCheck(req.file.originalname, invoice_number, amount, vendor, flags);
+
       validRows.push({
         ...withRules,
         category,
@@ -181,6 +234,8 @@ exports.uploadInvoice = async (req, res) => {
         content_hash: contentHash,
         approval_chain: workflow.approvalChain,
         autoApprove: workflow.autoApprove,
+        flagged: aiRes.flag || false,
+        flag_reason: aiRes.reason,
       });
 
       try {
@@ -206,13 +261,14 @@ exports.uploadInvoice = async (req, res) => {
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
       const currentStep = inv.autoApprove ? approvalChain.length : 0;
       const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, category, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27) RETURNING id`,
+        `INSERT INTO invoices (invoice_number, date, amount, vendor, file_name, tags, category, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28) RETURNING id`,
         [
           inv.invoice_number,
           inv.date,
           inv.amount,
           inv.vendor,
+          req.file.originalname,
           inv.tags || [],
           inv.category || null,
           null,
@@ -544,9 +600,9 @@ exports.importInvoicesCSV = async (req, res) => {
       const { invoice_number, date, amount, vendor } = row;
       if (!invoice_number || !vendor) continue;
       const result = await pool.query(
-        'INSERT INTO invoices (invoice_number, date, amount, vendor, encrypted_payload) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+        'INSERT INTO invoices (invoice_number, date, amount, vendor, file_name, encrypted_payload) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
         [invoice_number, row.date || date || new Date(), parseFloat(amount || 0), vendor,
-          encryptUploads ? encrypt(JSON.stringify(row), process.env.UPLOAD_ENCRYPTION_KEY) : null]
+          req.file.originalname, encryptUploads ? encrypt(JSON.stringify(row), process.env.UPLOAD_ENCRYPTION_KEY) : null]
       );
       inserted.push(result.rows[0].id);
     }
@@ -1098,11 +1154,16 @@ exports.updateRetentionPolicy = async (req, res) => {
     deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);
   }
   try {
+    const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     await pool.query(
       'UPDATE invoices SET retention_policy = $1, delete_at = $2 WHERE id = $3',
       [retention || 'forever', deleteAt, id]
     );
     await logActivity(req.user?.userId, 'update_retention', id, req.user?.username);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ message: 'Retention policy updated' });
   } catch (err) {
     console.error('Retention update error:', err);
@@ -1188,7 +1249,14 @@ exports.bulkArchiveInvoices = async (req, res) => {
     return res.status(400).json({ message: 'No invoice IDs provided' });
   }
   try {
-    await pool.query('UPDATE invoices SET archived = TRUE WHERE id = ANY($1::int[])', [ids]);
+    for (const id of ids) {
+      const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+      await pool.query('UPDATE invoices SET archived = TRUE WHERE id = $1', [id]);
+      const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+      if (before.rows.length && after.rows.length) {
+        await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+      }
+    }
     await logActivity(req.user?.userId, 'bulk_archive', null, req.user?.username);
     res.json({ message: 'Invoices archived' });
   } catch (err) {
@@ -1203,7 +1271,14 @@ exports.bulkAssignInvoices = async (req, res) => {
     return res.status(400).json({ message: 'No invoice IDs provided' });
   }
   try {
-    await pool.query('UPDATE invoices SET assignee = $1 WHERE id = ANY($2::int[])', [assignee || null, ids]);
+    for (const id of ids) {
+      const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+      await pool.query('UPDATE invoices SET assignee = $1 WHERE id = $2', [assignee || null, id]);
+      const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+      if (before.rows.length && after.rows.length) {
+        await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+      }
+    }
     await logActivity(req.user?.userId, 'bulk_assign', null, req.user?.username);
     res.json({ message: 'Invoices assigned' });
   } catch (err) {
@@ -1235,6 +1310,10 @@ exports.bulkApproveInvoices = async (req, res) => {
          WHERE id = $5`,
         [status, nextStep, step, comment || '', id]
       );
+      const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+      if (invRes.rows.length && after.rows.length) {
+        await recordInvoiceVersion(id, invRes.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+      }
       const nextLabel = nextStep >= chain.length ? 'Completed' : `Next: ${chain[nextStep]}`;
       const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
       await sendSlackNotification(msg);
@@ -1269,6 +1348,10 @@ exports.bulkRejectInvoices = async (req, res) => {
          WHERE id = $3`,
         [step, comment || '', id]
       );
+      const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+      if (invRes.rows.length && after.rows.length) {
+        await recordInvoiceVersion(id, invRes.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+      }
     }
     await logActivity(req.user?.userId, 'bulk_reject', null, req.user?.username);
     res.json({ message: 'Invoices rejected' });
@@ -1308,7 +1391,13 @@ exports.bulkUpdateInvoices = async (req, res) => {
     }
     values.push(ids);
     const query = `UPDATE invoices SET ${sets.join(', ')} WHERE id = ANY($${idx}::int[])`;
+    const before = await pool.query('SELECT * FROM invoices WHERE id = ANY($1::int[])', [ids]);
     await pool.query(query, values);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = ANY($1::int[])', [ids]);
+    for (const b of before.rows) {
+      const a = after.rows.find(r => r.id === b.id);
+      if (a) await recordInvoiceVersion(b.id, b, a, req.user?.userId, req.user?.username);
+    }
     await logActivity(req.user?.userId, 'bulk_update', null, req.user?.username);
     res.json({ message: 'Invoices updated' });
   } catch (err) {
@@ -1484,7 +1573,12 @@ exports.autoCategorizeInvoice = async (req, res) => {
       tags = Array.from(new Set([...(tags || []), ...aiTags]));
     }
     const category = tags[0] || categorizeInvoice(invoice);
+    const before = result.rows[0];
     await pool.query('UPDATE invoices SET tags = $1, category = $2 WHERE id = $3', [tags, category, id]);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (after.rows.length) {
+      await recordInvoiceVersion(id, before, after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ id, tags, category });
   } catch (err) {
     console.error('Auto categorize error:', err.response?.data || err.message);
@@ -1523,7 +1617,12 @@ exports.autoTagCategories = async (req, res) => {
       .split(/[,\n]/)
       .map((t) => t.trim())
       .filter(Boolean);
+    const before = invoice;
     await pool.query('UPDATE invoices SET tags = $1 WHERE id = $2', [tags, id]);
+    const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (after.rows.length) {
+      await recordInvoiceVersion(id, before, after.rows[0], req.user?.userId, req.user?.username);
+    }
     res.json({ id, tags });
   } catch (err) {
     console.error('Auto tag error:', err.response?.data || err.message);
