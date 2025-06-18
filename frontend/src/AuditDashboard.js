@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 
@@ -12,7 +12,7 @@ export default function AuditDashboard() {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     const params = new URLSearchParams();
@@ -26,9 +26,9 @@ export default function AuditDashboard() {
     const data = await res.json();
     if (res.ok) setLogs(data);
     setLoading(false);
-  };
+  }, [token, vendor, action, start, end]);
 
-  useEffect(() => { fetchLogs(); }, [token]);
+  useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   if (!['admin','finance','legal'].includes(role)) {
     return <div className="min-h-screen flex items-center justify-center">Access denied.</div>;

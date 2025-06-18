@@ -49,7 +49,6 @@ import {
   FlagIcon,
   DocumentArrowDownIcon,
   LightBulbIcon,
-  PlusCircleIcon,
   TagIcon,
   EyeIcon,
   TrashIcon,
@@ -364,8 +363,8 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
       } finally {
         setLoadingInvoices(false);
       }
-    },
-    [token]
+  },
+  [token, socket]
   );
 
   const handleArchive = useCallback(

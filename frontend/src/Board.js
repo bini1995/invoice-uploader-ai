@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import MainLayout from './components/MainLayout';
 
@@ -6,7 +6,7 @@ export default function Board() {
   const token = localStorage.getItem('token') || '';
   const [columns, setColumns] = useState({ pending: [], approved: [], flagged: [] });
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!token) return;
     const res = await fetch('http://localhost:3000/api/invoices', {
       headers: { Authorization: `Bearer ${token}` }
@@ -19,9 +19,9 @@ export default function Board() {
         flagged: data.filter(i => i.flagged)
       });
     }
-  };
+  }, [token]);
 
-  useEffect(() => { fetchData(); }, [token]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
