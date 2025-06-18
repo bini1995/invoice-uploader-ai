@@ -399,3 +399,15 @@ cd frontend
 rm -rf node_modules package-lock.json
 npm install --legacy-peer-deps
 ```
+
+**`SyntaxError: .../json-schema-draft-07.json: Unexpected end of JSON input`**
+
+This indicates the install was done with an incompatible Node version and
+corrupted some dependencies. Switch to Node 18 and reinstall:
+
+```bash
+nvm use 18
+cd frontend
+rm -rf node_modules package-lock.json
+npm install --legacy-peer-deps
+```
