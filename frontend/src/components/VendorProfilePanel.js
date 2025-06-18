@@ -32,13 +32,13 @@ export default function VendorProfilePanel({ vendor, open, onClose, token }) {
   return (
     <div className="fixed inset-0 z-40">
       <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
-      <div className={`absolute right-0 top-0 h-full w-80 max-w-full bg-white dark:bg-gray-800 shadow-lg transform transition-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`absolute right-0 top-0 h-full w-80 max-w-full bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="p-4 space-y-2 h-full overflow-y-auto">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold">{vendor}</h2>
             <button
               onClick={onClose}
-              className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all duration-300 ease-in-out"
               title="Close"
               aria-label="Close profile"
             >

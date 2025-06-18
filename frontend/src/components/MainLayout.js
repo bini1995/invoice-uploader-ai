@@ -10,9 +10,11 @@ export default function MainLayout({ title, helpTopic, children }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       <SidebarNav notifications={notifications} />
-      <div className="flex-1 p-4 pt-16">
+      <div className="flex-1 pt-16">
         <TopNavbar title={title} helpTopic={helpTopic} />
-        {children}
+        <div className="container mx-auto px-6 py-8">
+          {children}
+        </div>
       </div>
     </div>
   );
