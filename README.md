@@ -411,3 +411,16 @@ cd frontend
 rm -rf node_modules package-lock.json
 npm install --legacy-peer-deps
 ```
+
+**`Error: Unknown keyword instanceof`**
+
+This error appears when the dependencies were installed under Node 20 or
+another unsupported version. Use Node 18 and reinstall the frontend
+packages:
+
+```bash
+nvm use 18
+cd frontend
+rm -rf node_modules package-lock.json
+npm install --legacy-peer-deps
+```
