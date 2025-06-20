@@ -72,7 +72,19 @@ const {
 
 
 const { summarizeUploadErrors } = require('../controllers/aiController');
-const { invoiceQualityScore, assistantQuery, billingQuery, onboardingHelp, paymentRiskScore, paymentLikelihood, nlChartQuery, suggestTagColors, paymentBehaviorByVendor } = require('../controllers/aiController');
+const {
+  invoiceQualityScore,
+  assistantQuery,
+  billingQuery,
+  onboardingHelp,
+  paymentRiskScore,
+  paymentLikelihood,
+  nlChartQuery,
+  suggestTagColors,
+  paymentBehaviorByVendor,
+  thinkSuggestion,
+  overdueEmailTemplate,
+} = require('../controllers/aiController');
 const router = express.Router();
 const { sendSummaryEmail } = require('../controllers/emailController');
 const { smartDraftEmail } = require('../controllers/emailController');
@@ -114,6 +126,8 @@ router.post('/payment-likelihood', authMiddleware, paymentLikelihood);
 router.post('/payment-behavior', authMiddleware, paymentBehaviorByVendor);
 router.post('/assistant', authMiddleware, assistantQuery);
 router.post('/billing-query', authMiddleware, billingQuery);
+router.post('/:id/think-suggestion', authMiddleware, thinkSuggestion);
+router.post('/:id/overdue-email', authMiddleware, overdueEmailTemplate);
 router.get('/help/onboarding', authMiddleware, onboardingHelp);
 router.post('/summarize-errors', summarizeUploadErrors);
 router.post('/login', login);
