@@ -132,6 +132,17 @@ async function initDb() {
       text TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    // store user corrections from OCR parsing
+    await pool.query(`CREATE TABLE IF NOT EXISTS ocr_corrections (
+      id SERIAL PRIMARY KEY,
+      invoice_id INTEGER REFERENCES invoices(id) ON DELETE CASCADE,
+      field TEXT NOT NULL,
+      old_value TEXT,
+      new_value TEXT,
+      user_id INTEGER,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

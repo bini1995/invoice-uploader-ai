@@ -25,6 +25,7 @@ const { sendApprovalReminders } = require('./controllers/reminderController');
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices, autoCloseExpiredInvoices } = require('./controllers/invoiceController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
+const { loadCorrections } = require('./utils/parserTrainer');
 
 const app = express();                      // create the app
 const server = http.createServer(app);
@@ -55,6 +56,8 @@ app.use(Sentry.Handlers.errorHandler());
 
 (async () => {
   await initDb();
+  await loadCorrections();
+  setInterval(loadCorrections, 60 * 60 * 1000); // refresh corrections hourly
 
   // Run auto-archive daily
   autoArchiveOldInvoices();

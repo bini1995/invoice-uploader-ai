@@ -92,6 +92,8 @@ npm install --legacy-peer-deps
 - Fully responsive mobile layout and installable PWA
 - Capture invoice photos on mobile with built-in OCR
 - PDF Invoice OCR with AI formatting correction
+- Self-learning OCR corrections that retrain parsing from user edits
+- Intelligent column mapping suggestions (line items, totals, tax)
 - Supplier portal for vendors to upload invoices, update banking info and check payments
 - Slack/Teams notifications for approvals or flags
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)

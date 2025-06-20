@@ -67,6 +67,7 @@ const {
   getInvoiceVersions,
   restoreInvoiceVersion,
   checkInvoiceSimilarity,
+  suggestMappings,
 } = require('../controllers/invoiceController');
 
 
@@ -161,6 +162,7 @@ router.post('/:id/auto-tag', authMiddleware, autoTagCategories);
 router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);
 router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRetentionPolicy);
 router.post('/suggest-tags', authMiddleware, suggestTags);
+router.post('/suggest-mappings', authMiddleware, suggestMappings);
 router.post('/suggest-tag-colors', authMiddleware, suggestTagColors);
 router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
 router.patch('/:id/review-flag', authMiddleware, authorizeRoles('admin','reviewer'), setReviewFlag);
