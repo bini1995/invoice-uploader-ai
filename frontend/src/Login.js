@@ -1,6 +1,7 @@
 // src/Login.js
 import React, { useState } from 'react';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
+import { Card } from './components/ui/Card';
 
 export default function Login({ onLogin, addToast }) {
   const [username, setUsername] = useState('');
@@ -40,7 +41,7 @@ export default function Login({ onLogin, addToast }) {
         </h1>
       </nav>
       <div className="flex-1 flex items-center justify-center pt-20">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-80 space-y-4">
+        <Card className="w-80 space-y-4">
           <h1 className="text-xl font-bold text-center">Login</h1>
 
           {error && (
@@ -66,7 +67,7 @@ export default function Login({ onLogin, addToast }) {
           <button onClick={handleLogin} className="btn btn-primary w-full" title="Log In">
             Log In
           </button>
-        </div>
+        </Card>
       </div>
     </div>
   );

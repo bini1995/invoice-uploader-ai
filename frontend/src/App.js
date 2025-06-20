@@ -35,8 +35,10 @@ import Joyride from 'react-joyride';
 import ProgressBar from './components/ProgressBar';
 import FeatureWidget from './components/FeatureWidget';
 import { Button } from './components/ui/Button';
+import { Card } from './components/ui/Card';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
+import useDarkMode from './hooks/useDarkMode';
 import {
   ArchiveBoxIcon,
   ArrowDownTrayIcon,
@@ -177,7 +179,7 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     const saved = localStorage.getItem('notifications');
     return saved ? JSON.parse(saved) : [];
   });
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+  const [darkMode, setDarkMode] = useDarkMode();
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [confirmData, setConfirmData] = useState(null);
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
@@ -477,15 +479,6 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     localStorage.setItem('tenant', tenant);
   }, [tenant]);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [darkMode]);
 
   useEffect(() => {
     const addTitles = () => {
@@ -1833,7 +1826,7 @@ useEffect(() => {
   if (!token) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-900 dark:text-gray-100">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-sm space-y-4">
+        <Card className="w-full max-w-sm space-y-4">
           <h2 className="text-lg font-semibold mb-4">Login</h2>
           {loginError && <p className="text-red-600 mb-2">{loginError}</p>}
           <label htmlFor="username" className="block text-sm font-medium">
@@ -1859,7 +1852,7 @@ useEffect(() => {
           <button onClick={handleLogin} className="btn btn-primary w-full">
             Log In
           </button>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -1933,8 +1926,6 @@ useEffect(() => {
         onNotificationsOpen={markNotificationsRead}
         role={role}
         onLogout={handleLogout}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
         token={token}
         onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
         onUpload={() => fileInputRef.current?.click()}

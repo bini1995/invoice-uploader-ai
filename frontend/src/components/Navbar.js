@@ -4,6 +4,8 @@ import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
 import LanguageSelector from './LanguageSelector';
 import ThemePicker from './ThemePicker';
+import DarkModeToggle from './DarkModeToggle';
+import useDarkMode from '../hooks/useDarkMode';
 import { useTranslation } from 'react-i18next';
 import {
   Bars3Icon,
@@ -12,8 +14,6 @@ import {
   DocumentChartBarIcon,
   ArchiveBoxIcon,
   ArrowUpTrayIcon,
-  SunIcon,
-  MoonIcon,
   UsersIcon,
   UserCircleIcon,
   QuestionMarkCircleIcon,
@@ -29,8 +29,6 @@ export default function Navbar({
   onNotificationsOpen,
   role,
   onLogout,
-  darkMode,
-  setDarkMode,
   token,
   onToggleFilters,
   onUpload,
@@ -40,6 +38,7 @@ export default function Navbar({
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const { t } = useTranslation();
   const location = useLocation();
 
@@ -158,18 +157,7 @@ export default function Navbar({
                 <QuestionMarkCircleIcon className="h-6 w-6 cursor-help" />
                 {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
               </div>
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
-                aria-label="Toggle dark mode"
-                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {darkMode ? (
-                  <SunIcon className="h-6 w-6" />
-                ) : (
-                  <MoonIcon className="h-6 w-6" />
-                )}
-              </button>
+              <DarkModeToggle />
               <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} />
               <div className="relative">
                 <button
