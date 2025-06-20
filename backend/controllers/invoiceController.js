@@ -21,6 +21,7 @@ const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/
 const { encrypt } = require('../utils/encryption');
 const levenshtein = require('fast-levenshtein');
 const { categorizeInvoice } = require('../utils/categorize');
+const { applyCorrections, loadCorrections } = require('../utils/parserTrainer');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -91,6 +92,8 @@ exports.parseInvoiceSample = async (req, res) => {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: 'Unsupported file type' });
     }
+
+    invoices = invoices.map(applyCorrections);
 
     fs.unlinkSync(req.file.path);
     const invoice = invoices[0];
@@ -169,6 +172,7 @@ exports.uploadInvoice = async (req, res) => {
     } else {
       return res.status(400).json({ message: 'Unsupported file type' });
     }
+    invoices = invoices.map(applyCorrections);
     const fileBuffer = fs.readFileSync(req.file.path);
     const integrityHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
     const bc = await submitHashToBlockchain(integrityHash);
@@ -411,6 +415,8 @@ exports.voiceUpload = async (req, res) => {
     const vendor = match[1].trim();
     const amount = parseFloat(match[2].replace(/,/g, ''));
     const date = new Date(match[3].trim());
+    const corrected = applyCorrections({ vendor });
+    const finalVendor = corrected.vendor;
     const invoice_number = `VOICE-${Date.now()}`;
 
     const csv = `invoice_number,date,amount,vendor\n${invoice_number},${date
@@ -422,11 +428,11 @@ exports.voiceUpload = async (req, res) => {
     doc.on('data', (c) => chunks.push(c));
     doc.on('end', () => {
       const pdf = Buffer.concat(chunks).toString('base64');
-      res.json({ invoice_number, vendor, amount, date: date.toISOString(), csv, pdf });
+      res.json({ invoice_number, vendor: finalVendor, amount, date: date.toISOString(), csv, pdf });
     });
     doc.fontSize(18).text(`Invoice #${invoice_number}`, { align: 'center' });
     doc.moveDown();
-    doc.fontSize(12).text(`Vendor: ${vendor}`);
+    doc.fontSize(12).text(`Vendor: ${finalVendor}`);
     doc.text(`Date: ${date.toISOString().split('T')[0]}`);
     doc.text(`Amount: $${amount.toFixed(2)}`);
     doc.end();
@@ -1297,7 +1303,14 @@ exports.updateInvoiceField = async (req, res) => {
 
   try {
     const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
+    if (before.rows.length && String(before.rows[0][field]) !== String(value)) {
+      await pool.query(
+        'INSERT INTO ocr_corrections (invoice_id, field, old_value, new_value, user_id) VALUES ($1,$2,$3,$4,$5)',
+        [id, field, String(before.rows[0][field]), String(value), req.user?.userId || null]
+      );
+    }
     await pool.query(`UPDATE invoices SET ${field} = $1 WHERE id = $2`, [value, id]);
+    await loadCorrections();
     const after = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
     if (before.rows.length && after.rows.length) {
       await recordInvoiceVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
@@ -1548,6 +1561,48 @@ exports.suggestTags = async (req, res) => {
     console.error('Tag suggestion error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to generate tag suggestions' });
   }
+};
+
+// Suggest column mappings for CSV uploads
+exports.suggestMappings = async (req, res) => {
+  const { headers } = req.body;
+  if (!Array.isArray(headers) || headers.length === 0) {
+    return res.status(400).json({ message: 'No headers provided' });
+  }
+  const mapping = {};
+  headers.forEach((h) => {
+    const l = h.toLowerCase();
+    if (!mapping.line_item && /(item|description)/.test(l)) mapping.line_item = h;
+    if (!mapping.total && /(total|amount)/.test(l)) mapping.total = h;
+    if (!mapping.tax && /(tax|vat)/.test(l)) mapping.tax = h;
+  });
+  if (process.env.OPENROUTER_API_KEY) {
+    try {
+      const prompt = `Map these CSV columns to invoice fields (line item, total, tax) and return JSON. Headers: ${headers.join(', ')}`;
+      const resp = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'openai/gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'You suggest invoice CSV mappings.' },
+            { role: 'user', content: prompt },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const raw = resp.data.choices?.[0]?.message?.content?.trim();
+      const aiMap = JSON.parse(raw);
+      Object.assign(mapping, aiMap);
+    } catch (e) {
+      console.error('Mapping suggestion error:', e.response?.data || e.message);
+    }
+  }
+  res.json({ mapping });
 };
 
 
@@ -2656,5 +2711,6 @@ module.exports = {
   restoreInvoiceVersion: exports.restoreInvoiceVersion,
   checkInvoiceSimilarity: exports.checkInvoiceSimilarity,
   parseInvoiceSample: exports.parseInvoiceSample,
+  suggestMappings: exports.suggestMappings,
 };
 
