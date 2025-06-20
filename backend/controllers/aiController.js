@@ -684,3 +684,95 @@ exports.onboardingHelp = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch onboarding help.' });
   }
 };
+
+// Suggest actions for an invoice based on vendor history
+exports.thinkSuggestion = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Missing invoice id.' });
+
+    const invRes = await pool.query(
+      'SELECT invoice_number, vendor, amount, due_date FROM invoices WHERE id = $1',
+      [id]
+    );
+    if (!invRes.rows.length) return res.status(404).json({ message: 'Invoice not found' });
+    const inv = invRes.rows[0];
+
+    const histRes = await pool.query(
+      `SELECT COUNT(*) FILTER (WHERE due_date < NOW() AND paid=FALSE) AS overdue,
+              COUNT(*) AS total
+         FROM invoices WHERE vendor = $1`,
+      [inv.vendor]
+    );
+    const history = histRes.rows[0];
+
+    const prompt = `Given this invoice:\n- Number: ${inv.invoice_number}\n- Amount: $${inv.amount}\n- Vendor: ${inv.vendor}\n- Due: ${inv.due_date}
+Vendor has ${history.overdue} overdue out of ${history.total} invoices historically.
+In one short sentence, suggest an action for accounts payable (e.g. \"Delay invoice – vendor historically late\").`;
+
+    const aiRes = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You give concise AP suggestions.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+          'X-Title': 'invoice-uploader-ai',
+        },
+      }
+    );
+    const suggestion = aiRes.data.choices?.[0]?.message?.content?.trim();
+    res.json({ suggestion });
+  } catch (err) {
+    console.error('Think suggestion error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to generate suggestion.' });
+  }
+};
+
+// Generate an email reminder template for an overdue invoice
+exports.overdueEmailTemplate = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id) return res.status(400).json({ message: 'Missing invoice id.' });
+
+    const invRes = await pool.query(
+      'SELECT invoice_number, vendor, amount, due_date FROM invoices WHERE id = $1',
+      [id]
+    );
+    if (!invRes.rows.length) return res.status(404).json({ message: 'Invoice not found' });
+    const inv = invRes.rows[0];
+
+    const prompt = `Draft a short professional email reminding the vendor that invoice #${inv.invoice_number} for $${inv.amount} is overdue. Ask for prompt payment.`;
+
+    const aiRes = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'You draft polite payment reminder emails.' },
+          { role: 'user', content: prompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+          'X-Title': 'invoice-uploader-ai',
+        },
+      }
+    );
+    const template = aiRes.data.choices?.[0]?.message?.content?.trim();
+    res.json({ template });
+  } catch (err) {
+    console.error('Email template error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to generate email template.' });
+  }
+};
