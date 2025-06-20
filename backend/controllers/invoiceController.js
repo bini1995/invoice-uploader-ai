@@ -13,6 +13,7 @@ const crypto = require('crypto');
 const settings = require('../config/settings');
 const { submitHashToBlockchain } = require('../utils/blockchain');
 const { getWorkflowForDepartment } = require('../utils/workflows');
+const { evaluateWorkflowRules } = require('../utils/workflowRulesEngine');
 const { getExchangeRate } = require('../utils/exchangeRates');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 const { broadcastMessage } = require('../utils/chatServer');
@@ -270,7 +271,14 @@ exports.uploadInvoice = async (req, res) => {
         amount: convertedAmount,
         vendor,
       });
-      const workflow = await getWorkflowForDepartment(department, parseFloat(amount));
+      const ruleUpdates = await evaluateWorkflowRules({
+        invoice_number,
+        amount: convertedAmount,
+        vendor,
+        department,
+      });
+      const finalDept = ruleUpdates.department || department;
+      const workflow = await getWorkflowForDepartment(finalDept, parseFloat(amount));
       const category = categorizeInvoice({ vendor, description: inv.description });
 
       const flags = { similarFile: false, dupCombo: false, offHours: false };
@@ -294,7 +302,8 @@ exports.uploadInvoice = async (req, res) => {
       validRows.push({
         ...withRules,
         category,
-        department,
+        department: finalDept,
+        assignee: ruleUpdates.assignee || null,
         original_amount: originalAmount,
         currency,
         exchange_rate: exchangeRate,
@@ -302,7 +311,7 @@ exports.uploadInvoice = async (req, res) => {
         vat_amount: vatAmount,
         expires_at: expiresAt,
         content_hash: contentHash,
-        approval_chain: workflow.approvalChain,
+        approval_chain: ruleUpdates.approval_chain || workflow.approvalChain,
         autoApprove: workflow.autoApprove,
         flagged: aiRes.flag || false,
         flag_reason: aiRes.reason,
@@ -341,7 +350,7 @@ exports.uploadInvoice = async (req, res) => {
           req.file.originalname,
           inv.tags || [],
           inv.category || null,
-          null,
+          inv.assignee || null,
           inv.flagged || false,
           inv.flag_reason,
           JSON.stringify(approvalChain),
@@ -365,7 +374,9 @@ exports.uploadInvoice = async (req, res) => {
         ]
       );
       const newId = insertRes.rows[0].id;
-      await autoAssignInvoice(newId, inv.vendor, inv.tags || []);
+      if (!inv.assignee) {
+        await autoAssignInvoice(newId, inv.vendor, inv.tags || []);
+      }
 
       try {
         const poRes = await pool.query(

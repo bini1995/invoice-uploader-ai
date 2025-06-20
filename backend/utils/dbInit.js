@@ -143,6 +143,19 @@ async function initDb() {
       user_id INTEGER,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS workflow_rules (
+      id SERIAL PRIMARY KEY,
+      vendor TEXT,
+      amount_greater_than NUMERIC,
+      route_to_department TEXT,
+      assign_approver TEXT,
+      approval_chain JSONB,
+      alert_message TEXT,
+      priority INTEGER DEFAULT 0,
+      active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }
