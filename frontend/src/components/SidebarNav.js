@@ -38,6 +38,13 @@ export default function SidebarNav({ notifications = [] }) {
               <span>Dashboard</span>
             </Link>
             <Link
+              to="/adaptive"
+              className={`nav-link ${location.pathname === '/adaptive' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
+            >
+              <DocumentChartBarIcon className="w-5 h-5" />
+              <span>Adaptive</span>
+            </Link>
+            <Link
               to="/invoices"
               className={`nav-link ${location.pathname === '/invoices' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >

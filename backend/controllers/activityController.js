@@ -4,7 +4,7 @@ const archiver = require('archiver');
 
 exports.getActivityLogs = async (req, res) => {
   try {
-    const { start, end, vendor, action } = req.query;
+    const { start, end, vendor, action, limit } = req.query;
     let query = 'SELECT a.* FROM activity_logs a';
     const params = [];
     const conditions = [];
@@ -31,7 +31,9 @@ exports.getActivityLogs = async (req, res) => {
       conditions.push('i.flagged = TRUE');
     }
     const where = conditions.length ? ' WHERE ' + conditions.join(' AND ') : '';
-    const result = await pool.query(`${query}${where} ORDER BY a.created_at DESC`, params);
+    const lim = parseInt(limit, 10);
+    const limitClause = lim ? ` LIMIT ${lim}` : '';
+    const result = await pool.query(`${query}${where} ORDER BY a.created_at DESC${limitClause}`, params);
     res.json(result.rows);
   } catch (err) {
     console.error('Log fetch error:', err);

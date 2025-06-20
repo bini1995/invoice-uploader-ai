@@ -201,3 +201,24 @@ exports.getApprovalStats = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch approval stats' });
   }
 };
+
+// Aggregate metadata for adaptive dashboard
+exports.getDashboardMetadata = async (_req, res) => {
+  try {
+    const vendorRes = await pool.query('SELECT COUNT(DISTINCT vendor) AS count FROM invoices');
+    const flaggedRes = await pool.query('SELECT COUNT(*) AS count FROM invoices WHERE flagged = TRUE');
+    const procRes = await pool.query(
+      `SELECT AVG(EXTRACT(EPOCH FROM (COALESCE(updated_at, NOW()) - created_at))) AS avg_seconds
+       FROM invoices WHERE updated_at IS NOT NULL`
+    );
+    const avgSeconds = parseFloat(procRes.rows[0].avg_seconds) || 0;
+    res.json({
+      totalVendors: parseInt(vendorRes.rows[0].count, 10) || 0,
+      flaggedItems: parseInt(flaggedRes.rows[0].count, 10) || 0,
+      avgProcessingHours: +(avgSeconds / 3600).toFixed(2)
+    });
+  } catch (err) {
+    console.error('Dashboard metadata error:', err);
+    res.status(500).json({ message: 'Failed to fetch dashboard metadata' });
+  }
+};
