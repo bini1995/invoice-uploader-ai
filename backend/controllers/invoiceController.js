@@ -73,6 +73,72 @@ async function aiDuplicateCheck(filename, invoice_number, amount, vendor, flags)
   }
 }
 
+exports.parseInvoiceSample = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    let invoices;
+    if (ext === '.csv') {
+      invoices = await parseCSV(req.file.path);
+    } else if (ext === '.pdf') {
+      invoices = await parsePDF(req.file.path);
+    } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
+      invoices = await parseImage(req.file.path);
+    } else {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: 'Unsupported file type' });
+    }
+
+    fs.unlinkSync(req.file.path);
+    const invoice = invoices[0];
+    if (!invoice) {
+      return res.status(400).json({ message: 'Unable to parse invoice' });
+    }
+
+    let tags = vendorTagMap[invoice.vendor?.toLowerCase()] || [];
+    if (process.env.OPENROUTER_API_KEY) {
+      try {
+        const prompt = `Suggest short comma-separated tags for an invoice from ${invoice.vendor} for $${invoice.amount}.`;
+        const resp = await axios.post(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            model: 'openai/gpt-3.5-turbo',
+            messages: [
+              { role: 'system', content: 'You provide concise invoice tags.' },
+              { role: 'user', content: prompt },
+            ],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+              'X-Title': 'invoice-uploader-ai',
+            },
+          }
+        );
+        const txt = resp.data.choices?.[0]?.message?.content?.trim();
+        if (txt) {
+          tags = txt
+            .split(/[,\n]/)
+            .map((t) => t.trim())
+            .filter(Boolean);
+        }
+      } catch (err) {
+        console.error('Tag suggest error:', err.response?.data || err.message);
+      }
+    }
+
+    res.json({ invoice, tags });
+  } catch (err) {
+    console.error('Parse sample error:', err);
+    res.status(500).json({ message: 'Failed to parse invoice sample' });
+  }
+};
+
 
 exports.uploadInvoice = async (req, res) => {
   try {
@@ -2589,5 +2655,6 @@ module.exports = {
   getInvoiceVersions: exports.getInvoiceVersions,
   restoreInvoiceVersion: exports.restoreInvoiceVersion,
   checkInvoiceSimilarity: exports.checkInvoiceSimilarity,
+  parseInvoiceSample: exports.parseInvoiceSample,
 };
 

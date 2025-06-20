@@ -9,6 +9,7 @@ const { login, refreshToken, logout, authMiddleware, authorizeRoles } = require(
 const {
   uploadInvoice,
   voiceUpload,
+  parseInvoiceSample,
   conversationalUpload,
   getAllInvoices,
   clearAllInvoices,
@@ -95,6 +96,7 @@ router.post('/suggest-voucher', suggestVoucher);
 router.post('/send-email', sendSummaryEmail);
 router.post('/draft-smart-email', authMiddleware, smartDraftEmail);
 router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoice);
+router.post('/parse-sample', authMiddleware, upload.single('invoiceFile'), parseInvoiceSample);
 router.post('/import-csv', authMiddleware, authorizeRoles('admin'), upload.single('file'), importInvoicesCSV);
 router.post('/voice-upload', authMiddleware, authorizeRoles('admin'), voiceUpload);
 router.post('/nl-upload', authMiddleware, authorizeRoles('admin'), conversationalUpload);

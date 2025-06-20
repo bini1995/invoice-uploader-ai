@@ -14,6 +14,7 @@ import WorkflowPage from './WorkflowPage';
 import Board from './Board';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
+import OnboardingWizard from './OnboardingWizard';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -62,6 +63,7 @@ function AnimatedRoutes() {
         <Route path="/workflow" element={<PageWrapper><WorkflowPage /></PageWrapper>} />
         <Route path="/board" element={<PageWrapper><Board /></PageWrapper>} />
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
+        <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
