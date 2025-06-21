@@ -108,6 +108,9 @@ npm install --legacy-peer-deps
 - Smart vendor matching for inconsistent spellings
 - Team member roles view with profile avatars
 - Shareable collaborator mode with comment-only or editor access
+- Export template builder for custom CSV layouts
+- Whitelabel themes and logo per tenant
+- New roles: Admin, Accountant and Approver
 - Manual or API-driven payment status sync
 - Multi-currency support with automatic VAT/GST calculations
 - Automation marketplace integrations (Zapier/Make) for Slack, QuickBooks and Google Sheets via `/api/integrations`
@@ -269,6 +272,9 @@ interactive expression builder. Test expressions are sent to `POST /api/workflow
 to see how rules would route a sample invoice.
 - `GET /api/invoices/fraud/flagged` – list flagged invoices with reasons
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
+- `GET /api/:tenantId/export-templates` – list saved CSV templates
+- `POST /api/:tenantId/export-templates` – create a new export template
+- `GET /api/:tenantId/export-templates/:id/export` – export invoices using a template
 - `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
 - `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor
 - `POST /api/invoices/payment-behavior` – predict expected payment date and confidence

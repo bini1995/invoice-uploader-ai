@@ -6,6 +6,6 @@ const { authMiddleware, authorizeRoles } = require('../controllers/userControlle
 const { uploadPOs, getPOs } = require('../controllers/purchaseOrderController');
 
 router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('poFile'), uploadPOs);
-router.get('/', authMiddleware, authorizeRoles('admin','reviewer','finance'), getPOs);
+router.get('/', authMiddleware, authorizeRoles('admin','approver','accountant'), getPOs);
 
 module.exports = router;

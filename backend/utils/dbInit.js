@@ -142,6 +142,15 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS export_templates (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER,
+      tenant_id TEXT,
+      name TEXT NOT NULL,
+      columns JSONB NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     // store user corrections from OCR parsing
     await pool.query(`CREATE TABLE IF NOT EXISTS ocr_corrections (
       id SERIAL PRIMARY KEY,
