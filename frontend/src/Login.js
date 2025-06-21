@@ -1,6 +1,5 @@
 // src/Login.js
 import React, { useState } from 'react';
-import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import { Card } from './components/ui/Card';
 
 export default function Login({ onLogin, addToast }) {
