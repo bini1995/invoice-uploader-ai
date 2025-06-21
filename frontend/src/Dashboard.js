@@ -157,7 +157,15 @@ function Dashboard() {
               🎉 You've approved {approvalStats.total} invoices this week! Streak: {approvalStats.streak} days
             </div>
           )}
-          {vendors.length === 0 && !loading && <EmptyState />}
+          {vendors.length === 0 && !loading && (
+            <EmptyState message="No data yet. Here are some sample vendors to explore:" onCta={null}>
+              <ul className="list-disc list-inside text-gray-600 text-sm mt-2">
+                <li>Acme Corp</li>
+                <li>Globex Inc</li>
+                <li>Soylent Corp</li>
+              </ul>
+            </EmptyState>
+          )}
           <div className="h-64">
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />

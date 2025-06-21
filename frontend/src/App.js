@@ -31,6 +31,7 @@ import VendorProfilePanel from './components/VendorProfilePanel';
 import BulkSummary from './components/BulkSummary';
 import FloatingActionPanel from './components/FloatingActionPanel';
 import InvoiceSnapshotView from './components/InvoiceSnapshotView';
+import SuccessAnimation from './components/SuccessAnimation';
 import Joyride from 'react-joyride';
 import ProgressBar from './components/ProgressBar';
 import FeatureWidget from './components/FeatureWidget';
@@ -79,6 +80,7 @@ const [fileErrors, setFileErrors] = useState([]);
 const [dragActive, setDragActive] = useState(false);
 const [uploadProgress, setUploadProgress] = useState(0);
 const [recentUploads, setRecentUploads] = useState([]);
+const [uploadSuccess, setUploadSuccess] = useState(false);
 const [previewModalData, setPreviewModalData] = useState(null);
 const [bulkSummary, setBulkSummary] = useState(null);
 const [showTour, setShowTour] = useState(() => !localStorage.getItem('seenTour'));
@@ -962,6 +964,10 @@ useEffect(() => {
     setLoading(false);
     setFile([]);
     setFilePreviews([]);
+    if (!hadError) {
+      setUploadSuccess(true);
+      setTimeout(() => setUploadSuccess(false), 2000);
+    }
   };
   
   const handleExport = async () => {
@@ -2206,6 +2212,9 @@ useEffect(() => {
         <ArrowUpTrayIcon className="h-5 w-5" />
       )}
       <span>{loading ? 'Uploading...' : 'Upload Invoice'}</span>
+      {uploadSuccess && !loading && (
+        <SuccessAnimation className="h-6 w-6" />
+      )}
     </Button>
 
     {recentUploads.length > 0 && (
@@ -2743,14 +2752,14 @@ useEffect(() => {
               ) : sortedInvoices.length === 0 ? (
                 <tr>
                   <td colSpan={role !== 'viewer' ? 14 : 13}>
-                    <EmptyState />
+                    <EmptyState onCta={() => fileInputRef.current?.click()} message="Start by uploading your first invoice!" />
                   </td>
                 </tr>
               ) : (
                 
                 sortedInvoices.map((inv, idx) => (
                   <React.Fragment key={inv.id}>
-                  <tr
+                  <motion.tr
                           className={`text-center hover:bg-gray-100 hover:shadow ${
                             idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                           } ${
@@ -2764,6 +2773,8 @@ useEffect(() => {
                               ? 'bg-yellow-100 dark:bg-yellow-900'
                               : ''
                           } ${highlightIndex === idx ? 'ring-2 ring-indigo-500' : ''}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         >
                     <td className="border px-4 py-2 flex items-center space-x-1">
                       <button onClick={() => setExpandedRows((r) => r.includes(inv.id) ? r.filter(i => i !== inv.id) : [...r, inv.id])} className="text-xs">
@@ -3070,7 +3081,7 @@ useEffect(() => {
                       )}
                   </td>
                   )}
-                  </tr>
+                  </motion.tr>
                   {expandedRows.includes(inv.id) && (
                     <tr className="bg-gray-50">
                       <td colSpan={role !== 'viewer' ? 14 : 13} className="p-2 text-left">
