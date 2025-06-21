@@ -32,6 +32,9 @@ const vendorTagMap = {
   figma: ['SaaS'],
   aws: ['Cloud'],
   zoom: ['SaaS'],
+  verizon: ['Utilities'],
+  comcast: ['Utilities'],
+  netflix: ['Subscription'],
 };
 
 const vendorPaymentMap = {
@@ -1541,6 +1544,15 @@ exports.suggestTags = async (req, res) => {
       if (vendorKey.includes(key)) {
         return res.json({ tags });
       }
+    }
+
+    const text = `${invoice.vendor || ''} ${invoice.description || ''}`.toLowerCase();
+    const simpleTags = new Set();
+    if (/utility|electric|water|power|gas/.test(text)) simpleTags.add('Utilities');
+    if (/subscription|monthly|plan/.test(text)) simpleTags.add('Subscription');
+    if (/one[- ]?time|setup|installation/.test(text)) simpleTags.add('One-time');
+    if (simpleTags.size > 0) {
+      return res.json({ tags: Array.from(simpleTags) });
     }
 
     const prompt = `You are an intelligent finance assistant. Based on the following invoice details:
