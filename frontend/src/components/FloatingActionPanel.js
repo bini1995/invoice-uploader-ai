@@ -40,8 +40,8 @@ export default function FloatingActionPanel({ onUpload, onAsk, onVoice, onFeatur
         <button
           onClick={onVoice}
           className="p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white flex flex-col items-center"
-          title="Voice Upload"
-          aria-label="Voice upload"
+          title="Voice Command"
+          aria-label="Voice command"
         >
           <MicrophoneIcon className="w-6 h-6" />
           <span className="text-xs mt-1">Voice</span>
