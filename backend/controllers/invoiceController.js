@@ -23,6 +23,7 @@ const { encrypt } = require('../utils/encryption');
 const levenshtein = require('fast-levenshtein');
 const { categorizeInvoice } = require('../utils/categorize');
 const { applyCorrections, loadCorrections } = require('../utils/parserTrainer');
+const { updateWeights } = require('../utils/parserTrainer');
 
 // Basic vendor -> tag mapping for quick suggestions
 const vendorTagMap = {
@@ -1319,6 +1320,7 @@ exports.updateInvoiceField = async (req, res) => {
         'INSERT INTO ocr_corrections (invoice_id, field, old_value, new_value, user_id) VALUES ($1,$2,$3,$4,$5)',
         [id, field, String(before.rows[0][field]), String(value), req.user?.userId || null]
       );
+      updateWeights(field, value);
     }
     await pool.query(`UPDATE invoices SET ${field} = $1 WHERE id = $2`, [value, id]);
     await loadCorrections();

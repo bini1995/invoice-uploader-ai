@@ -38,7 +38,6 @@ import { Button } from './components/ui/Button';
 import { Card } from './components/ui/Card';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
-import useDarkMode from './hooks/useDarkMode';
 import {
   ArchiveBoxIcon,
   ArrowDownTrayIcon,
@@ -179,7 +178,6 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
     const saved = localStorage.getItem('notifications');
     return saved ? JSON.parse(saved) : [];
   });
-  const [darkMode, setDarkMode] = useDarkMode();
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [confirmData, setConfirmData] = useState(null);
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);

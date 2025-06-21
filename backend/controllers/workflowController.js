@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { evaluateWorkflowRules } = require('../utils/workflowRulesEngine');
 
 exports.getWorkflows = async (req, res) => {
   try {
@@ -26,5 +27,20 @@ exports.setWorkflow = async (req, res) => {
   } catch (err) {
     console.error('Set workflow error:', err);
     res.status(500).json({ message: 'Failed to save workflow' });
+  }
+};
+
+exports.evaluateWorkflow = async (req, res) => {
+  const payload = req.body || {};
+  try {
+    const result = await evaluateWorkflowRules(payload);
+    await pool.query(
+      'INSERT INTO workflow_evaluations (payload, result) VALUES ($1,$2)',
+      [JSON.stringify(payload), JSON.stringify(result)]
+    );
+    res.json({ result });
+  } catch (err) {
+    console.error('Evaluate workflow error:', err);
+    res.status(500).json({ message: 'Failed to evaluate workflow rules' });
   }
 };

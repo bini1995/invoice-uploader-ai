@@ -156,6 +156,13 @@ async function initDb() {
       active BOOLEAN DEFAULT TRUE,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS workflow_evaluations (
+      id SERIAL PRIMARY KEY,
+      payload JSONB,
+      result JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

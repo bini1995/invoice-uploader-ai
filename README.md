@@ -258,6 +258,15 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `POST /api/invoices/budgets` – create/update a monthly or quarterly budget by vendor or tag
 - `GET /api/invoices/budgets/warnings` – check if spending has exceeded 90% of a budget
 - `GET /api/invoices/anomalies` – list vendors with unusual spending spikes
+- `GET /api/workflows` – list saved workflows
+- `POST /api/workflows` – create or update a workflow
+- `POST /api/workflows/evaluate` – test workflow rules against a payload
+
+### Workflow Builder
+
+The `/workflow-builder` page lets admins design approval chains and rules with an
+interactive expression builder. Test expressions are sent to `POST /api/workflows/evaluate`
+to see how rules would route a sample invoice.
 - `GET /api/invoices/fraud/flagged` – list flagged invoices with reasons
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
 - `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
