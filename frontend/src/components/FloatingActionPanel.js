@@ -1,4 +1,6 @@
 import React from 'react';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 import { ChatBubbleLeftRightIcon, ArrowUpTrayIcon, MicrophoneIcon, LightBulbIcon } from '@heroicons/react/24/outline';
 export default function FloatingActionPanel({ onUpload, onAsk, onVoice, onFeature }) {
   return (
@@ -12,15 +14,17 @@ export default function FloatingActionPanel({ onUpload, onAsk, onVoice, onFeatur
         <ArrowUpTrayIcon className="w-6 h-6" />
         <span className="text-xs mt-1">Upload</span>
       </button>
-      <button
-        onClick={onAsk}
-        className="p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white flex flex-col items-center"
-        title="Ask AI"
-        aria-label="Ask AI"
-      >
-        <ChatBubbleLeftRightIcon className="w-6 h-6" />
-        <span className="text-xs mt-1">Ask AI</span>
-      </button>
+      <Tippy content="Let AI summarize uploaded invoices" placement="left">
+        <button
+          onClick={onAsk}
+          className="p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white flex flex-col items-center"
+          title="Ask AI"
+          aria-label="Ask AI"
+        >
+          <ChatBubbleLeftRightIcon className="w-6 h-6" />
+          <span className="text-xs mt-1">Ask AI</span>
+        </button>
+      </Tippy>
       {onFeature && (
         <button
           onClick={onFeature}

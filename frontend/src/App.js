@@ -2119,7 +2119,7 @@ useEffect(() => {
 <div className="mt-6 mb-6">
   <fieldset className="border border-gray-300 p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 flex flex-col gap-4">
     <legend className="text-xl font-bold px-2">Upload Invoice</legend>
-    <ol className="flex space-x-4 text-sm text-gray-500 mb-2">
+    <ol className="flex space-x-4 text-sm text-gray-600 mb-2">
       <li className="flex items-center space-x-1">
         <ArrowUpTrayIcon className="w-4 h-4 text-indigo-500" />
         <span>Select File</span>
@@ -2143,7 +2143,7 @@ useEffect(() => {
       onClick={() => fileInputRef.current.click()}
       whileHover={{ scale: 1.02 }}
     >
-      <p className="text-sm text-gray-500 dark:text-gray-300">Drag & drop CSV/PDF/Image here or tap to select or capture</p>
+      <p className="text-sm text-gray-600 dark:text-gray-300">Drag & drop CSV/PDF/Image here or tap to select or capture</p>
       <input
         type="file"
         multiple
@@ -2763,7 +2763,7 @@ useEffect(() => {
                           className={`text-center hover:bg-gray-100 hover:shadow ${
                             idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
                           } ${
-                            inv.archived ? '!bg-gray-200 text-gray-500 italic' : ''
+                            inv.archived ? '!bg-gray-200 text-gray-600 italic' : ''
                           } ${
                             recentInvoices.includes(inv.id) ? 'bg-green-100 border-green-400' : ''
                           } ${
@@ -2798,7 +2798,7 @@ useEffect(() => {
                             <span title="Paid" className="text-green-600 text-[10px] font-semibold">✅ Paid</span>
                           )}
                           {inv.archived && (
-                            <span title="Archived" className="text-gray-500 text-[10px] font-semibold">📦 Archived</span>
+                            <span title="Archived" className="text-gray-600 text-[10px] font-semibold">📦 Archived</span>
                           )}
                           {duplicateFlags[inv.id] && (
                             <span title="Possible duplicate" className="text-yellow-500 text-[10px] font-semibold">⚠️</span>
@@ -3090,7 +3090,7 @@ useEffect(() => {
                             <div key={i} className="text-xs mb-1">{c.text}</div>
                           ))
                         ) : (
-                          <em className="text-xs text-gray-500">No comments</em>
+                          <em className="text-xs text-gray-600">No comments</em>
                         )}
                       </td>
                     </tr>
@@ -3114,7 +3114,7 @@ useEffect(() => {
                     key={inv.id}
                     onClick={() => openInvoiceDetails(inv)}
                     className={`border rounded-lg p-4 shadow-md flex flex-col space-y-2 ${
-                      inv.archived ? 'bg-gray-100 text-gray-500 italic' : 'bg-white'
+                      inv.archived ? 'bg-gray-100 text-gray-600 italic' : 'bg-white'
                     } ${
                       role === 'approver' && (inv.approval_status || 'Pending') === 'Pending'
                         ? 'bg-yellow-100 dark:bg-yellow-900'
