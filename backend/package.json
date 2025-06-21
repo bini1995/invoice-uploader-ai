@@ -4,7 +4,8 @@
   "engines": {"node": ">=18 <19"},
   "main": "app.js",
   "scripts": {
-    "start": "PORT=3000 node app.js"
+    "start": "PORT=3000 node app.js",
+    "lint": "echo \"No lint configured\""
   },
   "dependencies": {
     "@sentry/node": "^7.103.0",
