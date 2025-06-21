@@ -375,6 +375,10 @@ exports.uploadInvoice = async (req, res) => {
         ]
       );
       const newId = insertRes.rows[0].id;
+      const afterRes = await pool.query('SELECT * FROM invoices WHERE id = $1', [newId]);
+      if (afterRes.rows.length) {
+        await recordInvoiceVersion(newId, {}, afterRes.rows[0], req.user?.userId, req.user?.username);
+      }
       if (!inv.assignee) {
         await autoAssignInvoice(newId, inv.vendor, inv.tags || []);
       }

@@ -1,7 +1,9 @@
 {
   "name": "invoice-pipeline",
   "version": "1.0.0",
-  "engines": {"node": ">=18 <19"},
+  "engines": {
+    "node": ">=18 <19"
+  },
   "main": "app.js",
   "scripts": {
     "start": "PORT=3000 node app.js",
@@ -19,10 +21,12 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "fast-levenshtein": "^2.0.6",
+    "googleapis": "^125.0.0",
     "json2csv": "^6.0.0-alpha.2",
     "jsondiffpatch": "^0.7.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.2",
     "nodemailer": "^7.0.3",
     "openai": "^4.97.0",
     "pdf-parse": "^1.1.1",
