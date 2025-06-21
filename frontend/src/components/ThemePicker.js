@@ -23,24 +23,24 @@ export default function ThemePicker({ darkMode, setDarkMode, tenant = 'default' 
     return () => {
       mq.removeEventListener('change', applySystem);
     };
-  }, [mode, setDarkMode]);
+  }, [mode, setDarkMode, tenant]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent-color', accent);
     localStorage.setItem(`accentColor_${tenant}`, accent);
-  }, [accent]);
+  }, [accent, tenant]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--font-base', font);
     localStorage.setItem(`fontFamily_${tenant}`, font);
-  }, [font]);
+  }, [font, tenant]);
 
   useEffect(() => {
     const savedAccent = localStorage.getItem(`accentColor_${tenant}`);
     if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
     const savedFont = localStorage.getItem(`fontFamily_${tenant}`);
     if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
-  }, []);
+  }, [tenant]);
 
   return (
     <div className="relative">
