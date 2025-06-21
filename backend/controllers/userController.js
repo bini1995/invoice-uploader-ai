@@ -11,27 +11,15 @@ const USERS = [
   },
   {
     id: 2,
-    username: 'reviewer',
-    passwordHash: bcrypt.hashSync('reviewerpass', 10),
-    role: 'reviewer',
+    username: 'accountant',
+    passwordHash: bcrypt.hashSync('accountantpass', 10),
+    role: 'accountant',
   },
   {
     id: 3,
-    username: 'finance',
-    passwordHash: bcrypt.hashSync('financepass', 10),
-    role: 'finance',
-  },
-  {
-    id: 5,
-    username: 'legal',
-    passwordHash: bcrypt.hashSync('legalpass', 10),
-    role: 'legal',
-  },
-  {
-    id: 4,
-    username: 'readonly',
-    passwordHash: bcrypt.hashSync('readonlypass', 10),
-    role: 'readonly',
+    username: 'approver',
+    passwordHash: bcrypt.hashSync('approverpass', 10),
+    role: 'approver',
   },
 ];
 

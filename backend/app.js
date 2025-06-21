@@ -6,6 +6,8 @@ const http = require('http');
 require('dotenv').config();                 // load environment variables
 const Sentry = require('@sentry/node');
 const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
+const exportTemplateRoutes = require('./routes/exportTemplateRoutes');
+const brandingRoutes = require('./routes/brandingRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -40,7 +42,9 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.use(cors());
 app.use(express.json());                    // allow reading JSON data
-app.use('/api/invoices', invoiceRoutes);    // route all invoice requests here
+app.use('/api/:tenantId/invoices', invoiceRoutes);
+app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
+app.use('/api/:tenantId/logo', brandingRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);

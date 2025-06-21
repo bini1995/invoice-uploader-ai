@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { PaintBrushIcon } from '@heroicons/react/24/outline';
 
-export default function ThemePicker({ darkMode, setDarkMode }) {
+export default function ThemePicker({ darkMode, setDarkMode, tenant = 'default' }) {
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState(() => localStorage.getItem('themeMode') || (darkMode ? 'dark' : 'light'));
-  const [accent, setAccent] = useState(() => localStorage.getItem('accentColor') || '#4f46e5');
-  const [font, setFont] = useState(() => localStorage.getItem('fontFamily') || 'Inter');
+  const [mode, setMode] = useState(() => localStorage.getItem(`themeMode_${tenant}`) || (darkMode ? 'dark' : 'light'));
+  const [accent, setAccent] = useState(() => localStorage.getItem(`accentColor_${tenant}`) || '#4f46e5');
+  const [font, setFont] = useState(() => localStorage.getItem(`fontFamily_${tenant}`) || 'Inter');
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -18,29 +18,29 @@ export default function ThemePicker({ darkMode, setDarkMode }) {
       setDarkMode(mode === 'dark');
     }
 
-    localStorage.setItem('themeMode', mode);
+    localStorage.setItem(`themeMode_${tenant}`, mode);
 
     return () => {
       mq.removeEventListener('change', applySystem);
     };
-  }, [mode, setDarkMode]);
+  }, [mode, setDarkMode, tenant]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent-color', accent);
-    localStorage.setItem('accentColor', accent);
-  }, [accent]);
+    localStorage.setItem(`accentColor_${tenant}`, accent);
+  }, [accent, tenant]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--font-base', font);
-    localStorage.setItem('fontFamily', font);
-  }, [font]);
+    localStorage.setItem(`fontFamily_${tenant}`, font);
+  }, [font, tenant]);
 
   useEffect(() => {
-    const savedAccent = localStorage.getItem('accentColor');
+    const savedAccent = localStorage.getItem(`accentColor_${tenant}`);
     if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
-    const savedFont = localStorage.getItem('fontFamily');
+    const savedFont = localStorage.getItem(`fontFamily_${tenant}`);
     if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
-  }, []);
+  }, [tenant]);
 
   return (
     <div className="relative">

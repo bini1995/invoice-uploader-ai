@@ -1,6 +1,5 @@
 // src/Login.js
 import React, { useState } from 'react';
-import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import { Card } from './components/ui/Card';
 
 export default function Login({ onLogin, addToast }) {
@@ -36,7 +35,7 @@ export default function Login({ onLogin, addToast }) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-4 z-20">
         <h1 className="text-xl font-bold flex items-center space-x-1">
-          <DocumentArrowUpIcon className="w-5 h-5" />
+          <img src={`/api/${localStorage.getItem('tenant') || 'default'}/logo`} alt="logo" className="h-5 w-5" />
           <span>Invoice Uploader AI</span>
         </h1>
       </nav>

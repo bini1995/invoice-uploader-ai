@@ -52,7 +52,7 @@ export default function Navbar({
       <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
           <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
-            <ArchiveBoxIcon className="h-5 w-5" />
+            <img src={`/api/${tenant}/logo`} alt="logo" className="h-5 w-5" />
             <span className="font-semibold text-sm">{t('title')}</span>
           </Link>
           {crumbs.length > 0 && (
@@ -158,7 +158,7 @@ export default function Navbar({
                 {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
               </div>
               <DarkModeToggle />
-              <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} />
+              <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} tenant={tenant} />
               <div className="relative">
                 <button
                   onClick={() => setUserOpen((o) => !o)}

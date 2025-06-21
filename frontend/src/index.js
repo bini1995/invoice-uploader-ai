@@ -5,6 +5,7 @@ import Dashboard from './Dashboard';
 import AdaptiveDashboard from './AdaptiveDashboard';
 import SharedDashboard from './SharedDashboard';
 import DashboardBuilder from './DashboardBuilder';
+import ExportTemplateBuilder from './ExportTemplateBuilder';
 import Reports from './Reports';
 import AuditDashboard from './AuditDashboard';
 import FraudReport from './FraudReport';
@@ -23,10 +24,15 @@ import './index.css';
 import './i18n';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
-const savedTheme = localStorage.getItem('theme');
+const currentTenant = localStorage.getItem('tenant') || 'default';
+const savedTheme = localStorage.getItem(`themeMode_${currentTenant}`);
 if (savedTheme === 'dark') {
   document.documentElement.classList.add('dark');
 }
+const savedAccent = localStorage.getItem(`accentColor_${currentTenant}`);
+if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
+const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
+if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
 
 const apiBase = process.env.REACT_APP_API_BASE_URL || '';
 if (apiBase) {
@@ -67,6 +73,7 @@ function AnimatedRoutes() {
         <Route path="/workflow-builder" element={<PageWrapper><WorkflowBuilderPage /></PageWrapper>} />
         <Route path="/board" element={<PageWrapper><Board /></PageWrapper>} />
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
+        <Route path="/export-builder" element={<PageWrapper><ExportTemplateBuilder /></PageWrapper>} />
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />

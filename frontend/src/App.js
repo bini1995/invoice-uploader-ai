@@ -2341,7 +2341,7 @@ useEffect(() => {
                             ✅ {selectedInvoices.length} invoice{selectedInvoices.length > 1 ? 's' : ''} selected
                           </span>
                           <div className="flex space-x-2">
-                            {!showArchived && (
+                            {!showArchived && role === 'approver' && (
                               <>
                                 <button
                                   onClick={handleBulkArchive}
@@ -2357,7 +2357,7 @@ useEffect(() => {
                                 </button>
                               </>
                             )}
-                            {showArchived && (
+                            {showArchived && role === 'approver' && (
                               <button
                                 onClick={handleBulkUnarchive}
                                 className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
@@ -2986,13 +2986,15 @@ useEffect(() => {
                                   <TrashIcon className="w-4 h-4" />
                                 </button>
                               )}
-                              <button
-                                onClick={() => handleArchive(inv.id)}
-                                className="bg-gray-600 text-white px-2 py-1 rounded hover:bg-gray-700 text-xs w-full"
-                                title="Archive"
-                              >
-                                <ArchiveBoxIcon className="w-4 h-4" />
-                              </button>
+                              {role === 'approver' && (
+                                <button
+                                  onClick={() => handleArchive(inv.id)}
+                                  className="bg-gray-600 text-white px-2 py-1 rounded hover:bg-gray-700 text-xs w-full"
+                                  title="Archive"
+                                >
+                                  <ArchiveBoxIcon className="w-4 h-4" />
+                                </button>
+                              )}
                             </>
                           )}
 
@@ -3004,7 +3006,7 @@ useEffect(() => {
                             <ArrowDownTrayIcon className="w-4 h-4" />
                           </button>
 
-                      {inv.archived && (
+                      {inv.archived && role === 'approver' && (
                         <button
                           onClick={() => handleUnarchive(inv.id)}
                           className="bg-indigo-500 text-white px-2 py-1 rounded hover:bg-indigo-600 text-xs w-full"
@@ -3040,7 +3042,7 @@ useEffect(() => {
                           onClick={(tag) => handleAddTag(inv.id, tag)}
                         />
                       )}
-                      {role === 'admin' && (
+                      {role === 'approver' && (
                         <button
                           onClick={() => handleFlagSuspicious(inv)}
                           className="btn btn-warning text-xs w-full px-2 py-1"
@@ -3170,7 +3172,7 @@ useEffect(() => {
                         onRemoveTag={(tag) => handleRemoveTag(inv.id, tag)}
                       />
                       <div className="mt-2 flex flex-wrap gap-2">
-                      {!inv.archived && (
+                      {!inv.archived && role === 'approver' && (
                         <button
                           onClick={(e) => { e.stopPropagation(); handleArchive(inv.id); }}
                           className="bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"

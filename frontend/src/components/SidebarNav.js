@@ -80,6 +80,13 @@ export default function SidebarNav({ notifications = [] }) {
               <span>Builder</span>
             </Link>
             <Link
+              to="/export-builder"
+              className={`nav-link ${location.pathname === '/export-builder' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
+            >
+              <DocumentChartBarIcon className="w-5 h-5" />
+              <span>Exports</span>
+            </Link>
+            <Link
               to="/board"
               className={`nav-link ${location.pathname === '/board' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
             >
