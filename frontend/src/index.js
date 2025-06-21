@@ -12,6 +12,7 @@ import Archive from './Archive';
 import TeamManagement from './TeamManagement';
 import VendorManagement from './VendorManagement';
 import WorkflowPage from './WorkflowPage';
+import WorkflowBuilderPage from './WorkflowBuilderPage';
 import Board from './Board';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
@@ -63,6 +64,7 @@ function AnimatedRoutes() {
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />
         <Route path="/workflow" element={<PageWrapper><WorkflowPage /></PageWrapper>} />
+        <Route path="/workflow-builder" element={<PageWrapper><WorkflowBuilderPage /></PageWrapper>} />
         <Route path="/board" element={<PageWrapper><Board /></PageWrapper>} />
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
