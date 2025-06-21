@@ -1024,38 +1024,6 @@ useEffect(() => {
     }
   };
 
-  const startVoiceUpload = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      addToast('Voice recognition not supported', 'error');
-      return;
-    }
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.onresult = async (event) => {
-      const text = Array.from(event.results).map((r) => r[0].transcript).join(' ');
-      try {
-        const res = await fetch('http://localhost:3000/api/invoices/voice-upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ text }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          addToast('Voice invoice created');
-          fetchInvoices(showArchived, selectedAssignee);
-        } else {
-          addToast(data.message || 'Voice upload failed', 'error');
-        }
-      } catch (err) {
-        console.error('Voice upload error:', err);
-        addToast('Voice upload failed', 'error');
-      }
-    };
-    recognition.onerror = () => addToast('Voice recognition error', 'error');
-    recognition.start();
-  };
 
   const startVoiceCommand = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
