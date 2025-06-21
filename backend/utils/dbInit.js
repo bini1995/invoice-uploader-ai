@@ -62,6 +62,15 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      message TEXT NOT NULL,
+      type TEXT,
+      read BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(
       "ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS username TEXT"
     );
