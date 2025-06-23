@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const { sendMail } = require('../utils/email');
 require('dotenv').config();
 const settings = require('../config/settings');
 
@@ -16,23 +16,8 @@ exports.sendSummaryEmail = async (req, res) => {
 
   const emailContent = `Invoice Summary Report\n\nAI Summary (${tone} tone):\n${aiSummary}\n\nUploaded Invoices:\n${invoiceList}`;
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use STARTTLS (TLS upgrade)
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-    tls: {
-      ciphers: 'SSLv3',
-    },
-  });
-  
-
   try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await sendMail({
       to: process.env.EMAIL_TO,
       subject: 'Invoice Upload Summary',
       text: emailContent,

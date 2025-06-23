@@ -417,6 +417,13 @@ rm -rf node_modules package-lock.json
 npm install --legacy-peer-deps
 ```
 
+**`Email error: Invalid login 535-5.7.8`**
+
+Gmail may reject the credentials provided to Nodemailer. Verify `EMAIL_USER` and
+`EMAIL_PASS` in your `.env` file. If your Google account has two-factor
+authentication enabled, create an [App Password](https://support.google.com/accounts/answer/185833)
+and use it as `EMAIL_PASS`.
+
 **`SyntaxError: .../json-schema-draft-07.json: Unexpected end of JSON input`**
 
 This indicates the install was done with an incompatible Node version and
