@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 function FraudReport() {
   const token = localStorage.getItem('token') || '';

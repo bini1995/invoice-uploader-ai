@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HandThumbUpIcon, HandThumbDownIcon } from '@heroicons/react/24/outline';
+import { API_BASE } from '../api';
 
 export default function FeedbackButtons({ endpoint }) {
   const [rating, setRating] = useState(0);

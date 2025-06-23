@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 function VendorManagement() {
   const token = localStorage.getItem('token') || '';
@@ -15,7 +16,7 @@ function VendorManagement() {
 
   const fetchVendors = useCallback(async () => {
     setLoading(true);
-    const res = await fetch('http://localhost:3000/api/vendors', { headers });
+    const res = await fetch(`${API_BASE}/api/vendors`, { headers });
     const data = await res.json();
     if (res.ok) setVendors(data.vendors || []);
     setLoading(false);
@@ -25,7 +26,7 @@ function VendorManagement() {
 
   const saveNotes = async (vendor) => {
     const notes = notesInput[vendor] ?? '';
-    await fetch(`http://localhost:3000/api/vendors/${encodeURIComponent(vendor)}/notes`, {
+    await fetch(`${API_BASE}/api/vendors/${encodeURIComponent(vendor)}/notes`, {
       method: 'PATCH',
       headers,
       body: JSON.stringify({ notes })

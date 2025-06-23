@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import VendorProfilePanel from './components/VendorProfilePanel';
+import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
@@ -20,10 +21,10 @@ export default function AdaptiveDashboard() {
     const headers = { Authorization: `Bearer ${token}` };
     setLoading(true);
     Promise.all([
-      fetch('http://localhost:3000/api/analytics/metadata', { headers }).then(r => r.json()),
-      fetch('http://localhost:3000/api/invoices/top-vendors', { headers }).then(r => r.json()),
-      fetch('http://localhost:3000/api/invoices/cash-flow?interval=monthly', { headers }).then(r => r.json()),
-      fetch('http://localhost:3000/api/invoices/logs?limit=20', { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/analytics/metadata`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/invoices/top-vendors`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/invoices/cash-flow?interval=monthly`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/invoices/logs?limit=20`, { headers }).then(r => r.json()),
     ])
       .then(([m, v, c, l]) => {
         setMeta(m);

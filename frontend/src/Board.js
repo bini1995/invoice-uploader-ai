@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 export default function Board() {
   const token = localStorage.getItem('token') || '';
@@ -8,7 +9,7 @@ export default function Board() {
 
   const fetchData = useCallback(async () => {
     if (!token) return;
-    const res = await fetch('http://localhost:3000/api/invoices', {
+    const res = await fetch(`${API_BASE}/api/invoices`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -32,12 +33,12 @@ export default function Board() {
     let options = { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } };
 
     if (destination.droppableId === 'approved') {
-      url = `http://localhost:3000/api/invoices/${id}/approve`;
+      url = `${API_BASE}/api/invoices/${id}/approve`;
     } else if (destination.droppableId === 'flagged') {
-      url = `http://localhost:3000/api/invoices/${id}/flag`;
+      url = `${API_BASE}/api/invoices/${id}/flag`;
       options.body = JSON.stringify({ flagged: true });
     } else if (destination.droppableId === 'pending') {
-      url = `http://localhost:3000/api/invoices/${id}/flag`;
+      url = `${API_BASE}/api/invoices/${id}/flag`;
       options.body = JSON.stringify({ flagged: false });
     }
     if (url) {

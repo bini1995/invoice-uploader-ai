@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { io } from 'socket.io-client';
+import { API_BASE } from './api';
 import LiveFeed from './components/LiveFeed';
 import Navbar from './components/Navbar';
 import SidebarNav from './components/SidebarNav';
@@ -118,7 +119,7 @@ const [role, setRole] = useState(localStorage.getItem('role') || '');
 const [loginError, setLoginError] = useState('');
 const [vendorSummary, setVendorSummary] = useState('');
 const [monthlyInsights, setMonthlyInsights] = useState(null);
-const socket = useMemo(() => io('http://localhost:3000'), []);
+const socket = useMemo(() => io(API_BASE), []);
   const [vendorSuggestions, setVendorSuggestions] = useState({});
   const [suspicionFlags] = useState({});
   const [duplicateFlags, setDuplicateFlags] = useState({});
@@ -501,6 +502,11 @@ const socket = useMemo(() => io('http://localhost:3000'), []);
   useEffect(() => {
     const orig = window.fetch;
     window.fetch = async (url, options = {}) => {
+      if (url.startsWith('http://localhost:3000')) {
+        url = url.replace('http://localhost:3000', API_BASE);
+      } else if (url.startsWith('/')) {
+        url = `${API_BASE}${url}`;
+      }
       const headers = { 'X-Tenant-Id': tenant, ...(options.headers || {}) };
       if (token && !headers.Authorization) {
         headers.Authorization = `Bearer ${token}`;

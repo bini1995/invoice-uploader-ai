@@ -5,6 +5,7 @@ import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
@@ -26,42 +27,42 @@ function Dashboard() {
     const headers = { Authorization: `Bearer ${token}` };
     setLoading(true);
     Promise.all([
-      fetch('http://localhost:3000/api/invoices/top-vendors', { headers })
+      fetch(`${API_BASE}/api/invoices/top-vendors`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setVendors(d.topVendors || []);
         }),
-      fetch('http://localhost:3000/api/invoices/spending-by-tag', { headers })
+      fetch(`${API_BASE}/api/invoices/spending-by-tag`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setCategories(d.byTag || []);
         }),
-      fetch('http://localhost:3000/api/invoices/cash-flow?interval=monthly', { headers })
+      fetch(`${API_BASE}/api/invoices/cash-flow?interval=monthly`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setCashFlow(d.data || []);
         }),
-      fetch('http://localhost:3000/api/invoices/anomalies', { headers })
+      fetch(`${API_BASE}/api/invoices/anomalies`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setAnomalies(d.anomalies || []);
         }),
-      fetch('http://localhost:3000/api/invoices/budgets/department-report', { headers })
+      fetch(`${API_BASE}/api/invoices/budgets/department-report`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setBudget(d.data || []);
         }),
-      fetch('http://localhost:3000/api/invoices/upload-heatmap', { headers })
+      fetch(`${API_BASE}/api/invoices/upload-heatmap`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setHeatmap(d.heatmap || []);
         }),
-      fetch('http://localhost:3000/api/invoices/quick-stats', { headers })
+      fetch(`${API_BASE}/api/invoices/quick-stats`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setStats(d);
         }),
-      fetch('http://localhost:3000/api/analytics/approvals/stats', { headers })
+      fetch(`${API_BASE}/api/analytics/approvals/stats`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setApprovalStats(d);
@@ -71,7 +72,7 @@ function Dashboard() {
 
   const handleExportPDF = async () => {
     const headers = { Authorization: `Bearer ${token}` };
-    const res = await fetch('http://localhost:3000/api/invoices/dashboard/pdf', { headers });
+    const res = await fetch(`${API_BASE}/api/invoices/dashboard/pdf`, { headers });
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -83,7 +84,7 @@ function Dashboard() {
 
   const handleShare = async () => {
     const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-    const res = await fetch('http://localhost:3000/api/invoices/dashboard/share', { method: 'POST', headers, body: JSON.stringify({}) });
+    const res = await fetch(`${API_BASE}/api/invoices/dashboard/share`, { method: 'POST', headers, body: JSON.stringify({}) });
     if (res.ok) {
       const { url } = await res.json();
       const full = `http://localhost:3001/dashboard/shared/${url.split('/').pop()}`;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE } from '../api';
 
 export default function VendorProfilePanel({ vendor, open, onClose, token }) {
   const [history, setHistory] = useState([]);

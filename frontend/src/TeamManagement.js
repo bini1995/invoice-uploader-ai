@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 function TeamManagement() {
   const token = localStorage.getItem('token') || '';
@@ -23,19 +24,19 @@ function TeamManagement() {
   );
 
   const fetchUsers = useCallback(async () => {
-    const res = await fetch('http://localhost:3000/api/users', { headers });
+    const res = await fetch(`${API_BASE}/api/users`, { headers });
     const data = await res.json();
     if (res.ok) setUsers(data);
   }, [headers]);
 
   const fetchLogs = useCallback(async () => {
-    const res = await fetch('http://localhost:3000/api/invoices/logs', { headers });
+    const res = await fetch(`${API_BASE}/api/invoices/logs`, { headers });
     const data = await res.json();
     if (res.ok) setLogs(data);
   }, [headers]);
 
   const fetchSettings = useCallback(async () => {
-    const res = await fetch('http://localhost:3000/api/settings', { headers });
+    const res = await fetch(`${API_BASE}/api/settings`, { headers });
     const data = await res.json();
     if (res.ok) {
       setAutoArchive(data.autoArchive);
@@ -54,7 +55,7 @@ function TeamManagement() {
   }, [fetchUsers, fetchLogs, fetchSettings, token]);
 
   const addUser = async () => {
-    await fetch('http://localhost:3000/api/users', {
+    await fetch(`${API_BASE}/api/users`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ username, password, role: newRole })
@@ -66,12 +67,12 @@ function TeamManagement() {
   };
 
   const deleteUser = async (id) => {
-    await fetch(`http://localhost:3000/api/users/${id}`, { method: 'DELETE', headers });
+    await fetch(`${API_BASE}/api/users/${id}`, { method: 'DELETE', headers });
     fetchUsers();
   };
 
   const changeRole = async (id, role) => {
-    await fetch(`http://localhost:3000/api/users/${id}/role`, {
+    await fetch(`${API_BASE}/api/users/${id}/role`, {
       method: 'PATCH',
       headers,
       body: JSON.stringify({ role })
@@ -80,7 +81,7 @@ function TeamManagement() {
   };
 
   const saveSettings = async () => {
-    await fetch('http://localhost:3000/api/settings', {
+    await fetch(`${API_BASE}/api/settings`, {
       method: 'PATCH',
       headers,
       body: JSON.stringify({

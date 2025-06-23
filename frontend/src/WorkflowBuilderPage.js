@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE } from './api';
 import WorkflowBuilder from './components/WorkflowBuilder';
 import RuleBuilder from './components/RuleBuilder';
 import ExpressionBuilder from './components/ExpressionBuilder';
@@ -19,7 +20,7 @@ export default function WorkflowBuilderPage() {
   const [expression, setExpression] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/workflows', {
+    fetch(`${API_BASE}/api/workflows`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -31,7 +32,7 @@ export default function WorkflowBuilderPage() {
 
   const save = async (newSteps) => {
     setSteps(newSteps);
-    await fetch('http://localhost:3000/api/workflows', {
+    await fetch(`${API_BASE}/api/workflows`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +52,7 @@ export default function WorkflowBuilderPage() {
     expression.forEach((c) => {
       payload[c.field] = c.value;
     });
-    const resp = await fetch('http://localhost:3000/api/workflows/evaluate', {
+    const resp = await fetch(`${API_BASE}/api/workflows/evaluate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

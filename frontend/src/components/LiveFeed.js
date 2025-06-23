@@ -1,9 +1,10 @@
 import { useEffect, useState, useMemo } from 'react';
 import { io } from 'socket.io-client';
+import { API_BASE } from '../api';
 
 export default function LiveFeed({ token, tenant }) {
   const [logs, setLogs] = useState([]);
-  const socket = useMemo(() => io('http://localhost:3000'), []);
+  const socket = useMemo(() => io(API_BASE), []);
 
   useEffect(() => {
     let isMounted = true;

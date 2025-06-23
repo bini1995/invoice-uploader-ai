@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 function SharedDashboard() {
   const { token } = useParams();
@@ -9,7 +10,7 @@ function SharedDashboard() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:3000/api/invoices/dashboard/shared/${token}`)
+    fetch(`${API_BASE}/api/invoices/dashboard/shared/${token}`)
       .then((r) => r.json())
       .then((d) => setData(d))
       .catch(() => {})

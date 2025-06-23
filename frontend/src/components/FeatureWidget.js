@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LightBulbIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { API_BASE } from '../api';
 
 export default function FeatureWidget({ open, onClose }) {
   const [text, setText] = useState('');

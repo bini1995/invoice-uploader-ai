@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE } from './api';
 import WorkflowBuilder from './components/WorkflowBuilder';
 import RuleBuilder from './components/RuleBuilder';
 import MainLayout from './components/MainLayout';
@@ -17,7 +18,7 @@ export default function WorkflowPage() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/workflows', {
+    fetch(`${API_BASE}/api/workflows`, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(r => r.json()).then(d => {
       if (d.workflows && d.workflows[0]) setSteps(d.workflows[0].approval_chain);
@@ -26,7 +27,7 @@ export default function WorkflowPage() {
 
   const save = async (newSteps) => {
     setSteps(newSteps);
-    await fetch('http://localhost:3000/api/workflows', {
+    await fetch(`${API_BASE}/api/workflows`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

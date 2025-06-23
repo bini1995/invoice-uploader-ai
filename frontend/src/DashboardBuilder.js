@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
@@ -19,24 +20,24 @@ export default function DashboardBuilder() {
 
   useEffect(() => {
     const headers = { Authorization: `Bearer ${token}` };
-    fetch('http://localhost:3000/api/invoices/top-vendors', { headers })
+    fetch(`${API_BASE}/api/invoices/top-vendors`, { headers })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
         if (ok) setVendors(d.topVendors || []);
       })
       .catch(() => {});
-    fetch('http://localhost:3000/api/invoices/upload-heatmap', { headers })
+    fetch(`${API_BASE}/api/invoices/upload-heatmap`, { headers })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
         if (ok) setHeatmap(d.heatmap || []);
       })
       .catch(() => {});
-    fetch('http://localhost:3000/api/invoices')
+    fetch(`${API_BASE}/api/invoices`)
       .then((r) => r.json())
       .then((list) => {
         if (list && list[0]) {
           const id = list[0].id;
-          fetch(`http://localhost:3000/api/invoices/${id}/timeline`, { headers })
+          fetch(`${API_BASE}/api/invoices/${id}/timeline`, { headers })
             .then((res) => res.json())
             .then((data) => setTimeline(data))
             .catch(() => {});

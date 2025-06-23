@@ -1,6 +1,7 @@
 // src/Login.js
 import React, { useState } from 'react';
 import { Card } from './components/ui/Card';
+import { API_BASE } from './api';
 
 export default function Login({ onLogin, addToast }) {
   const [username, setUsername] = useState('');
@@ -9,7 +10,7 @@ export default function Login({ onLogin, addToast }) {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/invoices/login', {
+      const res = await fetch(`${API_BASE}/api/invoices/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
