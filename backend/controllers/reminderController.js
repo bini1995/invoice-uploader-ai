@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const { sendMail } = require('../utils/email');
 const pool = require('../config/db');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 const { broadcastNotification } = require('../utils/chatServer');
@@ -17,18 +17,10 @@ async function sendApprovalReminders() {
     );
     if (!rows.length) return;
 
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-    });
-
     for (const inv of rows) {
       const msg = `Invoice ${inv.invoice_number} from ${inv.vendor} is awaiting approval.`;
       try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
+        await sendMail({
           to: process.env.EMAIL_TO,
           subject: 'Approval reminder',
           text: msg,

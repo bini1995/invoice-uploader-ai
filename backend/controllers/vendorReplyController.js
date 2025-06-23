@@ -1,5 +1,5 @@
 const openai = require('../config/openai');
-const nodemailer = require('nodemailer');
+const { sendMail } = require('../utils/email');
 const pool = require('../config/db');
 const settings = require('../config/settings');
 require('dotenv').config();
@@ -32,17 +32,7 @@ exports.vendorReply = async (req, res) => {
       if (!email) {
         return res.status(400).json({ message: 'Vendor email required to send.' });
       }
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+      await sendMail({
         to: email,
         subject: `Regarding Invoice ${inv.invoice_number}`,
         text: manualEdit,

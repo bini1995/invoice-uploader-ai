@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 const axios = require('axios');
-const nodemailer = require('nodemailer');
+const { sendMail } = require('../utils/email');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 const { broadcastNotification } = require('../utils/chatServer');
@@ -111,16 +111,6 @@ async function sendPaymentReminders() {
     );
     if (!rows.length) return;
 
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
     for (const inv of rows) {
       const overdue = new Date(inv.due_date) < now;
       const subject = overdue
@@ -130,8 +120,7 @@ async function sendPaymentReminders() {
         ? `Invoice ${inv.invoice_number} from ${inv.vendor} for $${inv.amount} was due on ${inv.due_date} and remains unpaid.`
         : `Invoice ${inv.invoice_number} from ${inv.vendor} for $${inv.amount} is due on ${inv.due_date}.`;
       try {
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
+        await sendMail({
           to: process.env.EMAIL_TO,
           subject,
           text,
