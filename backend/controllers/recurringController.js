@@ -4,14 +4,14 @@ const settings = require('../config/settings');
 const { getExchangeRate } = require('../utils/exchangeRates');
 
 async function createRecurringTemplate(req, res) {
-  const { vendor, amount, description, interval_days, next_run, currency, vat_percent } = req.body;
-  if (!vendor || !amount || !interval_days || !next_run) {
+  const { vendor, amount, description, interval_days, next_send, currency, vat_percent } = req.body;
+  if (!vendor || !amount || !interval_days || !next_send) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
   try {
     const result = await pool.query(
-      'INSERT INTO recurring_templates (vendor, amount, description, interval_days, next_run, user_id, currency, vat_percent) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',
-      [vendor, amount, description || null, interval_days, new Date(next_run), req.user?.userId || null, currency || settings.defaultCurrency, vat_percent || null]
+      'INSERT INTO recurring_templates (vendor, amount, description, interval_days, next_send, user_id, currency, vat_percent) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',
+      [vendor, amount, description || null, interval_days, new Date(next_send), req.user?.userId || null, currency || settings.defaultCurrency, vat_percent || null]
     );
     res.json({ template: result.rows[0] });
   } catch (err) {
@@ -33,7 +33,7 @@ async function getRecurringTemplates(req, res) {
 async function runRecurringInvoices() {
   try {
     const now = new Date();
-    const { rows } = await pool.query('SELECT * FROM recurring_templates WHERE next_run <= $1', [now]);
+    const { rows } = await pool.query('SELECT * FROM recurring_templates WHERE next_send <= $1', [now]);
     for (const t of rows) {
       const invoiceNumber = `REC-${Date.now()}`;
       const currency = t.currency || settings.defaultCurrency;
@@ -62,7 +62,7 @@ async function runRecurringInvoices() {
         ]
       );
       const next = new Date(now.getTime() + t.interval_days * 24 * 60 * 60 * 1000);
-      await pool.query('UPDATE recurring_templates SET next_run = $1 WHERE id = $2', [next, t.id]);
+      await pool.query('UPDATE recurring_templates SET next_send = $1 WHERE id = $2', [next, t.id]);
       sendSlackNotification?.(`Created recurring invoice ${invoiceNumber} for ${t.vendor}`);
       sendTeamsNotification?.(`Created recurring invoice ${invoiceNumber} for ${t.vendor}`);
     }
