@@ -50,8 +50,6 @@ async function initDb() {
       snapshot JSONB,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
-    await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
-    await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS activity_logs (
       id SERIAL PRIMARY KEY,
@@ -125,6 +123,8 @@ async function initDb() {
       next_run TIMESTAMP NOT NULL,
       user_id INTEGER
     )`);
+    await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
+    await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS purchase_orders (
       id SERIAL PRIMARY KEY,
