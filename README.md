@@ -95,6 +95,7 @@ npm install --legacy-peer-deps
 - Capture invoice photos on mobile with built-in OCR
 - PDF Invoice OCR with AI formatting correction
 - Self-learning OCR corrections that retrain parsing from user edits
+- Autonomous agents continuously retrain OCR models from field corrections and provide smart suggestions
 - Intelligent column mapping suggestions (line items, totals, tax)
 - Supplier portal for vendors to upload invoices, update banking info and check payments
 - Slack/Teams notifications for approvals or flags
@@ -321,6 +322,8 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `POST /api/automations` – create an automation
 - `PUT /api/automations/:id` – update an automation
 - `DELETE /api/automations/:id` – delete an automation
+- `POST /api/agents/suggest` – return smart suggestions for an invoice
+- `POST /api/agents/retrain` – trigger OCR retraining from corrections
 
 ### Vendor Reply Drafts
 
