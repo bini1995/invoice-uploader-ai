@@ -38,6 +38,7 @@ const { loadCorrections } = require('./utils/parserTrainer');
 const { loadModel, trainFromCorrections } = require('./utils/ocrAgent');
 const { startEmailSync } = require('./utils/emailSync');
 const { loadSchedules } = require('./utils/automationScheduler');
+const { scheduleReports } = require('./utils/reportScheduler');
 
 const app = express();                      // create the app
 const server = http.createServer(app);
@@ -85,6 +86,7 @@ app.use(Sentry.Handlers.errorHandler());
 
   await loadSchedules();
   startEmailSync();
+  scheduleReports();
 
   // Run auto-archive daily
   autoArchiveOldInvoices();

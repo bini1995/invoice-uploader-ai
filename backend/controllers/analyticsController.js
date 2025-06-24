@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
 
 function buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount }) {
   const params = [];
@@ -220,5 +221,152 @@ exports.getDashboardMetadata = async (_req, res) => {
   } catch (err) {
     console.error('Dashboard metadata error:', err);
     res.status(500).json({ message: 'Failed to fetch dashboard metadata' });
+  }
+};
+
+// Average approval times for charting
+exports.getApprovalTimeChart = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const params = [];
+  const conditions = ["approval_status = 'Approved'"]; 
+  if (startDate) { params.push(startDate); conditions.push(`created_at >= $${params.length}`); }
+  if (endDate) { params.push(endDate); conditions.push(`created_at <= $${params.length}`); }
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  try {
+    const result = await pool.query(
+      `SELECT id, EXTRACT(EPOCH FROM (updated_at - created_at))/3600 AS hours FROM invoices ${where}`,
+      params
+    );
+    const data = result.rows.map(r => ({ id: r.id, hours: parseFloat(r.hours) }));
+    res.json({ approvals: data });
+  } catch (err) {
+    console.error('Approval time error:', err);
+    res.status(500).json({ message: 'Failed to fetch approval times' });
+  }
+};
+
+// Spending totals grouped by vendor
+exports.getVendorSpend = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const params = [];
+  const conditions = [];
+  if (startDate) { params.push(startDate); conditions.push(`date >= $${params.length}`); }
+  if (endDate) { params.push(endDate); conditions.push(`date <= $${params.length}`); }
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  try {
+    const result = await pool.query(
+      `SELECT vendor, SUM(amount) AS total FROM invoices ${where} GROUP BY vendor ORDER BY vendor`,
+      params
+    );
+    const rows = result.rows.map(r => ({ vendor: r.vendor, total: parseFloat(r.total) }));
+    res.json({ byVendor: rows });
+  } catch (err) {
+    console.error('Vendor spend error:', err);
+    res.status(500).json({ message: 'Failed to fetch spend by vendor' });
+  }
+};
+
+// Export report as Excel
+exports.exportReportExcel = async (req, res) => {
+  const { vendor, startDate, endDate, minAmount, maxAmount } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount });
+  try {
+    const result = await pool.query(
+      `SELECT invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
+      params
+    );
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Report');
+    sheet.columns = [
+      { header: 'Invoice', key: 'invoice_number' },
+      { header: 'Date', key: 'date' },
+      { header: 'Vendor', key: 'vendor' },
+      { header: 'Amount', key: 'amount' }
+    ];
+    result.rows.forEach(r => sheet.addRow(r));
+    const buffer = await workbook.xlsx.writeBuffer();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="report.xlsx"');
+    res.send(buffer);
+  } catch (err) {
+    console.error('Report Excel error:', err);
+    res.status(500).json({ message: 'Failed to export report' });
+  }
+};
+
+// Outlier detection on invoice amounts
+exports.detectOutliers = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, vendor, amount, date FROM invoices WHERE date >= NOW() - INTERVAL '90 days'"
+    );
+    const amounts = rows.map(r => parseFloat(r.amount));
+    if (!amounts.length) return res.json({ outliers: [] });
+    const mean = amounts.reduce((a,b) => a+b,0) / amounts.length;
+    const sd = Math.sqrt(amounts.reduce((s,a) => s + Math.pow(a-mean,2),0) / amounts.length);
+    const threshold = mean + sd * 3;
+    const outliers = rows.filter(r => parseFloat(r.amount) > threshold);
+    res.json({ mean, sd, threshold, outliers });
+  } catch (err) {
+    console.error('Outlier detection error:', err);
+    res.status(500).json({ message: 'Failed to detect outliers' });
+  }
+};
+
+// Real-time dashboard metrics
+exports.getRealTimeDashboard = async (_req, res) => {
+  try {
+    const processed = await pool.query(
+      "SELECT COUNT(*) FROM invoices WHERE created_at >= NOW() - INTERVAL '1 day'"
+    );
+    const avgRes = await pool.query(
+      "SELECT AVG(EXTRACT(EPOCH FROM (updated_at - created_at))/3600) AS hours FROM invoices WHERE approval_status='Approved' AND updated_at >= NOW() - INTERVAL '1 day'"
+    );
+    const errors = await pool.query(
+      "SELECT COUNT(*) FROM invoices WHERE flagged=TRUE AND created_at >= NOW() - INTERVAL '1 day'"
+    );
+    res.json({
+      processedToday: parseInt(processed.rows[0].count,10) || 0,
+      avgApprovalHours: parseFloat(avgRes.rows[0].hours) || 0,
+      errorsToday: parseInt(errors.rows[0].count,10) || 0
+    });
+  } catch (err) {
+    console.error('Realtime dashboard error:', err);
+    res.status(500).json({ message: 'Failed to fetch dashboard' });
+  }
+};
+
+// Detect duplicate invoices
+exports.detectDuplicateInvoices = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT invoice_number, vendor, amount, COUNT(*) AS c
+       FROM invoices
+       GROUP BY invoice_number, vendor, amount
+       HAVING COUNT(*) > 1`
+    );
+    res.json({ duplicates: rows });
+  } catch (err) {
+    console.error('Duplicate detection error:', err);
+    res.status(500).json({ message: 'Failed to detect duplicates' });
+  }
+};
+
+// Simple cash flow forecast using moving average
+exports.forecastCashFlow = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT DATE_TRUNC('month', COALESCE(due_date, date)) AS m, SUM(amount) AS total
+       FROM invoices
+       GROUP BY m
+       ORDER BY m DESC
+       LIMIT 6`
+    );
+    const history = rows.map(r => ({ month: r.m, total: parseFloat(r.total) })).reverse();
+    const avg = history.reduce((a,b) => a + b.total, 0) / (history.length || 1);
+    res.json({ history, forecastNextMonth: avg });
+  } catch (err) {
+    console.error('Cash flow forecast error:', err);
+    res.status(500).json({ message: 'Failed to forecast cash flow' });
   }
 };

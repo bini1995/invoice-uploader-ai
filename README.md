@@ -272,6 +272,9 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `GET /api/workflows` – list saved workflows
 - `POST /api/workflows` – create or update a workflow
 - `POST /api/workflows/evaluate` – test workflow rules against a payload
+- `GET /api/analytics/report/excel` – download invoice reports in Excel format
+- `GET /api/analytics/outliers` – list invoices with unusual amounts
+- `GET /api/analytics/dashboard/realtime` – real-time processing metrics
 
 ### Workflow Builder
 
