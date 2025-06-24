@@ -14,10 +14,6 @@ import {
   BriefcaseIcon,
   CodeBracketSquareIcon,
   EnvelopeIcon,
-  ShoppingCartIcon,
-  UserGroupIcon,
-  ScaleIcon,
-  BoltIcon,
   TagIcon,
   ShieldExclamationIcon,
   LightBulbIcon,
@@ -33,6 +29,9 @@ import { Card } from './components/ui/Card';
 import ProgressDashboard from './components/ProgressDashboard';
 import AiSearchDemo from './components/AiSearchDemo';
 import DummyDataButton from './components/DummyDataButton';
+import PartnerLogos from './components/PartnerLogos';
+import SplitScreenStory from './components/SplitScreenStory';
+import ScrollingUseCases from './components/ScrollingUseCases';
 
 export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false);
@@ -111,12 +110,7 @@ export default function LandingPage() {
                 See it in Action
               </Link>
             </div>
-            <div className="flex justify-center md:justify-start items-center gap-4 pt-4 opacity-80">
-              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+1" alt="Client 1" className="h-8 object-contain" />
-              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+2" alt="Client 2" className="h-8 object-contain" />
-              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+3" alt="Client 3" className="h-8 object-contain" />
-              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+4" alt="Client 4" className="h-8 object-contain" />
-            </div>
+            <PartnerLogos />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -177,61 +171,14 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      <SplitScreenStory />
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-4">Split-Second AI Search</h2>
         <div className="container mx-auto px-6">
           <AiSearchDemo />
         </div>
       </section>
-      <section className="py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">Use Case Gallery</h2>
-        <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="text-center space-y-2">
-              <ShoppingCartIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-              <h3 className="font-semibold">Procurement</h3>
-            </Card>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Card className="text-center space-y-2">
-              <UserGroupIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-              <h3 className="font-semibold">AP Teams</h3>
-            </Card>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-          >
-            <Card className="text-center space-y-2">
-              <ScaleIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-              <h3 className="font-semibold">Legal Compliance</h3>
-            </Card>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <Card className="text-center space-y-2">
-              <BoltIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-              <h3 className="font-semibold">Expense Automation</h3>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
+      <ScrollingUseCases />
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">AI Feature Walkthrough</h2>
         <div className="container mx-auto overflow-x-auto px-6">
