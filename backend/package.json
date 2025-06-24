@@ -38,6 +38,6 @@
     "stripe": "^12.18.0",
     "telnet": "^0.0.1",
     "tesseract.js": "^4.0.2",
-    "swagger-ui-express": "^4.7.1"
+    "swagger-ui-express": "^4.6.3"
   }
 }
