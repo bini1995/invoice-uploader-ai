@@ -5,7 +5,7 @@
 
 :root {
   --accent-color: #4338ca;
-  --font-base: 'Inter', ui-sans-serif, system-ui;
+  --font-base: 'InterVariable', 'Inter', ui-sans-serif, system-ui;
 }
 
 
