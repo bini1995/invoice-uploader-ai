@@ -502,10 +502,26 @@ const socket = useMemo(() => io(API_BASE), []);
   useEffect(() => {
     const orig = window.fetch;
     window.fetch = async (url, options = {}) => {
-      if (url.startsWith('http://localhost:3000')) {
-        url = url.replace('http://localhost:3000', API_BASE);
-      } else if (url.startsWith('/')) {
-        url = `${API_BASE}${url}`;
+      if (typeof url === 'string') {
+        if (url.startsWith('http://localhost:3000')) {
+          url = url.replace('http://localhost:3000', API_BASE);
+        }
+        if (url.startsWith(API_BASE)) {
+          let path = url.slice(API_BASE.length);
+          if (path.startsWith('/api/invoices')) {
+            path = path.replace('/api/invoices', `/api/${tenant}/invoices`);
+          } else if (path.startsWith('/api/export-templates')) {
+            path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
+          }
+          url = API_BASE + path;
+        } else if (url.startsWith('/')) {
+          if (url.startsWith('/api/invoices')) {
+            url = url.replace('/api/invoices', `/api/${tenant}/invoices`);
+          } else if (url.startsWith('/api/export-templates')) {
+            url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
+          }
+          url = `${API_BASE}${url}`;
+        }
       }
       const headers = { 'X-Tenant-Id': tenant, ...(options.headers || {}) };
       if (token && !headers.Authorization) {
@@ -1399,7 +1415,7 @@ useEffect(() => {
       return;
     }
     try {
-      const res = await fetch('http://localhost:3000/api/invoices/login', {
+      const res = await fetch('/api/invoices/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
