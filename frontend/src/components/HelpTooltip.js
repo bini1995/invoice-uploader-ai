@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE } from '../api';
 
 export default function HelpTooltip({ topic, token }) {
   const [guide, setGuide] = useState('');
