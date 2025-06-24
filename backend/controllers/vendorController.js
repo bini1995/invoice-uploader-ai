@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { logActivity } = require('../utils/activityLogger');
+const { encryptSensitive, decryptSensitive } = require('../utils/encryption');
 const axios = require('axios');
 const { parse } = require('json2csv');
 const { parseCSV } = require('../utils/csvParser');
@@ -20,7 +21,7 @@ exports.listVendors = async (_req, res) => {
       vendor: r.vendor,
       last_invoice: r.last_invoice,
       total_spend: parseFloat(r.total_spend),
-      notes: r.notes || ''
+      notes: r.notes ? decryptSensitive(r.notes) : ''
     }));
     res.json({ vendors });
   } catch (err) {
@@ -37,7 +38,7 @@ exports.updateVendorNotes = async (req, res) => {
       `INSERT INTO vendor_notes (vendor, notes)
        VALUES ($1, $2)
        ON CONFLICT (vendor) DO UPDATE SET notes = EXCLUDED.notes`,
-      [vendor, notes || '']
+      [vendor, encryptSensitive(notes || '')]
     );
     await logActivity(req.user?.userId, 'update_vendor_notes', null, req.user?.username);
     res.json({ message: 'Notes updated' });

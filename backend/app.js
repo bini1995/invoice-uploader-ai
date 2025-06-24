@@ -25,6 +25,8 @@ const featureRoutes = require('./routes/featureRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const reminderRoutes = require('./routes/reminderRoutes');
 const automationRoutes = require('./routes/automationRoutes');
+const tenantRoutes = require('./routes/tenantRoutes');
+const { auditLog } = require('./middleware/auditMiddleware');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { sendApprovalReminders } = require('./controllers/reminderController'); // used for optional manual trigger
@@ -45,6 +47,7 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.use(cors());
 app.use(express.json());                    // allow reading JSON data
+app.use(auditLog);
 app.use('/api/:tenantId/invoices', invoiceRoutes);
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
@@ -65,6 +68,7 @@ app.use('/api/features', featureRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/automations', automationRoutes);
+app.use('/api/tenants', tenantRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
