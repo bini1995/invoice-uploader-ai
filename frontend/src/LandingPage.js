@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
@@ -7,13 +7,18 @@ import {
   DocumentArrowUpIcon,
   CheckCircleIcon,
   ChartBarIcon,
+  ArrowRightOnRectangleIcon,
+  UserPlusIcon,
 } from '@heroicons/react/24/outline';
 import LanguageSelector from './components/LanguageSelector';
 import DarkModeToggle from './components/DarkModeToggle';
 import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
+import DemoUploadModal from './components/DemoUploadModal';
 
 export default function LandingPage() {
+  const [authOpen, setAuthOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <nav className="bg-indigo-700 text-white p-4 shadow">
@@ -22,15 +27,41 @@ export default function LandingPage() {
             <DocumentArrowUpIcon className="w-6 h-6" />
             <span className="font-bold text-lg">Invoice Uploader AI</span>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 relative">
             <LanguageSelector />
             <DarkModeToggle />
-            <Link
-              to="/invoices"
-              className="btn btn-primary bg-white text-indigo-700 hover:bg-gray-100"
+            <button
+              onClick={() => setAuthOpen(o => !o)}
+              className="btn btn-primary bg-white text-indigo-700 hover:bg-gray-100 flex items-center"
             >
-              Log In
-            </Link>
+              <span className="mr-1">Account</span>
+              <ArrowRightOnRectangleIcon className="w-5 h-5" />
+            </button>
+            {authOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded shadow-lg z-20"
+              >
+                <Link
+                  to="/invoices"
+                  className="block px-4 py-2 text-sm group hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                  onClick={() => setAuthOpen(false)}
+                >
+                  <ArrowRightOnRectangleIcon className="w-4 h-4 mr-2 transform transition-transform group-hover:translate-x-1" />
+                  <span className="border-b-2 border-transparent group-hover:border-indigo-600 transition-all">Sign In</span>
+                </Link>
+                <Link
+                  to="/onboarding"
+                  className="block px-4 py-2 text-sm group hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                  onClick={() => setAuthOpen(false)}
+                >
+                  <UserPlusIcon className="w-4 h-4 mr-2 transform transition-transform group-hover:translate-x-1" />
+                  <span className="border-b-2 border-transparent group-hover:border-indigo-600 transition-all">Sign Up</span>
+                </Link>
+              </motion.div>
+            )}
           </div>
         </div>
       </nav>
@@ -46,7 +77,15 @@ export default function LandingPage() {
             <p className="text-lg max-w-xl mx-auto md:mx-0">
               Upload invoices, validate details and uncover insights—all in one intuitive platform.
             </p>
-            <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Try Invoice Uploader AI → Get Started</Link>
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+              <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Try Invoice Uploader AI → Get Started</Link>
+              <button
+                onClick={() => setDemoOpen(true)}
+                className="btn btn-secondary text-lg px-8 py-3 flex items-center justify-center"
+              >
+                Live Demo
+              </button>
+            </div>
             <div className="flex justify-center md:justify-start items-center gap-4 pt-4 opacity-80">
               <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+1" alt="Client 1" className="h-8 object-contain" />
               <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+2" alt="Client 2" className="h-8 object-contain" />
@@ -162,6 +201,7 @@ export default function LandingPage() {
       <footer className="p-6 text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900">
         © {new Date().getFullYear()} Invoice Uploader AI
       </footer>
+      <DemoUploadModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   );
 }
