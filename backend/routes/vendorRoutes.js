@@ -10,6 +10,8 @@ const {
   importVendorsCSV,
   getBehaviorFlags,
   getVendorAnalytics,
+  updateVendorCountry,
+  getVendorRiskProfile,
 } = require('../controllers/vendorController');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -24,5 +26,7 @@ router.patch('/:vendor/notes', authMiddleware, authorizeRoles('admin'), updateVe
 router.get('/:vendor/info', authMiddleware, getVendorInfo);
 router.get('/:vendor/predict', authMiddleware, predictVendorBehavior);
 router.get('/:vendor/profile', authMiddleware, getVendorAnalytics);
+router.patch('/:vendor/country', authMiddleware, authorizeRoles('admin'), updateVendorCountry);
+router.get('/:vendor/risk', authMiddleware, authorizeRoles('admin'), getVendorRiskProfile);
 
 module.exports = router;

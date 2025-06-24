@@ -214,6 +214,16 @@ async function initDb() {
       enabled BOOLEAN DEFAULT TRUE,
       UNIQUE(tenant_id, feature)
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS tenant_branding (
+      tenant_id TEXT PRIMARY KEY,
+      accent_color TEXT
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS vendor_profiles (
+      vendor TEXT PRIMARY KEY,
+      country TEXT
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

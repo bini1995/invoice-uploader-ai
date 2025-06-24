@@ -3,6 +3,7 @@ const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const pool = require('../config/db');
 const { sendMail } = require('./email');
+const { sendSlackNotification } = require('./notify');
 
 async function buildReport() {
   const { rows } = await pool.query(
@@ -39,15 +40,23 @@ async function buildReport() {
 async function sendDailyReport() {
   try {
     const { pdf, excel } = await buildReport();
+    const { rows: flagged } = await pool.query(
+      "SELECT COUNT(*) AS cnt FROM invoices WHERE flagged = TRUE AND created_at >= NOW() - INTERVAL '1 day'"
+    );
+    const { rows: uploaded } = await pool.query(
+      "SELECT COUNT(*) AS cnt FROM invoices WHERE created_at >= NOW() - INTERVAL '1 day'"
+    );
+    const summary = `Daily digest: ${uploaded[0].cnt} invoices uploaded, ${flagged[0].cnt} flagged.`;
     await sendMail({
       to: process.env.EMAIL_TO,
       subject: 'Daily Invoice Report',
-      text: 'Attached is the latest invoice report.',
+      text: summary,
       attachments: [
         { filename: 'report.pdf', content: pdf },
         { filename: 'report.xlsx', content: excel },
       ],
     });
+    await sendSlackNotification?.(summary);
   } catch (err) {
     console.error('Report email error:', err);
   }

@@ -4,6 +4,10 @@ const { encryptSensitive, decryptSensitive } = require('../utils/encryption');
 const axios = require('axios');
 const { parse } = require('json2csv');
 const { parseCSV } = require('../utils/csvParser');
+const countryRisk = {
+  high: ['Russia', 'Iran', 'North Korea'],
+  medium: ['Mexico', 'Brazil', 'India'],
+};
 
 exports.listVendors = async (_req, res) => {
   try {
@@ -254,5 +258,61 @@ exports.getVendorAnalytics = async (req, res) => {
   } catch (err) {
     console.error('Vendor analytics error:', err);
     res.status(500).json({ message: 'Failed to fetch vendor profile' });
+  }
+};
+
+exports.updateVendorCountry = async (req, res) => {
+  const { vendor } = req.params;
+  const { country } = req.body || {};
+  if (!country) return res.status(400).json({ message: 'country required' });
+  try {
+    await pool.query(
+      `INSERT INTO vendor_profiles (vendor, country)
+       VALUES ($1,$2)
+       ON CONFLICT (vendor) DO UPDATE SET country = EXCLUDED.country`,
+      [vendor, country]
+    );
+    res.json({ message: 'Country updated' });
+  } catch (err) {
+    console.error('Vendor country update error:', err);
+    res.status(500).json({ message: 'Failed to update country' });
+  }
+};
+
+exports.getVendorRiskProfile = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    const invoicesRes = await pool.query(
+      'SELECT date, amount FROM invoices WHERE LOWER(vendor)=LOWER($1)',
+      [vendor]
+    );
+    if (!invoicesRes.rows.length) {
+      return res.status(404).json({ message: 'Vendor not found' });
+    }
+    const countryRes = await pool.query(
+      'SELECT country FROM vendor_profiles WHERE vendor=$1',
+      [vendor]
+    );
+    const country = countryRes.rows[0]?.country || 'Unknown';
+    const months = {};
+    let total = 0;
+    invoicesRes.rows.forEach((r) => {
+      const m = `${r.date.getFullYear()}-${r.date.getMonth() + 1}`;
+      months[m] = (months[m] || 0) + 1;
+      total += parseFloat(r.amount || 0);
+    });
+    const freq = Object.values(months).reduce((a, b) => a + b, 0) /
+      Object.keys(months).length;
+    const avgAmount = total / invoicesRes.rows.length;
+    let risk = 0;
+    if (freq > 5) risk += 20; else if (freq > 2) risk += 10;
+    if (avgAmount > 5000) risk += 20; else if (avgAmount > 1000) risk += 10;
+    if (countryRisk.high.includes(country)) risk += 50;
+    else if (countryRisk.medium.includes(country)) risk += 20;
+    if (risk > 100) risk = 100;
+    res.json({ vendor, country, avg_amount: Number(avgAmount.toFixed(2)), monthly_frequency: Number(freq.toFixed(2)), risk });
+  } catch (err) {
+    console.error('Vendor risk error:', err);
+    res.status(500).json({ message: 'Failed to compute risk' });
   }
 };
