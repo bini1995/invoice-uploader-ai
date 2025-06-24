@@ -292,27 +292,51 @@ export default function LandingPage() {
       </section>
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">Pricing</h2>
-        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+        <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
           <Card className="text-center space-y-4">
-            <h3 className="text-xl font-semibold">Free</h3>
-            <p className="text-4xl font-bold">$0</p>
-            <p className="text-sm">All core features for small teams.</p>
+            <h3 className="text-xl font-semibold">Starter</h3>
+            <p className="text-4xl font-bold">$49</p>
+            <ul className="text-sm space-y-1">
+              <li>500 invoices/month</li>
+              <li>1 AI summary/query</li>
+              <li>1 user</li>
+            </ul>
             <Button asChild>
-              <Link to="/invoices">Get Started</Link>
+              <Link to="/onboarding">Start Free Trial</Link>
+            </Button>
+          </Card>
+          <Card className="text-center space-y-4">
+            <h3 className="text-xl font-semibold">Growth</h3>
+            <p className="text-4xl font-bold">$149</p>
+            <ul className="text-sm space-y-1">
+              <li>2,500 invoices/month</li>
+              <li>All AI features</li>
+              <li>3 users</li>
+            </ul>
+            <Button asChild>
+              <Link to="/onboarding">Start Free Trial</Link>
             </Button>
           </Card>
           <Card className="text-center space-y-4">
             <h3 className="text-xl font-semibold">Pro</h3>
-            <p className="text-4xl font-bold">$49</p>
-            <p className="text-sm">Advanced analytics and priority support.</p>
+            <p className="text-4xl font-bold">$399</p>
+            <ul className="text-sm space-y-1">
+              <li>10,000 invoices/month</li>
+              <li>All features unlocked</li>
+              <li>10 users</li>
+            </ul>
             <Button asChild>
-              <Link to="/invoices">Start Free Trial</Link>
+              <Link to="/onboarding">Start Free Trial</Link>
             </Button>
           </Card>
           <Card className="text-center space-y-4">
             <h3 className="text-xl font-semibold">Enterprise</h3>
-            <p className="text-4xl font-bold">Contact us</p>
-            <p className="text-sm">Custom integrations and onboarding.</p>
+            <p className="text-4xl font-bold">Custom</p>
+            <ul className="text-sm space-y-1">
+              <li>Unlimited invoices</li>
+              <li>Dedicated manager</li>
+              <li>Custom SLA</li>
+            </ul>
             <Button asChild>
               <Link to="/invoices">Contact Sales</Link>
             </Button>
@@ -320,20 +344,38 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">Blog</h2>
-        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-          <Card className="space-y-1">
-            <h3 className="font-semibold">AI in Finance</h3>
-            <p className="text-xs text-gray-500">Jan 5, 2024</p>
-          </Card>
-          <Card className="space-y-1">
-            <h3 className="font-semibold">Automating AP Workflows</h3>
-            <p className="text-xs text-gray-500">Feb 12, 2024</p>
-          </Card>
-          <Card className="space-y-1">
-            <h3 className="font-semibold">Security Best Practices</h3>
-            <p className="text-xs text-gray-500">Mar 22, 2024</p>
-          </Card>
+        <h2 className="text-3xl font-bold text-center mb-6">Optional Add-Ons</h2>
+        <div className="container mx-auto overflow-x-auto px-6">
+          <table className="min-w-full text-left text-sm">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Add-On Feature</th>
+                <th className="border-b px-4 py-2">Monthly Price</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              <tr>
+                <td className="px-4 py-2">Extra 1,000 invoices</td>
+                <td className="px-4 py-2">$10</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Additional user</td>
+                <td className="px-4 py-2">$5/user</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Email/Slack alert bundle</td>
+                <td className="px-4 py-2">$20</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Dedicated tenant setup</td>
+                <td className="px-4 py-2">$50</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Smart vendor scoring</td>
+                <td className="px-4 py-2">$100</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
       <footer className="bg-gray-100 dark:bg-gray-900 p-8 text-gray-600 dark:text-gray-400">
