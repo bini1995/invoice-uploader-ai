@@ -29,9 +29,24 @@ import { API_BASE } from './api';
 const originalFetch = window.fetch;
 window.fetch = async (url, options) => {
   if (typeof url === 'string') {
+    const tenant = localStorage.getItem('tenant') || 'default';
     if (url.startsWith('http://localhost:3000')) {
       url = url.replace('http://localhost:3000', API_BASE);
+    }
+    if (url.startsWith(API_BASE)) {
+      let path = url.slice(API_BASE.length);
+      if (path.startsWith('/api/invoices')) {
+        path = path.replace('/api/invoices', `/api/${tenant}/invoices`);
+      } else if (path.startsWith('/api/export-templates')) {
+        path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
+      }
+      url = API_BASE + path;
     } else if (url.startsWith('/')) {
+      if (url.startsWith('/api/invoices')) {
+        url = url.replace('/api/invoices', `/api/${tenant}/invoices`);
+      } else if (url.startsWith('/api/export-templates')) {
+        url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
+      }
       url = `${API_BASE}${url}`;
     }
   }
