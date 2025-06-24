@@ -18,6 +18,8 @@ exports.addWorkflowRule = async (req, res) => {
     assign_approver,
     approval_chain,
     alert_message,
+    alert_email,
+    alert_phone,
     priority,
     active,
   } = req.body || {};
@@ -29,8 +31,9 @@ exports.addWorkflowRule = async (req, res) => {
     const result = await pool.query(
       `INSERT INTO workflow_rules (
         vendor, amount_greater_than, route_to_department,
-        assign_approver, approval_chain, alert_message, priority, active
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,COALESCE($8,TRUE)) RETURNING *`,
+        assign_approver, approval_chain, alert_message, alert_email, alert_phone,
+        priority, active
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,COALESCE($10,TRUE)) RETURNING *`,
       [
         vendor || null,
         amount_greater_than || null,
@@ -38,6 +41,8 @@ exports.addWorkflowRule = async (req, res) => {
         assign_approver || null,
         approval_chain ? JSON.stringify(approval_chain) : null,
         alert_message || null,
+        alert_email || null,
+        alert_phone || null,
         priority || 0,
         active,
       ]
@@ -58,6 +63,8 @@ exports.updateWorkflowRule = async (req, res) => {
     assign_approver,
     approval_chain,
     alert_message,
+    alert_email,
+    alert_phone,
     priority,
     active,
   } = req.body || {};
@@ -70,9 +77,11 @@ exports.updateWorkflowRule = async (req, res) => {
         assign_approver = COALESCE($4, assign_approver),
         approval_chain = COALESCE($5, approval_chain),
         alert_message = COALESCE($6, alert_message),
-        priority = COALESCE($7, priority),
-        active = COALESCE($8, active)
-       WHERE id = $9 RETURNING *`,
+        alert_email = COALESCE($7, alert_email),
+        alert_phone = COALESCE($8, alert_phone),
+        priority = COALESCE($9, priority),
+        active = COALESCE($10, active)
+       WHERE id = $11 RETURNING *`,
       [
         vendor,
         amount_greater_than,
@@ -80,6 +89,8 @@ exports.updateWorkflowRule = async (req, res) => {
         assign_approver,
         approval_chain ? JSON.stringify(approval_chain) : null,
         alert_message,
+        alert_email,
+        alert_phone,
         priority,
         active,
         id,

@@ -1,5 +1,10 @@
 const pool = require('../config/db');
-const { sendSlackNotification, sendTeamsNotification } = require('./notify');
+const {
+  sendSlackNotification,
+  sendTeamsNotification,
+  sendEmailNotification,
+  sendSmsNotification,
+} = require('./notify');
 
 async function evaluateWorkflowRules(invoice) {
   try {
@@ -20,6 +25,8 @@ async function evaluateWorkflowRules(invoice) {
           const msg = rule.alert_message.replace('{invoice}', invoice.invoice_number || '');
           await sendSlackNotification?.(msg);
           await sendTeamsNotification?.(msg);
+          await sendEmailNotification?.(rule.alert_email, 'Workflow Alert', msg);
+          await sendSmsNotification?.(rule.alert_phone, msg);
         }
       }
     }

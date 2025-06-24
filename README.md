@@ -127,6 +127,7 @@ cd backend
 npm install
 cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
 # Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
+# Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts
 npm start
 ```
 
@@ -272,6 +273,7 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 The `/workflow-builder` page lets admins design approval chains and rules with an
 interactive expression builder. Test expressions are sent to `POST /api/workflows/evaluate`
 to see how rules would route a sample invoice.
+The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `GET /api/invoices/fraud/flagged` – list flagged invoices with reasons
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
 - `GET /api/:tenantId/export-templates` – list saved CSV templates
