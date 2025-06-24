@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import TagEditor from './TagEditor';
-import { API_BASE } from '../api';
 
 export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
