@@ -26,6 +26,7 @@ import LanguageSelector from './components/LanguageSelector';
 import DarkModeToggle from './components/DarkModeToggle';
 import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
+import { Button } from './components/ui/Button';
 import ProgressDashboard from './components/ProgressDashboard';
 import AiSearchDemo from './components/AiSearchDemo';
 import DummyDataButton from './components/DummyDataButton';
@@ -46,13 +47,14 @@ export default function LandingPage() {
           <div className="flex items-center space-x-2 relative">
             <LanguageSelector />
             <DarkModeToggle />
-            <button
+            <Button
+              variant="secondary"
+              className="bg-white text-indigo-700 hover:bg-gray-100 flex items-center"
               onClick={() => setAuthOpen(o => !o)}
-              className="btn btn-primary bg-white text-indigo-700 hover:bg-gray-100 flex items-center"
             >
               <span className="mr-1">Account</span>
               <ArrowRightOnRectangleIcon className="w-5 h-5" />
-            </button>
+            </Button>
             {authOpen && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -102,13 +104,12 @@ export default function LandingPage() {
               Upload invoices, validate details and uncover insights—all in one intuitive platform.
             </p>
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-              <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Upload Invoice</Link>
-              <Link
-                to="/sandbox"
-                className="btn btn-secondary text-lg px-8 py-3 flex items-center justify-center"
-              >
-                See it in Action
-              </Link>
+              <Button asChild className="text-lg px-8 py-3">
+                <Link to="/invoices">Upload Invoice</Link>
+              </Button>
+              <Button asChild variant="secondary" className="text-lg px-8 py-3 flex items-center justify-center">
+                <Link to="/sandbox">See it in Action</Link>
+              </Button>
             </div>
             <PartnerLogos />
           </motion.div>
@@ -129,6 +130,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            whileHover={{ scale: 1.05 }}
           >
             <Card className="text-center space-y-2">
               <CheckCircleIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
@@ -141,6 +143,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            whileHover={{ scale: 1.05 }}
           >
             <Card className="text-center space-y-2">
               <ChartBarIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
@@ -153,6 +156,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
+            whileHover={{ scale: 1.05 }}
           >
             <Card className="text-center space-y-2">
               <DocumentArrowUpIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
@@ -264,7 +268,9 @@ export default function LandingPage() {
         <h2 className="text-3xl font-bold text-center mb-8">Developers</h2>
         <p className="text-center mb-4">Explore our API and build custom integrations.</p>
         <div className="text-center">
-          <Link to="/api-docs" className="btn btn-primary text-lg px-8 py-3">View API Docs</Link>
+          <Button asChild className="text-lg px-8 py-3">
+            <Link to="/api-docs">View API Docs</Link>
+          </Button>
         </div>
       </section>
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
@@ -291,19 +297,25 @@ export default function LandingPage() {
             <h3 className="text-xl font-semibold">Free</h3>
             <p className="text-4xl font-bold">$0</p>
             <p className="text-sm">All core features for small teams.</p>
-            <Link to="/invoices" className="btn btn-primary">Get Started</Link>
+            <Button asChild>
+              <Link to="/invoices">Get Started</Link>
+            </Button>
           </Card>
           <Card className="text-center space-y-4">
             <h3 className="text-xl font-semibold">Pro</h3>
             <p className="text-4xl font-bold">$49</p>
             <p className="text-sm">Advanced analytics and priority support.</p>
-            <Link to="/invoices" className="btn btn-primary">Start Free Trial</Link>
+            <Button asChild>
+              <Link to="/invoices">Start Free Trial</Link>
+            </Button>
           </Card>
           <Card className="text-center space-y-4">
             <h3 className="text-xl font-semibold">Enterprise</h3>
             <p className="text-4xl font-bold">Contact us</p>
             <p className="text-sm">Custom integrations and onboarding.</p>
-            <Link to="/invoices" className="btn btn-primary">Contact Sales</Link>
+            <Button asChild>
+              <Link to="/invoices">Contact Sales</Link>
+            </Button>
           </Card>
         </div>
       </section>
@@ -398,10 +410,10 @@ export default function LandingPage() {
                 placeholder="you@example.com"
                 className="input flex-1 text-xs"
               />
-              <button className="btn btn-primary px-3 flex items-center" type="submit">
+              <Button type="submit" className="px-3 flex items-center">
                 <EnvelopeIcon className="w-4 h-4 mr-1" />
                 Sign Up
-              </button>
+              </Button>
             </form>
           </div>
         </div>
