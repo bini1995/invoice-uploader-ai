@@ -15,6 +15,7 @@ import VendorManagement from './VendorManagement';
 import WorkflowPage from './WorkflowPage';
 import WorkflowBuilderPage from './WorkflowBuilderPage';
 import Board from './Board';
+import KanbanDashboard from './KanbanDashboard';
 import Inbox from './Inbox';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
@@ -103,6 +104,7 @@ function AnimatedRoutes() {
         <Route path="/workflow" element={<PageWrapper><WorkflowPage /></PageWrapper>} />
         <Route path="/workflow-builder" element={<PageWrapper><WorkflowBuilderPage /></PageWrapper>} />
         <Route path="/board" element={<PageWrapper><Board /></PageWrapper>} />
+        <Route path="/kanban" element={<PageWrapper><KanbanDashboard /></PageWrapper>} />
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
         <Route path="/export-builder" element={<PageWrapper><ExportTemplateBuilder /></PageWrapper>} />
         <Route path="/upload-wizard" element={<PageWrapper><UploadWizard /></PageWrapper>} />
