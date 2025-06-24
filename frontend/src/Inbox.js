@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
+import { motion } from 'framer-motion';
 import { API_BASE } from './api';
 
 export default function Inbox() {
@@ -42,6 +43,14 @@ export default function Inbox() {
     fetchInvoices();
   };
 
+  const archive = async (id) => {
+    await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/archive`, {
+      method: 'PATCH',
+      headers,
+    }).catch(() => {});
+    fetchInvoices();
+  };
+
   return (
     <MainLayout title="Inbox" helpTopic="inbox">
       <div className="overflow-x-auto rounded-lg">
@@ -61,7 +70,16 @@ export default function Inbox() {
             </tr>
           ) : (
             invoices.map(inv => (
-              <tr key={inv.id} className="border-t hover:bg-gray-100">
+              <motion.tr
+                key={inv.id}
+                className="border-t hover:bg-gray-100"
+                drag="x"
+                dragConstraints={{ left: -120, right: 0 }}
+                onDragEnd={(e, info) => {
+                  if (info.offset.x < -100) archive(inv.id);
+                }}
+                whileDrag={{ scale: 1.02 }}
+              >
                 <td className="px-2 py-1">{inv.invoice_number}</td>
                 <td className="px-2 py-1">{inv.vendor}</td>
                 <td className="px-2 py-1">${inv.amount}</td>
@@ -69,7 +87,7 @@ export default function Inbox() {
                   <button onClick={() => approve(inv.id)} className="bg-green-600 text-white px-2 py-1 rounded text-xs">Approve</button>
                   <button onClick={() => reject(inv.id)} className="bg-red-600 text-white px-2 py-1 rounded text-xs">Reject</button>
                 </td>
-              </tr>
+              </motion.tr>
             ))
           )}
         </tbody>
