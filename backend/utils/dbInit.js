@@ -185,6 +185,17 @@ async function initDb() {
       result JSONB,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS automations (
+      id SERIAL PRIMARY KEY,
+      event TEXT NOT NULL,
+      condition TEXT,
+      action TEXT NOT NULL,
+      config JSONB,
+      cron TEXT,
+      active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

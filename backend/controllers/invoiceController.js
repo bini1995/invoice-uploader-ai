@@ -16,6 +16,7 @@ const { getWorkflowForDepartment } = require('../utils/workflows');
 const { evaluateWorkflowRules } = require('../utils/workflowRulesEngine');
 const { getExchangeRate } = require('../utils/exchangeRates');
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
+const { triggerAutomations } = require('../utils/automationEngine');
 const { broadcastMessage } = require('../utils/chatServer');
 const { recordInvoiceVersion } = require('../utils/versionLogger');
 const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/assignment');
@@ -1155,6 +1156,9 @@ exports.approveInvoice = async (req, res) => {
     const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
     await sendSlackNotification(msg);
     await sendTeamsNotification(msg);
+    if (status === 'Approved') {
+      await triggerAutomations('invoice.approved', { invoice: { ...invoice, ...result.rows[0], id: parseInt(id,10) } });
+    }
     res.json({ message: 'Invoice approved', invoice: result.rows[0] });
   } catch (err) {
     console.error('Approve error:', err);
@@ -1418,6 +1422,9 @@ exports.bulkApproveInvoices = async (req, res) => {
       const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
       await sendSlackNotification(msg);
       await sendTeamsNotification(msg);
+      if (status === 'Approved' && after.rows.length) {
+        await triggerAutomations('invoice.approved', { invoice: after.rows[0] });
+      }
     }
     await logActivity(req.user?.userId, 'bulk_approve', null, req.user?.username);
     res.json({ message: 'Invoices approved' });
