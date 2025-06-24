@@ -32,11 +32,11 @@ export default function LandingPage() {
         </div>
       </nav>
       <header className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 mt-6">Automate Your Invoice Processing</h1>
-        <p className="text-lg mb-8 max-w-2xl">AI-driven tools to upload, validate, and analyze invoices instantly.</p>
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 mt-6">Streamline Accounts Payable with AI</h1>
+        <p className="text-lg mb-8 max-w-2xl">Upload invoices, validate details and uncover insights—all in one intuitive platform.</p>
         <div className="w-full max-w-3xl mb-8">
           <video
-            src="https://www.w3schools.com/html/mov_bbb.mp4"
+            src="https://samplelib.com/lib/preview/mp4/sample-20s.mp4"
             autoPlay
             muted
             loop

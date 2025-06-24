@@ -93,6 +93,13 @@ function Dashboard() {
     }
   };
 
+  const handleApprovalReminders = async () => {
+    if (!stats?.invoicesPending) return;
+    const headers = { Authorization: `Bearer ${token}` };
+    await fetch(`${API_BASE}/api/reminders/approval`, { method: 'POST', headers });
+    alert('Approval reminder emails sent');
+  };
+
   const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
   let max = 0;
   heatmap.forEach(({ day, hour, count }) => {
@@ -102,9 +109,14 @@ function Dashboard() {
 
   return (
     <MainLayout title="AI Dashboard">
-      <div className="mb-4 text-right">
-        <button onClick={handleExportPDF} className="underline mr-2">Export PDF</button>
+      <div className="mb-4 text-right space-x-2">
+        <button onClick={handleExportPDF} className="underline">Export PDF</button>
         <button onClick={handleShare} className="underline">Share Link</button>
+        {stats?.invoicesPending > 0 && (
+          <button onClick={handleApprovalReminders} className="underline">
+            Send Approval Reminders
+          </button>
+        )}
       </div>
       {!token ? (
         <p className="text-center text-gray-600">Please log in from the main app.</p>

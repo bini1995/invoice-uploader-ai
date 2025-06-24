@@ -23,9 +23,10 @@ const poRoutes = require('./routes/poRoutes');
 const integrationRoutes = require('./routes/integrationRoutes');
 const featureRoutes = require('./routes/featureRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const reminderRoutes = require('./routes/reminderRoutes');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
-const { sendApprovalReminders } = require('./controllers/reminderController');
+const { sendApprovalReminders } = require('./controllers/reminderController'); // used for optional manual trigger
 const { autoArchiveOldInvoices, autoDeleteExpiredInvoices, autoCloseExpiredInvoices } = require('./controllers/invoiceController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
@@ -60,6 +61,7 @@ app.use('/api/recurring', recurringRoutes);
 app.use('/api/integrations', integrationRoutes);
 app.use('/api/features', featureRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/reminders', reminderRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
@@ -83,8 +85,6 @@ app.use(Sentry.Handlers.errorHandler());
   setInterval(processFailedPayments, 60 * 60 * 1000);
   sendPaymentReminders();
   setInterval(sendPaymentReminders, 24 * 60 * 60 * 1000);
-  sendApprovalReminders();
-  setInterval(sendApprovalReminders, 24 * 60 * 60 * 1000);
 
   console.log('🟢 Routes mounted');
 
