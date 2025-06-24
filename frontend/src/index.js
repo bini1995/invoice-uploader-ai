@@ -23,6 +23,20 @@ import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import './i18n';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { API_BASE } from './api';
+
+// Global fetch wrapper to route API requests to configured backend
+const originalFetch = window.fetch;
+window.fetch = async (url, options) => {
+  if (typeof url === 'string') {
+    if (url.startsWith('http://localhost:3000')) {
+      url = url.replace('http://localhost:3000', API_BASE);
+    } else if (url.startsWith('/')) {
+      url = `${API_BASE}${url}`;
+    }
+  }
+  return originalFetch(url, options);
+};
 
 const currentTenant = localStorage.getItem('tenant') || 'default';
 const savedTheme = localStorage.getItem(`themeMode_${currentTenant}`);
@@ -34,9 +48,8 @@ if (savedAccent) document.documentElement.style.setProperty('--accent-color', sa
 const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
 if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
 
-const apiBase = process.env.REACT_APP_API_BASE_URL || '';
-if (apiBase) {
-  fetch(`${apiBase}/api/invoices`).catch((err) => {
+if (API_BASE) {
+  fetch(`${API_BASE}/api/invoices`).catch((err) => {
     console.error('API connection failed', err);
   });
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
+import { API_BASE } from './api';
 
 export default function AuditDashboard() {
   const token = localStorage.getItem('token') || '';
@@ -20,7 +21,7 @@ export default function AuditDashboard() {
     if (action) params.append('action', action);
     if (start) params.append('start', start);
     if (end) params.append('end', end);
-    const res = await fetch(`http://localhost:3000/api/invoices/logs?${params.toString()}`, {
+    const res = await fetch(`${API_BASE}/api/invoices/logs?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();

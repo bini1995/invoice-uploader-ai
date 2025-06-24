@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
@@ -23,7 +24,7 @@ function Reports() {
     if (endDate) params.append('endDate', endDate);
     if (minAmount) params.append('minAmount', minAmount);
     if (maxAmount) params.append('maxAmount', maxAmount);
-    const res = await fetch(`http://localhost:3000/api/analytics/report?${params.toString()}`, {
+    const res = await fetch(`${API_BASE}/api/analytics/report?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -38,7 +39,7 @@ function Reports() {
     if (endDate) params.append('endDate', endDate);
     if (minAmount) params.append('minAmount', minAmount);
     if (maxAmount) params.append('maxAmount', maxAmount);
-    const res = await fetch(`http://localhost:3000/api/analytics/report/pdf?${params.toString()}`, {
+    const res = await fetch(`${API_BASE}/api/analytics/report/pdf?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const blob = await res.blob();
@@ -51,7 +52,7 @@ function Reports() {
   };
 
   const loadRules = useCallback(async () => {
-    const res = await fetch('http://localhost:3000/api/analytics/rules', {
+    const res = await fetch(`${API_BASE}/api/analytics/rules`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -60,7 +61,7 @@ function Reports() {
   }, [token]);
 
   const addAmountRule = async () => {
-    await fetch('http://localhost:3000/api/analytics/rules', {
+    await fetch(`${API_BASE}/api/analytics/rules`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ amountGreaterThan: parseFloat(threshold), flagReason: `Amount over $${threshold}` })

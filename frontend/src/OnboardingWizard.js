@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MainLayout from './components/MainLayout';
 import { Button } from './components/ui/Button';
+import { API_BASE } from './api';
 
 export default function OnboardingWizard() {
   const token = localStorage.getItem('token') || '';
@@ -16,7 +17,7 @@ export default function OnboardingWizard() {
     const formData = new FormData();
     formData.append('invoiceFile', file);
     try {
-      const res = await fetch('http://localhost:3000/api/invoices/parse-sample', {
+      const res = await fetch(`${API_BASE}/api/invoices/parse-sample`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import { API_BASE } from './api';
 
 function Archive() {
   const token = localStorage.getItem('token') || '';
@@ -14,7 +15,7 @@ function Archive() {
   useEffect(() => {
     if (!token) return;
     setLoading(true);
-    fetch('http://localhost:3000/api/invoices?includeArchived=true', {
+    fetch(`${API_BASE}/api/invoices?includeArchived=true`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
@@ -43,7 +44,7 @@ function Archive() {
   });
 
   const handleRestore = async (id) => {
-    const res = await fetch(`http://localhost:3000/api/invoices/${id}/unarchive`, {
+    const res = await fetch(`${API_BASE}/api/invoices/${id}/unarchive`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     });
