@@ -5,6 +5,7 @@ import TagEditor from './components/TagEditor';
 import SuggestionChips from './components/SuggestionChips';
 import { Button } from './components/ui/Button';
 import ProgressBar from './components/ProgressBar';
+import { CircularProgress, Tooltip } from '@mui/material';
 import { API_BASE } from './api';
 
 export default function UploadWizard() {
@@ -158,8 +159,17 @@ export default function UploadWizard() {
           <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow text-center">
             <h2 className="text-lg font-semibold">4. Finalize Upload</h2>
             <p className="text-sm">{rows.length} invoices, total ${totalAmount.toFixed(2)}</p>
-            {uploading && <ProgressBar value={uploadProgress} />}
-            <Button onClick={handleUpload} disabled={uploading}>{uploading ? 'Uploading...' : 'Upload'}</Button>
+            {uploading && (
+              <div className="flex flex-col items-center space-y-2">
+                <CircularProgress size={24} />
+                <ProgressBar value={uploadProgress} />
+              </div>
+            )}
+            <Tooltip title="Submit invoices">
+              <span>
+                <Button onClick={handleUpload} disabled={uploading}>{uploading ? 'Uploading...' : 'Upload'}</Button>
+              </span>
+            </Tooltip>
           </div>
         )}
 
