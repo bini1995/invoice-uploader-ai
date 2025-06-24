@@ -130,6 +130,7 @@ cd backend
 npm install
 cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
 # Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
+# Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields
 # Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts
 npm start
 ```

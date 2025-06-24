@@ -19,4 +19,13 @@ function decrypt(data, key) {
   return decrypted.toString('utf8');
 }
 
-module.exports = { encrypt, decrypt };
+function encryptSensitive(text) {
+  const key = process.env.DATA_ENCRYPTION_KEY;
+  return key ? encrypt(text, key) : text;
+}
+
+function decryptSensitive(text) {
+  const key = process.env.DATA_ENCRYPTION_KEY;
+  return key ? decrypt(text, key) : text;
+}
+module.exports = { encrypt, decrypt, encryptSensitive, decryptSensitive };

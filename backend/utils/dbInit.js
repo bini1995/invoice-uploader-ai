@@ -60,6 +60,16 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS activities_log (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT,
+      user_id INTEGER,
+      username TEXT,
+      action TEXT NOT NULL,
+      details JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(`CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL,
@@ -195,6 +205,14 @@ async function initDb() {
       cron TEXT,
       active BOOLEAN DEFAULT TRUE,
       created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS tenant_features (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT NOT NULL,
+      feature TEXT NOT NULL,
+      enabled BOOLEAN DEFAULT TRUE,
+      UNIQUE(tenant_id, feature)
     )`);
   } catch (err) {
     console.error('Database init error:', err);
