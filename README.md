@@ -116,6 +116,9 @@ npm install --legacy-peer-deps
 - Manual or API-driven payment status sync
 - Multi-currency support with automatic VAT/GST calculations
 - Automation marketplace integrations (Zapier/Make) for Slack, QuickBooks and Google Sheets via `/api/integrations`
+- RPA automation engine triggers post-approval exports to QuickBooks or SAP
+- Scheduled email fetch imports PDF invoices automatically
+- Low-code automation builder (`/api/automations`) for if‑then API workflows
 - Blockchain-backed invoice validation with PDF hashing for tamper-proof records
 
 ## Setup Instructions
@@ -313,6 +316,10 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `POST /api/payments/stripe/webhook` – Stripe webhook endpoint for status updates
 - `POST /api/pos/upload` – upload a CSV of purchase orders
 - `GET /api/pos` – list all purchase orders
+- `GET /api/automations` – list automation rules
+- `POST /api/automations` – create an automation
+- `PUT /api/automations/:id` – update an automation
+- `DELETE /api/automations/:id` – delete an automation
 
 ### Vendor Reply Drafts
 

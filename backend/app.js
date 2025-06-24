@@ -24,6 +24,7 @@ const integrationRoutes = require('./routes/integrationRoutes');
 const featureRoutes = require('./routes/featureRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const reminderRoutes = require('./routes/reminderRoutes');
+const automationRoutes = require('./routes/automationRoutes');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { sendApprovalReminders } = require('./controllers/reminderController'); // used for optional manual trigger
@@ -32,6 +33,7 @@ const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
 const { loadCorrections } = require('./utils/parserTrainer');
 const { startEmailSync } = require('./utils/emailSync');
+const { loadSchedules } = require('./utils/automationScheduler');
 
 const app = express();                      // create the app
 const server = http.createServer(app);
@@ -62,6 +64,7 @@ app.use('/api/integrations', integrationRoutes);
 app.use('/api/features', featureRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reminders', reminderRoutes);
+app.use('/api/automations', automationRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
@@ -70,6 +73,7 @@ app.use(Sentry.Handlers.errorHandler());
   await loadCorrections();
   setInterval(loadCorrections, 60 * 60 * 1000); // refresh corrections hourly
 
+  await loadSchedules();
   startEmailSync();
 
   // Run auto-archive daily
