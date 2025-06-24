@@ -321,14 +321,32 @@ export default function LandingPage() {
           </div>
           <div>
             <h3 className="font-semibold mb-2">Follow</h3>
-            <div className="flex space-x-3">
-              <a href="#" aria-label="Twitter" className="hover:text-indigo-600">
+            <div className="flex space-x-4">
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter"
+                className="hover:text-indigo-600 transition-colors"
+              >
                 <AtSymbolIcon className="w-5 h-5" />
               </a>
-              <a href="#" aria-label="LinkedIn" className="hover:text-indigo-600">
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="hover:text-indigo-600 transition-colors"
+              >
                 <BriefcaseIcon className="w-5 h-5" />
               </a>
-              <a href="#" aria-label="GitHub" className="hover:text-indigo-600">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="hover:text-indigo-600 transition-colors"
+              >
                 <CodeBracketSquareIcon className="w-5 h-5" />
               </a>
             </div>
