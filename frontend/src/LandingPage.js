@@ -9,6 +9,10 @@ import {
   ChartBarIcon,
   ArrowRightOnRectangleIcon,
   UserPlusIcon,
+  AtSymbolIcon,
+  BriefcaseIcon,
+  CodeBracketSquareIcon,
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import LanguageSelector from './components/LanguageSelector';
 import DarkModeToggle from './components/DarkModeToggle';
@@ -20,7 +24,7 @@ export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-indigo-100 to-indigo-200 dark:from-purple-900 dark:via-indigo-900 dark:to-gray-900 text-gray-900 dark:text-gray-100">
       <nav className="bg-indigo-700 text-white p-4 shadow">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -198,8 +202,67 @@ export default function LandingPage() {
           </Card>
         </div>
       </section>
-      <footer className="p-6 text-center text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900">
-        © {new Date().getFullYear()} Invoice Uploader AI
+      <footer className="bg-gray-100 dark:bg-gray-900 p-8 text-gray-600 dark:text-gray-400">
+        <div className="container mx-auto grid md:grid-cols-4 gap-8 text-sm">
+          <div>
+            <h3 className="font-semibold mb-2">About Us</h3>
+            <p className="text-xs">
+              Invoice Uploader AI simplifies accounts payable with automation and
+              AI-driven insights.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-2">Quick Links</h3>
+            <ul className="space-y-1">
+              <li>
+                <Link to="/invoices" className="hover:underline">
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/reports" className="hover:underline">
+                  Reports
+                </Link>
+              </li>
+              <li>
+                <Link to="/onboarding" className="hover:underline">
+                  Sign Up
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-2">Follow</h3>
+            <div className="flex space-x-3">
+              <a href="#" aria-label="Twitter" className="hover:text-indigo-600">
+                <AtSymbolIcon className="w-5 h-5" />
+              </a>
+              <a href="#" aria-label="LinkedIn" className="hover:text-indigo-600">
+                <BriefcaseIcon className="w-5 h-5" />
+              </a>
+              <a href="#" aria-label="GitHub" className="hover:text-indigo-600">
+                <CodeBracketSquareIcon className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-2">Newsletter</h3>
+            <form className="flex space-x-2">
+              <input
+                type="email"
+                placeholder="you@example.com"
+                className="input flex-1 text-xs"
+              />
+              <button className="btn btn-primary px-3 flex items-center" type="submit">
+                <EnvelopeIcon className="w-4 h-4 mr-1" />
+                Sign Up
+              </button>
+            </form>
+          </div>
+        </div>
+        <p className="text-center mt-8 text-xs">
+          © {new Date().getFullYear()} Invoice Uploader AI
+        </p>
       </footer>
       <DemoUploadModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
