@@ -71,6 +71,7 @@ npm install --legacy-peer-deps
 - Smart reminders for overdue invoices and pending approvals (email, Slack/Teams & in-app)
 - Batch actions with bulk approval and PDF export
 - Bulk edit/delete/archive options for faster table management
+- Multi-step upload wizard guides file selection, review, tagging and final confirmation
 - AI explanations for why an invoice was flagged
 - Admin settings panel with auto-archive toggle, custom AI tone and upload limits
 - Invoice expiration auto-closes past-due invoices or flags them for review
