@@ -1,6 +1,7 @@
 const fs = require('fs');
 const pool = require('../config/db');
 const path = require('path');
+const JSZip = require('jszip');
 const { parseCSV } = require('../utils/csvParser');
 const { parsePDF } = require('../utils/pdfParser');
 const { parseImage } = require('../utils/imageParser');
@@ -685,9 +686,34 @@ exports.importInvoicesCSV = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
-    const rows = await parseCSV(req.file.path);
+    let rows = [];
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    if (ext === '.zip') {
+      const data = fs.readFileSync(req.file.path);
+      const zip = await JSZip.loadAsync(data);
+      for (const name of Object.keys(zip.files)) {
+        if (name.toLowerCase().endsWith('.csv')) {
+          const buf = await zip.files[name].async('nodebuffer');
+          const tmp = await new Promise((resolve, reject) => {
+            const results = [];
+            const csv = require('csv-parser');
+            const stream = require('stream');
+            const s = new stream.PassThrough();
+            s.end(buf);
+            s.pipe(csv())
+              .on('data', (r) => results.push(r))
+              .on('end', () => resolve(results))
+              .on('error', (e) => reject(e));
+          });
+          rows = rows.concat(tmp);
+        }
+      }
+    } else {
+      rows = await parseCSV(req.file.path);
+    }
     const encryptUploads = process.env.UPLOAD_ENCRYPTION_KEY && (req.body.encrypt === 'true' || req.headers['x-encrypt'] === 'true');
     const inserted = [];
+    const totalRows = rows.length;
     for (const row of rows) {
       const { invoice_number, date, amount, vendor } = row;
       if (!invoice_number || !vendor) continue;
@@ -698,7 +724,7 @@ exports.importInvoicesCSV = async (req, res) => {
       );
       inserted.push(result.rows[0].id);
     }
-    res.json({ inserted });
+    res.json({ inserted, totalRows });
   } catch (err) {
     console.error('Import invoices error:', err);
     res.status(500).json({ message: 'Failed to import invoices' });
