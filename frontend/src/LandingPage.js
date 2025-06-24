@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
 import heroAnimation from './invoice-hero.json';
+import TypingText from './components/TypingText';
 import {
   DocumentArrowUpIcon,
   CheckCircleIcon,
@@ -92,16 +93,24 @@ export default function LandingPage() {
             className="space-y-6 text-center md:text-left"
           >
             <h1 className="text-5xl md:text-6xl font-extrabold">Streamline Accounts Payable with AI</h1>
+            <TypingText
+              texts={[
+                'Summarize errors.',
+                'Flag fraud.',
+                'Automate compliance.',
+              ]}
+              className="block text-2xl font-semibold text-indigo-600 dark:text-indigo-400 h-8"
+            />
             <p className="text-lg max-w-xl mx-auto md:mx-0">
               Upload invoices, validate details and uncover insights—all in one intuitive platform.
             </p>
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-              <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Try Invoice Uploader AI → Get Started</Link>
+              <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Upload Invoice</Link>
               <button
                 onClick={() => setDemoOpen(true)}
                 className="btn btn-secondary text-lg px-8 py-3 flex items-center justify-center"
               >
-                Live Demo
+                Try Demo
               </button>
             </div>
             <div className="flex justify-center md:justify-start items-center gap-4 pt-4 opacity-80">
