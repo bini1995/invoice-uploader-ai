@@ -26,6 +26,7 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const reminderRoutes = require('./routes/reminderRoutes');
 const automationRoutes = require('./routes/automationRoutes');
 const tenantRoutes = require('./routes/tenantRoutes');
+const agentRoutes = require('./routes/agentRoutes');
 const { auditLog } = require('./middleware/auditMiddleware');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
@@ -34,6 +35,7 @@ const { autoArchiveOldInvoices, autoDeleteExpiredInvoices, autoCloseExpiredInvoi
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
 const { loadCorrections } = require('./utils/parserTrainer');
+const { loadModel, trainFromCorrections } = require('./utils/ocrAgent');
 const { startEmailSync } = require('./utils/emailSync');
 const { loadSchedules } = require('./utils/automationScheduler');
 
@@ -69,6 +71,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/automations', automationRoutes);
 app.use('/api/tenants', tenantRoutes);
+app.use('/api/agents', agentRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
@@ -76,6 +79,9 @@ app.use(Sentry.Handlers.errorHandler());
   await initDb();
   await loadCorrections();
   setInterval(loadCorrections, 60 * 60 * 1000); // refresh corrections hourly
+  await loadModel();
+  await trainFromCorrections();
+  setInterval(trainFromCorrections, 6 * 60 * 60 * 1000); // retrain regularly
 
   await loadSchedules();
   startEmailSync();
