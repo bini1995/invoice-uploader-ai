@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import useOutsideClick from '../hooks/useOutsideClick';
 
 export default function NotificationBell({ notifications = [], onOpen }) {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef(null);
+  useOutsideClick(wrapperRef, () => setOpen(false));
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleToggle = () => {
@@ -10,7 +13,7 @@ export default function NotificationBell({ notifications = [], onOpen }) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <button
         className="text-xl focus:outline-none"
         onClick={handleToggle}

@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import useOutsideClick from '../hooks/useOutsideClick';
 import { PaintBrushIcon } from '@heroicons/react/24/outline';
 
 export default function ThemePicker({ darkMode, setDarkMode, tenant = 'default' }) {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef(null);
+  useOutsideClick(wrapperRef, () => setOpen(false));
   const [mode, setMode] = useState(() => localStorage.getItem(`themeMode_${tenant}`) || (darkMode ? 'dark' : 'light'));
   const [accent, setAccent] = useState(() => localStorage.getItem(`accentColor_${tenant}`) || '#4f46e5');
   const [font, setFont] = useState(() => localStorage.getItem(`fontFamily_${tenant}`) || 'Inter');
@@ -43,7 +46,7 @@ export default function ThemePicker({ darkMode, setDarkMode, tenant = 'default' 
   }, [tenant]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <button
         onClick={() => setOpen(o => !o)}
         className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
