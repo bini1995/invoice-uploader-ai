@@ -39,6 +39,8 @@ const { loadModel, trainFromCorrections } = require('./utils/ocrAgent');
 const { startEmailSync } = require('./utils/emailSync');
 const { loadSchedules } = require('./utils/automationScheduler');
 const { scheduleReports } = require('./utils/reportScheduler');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./docs/swagger.json');
 
 const app = express();                      // create the app
 const server = http.createServer(app);
@@ -50,6 +52,7 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.use(cors());
 app.use(express.json());                    // allow reading JSON data
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(auditLog);
 app.use('/api/:tenantId/invoices', invoiceRoutes);
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
