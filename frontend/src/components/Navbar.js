@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
@@ -6,6 +6,7 @@ import LanguageSelector from './LanguageSelector';
 import ThemePicker from './ThemePicker';
 import DarkModeToggle from './DarkModeToggle';
 import useDarkMode from '../hooks/useDarkMode';
+import useOutsideClick from '../hooks/useOutsideClick';
 import { useTranslation } from 'react-i18next';
 import {
   Bars3Icon,
@@ -39,6 +40,10 @@ export default function Navbar({
   const [userOpen, setUserOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [darkMode, setDarkMode] = useDarkMode();
+  const menuRef = useRef(null);
+  const userRef = useRef(null);
+  useOutsideClick(menuRef, () => setMenuOpen(false));
+  useOutsideClick(userRef, () => setUserOpen(false));
   const { t } = useTranslation();
   const location = useLocation();
 
@@ -90,76 +95,82 @@ export default function Navbar({
           )}
           {token && (
             <>
-              <button
-                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
-                onClick={() => setMenuOpen((o) => !o)}
-                title="Menu"
-                aria-label="Menu"
-              >
-                <Bars3Icon className="h-6 w-6" />
-              </button>
-              {menuOpen && (
-                <div className="absolute right-12 top-8 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded shadow-lg w-40">
-                  <Link
-                    to="/dashboard"
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <HomeIcon className="h-5 w-5 mr-2" /> Dashboard
-                  </Link>
-                  <Link
-                    to="/analytics"
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <DocumentChartBarIcon className="h-5 w-5 mr-2" /> Analytics
-                  </Link>
-                  <Link
-                    to="/vendors"
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <UsersIcon className="h-5 w-5 mr-2" /> Vendors
-                  </Link>
-                  <Link
-                    to="/archive"
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <ArchiveBoxIcon className="h-5 w-5 mr-2" /> Archive
-                  </Link>
-                  <Link
-                    to="/board"
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <Squares2X2Icon className="h-5 w-5 mr-2" /> Board
-                  </Link>
-                  <Link
-                    to="/fraud"
-                    className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <FlagIcon className="h-5 w-5 mr-2" /> Fraud
-                  </Link>
-                  {role === 'admin' && (
+              <div className="relative" ref={menuRef}>
+                <button
+                  className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                  onClick={() => setMenuOpen((o) => !o)}
+                  title="Menu"
+                  aria-label="Menu"
+                >
+                  <Bars3Icon className="h-6 w-6" />
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-12 top-8 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded shadow-lg w-40">
                     <Link
-                      to="/settings"
+                      to="/dashboard"
                       className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setMenuOpen(false)}
                     >
-                      <UsersIcon className="h-5 w-5 mr-2" /> Settings
+                      <HomeIcon className="h-5 w-5 mr-2" /> Dashboard
                     </Link>
-                  )}
-                </div>
-              )}
-              <div className="relative" onMouseEnter={() => setHelpOpen(true)} onMouseLeave={() => setHelpOpen(false)}>
+                    <Link
+                      to="/analytics"
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <DocumentChartBarIcon className="h-5 w-5 mr-2" /> Analytics
+                    </Link>
+                    <Link
+                      to="/vendors"
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <UsersIcon className="h-5 w-5 mr-2" /> Vendors
+                    </Link>
+                    <Link
+                      to="/archive"
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <ArchiveBoxIcon className="h-5 w-5 mr-2" /> Archive
+                    </Link>
+                    <Link
+                      to="/board"
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <Squares2X2Icon className="h-5 w-5 mr-2" /> Board
+                    </Link>
+                    <Link
+                      to="/fraud"
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <FlagIcon className="h-5 w-5 mr-2" /> Fraud
+                    </Link>
+                    {role === 'admin' && (
+                      <Link
+                        to="/settings"
+                        className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <UsersIcon className="h-5 w-5 mr-2" /> Settings
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div
+                className="relative"
+                onMouseEnter={() => setHelpOpen(true)}
+                onMouseLeave={() => setHelpOpen(false)}
+              >
                 <QuestionMarkCircleIcon className="h-6 w-6 cursor-help" />
                 {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
               </div>
               <DarkModeToggle />
               <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} tenant={tenant} />
-              <div className="relative">
+              <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setUserOpen((o) => !o)}
                   className="flex items-center space-x-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
