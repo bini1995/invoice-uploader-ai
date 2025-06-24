@@ -1,5 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import Lottie from 'lottie-react';
+import heroAnimation from './invoice-hero.json';
 import {
   DocumentArrowUpIcon,
   CheckCircleIcon,
@@ -31,42 +34,86 @@ export default function LandingPage() {
           </div>
         </div>
       </nav>
-      <header className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 mt-6">Streamline Accounts Payable with AI</h1>
-        <p className="text-lg mb-8 max-w-2xl">Upload invoices, validate details and uncover insights—all in one intuitive platform.</p>
-        <div className="w-full max-w-3xl mb-8">
-          <video
-            src="https://samplelib.com/lib/preview/mp4/sample-20s.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full rounded-xl shadow-lg"
-          />
+      <header className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6 text-center md:text-left"
+          >
+            <h1 className="text-5xl md:text-6xl font-extrabold">Streamline Accounts Payable with AI</h1>
+            <p className="text-lg max-w-xl mx-auto md:mx-0">
+              Upload invoices, validate details and uncover insights—all in one intuitive platform.
+            </p>
+            <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Try Invoice Uploader AI → Get Started</Link>
+            <div className="flex justify-center md:justify-start items-center gap-4 pt-4 opacity-80">
+              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+1" alt="Client 1" className="h-8 object-contain" />
+              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+2" alt="Client 2" className="h-8 object-contain" />
+              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+3" alt="Client 3" className="h-8 object-contain" />
+              <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+4" alt="Client 4" className="h-8 object-contain" />
+            </div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="w-full"
+          >
+            <Lottie animationData={heroAnimation} loop className="w-full max-w-md mx-auto" />
+          </motion.div>
         </div>
-        <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Try Invoice Uploader AI → Get Started</Link>
       </header>
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-          <Card className="text-center space-y-2">
-            <CheckCircleIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">Automatic Validation</h3>
-            <p className="text-sm">Catch errors and duplicates before they hit your books.</p>
-          </Card>
-          <Card className="text-center space-y-2">
-            <ChartBarIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">Real-Time Analytics</h3>
-            <p className="text-sm">AI insights reveal spending trends and anomalies.</p>
-          </Card>
-          <Card className="text-center space-y-2">
-            <DocumentArrowUpIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">One-Click Uploads</h3>
-            <p className="text-sm">Import CSVs or PDFs and organize them instantly.</p>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="text-center space-y-2">
+              <CheckCircleIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+              <h3 className="font-semibold">Automatic Validation</h3>
+              <p className="text-sm">Catch errors and duplicates before they hit your books.</p>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="text-center space-y-2">
+              <ChartBarIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+              <h3 className="font-semibold">Real-Time Analytics</h3>
+              <p className="text-sm">AI insights reveal spending trends and anomalies.</p>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <Card className="text-center space-y-2">
+              <DocumentArrowUpIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+              <h3 className="font-semibold">One-Click Uploads</h3>
+              <p className="text-sm">Import CSVs or PDFs and organize them instantly.</p>
+            </Card>
+          </motion.div>
         </div>
       </section>
       <section className="py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">What People Are Saying</h2>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl font-bold text-center mb-8"
+        >
+          What People Are Saying
+        </motion.h2>
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6 mb-8">
           <Card className="space-y-2">
             <p className="text-sm">"This app cut our invoice processing time in half."</p>
