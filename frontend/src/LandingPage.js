@@ -13,6 +13,14 @@ import {
   BriefcaseIcon,
   CodeBracketSquareIcon,
   EnvelopeIcon,
+  ShoppingCartIcon,
+  UserGroupIcon,
+  ScaleIcon,
+  BoltIcon,
+  TagIcon,
+  ShieldExclamationIcon,
+  LightBulbIcon,
+  ArrowLongRightIcon,
 } from '@heroicons/react/24/outline';
 import LanguageSelector from './components/LanguageSelector';
 import DarkModeToggle from './components/DarkModeToggle';
@@ -145,6 +153,86 @@ export default function LandingPage() {
               <p className="text-sm">Import CSVs or PDFs and organize them instantly.</p>
             </Card>
           </motion.div>
+        </div>
+      </section>
+      <section className="py-12">
+        <h2 className="text-3xl font-bold text-center mb-8">Use Case Gallery</h2>
+        <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="text-center space-y-2">
+              <ShoppingCartIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+              <h3 className="font-semibold">Procurement</h3>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="text-center space-y-2">
+              <UserGroupIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+              <h3 className="font-semibold">AP Teams</h3>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <Card className="text-center space-y-2">
+              <ScaleIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+              <h3 className="font-semibold">Legal Compliance</h3>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <Card className="text-center space-y-2">
+              <BoltIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+              <h3 className="font-semibold">Expense Automation</h3>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-center mb-8">AI Feature Walkthrough</h2>
+        <div className="container mx-auto overflow-x-auto px-6">
+          <div className="flex items-center space-x-4 w-max">
+            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
+              <DocumentArrowUpIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <span className="font-semibold">Upload</span>
+            </Card>
+            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
+            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
+              <CheckCircleIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <span className="font-semibold">Validate</span>
+            </Card>
+            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
+            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
+              <TagIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <span className="font-semibold">Auto-tag</span>
+            </Card>
+            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
+            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
+              <ShieldExclamationIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <span className="font-semibold">Fraud Detection</span>
+            </Card>
+            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
+            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
+              <LightBulbIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <span className="font-semibold">Insights</span>
+            </Card>
+          </div>
         </div>
       </section>
       <section className="py-12">
