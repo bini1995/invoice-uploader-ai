@@ -18,6 +18,7 @@ import Board from './Board';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
 import OnboardingWizard from './OnboardingWizard';
+import UploadWizard from './UploadWizard';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -102,6 +103,7 @@ function AnimatedRoutes() {
         <Route path="/board" element={<PageWrapper><Board /></PageWrapper>} />
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
         <Route path="/export-builder" element={<PageWrapper><ExportTemplateBuilder /></PageWrapper>} />
+        <Route path="/upload-wizard" element={<PageWrapper><UploadWizard /></PageWrapper>} />
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
