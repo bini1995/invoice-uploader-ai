@@ -68,6 +68,8 @@ const {
   restoreInvoiceVersion,
   checkInvoiceSimilarity,
   suggestMappings,
+  getProgressStats,
+  seedDummyData,
 } = require('../controllers/invoiceController');
 
 
@@ -143,6 +145,7 @@ router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/spending-by-tag', authMiddleware, getSpendingByTag);
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
 router.get('/quick-stats', authMiddleware, getQuickStats);
+router.get('/progress', authMiddleware, getProgressStats);
 router.get('/dashboard', authMiddleware, getDashboardData);
 router.get('/recurring/insights', authMiddleware, getRecurringInsights);
 router.get('/vendor-profile/:vendor', authMiddleware, getVendorProfile);
@@ -171,6 +174,7 @@ router.delete('/bulk/delete', authMiddleware, authorizeRoles('admin'), bulkDelet
 router.patch('/bulk/edit', authMiddleware, authorizeRoles('admin'), bulkUpdateInvoices);
 router.post('/bulk/pdf', authMiddleware, exportPDFBundle);
 router.post('/bulk/auto-categorize', authMiddleware, bulkAutoCategorize);
+router.post('/seed-dummy', authMiddleware, authorizeRoles('admin'), seedDummyData);
 router.post('/:id/auto-categorize', authMiddleware, autoCategorizeInvoice);
 router.post('/:id/auto-tag', authMiddleware, autoTagCategories);
 router.patch('/:id/notes', authMiddleware, authorizeRoles('admin'), updatePrivateNotes);

@@ -30,6 +30,9 @@ import DarkModeToggle from './components/DarkModeToggle';
 import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
 import DemoUploadModal from './components/DemoUploadModal';
+import ProgressDashboard from './components/ProgressDashboard';
+import AiSearchDemo from './components/AiSearchDemo';
+import DummyDataButton from './components/DummyDataButton';
 
 export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false);
@@ -156,6 +159,21 @@ export default function LandingPage() {
               <p className="text-sm">Import CSVs or PDFs and organize them instantly.</p>
             </Card>
           </motion.div>
+        </div>
+      </section>
+      <section className="py-12">
+        <h2 className="text-3xl font-bold text-center mb-4">Progress Dashboard</h2>
+        <div className="container mx-auto px-6">
+          <ProgressDashboard />
+          <div className="text-center mt-4">
+            <DummyDataButton />
+          </div>
+        </div>
+      </section>
+      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-center mb-4">Split-Second AI Search</h2>
+        <div className="container mx-auto px-6">
+          <AiSearchDemo />
         </div>
       </section>
       <section className="py-12">
@@ -296,6 +314,23 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-center mb-8">Case Studies</h2>
+        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+          <Card className="space-y-2">
+            <h3 className="font-semibold">Acme Corp</h3>
+            <p className="text-sm">Reduced processing costs by 40%.</p>
+          </Card>
+          <Card className="space-y-2">
+            <h3 className="font-semibold">Globex</h3>
+            <p className="text-sm">Accelerated approvals to same day.</p>
+          </Card>
+          <Card className="space-y-2">
+            <h3 className="font-semibold">Initech</h3>
+            <p className="text-sm">Gained real-time vendor insights.</p>
+          </Card>
+        </div>
+      </section>
+      <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">Pricing</h2>
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
           <Card className="text-center space-y-4">
@@ -315,6 +350,23 @@ export default function LandingPage() {
             <p className="text-4xl font-bold">Contact us</p>
             <p className="text-sm">Custom integrations and onboarding.</p>
             <Link to="/invoices" className="btn btn-primary">Contact Sales</Link>
+          </Card>
+        </div>
+      </section>
+      <section className="py-12">
+        <h2 className="text-3xl font-bold text-center mb-8">Blog</h2>
+        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+          <Card className="space-y-1">
+            <h3 className="font-semibold">AI in Finance</h3>
+            <p className="text-xs text-gray-500">Jan 5, 2024</p>
+          </Card>
+          <Card className="space-y-1">
+            <h3 className="font-semibold">Automating AP Workflows</h3>
+            <p className="text-xs text-gray-500">Feb 12, 2024</p>
+          </Card>
+          <Card className="space-y-1">
+            <h3 className="font-semibold">Security Best Practices</h3>
+            <p className="text-xs text-gray-500">Mar 22, 2024</p>
           </Card>
         </div>
       </section>

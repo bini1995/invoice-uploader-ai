@@ -2678,6 +2678,52 @@ exports.getRelationshipGraph = async (req, res) => {
   }
 };
 
+// Simple progress metrics for investor dashboard
+exports.getProgressStats = async (_req, res) => {
+  try {
+    const uploadedRes = await pool.query('SELECT COUNT(*) FROM invoices');
+    const categorizedRes = await pool.query(
+      "SELECT COUNT(*) FROM invoices WHERE category IS NOT NULL AND category <> ''"
+    );
+    const flaggedRes = await pool.query('SELECT COUNT(*) FROM invoices WHERE flagged = TRUE');
+    res.json({
+      uploaded: parseInt(uploadedRes.rows[0].count, 10) || 0,
+      categorized: parseInt(categorizedRes.rows[0].count, 10) || 0,
+      flagged: parseInt(flaggedRes.rows[0].count, 10) || 0,
+    });
+  } catch (err) {
+    console.error('Progress stats error:', err);
+    res.status(500).json({ message: 'Failed to fetch progress stats' });
+  }
+};
+
+// Insert a batch of dummy invoices for demos
+exports.seedDummyData = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const vendors = ['Acme Corp', 'Globex', 'Soylent', 'Initech', 'Umbrella'];
+    const categories = ['Office Supplies', 'Software', 'Travel', 'Utilities'];
+    const inserted = [];
+    for (let i = 0; i < 20; i++) {
+      const vendor = vendors[Math.floor(Math.random() * vendors.length)];
+      const amount = (Math.random() * 900 + 100).toFixed(2);
+      const date = new Date(Date.now() - Math.random() * 60 * 86400000);
+      const category = categories[Math.floor(Math.random() * categories.length)];
+      const result = await client.query(
+        'INSERT INTO invoices (invoice_number, date, amount, vendor, category) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+        [`DEMO-${Date.now()}-${i}`, date, amount, vendor, category]
+      );
+      inserted.push(result.rows[0].id);
+    }
+    res.json({ inserted: inserted.length });
+  } catch (err) {
+    console.error('Seed demo data error:', err);
+    res.status(500).json({ message: 'Failed to seed demo data' });
+  } finally {
+    client.release();
+  }
+};
+
 
 
 module.exports = {
@@ -2750,5 +2796,7 @@ module.exports = {
   checkInvoiceSimilarity: exports.checkInvoiceSimilarity,
   parseInvoiceSample: exports.parseInvoiceSample,
   suggestMappings: exports.suggestMappings,
+  getProgressStats: exports.getProgressStats,
+  seedDummyData: exports.seedDummyData,
 };
 
