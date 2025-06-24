@@ -69,6 +69,7 @@ npm install --legacy-peer-deps
 - Shared comment threads for team discussion
 - Approver reminders with escalation
 - Smart reminders for overdue invoices and pending approvals (email, Slack/Teams & in-app)
+- Manual approval reminder emails can be triggered via `POST /api/reminders/approval`
 - Batch actions with bulk approval and PDF export
 - Bulk edit/delete/archive options for faster table management
 - Multi-step upload wizard guides file selection, review, tagging and final confirmation
