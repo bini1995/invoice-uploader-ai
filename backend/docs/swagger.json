@@ -1,0 +1,53 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Invoice Uploader AI API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/{tenantId}/invoices": {
+      "get": {
+        "summary": "List invoices",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Array of invoices" }
+        }
+      }
+    },
+    "/api/{tenantId}/invoices/upload": {
+      "post": {
+        "summary": "Upload invoice",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Upload result" }
+        }
+      }
+    }
+  }
+}

@@ -21,6 +21,9 @@ import {
   ShieldExclamationIcon,
   LightBulbIcon,
   ArrowLongRightIcon,
+  ShieldCheckIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline';
 import LanguageSelector from './components/LanguageSelector';
 import DarkModeToggle from './components/DarkModeToggle';
@@ -268,6 +271,31 @@ export default function LandingPage() {
         />
       </section>
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-center mb-8">Security &amp; Compliance</h2>
+        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+          <Card className="text-center space-y-2">
+            <ShieldCheckIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">SOC2 Compliant</h3>
+          </Card>
+          <Card className="text-center space-y-2">
+            <GlobeAltIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">GDPR Ready</h3>
+          </Card>
+          <Card className="text-center space-y-2">
+            <LockClosedIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">SSL Encryption</h3>
+          </Card>
+        </div>
+        <p className="text-center mt-6 font-semibold text-indigo-600 dark:text-indigo-400">Bank-grade encryption</p>
+      </section>
+      <section className="py-12">
+        <h2 className="text-3xl font-bold text-center mb-8">Developers</h2>
+        <p className="text-center mb-4">Explore our API and build custom integrations.</p>
+        <div className="text-center">
+          <Link to="/api-docs" className="btn btn-primary text-lg px-8 py-3">View API Docs</Link>
+        </div>
+      </section>
+      <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">Pricing</h2>
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
           <Card className="text-center space-y-4">
@@ -316,6 +344,11 @@ export default function LandingPage() {
                 <Link to="/onboarding" className="hover:underline">
                   Sign Up
                 </Link>
+              </li>
+              <li>
+                <a href="/api-docs" className="hover:underline">
+                  API Docs
+                </a>
               </li>
             </ul>
           </div>
