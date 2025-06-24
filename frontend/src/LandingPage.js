@@ -30,14 +30,12 @@ import LanguageSelector from './components/LanguageSelector';
 import DarkModeToggle from './components/DarkModeToggle';
 import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
-import DemoUploadModal from './components/DemoUploadModal';
 import ProgressDashboard from './components/ProgressDashboard';
 import AiSearchDemo from './components/AiSearchDemo';
 import DummyDataButton from './components/DummyDataButton';
 
 export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false);
-  const [demoOpen, setDemoOpen] = useState(false);
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-indigo-100 to-indigo-200 dark:from-purple-900 dark:via-indigo-900 dark:to-gray-900 text-gray-900 dark:text-gray-100">
       <nav className="bg-indigo-700 text-white p-4 shadow">
@@ -106,12 +104,12 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
               <Link to="/invoices" className="btn btn-primary text-lg px-8 py-3">Upload Invoice</Link>
-              <button
-                onClick={() => setDemoOpen(true)}
+              <Link
+                to="/sandbox"
                 className="btn btn-secondary text-lg px-8 py-3 flex items-center justify-center"
               >
-                Try Demo
-              </button>
+                See it in Action
+              </Link>
             </div>
             <div className="flex justify-center md:justify-start items-center gap-4 pt-4 opacity-80">
               <img src="https://dummyimage.com/120x60/000/fff.png&text=Client+1" alt="Client 1" className="h-8 object-contain" />
@@ -464,7 +462,6 @@ export default function LandingPage() {
           © {new Date().getFullYear()} Invoice Uploader AI
         </p>
       </footer>
-      <DemoUploadModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   );
 }
