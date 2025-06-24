@@ -11,6 +11,7 @@ import {
   Squares2X2Icon,
   ArchiveBoxIcon,
   FlagIcon,
+  InboxIcon,
 } from '@heroicons/react/24/outline';
 
 export default function SidebarNav({ notifications = [] }) {
@@ -50,6 +51,13 @@ export default function SidebarNav({ notifications = [] }) {
             >
               <DocumentIcon className="w-5 h-5" />
               <span>Invoices</span>
+            </Link>
+            <Link
+              to="/inbox"
+              className={`nav-link ${location.pathname === '/inbox' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700' : ''}`}
+            >
+              <InboxIcon className="w-5 h-5" />
+              <span>Inbox</span>
             </Link>
             <Link
               to="/vendors"

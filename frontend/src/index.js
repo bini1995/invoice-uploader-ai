@@ -15,6 +15,7 @@ import VendorManagement from './VendorManagement';
 import WorkflowPage from './WorkflowPage';
 import WorkflowBuilderPage from './WorkflowBuilderPage';
 import Board from './Board';
+import Inbox from './Inbox';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
 import OnboardingWizard from './OnboardingWizard';
@@ -92,6 +93,7 @@ function AnimatedRoutes() {
         <Route path="/adaptive" element={<PageWrapper><AdaptiveDashboard /></PageWrapper>} />
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
         <Route path="/invoices" element={<PageWrapper><App /></PageWrapper>} />
+        <Route path="/inbox" element={<PageWrapper><Inbox /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><Reports /></PageWrapper>} />
         <Route path="/audit" element={<PageWrapper><AuditDashboard /></PageWrapper>} />
         <Route path="/fraud" element={<PageWrapper><FraudReport /></PageWrapper>} />

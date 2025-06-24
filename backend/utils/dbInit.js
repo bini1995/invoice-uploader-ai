@@ -170,10 +170,14 @@ async function initDb() {
       assign_approver TEXT,
       approval_chain JSONB,
       alert_message TEXT,
+      alert_email TEXT,
+      alert_phone TEXT,
       priority INTEGER DEFAULT 0,
       active BOOLEAN DEFAULT TRUE,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+    await pool.query("ALTER TABLE workflow_rules ADD COLUMN IF NOT EXISTS alert_email TEXT");
+    await pool.query("ALTER TABLE workflow_rules ADD COLUMN IF NOT EXISTS alert_phone TEXT");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS workflow_evaluations (
       id SERIAL PRIMARY KEY,
