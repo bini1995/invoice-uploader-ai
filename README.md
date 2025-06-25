@@ -4,7 +4,7 @@ This is a full-stack invoice uploader tool with AI-powered CSV error summarizati
 
 - **React + Tailwind CSS** (frontend)
 - **Express + PostgreSQL** (backend)
-- **OpenAI API** for natural language error feedback
+- **OpenRouter API** for natural language error feedback
 
 
 ## Requirements
@@ -33,9 +33,9 @@ npm install --legacy-peer-deps
 - CSV import/export for invoices and vendors
 - See a clean display of parsed invoices
 - Get validation feedback for bad rows
-- AI-generated summaries of common CSV issues (via OpenAI)
+- AI-generated summaries of common CSV issues (via OpenRouter)
 - AI-generated summaries of common CSV issues with "Possible Fixes" and "Warnings"
-- Query invoices using natural language (via OpenAI)
+- Query invoices using natural language (via OpenRouter)
 - Natural language chart queries show spending trends instantly
 - AI-powered invoice quality scores with tips
 - AI-driven invoice explanations and anomaly spotting for any invoice
@@ -136,7 +136,7 @@ npm install --legacy-peer-deps
 ```bash
 cd backend
 npm install
-cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
+cp .env.example .env   # Make sure to add your DATABASE_URL and OPENROUTER_API_KEY
 # Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
 # Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields
 # Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts
