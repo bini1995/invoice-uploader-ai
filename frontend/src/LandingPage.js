@@ -98,6 +98,9 @@ export default function LandingPage() {
                 <Link to="/onboarding">Get Started</Link>
               </Button>
               <Button asChild variant="secondary" className="text-lg px-8 py-3 flex items-center justify-center">
+                <Link to="/free-trial">Instant Free Trial</Link>
+              </Button>
+              <Button asChild variant="secondary" className="text-lg px-8 py-3 flex items-center justify-center">
                 <Link to="/sandbox">Watch Demo</Link>
               </Button>
             </div>
