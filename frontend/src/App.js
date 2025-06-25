@@ -38,6 +38,7 @@ import ProgressBar from './components/ProgressBar';
 import FeatureWidget from './components/FeatureWidget';
 import VoiceResultModal from './components/VoiceResultModal';
 import ExplanationModal from './components/ExplanationModal';
+import FlaggedBadge from './components/FlaggedBadge';
 import { Button } from './components/ui/Button';
 import { Card } from './components/ui/Card';
 import { motion } from 'framer-motion';
@@ -2847,6 +2848,7 @@ useEffect(() => {
                           {duplicateFlags[inv.id] && (
                             <span title="Possible duplicate" className="text-yellow-500 text-[10px] font-semibold">⚠️</span>
                           )}
+                          {inv.flagged && <FlaggedBadge id={inv.id} />}
                         </div>
                       </div>
                     </td>
@@ -3175,7 +3177,7 @@ useEffect(() => {
                     }`}
                   >
                       <img src="/logo192.png" alt="preview" className="w-full h-32 object-contain rounded" />
-                      <div className="text-sm font-semibold">#{inv.invoice_number} {duplicateFlags[inv.id] && <span className="text-yellow-500">⚠️</span>}</div>
+                      <div className="text-sm font-semibold">#{inv.invoice_number} {duplicateFlags[inv.id] && <span className="text-yellow-500">⚠️</span>} {inv.flagged && <FlaggedBadge id={inv.id} />}</div>
                       <div className="text-sm">💰 {inv.amount}</div>
                       <div className="text-sm">📅 {new Date(inv.date).toLocaleDateString()}</div>
                       <div className="text-sm">🏢 {inv.vendor}

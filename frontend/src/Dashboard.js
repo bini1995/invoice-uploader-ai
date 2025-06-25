@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
@@ -274,11 +274,21 @@ function Dashboard() {
           </div>
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Unusual Invoice Spikes</h2>
-            <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300">
-              {anomalies.map(a => (
-                <li key={a.vendor}>{a.vendor}: avg ${a.avg.toFixed(2)} last ${a.last.toFixed(2)}</li>
-              ))}
-            </ul>
+            {anomalies.length ? (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={anomalies} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="vendor" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="avg" fill="#3b82f6" name="Avg" />
+                  <Bar dataKey="last" fill="#ef4444" name="Last" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-gray-600">No anomalies detected</p>
+            )}
           </div>
           <div className="h-64">
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Budget vs Actual</h2>
