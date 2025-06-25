@@ -20,7 +20,7 @@ import Inbox from './Inbox';
 import NotFound from './NotFound';
 import LandingPage from './LandingPage';
 import OnboardingWizard from './OnboardingWizard';
-import UploadWizard from './UploadWizard';
+import MultiUploadWizard from './MultiUploadWizard';
 import DemoSandbox from './DemoSandbox';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -108,7 +108,7 @@ function AnimatedRoutes() {
         <Route path="/kanban" element={<PageWrapper><KanbanDashboard /></PageWrapper>} />
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
         <Route path="/export-builder" element={<PageWrapper><ExportTemplateBuilder /></PageWrapper>} />
-        <Route path="/upload-wizard" element={<PageWrapper><UploadWizard /></PageWrapper>} />
+        <Route path="/upload-wizard" element={<PageWrapper><MultiUploadWizard /></PageWrapper>} />
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/sandbox" element={<PageWrapper><DemoSandbox /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
