@@ -123,6 +123,7 @@ npm install --legacy-peer-deps
 - Automation marketplace integrations (Zapier/Make) for Slack and Google Sheets, plus connectors for your accounting platform, via `/api/integrations`
 - RPA automation engine triggers post-approval exports to your ERP system
 - Scheduled email fetch imports PDF invoices automatically
+- Forward invoices to `upload@yourdomain.com` and attachments are parsed via Gmail API
 - Low-code automation builder (`/api/automations`) for if‑then API workflows
 - Blockchain-backed invoice validation with PDF hashing for tamper-proof records
 
@@ -137,6 +138,7 @@ cp .env.example .env   # Make sure to add your DATABASE_URL and OPENAI_API_KEY
 # Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
 # Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields
 # Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts
+# Set GOOGLE_SERVICE_ACCOUNT_KEY and EMAIL_INBOX to enable email-to-upload support
 npm start
 ```
 
