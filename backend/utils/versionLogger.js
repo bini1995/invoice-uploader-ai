@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { broadcastDiff } = require('./chatServer');
 // jsondiffpatch is an ES module. Use dynamic import in CommonJS.
 
 let diff;
@@ -18,6 +19,7 @@ async function recordInvoiceVersion(invoiceId, oldInvoice, newInvoice, userId, u
       'INSERT INTO invoice_versions (invoice_id, editor_id, editor_name, diff, snapshot) VALUES ($1,$2,$3,$4,$5)',
       [invoiceId, userId || null, username || null, changes, newInvoice]
     );
+    broadcastDiff(invoiceId, changes);
   } catch (err) {
     console.error('Version log error:', err);
   }

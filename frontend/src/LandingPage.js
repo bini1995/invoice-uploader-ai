@@ -32,11 +32,12 @@ import DummyDataButton from './components/DummyDataButton';
 import PartnerLogos from './components/PartnerLogos';
 import SplitScreenStory from './components/SplitScreenStory';
 import ScrollingUseCases from './components/ScrollingUseCases';
+import HowItWorks from './components/HowItWorks';
 
 export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false);
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-indigo-100 to-indigo-200 dark:from-purple-900 dark:via-indigo-900 dark:to-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <nav className="bg-indigo-700 text-white p-4 shadow">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
@@ -294,6 +295,7 @@ export default function LandingPage() {
         </div>
       </section>
       <SplitScreenStory />
+      <HowItWorks />
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-4">Split-Second AI Search</h2>
         <div className="container mx-auto px-6">

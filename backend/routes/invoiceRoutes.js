@@ -88,6 +88,7 @@ const {
   thinkSuggestion,
   overdueEmailTemplate,
   invoiceCopilot,
+  suggestFixes,
 } = require('../controllers/aiController');
 const router = express.Router({ mergeParams: true });
 const { sendSummaryEmail } = require('../controllers/emailController');
@@ -136,6 +137,7 @@ router.post('/:id/overdue-email', authMiddleware, overdueEmailTemplate);
 router.post('/:id/copilot', authMiddleware, invoiceCopilot);
 router.get('/help/onboarding', authMiddleware, onboardingHelp);
 router.post('/summarize-errors', summarizeUploadErrors);
+router.post('/suggest-fixes', authMiddleware, suggestFixes);
 router.post('/login', login);
 router.post('/refresh', refreshToken);
 router.post('/logout', logout);

@@ -26,4 +26,10 @@ function broadcastActivity(log) {
   }
 }
 
-module.exports = { initChat, broadcastMessage, broadcastNotification, broadcastActivity };
+function broadcastDiff(invoiceId, diff) {
+  if (io) {
+    io.to(`invoice-${invoiceId}`).emit('invoiceDiff', diff);
+  }
+}
+
+module.exports = { initChat, broadcastMessage, broadcastNotification, broadcastActivity, broadcastDiff };
