@@ -16,6 +16,8 @@ import {
   ShieldCheckIcon,
   GlobeAltIcon,
   LockClosedIcon,
+  ExclamationCircleIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
@@ -30,6 +32,7 @@ import HeroSection from './components/HeroSection';
 import FeatureCard from './components/FeatureCard';
 import ProblemSolutionSection from './components/ProblemSolutionSection';
 import ScheduleDemoModal from './components/ScheduleDemoModal';
+import SocialProofSection from './components/SocialProofSection';
 
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false);
@@ -54,24 +57,35 @@ export default function LandingPage() {
       <HeroSection onRequestDemo={() => setDemoOpen(true)} />
       <ProblemSolutionSection />
       <section id="features" className="py-12 bg-gray-50 dark:bg-gray-800">
-        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+        <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-6">
+          <FeatureCard
+            icon={DocumentArrowUpIcon}
+            title="Invoice Upload"
+            description="Import CSVs or PDFs in seconds."
+          />
           <FeatureCard
             icon={CheckCircleIcon}
-            title="Automatic Validation"
-            description="Catch errors and duplicates before they hit your books."
+            title="AI Validation"
+            description="Catch errors before they hit your books."
+          />
+          <FeatureCard
+            icon={ExclamationCircleIcon}
+            title="Error Insights"
+            description="Understand issues with smart summaries."
           />
           <FeatureCard
             icon={ChartBarIcon}
-            title="Real-Time Analytics"
-            description="AI insights reveal spending trends and anomalies."
+            title="Analytics"
+            description="See trends and anomalies instantly."
           />
           <FeatureCard
-            icon={DocumentArrowUpIcon}
-            title="One-Click Uploads"
-            description="Import CSVs or PDFs and organize them instantly."
+            icon={ArrowDownTrayIcon}
+            title="Export to Finance"
+            description="Send clean data to your ERP."
           />
         </div>
       </section>
+      <SocialProofSection />
       <section id="customers" className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">Why Teams Choose Us Over Other Tools</h2>
         <div className="container mx-auto overflow-x-auto px-6">
