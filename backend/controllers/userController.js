@@ -23,6 +23,18 @@ const USERS = [
   },
 ];
 
+function userExists(username) {
+  return USERS.some((u) => u.username === username);
+}
+
+function createUser(username, password, role) {
+  const id = USERS.length ? Math.max(...USERS.map((u) => u.id)) + 1 : 1;
+  const passwordHash = bcrypt.hashSync(password, 10);
+  const user = { id, username, passwordHash, role };
+  USERS.push(user);
+  return user;
+}
+
 const REFRESH_TOKENS = [];
 
 exports.login = (req, res) => {
@@ -108,15 +120,12 @@ exports.addUser = (req, res) => {
   if (!username || !password || !role) {
     return res.status(400).json({ message: 'Missing fields' });
   }
-  if (USERS.find((u) => u.username === username)) {
+  if (userExists(username)) {
     return res.status(400).json({ message: 'User exists' });
   }
-  const id = USERS.length ? Math.max(...USERS.map((u) => u.id)) + 1 : 1;
-  const passwordHash = bcrypt.hashSync(password, 10);
-  const user = { id, username, passwordHash, role };
-  USERS.push(user);
+  const user = createUser(username, password, role);
   logActivity(req.user?.userId, 'add_user', null, req.user?.username);
-  res.json({ id, username, role });
+  res.json({ id: user.id, username: user.username, role: user.role });
 };
 
 exports.deleteUser = (req, res) => {
@@ -141,3 +150,6 @@ exports.updateUserRole = (req, res) => {
   logActivity(req.user?.userId, 'update_user_role', null, req.user?.username);
   res.json({ id: user.id, username: user.username, role: user.role });
 };
+
+exports.createUser = createUser;
+exports.userExists = userExists;

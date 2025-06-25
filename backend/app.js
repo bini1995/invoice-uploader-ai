@@ -27,6 +27,7 @@ const reminderRoutes = require('./routes/reminderRoutes');
 const automationRoutes = require('./routes/automationRoutes');
 const tenantRoutes = require('./routes/tenantRoutes');
 const agentRoutes = require('./routes/agentRoutes');
+const inviteRoutes = require('./routes/inviteRoutes');
 const { auditLog } = require('./middleware/auditMiddleware');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
@@ -76,6 +77,7 @@ app.use('/api/reminders', reminderRoutes);
 app.use('/api/automations', automationRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
+app.use('/api/invites', inviteRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
