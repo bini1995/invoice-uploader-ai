@@ -70,6 +70,7 @@ const {
   suggestMappings,
   getProgressStats,
   seedDummyData,
+  amountSuggestions,
 } = require('../controllers/invoiceController');
 
 
@@ -86,6 +87,7 @@ const {
   paymentBehaviorByVendor,
   thinkSuggestion,
   overdueEmailTemplate,
+  invoiceCopilot,
 } = require('../controllers/aiController');
 const router = express.Router({ mergeParams: true });
 const { sendSummaryEmail } = require('../controllers/emailController');
@@ -130,6 +132,7 @@ router.post('/assistant', authMiddleware, assistantQuery);
 router.post('/billing-query', authMiddleware, billingQuery);
 router.post('/:id/think-suggestion', authMiddleware, thinkSuggestion);
 router.post('/:id/overdue-email', authMiddleware, overdueEmailTemplate);
+router.post('/:id/copilot', authMiddleware, invoiceCopilot);
 router.get('/help/onboarding', authMiddleware, onboardingHelp);
 router.post('/summarize-errors', summarizeUploadErrors);
 router.post('/login', login);
@@ -145,6 +148,7 @@ router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/spending-by-tag', authMiddleware, getSpendingByTag);
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
 router.get('/quick-stats', authMiddleware, getQuickStats);
+router.get('/amount-suggestions', authMiddleware, amountSuggestions);
 router.get('/progress', authMiddleware, getProgressStats);
 router.get('/dashboard', authMiddleware, getDashboardData);
 router.get('/recurring/insights', authMiddleware, getRecurringInsights);

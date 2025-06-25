@@ -7,6 +7,8 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
   const [timeline, setTimeline] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
+  const [vendorSuggestions, setVendorSuggestions] = useState([]);
+  const [amountSuggestions, setAmountSuggestions] = useState([]);
 
   useEffect(() => {
     if (invoice) {
@@ -27,6 +29,24 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
       }
     }
   }, [invoice, token]);
+
+  useEffect(() => {
+    if (!token || !form.vendor) return;
+    const q = encodeURIComponent(form.vendor);
+    fetch(`http://localhost:3000/api/vendors/match?q=${q}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(data => setVendorSuggestions(data.matches || []))
+      .catch(() => {});
+  }, [form.vendor, token]);
+
+  useEffect(() => {
+    if (!token || !form.amount) return;
+    const q = encodeURIComponent(form.amount);
+    fetch(`http://localhost:3000/api/invoices/amount-suggestions?q=${q}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(data => setAmountSuggestions(data.matches || []))
+      .catch(() => {});
+  }, [form.amount, token]);
 
   if (!open || !invoice) return null;
 
@@ -85,12 +105,20 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
           <div>
             <span className="font-semibold mr-2">Amount:</span>
             {editMode ? (
-              <input
-                type="text"
-                value={form.amount}
-                onChange={(e) => handleChange('amount', e.target.value)}
-                className="input px-1 text-sm w-full"
-              />
+              <>
+                <input
+                  type="text"
+                  list="amount-suggest"
+                  value={form.amount}
+                  onChange={(e) => handleChange('amount', e.target.value)}
+                  className="input px-1 text-sm w-full"
+                />
+                <datalist id="amount-suggest">
+                  {amountSuggestions.map((a) => (
+                    <option key={a} value={a} />
+                  ))}
+                </datalist>
+              </>
             ) : (
               invoice.amount
             )}
@@ -98,12 +126,20 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
           <div>
             <span className="font-semibold mr-2">Vendor:</span>
             {editMode ? (
-              <input
-                type="text"
-                value={form.vendor}
-                onChange={(e) => handleChange('vendor', e.target.value)}
-                className="input px-1 text-sm w-full"
-              />
+              <>
+                <input
+                  type="text"
+                  list="vendor-suggest"
+                  value={form.vendor}
+                  onChange={(e) => handleChange('vendor', e.target.value)}
+                  className="input px-1 text-sm w-full"
+                />
+                <datalist id="vendor-suggest">
+                  {vendorSuggestions.map((v) => (
+                    <option key={v} value={v} />
+                  ))}
+                </datalist>
+              </>
             ) : (
               invoice.vendor
             )}
