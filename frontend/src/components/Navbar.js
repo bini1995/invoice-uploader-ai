@@ -5,6 +5,7 @@ import NotificationBell from './NotificationBell';
 import LanguageSelector from './LanguageSelector';
 import ThemePicker from './ThemePicker';
 import DarkModeToggle from './DarkModeToggle';
+import HighContrastToggle from './HighContrastToggle';
 import useDarkMode from '../hooks/useDarkMode';
 import useOutsideClick from '../hooks/useOutsideClick';
 import { useTranslation } from 'react-i18next';
@@ -71,6 +72,7 @@ export default function Navbar({
           value={search}
           onChange={(e) => onSearchChange?.(e.target.value)}
           placeholder={t('searchPlaceholder')}
+          aria-label={t('searchPlaceholder')}
           className="input text-gray-800 dark:text-gray-100 h-7 text-sm"
         />
         <div className="flex items-center space-x-3 relative">
@@ -166,11 +168,12 @@ export default function Navbar({
                 onMouseEnter={() => setHelpOpen(true)}
                 onMouseLeave={() => setHelpOpen(false)}
               >
-                <QuestionMarkCircleIcon className="h-6 w-6 cursor-help" />
-                {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
-              </div>
-              <DarkModeToggle />
-              <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} tenant={tenant} />
+              <QuestionMarkCircleIcon className="h-6 w-6 cursor-help" />
+              {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
+            </div>
+            <HighContrastToggle />
+            <DarkModeToggle />
+            <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} tenant={tenant} />
               <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setUserOpen((o) => !o)}

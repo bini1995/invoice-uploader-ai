@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HelpTooltip from './HelpTooltip';
 import LanguageSelector from './LanguageSelector';
 import DarkModeToggle from './DarkModeToggle';
+import HighContrastToggle from './HighContrastToggle';
 
 export default function TopNavbar({ title, helpTopic }) {
   const token = localStorage.getItem('token') || '';
@@ -20,6 +21,7 @@ export default function TopNavbar({ title, helpTopic }) {
       </h1>
       <div className="flex items-center gap-2">
         <LanguageSelector />
+        <HighContrastToggle />
         <DarkModeToggle />
         <Link to="/invoices" className="underline">Back to App</Link>
       </div>

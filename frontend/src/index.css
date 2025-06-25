@@ -76,3 +76,18 @@ code {
     @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4;
   }
 }
+
+/* High contrast mode */
+.high-contrast body {
+  @apply bg-black text-yellow-300;
+}
+.high-contrast .btn-primary {
+  background-color: #ffff00;
+  @apply text-black;
+}
+.high-contrast .input {
+  @apply border-yellow-400 bg-black text-yellow-300;
+}
+.high-contrast .card {
+  @apply bg-black text-yellow-300 border border-yellow-400;
+}

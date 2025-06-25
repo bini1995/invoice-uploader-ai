@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Card } from './components/ui/Card';
 import { API_BASE } from './api';
+import DarkModeToggle from './components/DarkModeToggle';
+import HighContrastToggle from './components/HighContrastToggle';
 
 export default function Login({ onLogin, addToast }) {
   const [username, setUsername] = useState('');
@@ -34,21 +36,27 @@ export default function Login({ onLogin, addToast }) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-4 z-20">
+      <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-4 z-20 flex justify-between items-center">
         <h1 className="text-xl font-bold flex items-center space-x-1">
           <img src={`/api/${localStorage.getItem('tenant') || 'default'}/logo`} alt="logo" className="h-5 w-5" />
           <span>Invoice Uploader AI</span>
         </h1>
+        <div className="flex items-center gap-2">
+          <HighContrastToggle />
+          <DarkModeToggle />
+        </div>
       </nav>
       <div className="flex-1 flex items-center justify-center pt-20">
         <Card className="w-80 space-y-4">
           <h1 className="text-xl font-bold text-center">Login</h1>
 
           {error && (
-            <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded">{error}</div>
+            <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded" role="alert">{error}</div>
           )}
 
+          <label htmlFor="username" className="sr-only">Username</label>
           <input
+            id="username"
             type="text"
             placeholder="Username"
             value={username}
@@ -56,7 +64,9 @@ export default function Login({ onLogin, addToast }) {
             className="input w-full mb-3"
           />
 
+          <label htmlFor="password" className="sr-only">Password</label>
           <input
+            id="password"
             type="password"
             placeholder="Password"
             value={password}

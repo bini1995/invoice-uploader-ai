@@ -7,7 +7,7 @@ export default function Toast({ message, type, actionText, onAction }) {
   const color = type === 'error' ? 'bg-red-600' : 'bg-green-600';
   const Icon = type === 'error' ? XCircleIcon : CheckCircleIcon;
   return (
-    <div className={`${base} ${color} animate-slide-in-right`}>
+    <div className={`${base} ${color} animate-slide-in-right`} role="alert" aria-live="assertive">
       <Icon className="h-5 w-5" />
       <span className="flex-1">{message}</span>
       {actionText && (
