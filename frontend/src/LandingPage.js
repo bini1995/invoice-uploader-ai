@@ -50,7 +50,7 @@ export default function LandingPage() {
               className="bg-white text-indigo-700 hover:bg-gray-100 flex items-center"
               onClick={() => setAuthOpen(o => !o)}
             >
-              <span className="mr-1">Account</span>
+              <span className="mr-1">Login</span>
               <ArrowRightOnRectangleIcon className="w-5 h-5" />
             </Button>
             {authOpen && (
@@ -58,7 +58,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded shadow-lg z-20"
+                className="absolute right-0 mt-2 w-32 bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200 rounded shadow-lg z-20"
               >
                 <Link
                   to="/invoices"
