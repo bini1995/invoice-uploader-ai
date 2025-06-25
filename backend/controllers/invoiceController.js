@@ -25,6 +25,7 @@ const { encrypt } = require('../utils/encryption');
 const levenshtein = require('fast-levenshtein');
 const { categorizeInvoice } = require('../utils/categorize');
 const { applyCorrections, loadCorrections } = require('../utils/parserTrainer');
+const { selfHealInvoices } = require('../utils/selfHeal');
 const { updateWeights } = require('../utils/parserTrainer');
 
 // Basic vendor -> tag mapping for quick suggestions
@@ -101,6 +102,7 @@ exports.parseInvoiceSample = async (req, res) => {
     }
 
     invoices = invoices.map(applyCorrections);
+    invoices = await selfHealInvoices(invoices);
 
     fs.unlinkSync(req.file.path);
     const invoice = invoices[0];
@@ -711,6 +713,7 @@ exports.importInvoicesCSV = async (req, res) => {
     } else {
       rows = await parseCSV(req.file.path);
     }
+    rows = await selfHealInvoices(rows);
     const encryptUploads = process.env.UPLOAD_ENCRYPTION_KEY && (req.body.encrypt === 'true' || req.headers['x-encrypt'] === 'true');
     const inserted = [];
     const totalRows = rows.length;
