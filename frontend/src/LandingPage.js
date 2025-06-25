@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Lottie from 'lottie-react';
-import heroAnimation from './invoice-hero.json';
-import TypingText from './components/TypingText';
 import {
   DocumentArrowUpIcon,
   CheckCircleIcon,
@@ -91,24 +88,16 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
             className="space-y-6 text-center md:text-left"
           >
-            <h1 className="text-5xl md:text-6xl font-extrabold">Streamline Accounts Payable with AI</h1>
-            <TypingText
-              texts={[
-                'Summarize errors.',
-                'Flag fraud.',
-                'Automate compliance.',
-              ]}
-              className="block text-2xl font-semibold text-indigo-600 dark:text-indigo-400 h-8"
-            />
+            <h1 className="text-5xl md:text-6xl font-extrabold">Automate More Than Just Invoices.</h1>
             <p className="text-lg max-w-xl mx-auto md:mx-0">
-              Upload invoices, validate details and uncover insights—all in one intuitive platform.
+              AI-powered platform that understands, scores, and acts on your financial docs — with fraud detection, recurring billing, and smart workflows built in.
             </p>
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
               <Button asChild className="text-lg px-8 py-3">
-                <Link to="/invoices">Upload Invoice</Link>
+                <Link to="/onboarding">Get Started</Link>
               </Button>
               <Button asChild variant="secondary" className="text-lg px-8 py-3 flex items-center justify-center">
-                <Link to="/sandbox">See it in Action</Link>
+                <Link to="/sandbox">Watch Demo</Link>
               </Button>
             </div>
             <PartnerLogos />
@@ -119,7 +108,11 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
             className="w-full"
           >
-            <Lottie animationData={heroAnimation} loop className="w-full max-w-md mx-auto" />
+            <img
+              src="/hero-demo.gif"
+              alt="Demo showing invoice upload, scoring, auto-email and fraud flagging"
+              className="w-full max-w-md mx-auto"
+            />
           </motion.div>
         </div>
       </header>
