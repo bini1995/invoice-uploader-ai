@@ -26,6 +26,7 @@ import { Card } from './components/ui/Card';
 import { Button } from './components/ui/Button';
 import ProgressDashboard from './components/ProgressDashboard';
 import AiSearchDemo from './components/AiSearchDemo';
+import HeroAnimation from './components/HeroAnimation';
 import DummyDataButton from './components/DummyDataButton';
 import PartnerLogos from './components/PartnerLogos';
 import SplitScreenStory from './components/SplitScreenStory';
@@ -108,11 +109,7 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
             className="w-full"
           >
-            <img
-              src="/hero-demo.gif"
-              alt="Demo showing invoice upload, scoring, auto-email and fraud flagging"
-              className="w-full max-w-md mx-auto"
-            />
+            <HeroAnimation />
           </motion.div>
         </div>
       </header>
