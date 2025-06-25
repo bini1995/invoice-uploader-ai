@@ -296,19 +296,22 @@ export default function LandingPage() {
         />
       </section>
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-8">Security &amp; Compliance</h2>
+        <h2 className="text-3xl font-bold text-center mb-2">Security &amp; Compliance</h2>
+        <p className="text-center mb-8 text-indigo-600 dark:text-indigo-400 font-medium">
+          Security-first infrastructure for sensitive financial data
+        </p>
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-          <Card className="text-center space-y-2">
-            <ShieldCheckIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">SOC2 Compliant</h3>
-          </Card>
           <Card className="text-center space-y-2">
             <GlobeAltIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
             <h3 className="font-semibold">GDPR Ready</h3>
           </Card>
           <Card className="text-center space-y-2">
+            <ShieldCheckIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">SOC 2 Compliant</h3>
+          </Card>
+          <Card className="text-center space-y-2">
             <LockClosedIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">SSL Encryption</h3>
+            <h3 className="font-semibold">End-to-End Encryption</h3>
           </Card>
         </div>
         <p className="text-center mt-6 font-semibold text-indigo-600 dark:text-indigo-400">Bank-grade encryption</p>
