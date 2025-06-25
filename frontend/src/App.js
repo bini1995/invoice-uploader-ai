@@ -39,6 +39,7 @@ import FeatureWidget from './components/FeatureWidget';
 import VoiceResultModal from './components/VoiceResultModal';
 import ExplanationModal from './components/ExplanationModal';
 import FlaggedBadge from './components/FlaggedBadge';
+import CollaborativeCommentInput from './components/CollaborativeCommentInput';
 import { Button } from './components/ui/Button';
 import { Card } from './components/ui/Card';
 import { motion } from 'framer-motion';
@@ -1785,8 +1786,7 @@ useEffect(() => {
     }
   };
 
-  const handleAddComment = async (id) => {
-    const text = commentInputs[id];
+  const handleAddComment = async (id, text) => {
     if (!text) return;
     try {
       const res = await fetch(`http://localhost:3000/api/invoices/${id}/comments`, {
@@ -3259,16 +3259,13 @@ useEffect(() => {
                       ))}
                       {role !== 'viewer' && (
                         <div className="flex mt-1">
-                          <input
-                            type="text"
-                            value={commentInputs[inv.id] || ''}
-                            onChange={(e) => setCommentInputs((p) => ({ ...p, [inv.id]: e.target.value }))}
-                            onClick={(e) => e.stopPropagation()}
-                            className="input text-xs flex-1 px-1"
-                            placeholder="Add comment"
+                          <CollaborativeCommentInput
+                            invoiceId={inv.id}
+                            onChange={(v) => setCommentInputs((p) => ({ ...p, [inv.id]: v }))}
+                            onSubmit={(text) => { handleAddComment(inv.id, text); }}
                           />
                           <button
-                            onClick={(e) => { e.stopPropagation(); handleAddComment(inv.id); }}
+                            onClick={(e) => { e.stopPropagation(); handleAddComment(inv.id, commentInputs[inv.id]); }}
                             className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded"
                           >
                             Post

@@ -42,6 +42,9 @@ const { loadSchedules } = require('./utils/automationScheduler');
 const { scheduleReports } = require('./utils/reportScheduler');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/swagger.json');
+const { WebSocketServer } = require('ws');
+const { setupWSConnection } = require('y-websocket/bin/utils.js');
+const { parse } = require('url');
 
 const app = express();                      // create the app
 const server = http.createServer(app);
@@ -110,6 +113,16 @@ app.use(Sentry.Handlers.errorHandler());
   console.log('🟢 Routes mounted');
 
   initChat(server);
+
+  const wss = new WebSocketServer({ noServer: true });
+  server.on('upgrade', (request, socket, head) => {
+    const { pathname } = parse(request.url);
+    if (pathname === '/yjs') {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        setupWSConnection(ws, request);
+      });
+    }
+  });
 
   const port = process.env.PORT || 3000;
   server.listen(port, () => {
