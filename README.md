@@ -116,8 +116,8 @@ npm install --legacy-peer-deps
 - New roles: Admin, Accountant and Approver
 - Manual or API-driven payment status sync
 - Multi-currency support with automatic VAT/GST calculations
-- Automation marketplace integrations (Zapier/Make) for Slack, QuickBooks and Google Sheets via `/api/integrations`
-- RPA automation engine triggers post-approval exports to QuickBooks or SAP
+- Automation marketplace integrations (Zapier/Make) for Slack and Google Sheets, plus connectors for your accounting platform, via `/api/integrations`
+- RPA automation engine triggers post-approval exports to your ERP system
 - Scheduled email fetch imports PDF invoices automatically
 - Low-code automation builder (`/api/automations`) for if‑then API workflows
 - Blockchain-backed invoice validation with PDF hashing for tamper-proof records
