@@ -33,6 +33,7 @@ import FeatureCard from './components/FeatureCard';
 import ProblemSolutionSection from './components/ProblemSolutionSection';
 import ScheduleDemoModal from './components/ScheduleDemoModal';
 import SocialProofSection from './components/SocialProofSection';
+import CsvUploadFlowDemo from './components/CsvUploadFlowDemo';
 
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false);
@@ -56,6 +57,10 @@ export default function LandingPage() {
       </nav>
       <HeroSection onRequestDemo={() => setDemoOpen(true)} />
       <ProblemSolutionSection />
+      <section className="py-12">
+        <h2 className="text-3xl font-bold text-center mb-6">Interactive Demo</h2>
+        <CsvUploadFlowDemo />
+      </section>
       <section id="features" className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-6">
           <FeatureCard
