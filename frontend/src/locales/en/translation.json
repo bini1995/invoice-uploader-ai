@@ -1,0 +1,13 @@
+{
+  "title": "Invoice Uploader AI",
+  "upload": "Upload",
+  "searchPlaceholder": "Search...",
+  "demoUpload": "Demo Upload",
+  "parsingInvoice": "Parsing invoice...",
+  "invoiceParsed": "Invoice Parsed!",
+  "close": "Close",
+  "seedDummyData": "Seed Dummy Data",
+  "seeding": "Seeding...",
+  "seeded": "Seeded!"
+  ,"uploadSummary": "Upload Summary"
+}

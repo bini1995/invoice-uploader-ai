@@ -1,10 +1,14 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+import en from './locales/en/translation.json';
+import es from './locales/es/translation.json';
+import fr from './locales/fr/translation.json';
+
 const resources = {
-  en: { translation: { "title": "Invoice Uploader AI" } },
-  es: { translation: { "title": "Cargador de Facturas AI" } },
-  fr: { translation: { "title": "Téléverseur de Factures AI" } },
+  en: { translation: en },
+  es: { translation: es },
+  fr: { translation: fr },
 };
 
 i18n.use(initReactI18next).init({
