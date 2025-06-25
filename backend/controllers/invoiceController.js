@@ -583,7 +583,7 @@ exports.summarizeErrors = async (req, res) => {
     const prompt = `Summarize these CSV row validation errors clearly:\n\n${errors.join('\n')}`;
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'openai/gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.5,
     });
@@ -592,7 +592,7 @@ exports.summarizeErrors = async (req, res) => {
     res.json({ summary });
 
   } catch (error) {
-    console.error('OpenAI error:', error.message);
+    console.error('OpenRouter error:', error.message);
     res.status(500).json({ message: 'Failed to generate summary' });
   }
 };
@@ -1925,7 +1925,7 @@ exports.getMonthlyInsights = async (req, res) => {
     const prompt = `Provide a short summary of this month's spending compared to last month:\n\n${formatted}`;
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'openai/gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.5,
     });

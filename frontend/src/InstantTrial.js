@@ -45,7 +45,11 @@ export default function InstantTrial() {
         body: JSON.stringify({ errors: errs })
       });
       const data = await res.json();
-      if (res.ok && data.summary) setSummary(data.summary);
+      if (res.ok && data.summary) {
+        setSummary(data.summary);
+      } else {
+        setSummary('No issues detected.');
+      }
     } catch (e) {
       setSummary('Failed to generate summary.');
     } finally {
