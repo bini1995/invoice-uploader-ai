@@ -65,6 +65,7 @@ npm install --legacy-peer-deps
 - Analytics and reports page with filtering and PDF export
 - Trend reports for monthly spend and aging invoices
 - Customizable dashboards with date filters and export options
+- Custom KPI dashboards per department or vendor with charts like approval time by vendor, late payments trend and invoices over budget
 - Public shareable dashboards accessible via secure link
 - ML predictions highlight cash-flow problem areas
 - Private notes on invoices
@@ -88,6 +89,7 @@ npm install --legacy-peer-deps
 - Natural language invoice search
 - Hoverable vendor bios with website and industry info
 - AI fraud detection heatmaps (color-coded anomaly maps)
+- Risk heatmap with clustering graphs highlighting similar invoices or vendors
 - Fraud detection reports listing flagged invoices with reasons
 - Automatic vendor bios + risk scores from public data
 - Real-time invoice chat thread with collaborators
