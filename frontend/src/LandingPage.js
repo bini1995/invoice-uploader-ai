@@ -21,6 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 import LanguageSelector from './components/LanguageSelector';
 import DarkModeToggle from './components/DarkModeToggle';
+import HighContrastToggle from './components/HighContrastToggle';
 import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
 import { Button } from './components/ui/Button';
@@ -44,6 +45,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center space-x-2 relative">
             <LanguageSelector />
+            <HighContrastToggle />
             <DarkModeToggle />
             <Button
               variant="secondary"

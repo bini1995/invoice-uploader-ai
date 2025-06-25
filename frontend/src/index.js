@@ -63,6 +63,10 @@ const savedTheme = localStorage.getItem(`themeMode_${currentTenant}`);
 if (savedTheme === 'dark') {
   document.documentElement.classList.add('dark');
 }
+const savedContrast = localStorage.getItem('contrast');
+if (savedContrast === 'high') {
+  document.documentElement.classList.add('high-contrast');
+}
 const savedAccent = localStorage.getItem(`accentColor_${currentTenant}`);
 if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
 const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
