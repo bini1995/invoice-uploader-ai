@@ -45,6 +45,7 @@ npm install --legacy-peer-deps
 - Context-aware Inbox Copilot chat for each invoice
 - (e.g. "Which vendors had the most inconsistencies last month?")
 - Role-based access control (Admins, Approvers, Viewers)
+- Admins can generate expiring invitation links for Viewer or Editor accounts
 - Activity log of invoice actions
 - Downloadable audit history per vendor or invoice
 - Detailed logs show who made each change
@@ -402,6 +403,23 @@ cd frontend
 npm install
 npm start
 ```
+
+### Invitations
+
+Admins can generate an invite link by calling:
+
+```bash
+POST /api/invites { "role": "viewer", "expiresInHours": 48 }
+```
+
+The link returned as `/api/invites/<token>` can be shared with a teammate. They
+complete the sign‑up via:
+
+```bash
+POST /api/invites/<token>/accept { "username": "newuser", "password": "pass" }
+```
+
+Invites expire automatically and grant the specified role (viewer or editor).
 
 ### Offline Mode (PWA)
 

@@ -122,6 +122,15 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS invites (
+      token TEXT PRIMARY KEY,
+      role TEXT NOT NULL,
+      expires_at TIMESTAMP NOT NULL,
+      used BOOLEAN DEFAULT FALSE,
+      created_by INTEGER,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(`CREATE TABLE IF NOT EXISTS recurring_templates (
       id SERIAL PRIMARY KEY,
       vendor TEXT NOT NULL,
