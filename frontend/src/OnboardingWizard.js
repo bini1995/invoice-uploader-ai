@@ -17,9 +17,11 @@ export default function OnboardingWizard() {
     const formData = new FormData();
     formData.append('invoiceFile', file);
     try {
+      const headers = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
       const res = await fetch(`${API_BASE}/api/invoices/parse-sample`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
         body: formData,
       });
       const data = await res.json();
