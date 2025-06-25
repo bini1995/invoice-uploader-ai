@@ -2750,29 +2750,6 @@ exports.seedDummyData = async (req, res) => {
   }
 };
 
-// Suggest previous amounts close to the user's input
-exports.amountSuggestions = async (req, res) => {
-  const { q } = req.query;
-  if (!q) return res.status(400).json({ message: 'Missing q' });
-  const value = parseFloat(String(q).replace(/[^0-9.]/g, ''));
-  if (isNaN(value)) return res.status(400).json({ message: 'Invalid amount' });
-  try {
-    const result = await pool.query('SELECT DISTINCT amount FROM invoices');
-    const amounts = result.rows
-      .map((r) => parseFloat(r.amount))
-      .filter((a) => !isNaN(a));
-    const suggestions = amounts
-      .map((a) => ({ a, diff: Math.abs(a - value) }))
-      .sort((x, y) => x.diff - y.diff)
-      .slice(0, 5)
-      .map((x) => x.a);
-    res.json({ matches: suggestions });
-  } catch (err) {
-    console.error('Amount suggestion error:', err);
-    res.status(500).json({ message: 'Failed to fetch suggestions' });
-  }
-};
-
 
 
 module.exports = {
@@ -2847,6 +2824,5 @@ module.exports = {
   suggestMappings: exports.suggestMappings,
   getProgressStats: exports.getProgressStats,
   seedDummyData: exports.seedDummyData,
-  amountSuggestions: exports.amountSuggestions,
 };
 
