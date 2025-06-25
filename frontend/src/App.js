@@ -95,6 +95,10 @@ const tourSteps = [
     content: 'Upload invoices here',
   },
   {
+    target: '#invoiceTable',
+    content: 'Review uploaded invoices',
+  },
+  {
     target: '#searchInput',
     content: 'Search invoices',
   },
@@ -1980,6 +1984,7 @@ useEffect(() => {
         onUpload={() => fileInputRef.current?.click()}
         search={searchTerm}
         onSearchChange={setSearchTerm}
+        onStartTour={() => setShowTour(true)}
       />
 
       {filterSidebarOpen && (
@@ -2740,7 +2745,7 @@ useEffect(() => {
                 {viewMode !== 'graph' && (
                   viewMode === 'table' ? (
               <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded-lg border">
-              <table className="min-w-full bg-white border border-gray-300 text-sm rounded-lg overflow-hidden">
+              <table id="invoiceTable" className="min-w-full bg-white border border-gray-300 text-sm rounded-lg overflow-hidden">
               <thead className="bg-gray-200 text-gray-700 sticky top-8 z-10 shadow-md">
                   <tr>
                     <th className="border px-4 py-2">

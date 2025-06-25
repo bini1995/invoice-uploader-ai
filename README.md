@@ -29,6 +29,7 @@ npm install --legacy-peer-deps
 ## Features
 
 - Upload CSV invoice files
+- In-app guided tour for new users
 - CSV import/export for invoices and vendors
 - See a clean display of parsed invoices
 - Get validation feedback for bad rows
