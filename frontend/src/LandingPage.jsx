@@ -28,6 +28,7 @@ import ScrollingUseCases from './components/ScrollingUseCases';
 import HowItWorks from './components/HowItWorks';
 import HeroSection from './components/HeroSection';
 import FeatureCard from './components/FeatureCard';
+import ProblemSolutionSection from './components/ProblemSolutionSection';
 import ScheduleDemoModal from './components/ScheduleDemoModal';
 
 export default function LandingPage() {
@@ -51,6 +52,7 @@ export default function LandingPage() {
         </div>
       </nav>
       <HeroSection onRequestDemo={() => setDemoOpen(true)} />
+      <ProblemSolutionSection />
       <section id="features" className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
           <FeatureCard
