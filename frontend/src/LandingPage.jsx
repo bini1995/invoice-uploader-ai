@@ -27,12 +27,12 @@ import { Card } from './components/ui/Card';
 import { Button } from './components/ui/Button';
 import ProgressDashboard from './components/ProgressDashboard';
 import AiSearchDemo from './components/AiSearchDemo';
-import HeroAnimation from './components/HeroAnimation';
 import DummyDataButton from './components/DummyDataButton';
-import PartnerLogos from './components/PartnerLogos';
 import SplitScreenStory from './components/SplitScreenStory';
 import ScrollingUseCases from './components/ScrollingUseCases';
 import HowItWorks from './components/HowItWorks';
+import HeroSection from './components/HeroSection';
+import FeatureCard from './components/FeatureCard';
 
 export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false);
@@ -84,82 +84,24 @@ export default function LandingPage() {
           </div>
         </div>
       </nav>
-      <header className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6 text-center md:text-left"
-          >
-            <h1 className="text-5xl md:text-6xl font-extrabold">Automate More Than Just Invoices.</h1>
-            <p className="text-lg max-w-xl mx-auto md:mx-0">
-              AI-powered platform that understands, scores, and acts on your financial docs — with fraud detection, recurring billing, and smart workflows built in.
-            </p>
-            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-              <Button asChild className="text-lg px-8 py-3">
-                <Link to="/onboarding">Get Started</Link>
-              </Button>
-              <Button asChild variant="secondary" className="text-lg px-8 py-3 flex items-center justify-center">
-                <Link to="/free-trial">Instant Free Trial</Link>
-              </Button>
-              <Button asChild variant="secondary" className="text-lg px-8 py-3 flex items-center justify-center">
-                <Link to="/sandbox">Watch Demo</Link>
-              </Button>
-            </div>
-            <PartnerLogos />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="w-full"
-          >
-            <HeroAnimation />
-          </motion.div>
-        </div>
-      </header>
-      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+      <HeroSection />
+      <section id="features" className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <Card className="text-center space-y-2">
-              <CheckCircleIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-              <h3 className="font-semibold">Automatic Validation</h3>
-              <p className="text-sm">Catch errors and duplicates before they hit your books.</p>
-            </Card>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <Card className="text-center space-y-2">
-              <ChartBarIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-              <h3 className="font-semibold">Real-Time Analytics</h3>
-              <p className="text-sm">AI insights reveal spending trends and anomalies.</p>
-            </Card>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <Card className="text-center space-y-2">
-              <DocumentArrowUpIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-              <h3 className="font-semibold">One-Click Uploads</h3>
-              <p className="text-sm">Import CSVs or PDFs and organize them instantly.</p>
-            </Card>
-          </motion.div>
+          <FeatureCard
+            icon={CheckCircleIcon}
+            title="Automatic Validation"
+            description="Catch errors and duplicates before they hit your books."
+          />
+          <FeatureCard
+            icon={ChartBarIcon}
+            title="Real-Time Analytics"
+            description="AI insights reveal spending trends and anomalies."
+          />
+          <FeatureCard
+            icon={DocumentArrowUpIcon}
+            title="One-Click Uploads"
+            description="Import CSVs or PDFs and organize them instantly."
+          />
         </div>
       </section>
       <section className="py-12 bg-gray-50 dark:bg-gray-800">

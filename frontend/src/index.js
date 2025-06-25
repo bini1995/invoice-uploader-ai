@@ -18,7 +18,7 @@ import Board from './Board';
 import KanbanDashboard from './KanbanDashboard';
 import Inbox from './Inbox';
 import NotFound from './NotFound';
-import LandingPage from './LandingPage';
+import LandingPage from './LandingPage.jsx';
 import OnboardingWizard from './OnboardingWizard';
 import MultiUploadWizard from './MultiUploadWizard';
 import DemoSandbox from './DemoSandbox';
