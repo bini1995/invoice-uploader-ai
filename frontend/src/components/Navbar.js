@@ -70,7 +70,7 @@ export default function Navbar({
           type="text"
           value={search}
           onChange={(e) => onSearchChange?.(e.target.value)}
-          placeholder="Search..."
+          placeholder={t('searchPlaceholder')}
           className="input text-gray-800 dark:text-gray-100 h-7 text-sm"
         />
         <div className="flex items-center space-x-3 relative">
@@ -80,7 +80,7 @@ export default function Navbar({
           {token && (
             <button onClick={onUpload} className="btn btn-primary text-xs flex items-center space-x-1">
               <ArrowUpTrayIcon className="w-4 h-4" />
-              <span>Upload</span>
+              <span>{t('upload')}</span>
             </button>
           )}
           {token && onToggleFilters && (

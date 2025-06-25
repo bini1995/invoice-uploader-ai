@@ -1,0 +1,13 @@
+{
+  "title": "Téléverseur de Factures AI",
+  "upload": "Téléverser",
+  "searchPlaceholder": "Recherche...",
+  "demoUpload": "Téléversement Démo",
+  "parsingInvoice": "Analyse de la facture...",
+  "invoiceParsed": "Facture Analysée !",
+  "close": "Fermer",
+  "seedDummyData": "Générer des Données d'Essai",
+  "seeding": "Génération...",
+  "seeded": "Généré !"
+  ,"uploadSummary": "Récapitulatif de Téléversement"
+}

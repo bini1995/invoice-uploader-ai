@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import GraphView from './GraphView';
+import { useTranslation } from 'react-i18next';
 
 export default function InvoiceSnapshotView({ open, invoice, onClose, token, tenant, onAddComment }) {
   const [comment, setComment] = useState('');
+  const { t } = useTranslation();
   if (!open || !invoice) return null;
   return (
     <div className="fixed inset-0 z-40">
@@ -16,7 +18,7 @@ export default function InvoiceSnapshotView({ open, invoice, onClose, token, ten
               className="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="Close snapshot"
             >
-              Close
+              {t('close')}
             </button>
           </div>
           <div className="text-sm space-y-1">

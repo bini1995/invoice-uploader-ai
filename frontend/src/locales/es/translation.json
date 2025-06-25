@@ -1,0 +1,13 @@
+{
+  "title": "Cargador de Facturas AI",
+  "upload": "Subir",
+  "searchPlaceholder": "Buscar...",
+  "demoUpload": "Carga de Demostración",
+  "parsingInvoice": "Procesando factura...",
+  "invoiceParsed": "¡Factura Procesada!",
+  "close": "Cerrar",
+  "seedDummyData": "Generar Datos de Prueba",
+  "seeding": "Generando...",
+  "seeded": "¡Generado!"
+  ,"uploadSummary": "Resumen de Subida"
+}
