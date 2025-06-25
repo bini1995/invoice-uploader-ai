@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import { motion } from 'framer-motion';
-import ChatSidebar from './components/ChatSidebar';
 import { API_BASE } from './api';
 
 export default function Inbox() {
@@ -10,10 +9,6 @@ export default function Inbox() {
   const tenant = localStorage.getItem('tenant') || 'default';
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [copilotOpen, setCopilotOpen] = useState(false);
-  const [activeInvoice, setActiveInvoice] = useState(null);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [loadingChat, setLoadingChat] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -56,35 +51,6 @@ export default function Inbox() {
     fetchInvoices();
   };
 
-  const openCopilot = (inv) => {
-    setActiveInvoice(inv);
-    setChatHistory([]);
-    setCopilotOpen(true);
-  };
-
-  const handleCopilotAsk = async (question) => {
-    if (!question.trim() || !activeInvoice) return;
-    try {
-      setLoadingChat(true);
-      const res = await fetch(`${API_BASE}/api/${tenant}/invoices/${activeInvoice.id}/copilot`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ question }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setChatHistory((h) => [...h, { type: 'chat', question, answer: data.answer }]);
-      } else {
-        setChatHistory((h) => [...h, { type: 'chat', question, answer: data.message || 'Error' }]);
-      }
-    } catch (err) {
-      console.error('Copilot error:', err);
-      setChatHistory((h) => [...h, { type: 'chat', question, answer: 'Failed to get answer' }]);
-    } finally {
-      setLoadingChat(false);
-    }
-  };
-
   return (
     <MainLayout title="Inbox" helpTopic="inbox">
       <div className="overflow-x-auto rounded-lg">
@@ -120,7 +86,6 @@ export default function Inbox() {
                 <td className="px-2 py-1 space-x-1">
                   <button onClick={() => approve(inv.id)} className="bg-green-600 text-white px-2 py-1 rounded text-xs">Approve</button>
                   <button onClick={() => reject(inv.id)} className="bg-red-600 text-white px-2 py-1 rounded text-xs">Reject</button>
-                  <button onClick={() => openCopilot(inv)} className="bg-indigo-600 text-white px-2 py-1 rounded text-xs">Chat</button>
                 </td>
               </motion.tr>
             ))
@@ -128,14 +93,6 @@ export default function Inbox() {
         </tbody>
       </table>
       </div>
-      <ChatSidebar
-        open={copilotOpen}
-        onClose={() => setCopilotOpen(false)}
-        onAsk={handleCopilotAsk}
-        history={chatHistory}
-        loading={loadingChat}
-        invoice={activeInvoice}
-      />
     </MainLayout>
   );
 }

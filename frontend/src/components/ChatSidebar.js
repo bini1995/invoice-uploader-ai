@@ -16,7 +16,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 
-export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, onUpload, history, loading, invoice }) {
+export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, onUpload, history, loading }) {
   const [question, setQuestion] = useState('');
   const [chartQ, setChartQ] = useState('');
   const [billingQ, setBillingQ] = useState('');
@@ -58,9 +58,6 @@ export default function ChatSidebar({ open, onClose, onAsk, onChart, onBilling, 
     >
       <div className="p-2 border-b flex justify-between items-center">
         <h2 id="chat-title" className="text-lg font-semibold">AI Assistant</h2>
-        {invoice && (
-          <span className="text-xs text-gray-500 ml-2">#{invoice.invoice_number} - {invoice.vendor}</span>
-        )}
         <button
           onClick={onClose}
           title="Close"
