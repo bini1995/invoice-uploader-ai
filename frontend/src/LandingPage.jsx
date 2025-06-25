@@ -5,8 +5,6 @@ import {
   DocumentArrowUpIcon,
   CheckCircleIcon,
   ChartBarIcon,
-  ArrowRightOnRectangleIcon,
-  UserPlusIcon,
   AtSymbolIcon,
   BriefcaseIcon,
   CodeBracketSquareIcon,
@@ -19,9 +17,6 @@ import {
   GlobeAltIcon,
   LockClosedIcon,
 } from '@heroicons/react/24/outline';
-import LanguageSelector from './components/LanguageSelector';
-import DarkModeToggle from './components/DarkModeToggle';
-import HighContrastToggle from './components/HighContrastToggle';
 import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
 import { Button } from './components/ui/Button';
@@ -33,58 +28,29 @@ import ScrollingUseCases from './components/ScrollingUseCases';
 import HowItWorks from './components/HowItWorks';
 import HeroSection from './components/HeroSection';
 import FeatureCard from './components/FeatureCard';
+import ScheduleDemoModal from './components/ScheduleDemoModal';
 
 export default function LandingPage() {
-  const [authOpen, setAuthOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <nav className="bg-indigo-700 text-white p-4 shadow">
-        <div className="container mx-auto flex justify-between items-center">
+      <nav className="sticky top-0 bg-white/80 backdrop-blur dark:bg-gray-900/80 shadow z-30">
+        <div className="container mx-auto flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
-            <DocumentArrowUpIcon className="w-6 h-6" />
+            <DocumentArrowUpIcon className="w-6 h-6 text-indigo-600" />
             <span className="font-bold text-lg">Invoice Uploader AI</span>
           </div>
-          <div className="flex items-center space-x-2 relative">
-            <LanguageSelector />
-            <HighContrastToggle />
-            <DarkModeToggle />
-            <Button
-              variant="secondary"
-              className="bg-white text-indigo-700 hover:bg-gray-100 flex items-center"
-              onClick={() => setAuthOpen(o => !o)}
-            >
-              <span className="mr-1">Login</span>
-              <ArrowRightOnRectangleIcon className="w-5 h-5" />
-            </Button>
-            {authOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-32 bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200 rounded shadow-lg z-20"
-              >
-                <Link
-                  to="/invoices"
-                  className="block px-4 py-2 text-sm group hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                  onClick={() => setAuthOpen(false)}
-                >
-                  <ArrowRightOnRectangleIcon className="w-4 h-4 mr-2 transform transition-transform group-hover:translate-x-1" />
-                  <span className="border-b-2 border-transparent group-hover:border-indigo-600 transition-all">Sign In</span>
-                </Link>
-                <Link
-                  to="/onboarding"
-                  className="block px-4 py-2 text-sm group hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                  onClick={() => setAuthOpen(false)}
-                >
-                  <UserPlusIcon className="w-4 h-4 mr-2 transform transition-transform group-hover:translate-x-1" />
-                  <span className="border-b-2 border-transparent group-hover:border-indigo-600 transition-all">Sign Up</span>
-                </Link>
-              </motion.div>
-            )}
+          <div className="hidden md:flex items-center space-x-6 text-sm">
+            <a href="#product" className="hover:text-indigo-600">Product</a>
+            <a href="#how-it-works" className="hover:text-indigo-600">How It Works</a>
+            <a href="#customers" className="hover:text-indigo-600">Customers</a>
+            <a href="#pricing" className="hover:text-indigo-600">Pricing</a>
+            <a href="#resources" className="hover:text-indigo-600">Resources</a>
           </div>
+          <Button className="hidden sm:block" onClick={() => setDemoOpen(true)}>Request Demo</Button>
         </div>
       </nav>
-      <HeroSection />
+      <HeroSection onRequestDemo={() => setDemoOpen(true)} />
       <section id="features" className="py-12 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
           <FeatureCard
@@ -104,7 +70,7 @@ export default function LandingPage() {
           />
         </div>
       </section>
-      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+      <section id="customers" className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">Why Teams Choose Us Over Other Tools</h2>
         <div className="container mx-auto overflow-x-auto px-6">
           <table className="min-w-full text-sm text-center">
@@ -175,7 +141,7 @@ export default function LandingPage() {
           </table>
         </div>
       </section>
-      <section className="py-12">
+      <section id="resources" className="py-12">
         <h2 className="text-3xl font-bold text-center mb-8">
           Deep-Dive on Your Differentiators
         </h2>
@@ -238,7 +204,7 @@ export default function LandingPage() {
       </section>
       <SplitScreenStory />
       <HowItWorks />
-      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+      <section id="pricing" className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-4">Split-Second AI Search</h2>
         <div className="container mx-auto px-6">
           <AiSearchDemo />
@@ -525,6 +491,7 @@ export default function LandingPage() {
           © {new Date().getFullYear()} Invoice Uploader AI
         </p>
       </footer>
+      <ScheduleDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   );
 }

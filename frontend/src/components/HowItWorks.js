@@ -15,7 +15,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="py-12" ref={ref}>
+    <section id="how-it-works" className="py-12" ref={ref}>
       <h2 className="text-3xl font-bold text-center mb-8">How It Works</h2>
       <div className="container mx-auto grid md:grid-cols-4 gap-6 px-6">
         {steps.map((step) => (
