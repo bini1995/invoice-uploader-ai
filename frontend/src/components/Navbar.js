@@ -35,6 +35,7 @@ export default function Navbar({
   onUpload,
   search,
   onSearchChange,
+  onStartTour,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -182,6 +183,14 @@ export default function Navbar({
                 </button>
                 {userOpen && (
                   <div className="absolute right-0 mt-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded shadow-lg">
+                    {onStartTour && (
+                      <button
+                        onClick={() => { onStartTour(); setUserOpen(false); }}
+                        className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Start Tour
+                      </button>
+                    )}
                     <button
                       onClick={onLogout}
                       className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700"
