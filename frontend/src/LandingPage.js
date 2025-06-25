@@ -156,6 +156,77 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
+      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-center mb-8">Why Teams Choose Us Over Other Tools</h2>
+        <div className="container mx-auto overflow-x-auto px-6">
+          <table className="min-w-full text-sm text-center">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2 text-left">Feature</th>
+                <th className="border-b px-4 py-2">Invoice Uploader AI</th>
+                <th className="border-b px-4 py-2">Competitor A</th>
+                <th className="border-b px-4 py-2">Competitor B</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              <tr>
+                <td className="px-4 py-2 text-left">Upload CSV/PDF/Image</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">✅</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">Natural Language Insights</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">AI-generated Emails</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">✅</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">Fraud Detection</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">Recurring Billing Automation</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">Audit Logs &amp; Scoring</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">Workflow Builder</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">Slack/Teams Integration</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">✅</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-left">Whitelabel &amp; Multitenancy</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
       <section className="py-12">
         <h2 className="text-3xl font-bold text-center mb-8">
           Deep-Dive on Your Differentiators
