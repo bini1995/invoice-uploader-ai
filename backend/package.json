@@ -36,8 +36,10 @@
     "pg": "^8.11.1",
     "socket.io": "^4.8.1",
     "stripe": "^12.18.0",
+    "swagger-ui-express": "^4.6.3",
     "telnet": "^0.0.1",
     "tesseract.js": "^4.0.2",
-    "swagger-ui-express": "^4.6.3"
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27"
   }
 }
