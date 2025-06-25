@@ -830,3 +830,68 @@ exports.invoiceCopilot = async (req, res) => {
     res.status(500).json({ message: 'Failed to process copilot query.' });
   }
 };
+
+// Use OpenAI function calling to suggest fixes for CSV upload errors
+exports.suggestFixes = async (req, res) => {
+  try {
+    const { errors } = req.body;
+    if (!Array.isArray(errors) || errors.length === 0) {
+      return res.status(400).json({ message: 'No errors provided' });
+    }
+
+    const functions = [
+      {
+        name: 'suggest_fixes',
+        description: 'Suggest fixes for invoice errors',
+        parameters: {
+          type: 'object',
+          properties: {
+            fixes: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  field: { type: 'string', description: 'field to fix' },
+                  fix: { type: 'string', description: 'recommended value' },
+                },
+                required: ['field', 'fix'],
+              },
+            },
+          },
+          required: ['fixes'],
+        },
+      },
+    ];
+
+    const completion = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo-1106',
+        messages: [
+          { role: 'system', content: 'You suggest fixes for invoice CSV errors.' },
+          { role: 'user', content: `Errors:\n${errors.join('\n')}` },
+        ],
+        functions,
+        function_call: 'auto',
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+          'X-Title': 'invoice-uploader-ai',
+        },
+      }
+    );
+
+    const choice = completion.data.choices?.[0];
+    if (choice?.finish_reason === 'function_call') {
+      const args = JSON.parse(choice.message.function_call.arguments || '{}');
+      return res.json(args);
+    }
+    res.json({ suggestion: choice?.message?.content?.trim() });
+  } catch (err) {
+    console.error('Fix suggestion error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to generate fix suggestions' });
+  }
+};
