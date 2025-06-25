@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TagEditor from './TagEditor';
+import { API_BASE } from '../api';
 
 export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
@@ -7,6 +8,8 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
   const [timeline, setTimeline] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
+  const [vendorSuggestions, setVendorSuggestions] = useState([]);
+  const [amountSuggestions, setAmountSuggestions] = useState([]);
 
   useEffect(() => {
     if (invoice) {
@@ -18,7 +21,7 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
       });
       setComments(invoice.comments || []);
       if (token) {
-        fetch(`http://localhost:3000/api/invoices/${invoice.id}/timeline`, {
+        fetch(`${API_BASE}/api/invoices/${invoice.id}/timeline`, {
           headers: { Authorization: `Bearer ${token}` },
         })
           .then((res) => res.json())
@@ -27,6 +30,28 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
       }
     }
   }, [invoice, token]);
+
+  useEffect(() => {
+    if (!token || !form.vendor) return;
+    const q = encodeURIComponent(form.vendor);
+    fetch(`${API_BASE}/api/vendors/match?q=${q}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => setVendorSuggestions(data.matches || []))
+      .catch(() => {});
+  }, [form.vendor, token]);
+
+  useEffect(() => {
+    if (!token || !form.amount) return;
+    const q = encodeURIComponent(form.amount);
+    fetch(`${API_BASE}/api/invoices/amount-suggestions?q=${q}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.json())
+      .then(data => setAmountSuggestions(data.matches || []))
+      .catch(() => {});
+  }, [form.amount, token]);
 
   if (!open || !invoice) return null;
 
@@ -46,7 +71,7 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
   const handleAddComment = async () => {
     if (!commentInput) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${invoice.id}/comments`, {
+      const res = await fetch(`${API_BASE}/api/invoices/${invoice.id}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ text: commentInput }),
@@ -85,12 +110,20 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
           <div>
             <span className="font-semibold mr-2">Amount:</span>
             {editMode ? (
-              <input
-                type="text"
-                value={form.amount}
-                onChange={(e) => handleChange('amount', e.target.value)}
-                className="input px-1 text-sm w-full"
-              />
+              <>
+                <input
+                  type="text"
+                  list="amount-suggest"
+                  value={form.amount}
+                  onChange={(e) => handleChange('amount', e.target.value)}
+                  className="input px-1 text-sm w-full"
+                />
+                <datalist id="amount-suggest">
+                  {amountSuggestions.map((a) => (
+                    <option key={a} value={a} />
+                  ))}
+                </datalist>
+              </>
             ) : (
               invoice.amount
             )}
@@ -98,12 +131,20 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
           <div>
             <span className="font-semibold mr-2">Vendor:</span>
             {editMode ? (
-              <input
-                type="text"
-                value={form.vendor}
-                onChange={(e) => handleChange('vendor', e.target.value)}
-                className="input px-1 text-sm w-full"
-              />
+              <>
+                <input
+                  type="text"
+                  list="vendor-suggest"
+                  value={form.vendor}
+                  onChange={(e) => handleChange('vendor', e.target.value)}
+                  className="input px-1 text-sm w-full"
+                />
+                <datalist id="vendor-suggest">
+                  {vendorSuggestions.map((v) => (
+                    <option key={v} value={v} />
+                  ))}
+                </datalist>
+              </>
             ) : (
               invoice.vendor
             )}
@@ -124,7 +165,7 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
             <TagEditor
               tags={invoice.tags || []}
               onAddTag={async (tag) => {
-                await fetch(`http://localhost:3000/api/invoices/${invoice.id}/tags`, {
+                  await fetch(`${API_BASE}/api/invoices/${invoice.id}/tags`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify({ tag }),
@@ -132,7 +173,7 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
               }}
               onRemoveTag={async (tag) => {
                 const newTags = (invoice.tags || []).filter((t) => t !== tag);
-                await fetch(`http://localhost:3000/api/invoices/${invoice.id}/update-tags`, {
+                  await fetch(`${API_BASE}/api/invoices/${invoice.id}/update-tags`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify({ tags: newTags }),

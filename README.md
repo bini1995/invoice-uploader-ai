@@ -42,6 +42,7 @@ npm install --legacy-peer-deps
 - User ratings on AI responses continuously improve future accuracy
 - Ask Me Anything assistant for financial questions
 - AI assistant can answer billing support queries
+- Context-aware Inbox Copilot chat for each invoice
 - (e.g. "Which vendors had the most inconsistencies last month?")
 - Role-based access control (Admins, Approvers, Viewers)
 - Activity log of invoice actions
@@ -60,6 +61,7 @@ npm install --legacy-peer-deps
 - Recurring billing templates with automated sending and payment retries
 - Linked invoice relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
+- AI-powered autocomplete and cleanup for vendor and total fields
 - Analytics and reports page with filtering and PDF export
 - Trend reports for monthly spend and aging invoices
 - Customizable dashboards with date filters and export options
@@ -303,6 +305,8 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `GET /api/vendors` – list vendors with last invoice date and total spend
 - `PATCH /api/vendors/:vendor/notes` – update notes for a vendor
 - `GET /api/vendors/match?q=name` – fuzzy match vendor names
+- `GET /api/invoices/amount-suggestions?q=100` – suggest close historical amounts
+- `POST /api/invoices/:id/copilot` – context-aware chat about an invoice
 - `GET /api/vendors/export` – download vendors as CSV
 - `POST /api/vendors/import` – import vendors from CSV
 - `PATCH /api/invoices/:id/payment-status` – update payment status
