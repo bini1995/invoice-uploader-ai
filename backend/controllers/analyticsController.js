@@ -370,3 +370,142 @@ exports.forecastCashFlow = async (_req, res) => {
     res.status(500).json({ message: 'Failed to forecast cash flow' });
   }
 };
+
+// Average approval time grouped by vendor
+exports.getApprovalTimeByVendor = async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT vendor,
+             AVG(EXTRACT(EPOCH FROM (updated_at - created_at))/3600) AS hours
+      FROM invoices
+      WHERE approval_status = 'Approved'
+      GROUP BY vendor
+      ORDER BY vendor`);
+    const rows = result.rows.map(r => ({
+      vendor: r.vendor,
+      hours: parseFloat(r.hours)
+    }));
+    res.json({ data: rows });
+  } catch (err) {
+    console.error('Approval time by vendor error:', err);
+    res.status(500).json({ message: 'Failed to fetch approval times by vendor' });
+  }
+};
+
+// Trend of late payments over time
+exports.getLatePaymentTrend = async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT DATE_TRUNC('month', due_date) AS month,
+             COUNT(*) AS late_count
+      FROM invoices
+      WHERE due_date IS NOT NULL
+        AND due_date < NOW()
+        AND payment_status != 'Paid'
+      GROUP BY month
+      ORDER BY month`);
+    const rows = result.rows.map(r => ({
+      month: r.month,
+      late: parseInt(r.late_count, 10)
+    }));
+    res.json({ trend: rows });
+  } catch (err) {
+    console.error('Late payments trend error:', err);
+    res.status(500).json({ message: 'Failed to fetch late payments trend' });
+  }
+};
+
+// Departments or vendors that exceeded their budgets
+exports.getInvoicesOverBudget = async (_req, res) => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  try {
+    const budgetRes = await pool.query(
+      `SELECT vendor, tag AS department, amount
+         FROM budgets
+        WHERE period='monthly'`
+    );
+    const over = [];
+    for (const b of budgetRes.rows) {
+      let spent = 0;
+      if (b.vendor) {
+        const r = await pool.query(
+          'SELECT SUM(amount) AS s FROM invoices WHERE vendor=$1 AND date >= $2 AND date < $3',
+          [b.vendor, start, end]
+        );
+        spent = parseFloat(r.rows[0].s) || 0;
+      } else if (b.department) {
+        const r = await pool.query(
+          'SELECT SUM(amount) AS s FROM invoices WHERE department=$1 AND date >= $2 AND date < $3',
+          [b.department, start, end]
+        );
+        spent = parseFloat(r.rows[0].s) || 0;
+      }
+      if (spent > parseFloat(b.amount)) {
+        over.push({
+          vendor: b.vendor,
+          department: b.department,
+          budget: parseFloat(b.amount),
+          spent
+        });
+      }
+    }
+    res.json({ overBudget: over });
+  } catch (err) {
+    console.error('Over budget error:', err);
+    res.status(500).json({ message: 'Failed to check budgets' });
+  }
+};
+
+// Risk heatmap showing vendors with many flagged or overdue invoices
+exports.getRiskHeatmap = async (_req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT vendor,
+             COUNT(*) FILTER (WHERE flagged OR (due_date < NOW() AND payment_status != 'Paid')) AS risk,
+             COUNT(*) AS total
+        FROM invoices
+       GROUP BY vendor`);
+    const data = result.rows.map(r => ({
+      vendor: r.vendor,
+      riskScore: parseFloat(r.total ? r.risk / r.total : 0)
+    }));
+    res.json({ heatmap: data });
+  } catch (err) {
+    console.error('Risk heatmap error:', err);
+    res.status(500).json({ message: 'Failed to build risk heatmap' });
+  }
+};
+
+// Simple clustering of invoices by vendor name and amount similarity
+exports.getInvoiceClusters = async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT id, vendor, amount FROM invoices');
+    const clusters = [];
+    const used = new Set();
+    const dist = (a, b) => {
+      const nameDist = require('fast-levenshtein').get(a.vendor.toLowerCase(), b.vendor.toLowerCase());
+      const amountDiff = Math.abs(parseFloat(a.amount) - parseFloat(b.amount));
+      const amountAvg = (parseFloat(a.amount) + parseFloat(b.amount)) / 2 || 1;
+      return nameDist + amountDiff / amountAvg;
+    };
+    for (let i = 0; i < rows.length; i++) {
+      if (used.has(rows[i].id)) continue;
+      const cluster = [rows[i]];
+      used.add(rows[i].id);
+      for (let j = i + 1; j < rows.length; j++) {
+        if (used.has(rows[j].id)) continue;
+        if (dist(rows[i], rows[j]) < 3) {
+          cluster.push(rows[j]);
+          used.add(rows[j].id);
+        }
+      }
+      if (cluster.length > 1) clusters.push(cluster.map(c => c.id));
+    }
+    res.json({ clusters });
+  } catch (err) {
+    console.error('Invoice clustering error:', err);
+    res.status(500).json({ message: 'Failed to cluster invoices' });
+  }
+};
