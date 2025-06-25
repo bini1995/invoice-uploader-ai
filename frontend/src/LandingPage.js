@@ -157,6 +157,79 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="py-12">
+        <h2 className="text-3xl font-bold text-center mb-8">
+          Why Teams Choose Us Over Rossum or LuminAI
+        </h2>
+        <div className="container mx-auto overflow-x-auto px-6">
+          <table className="min-w-full text-sm text-left">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Feature</th>
+                <th className="border-b px-4 py-2">Invoice Uploader AI</th>
+                <th className="border-b px-4 py-2">Rossum</th>
+                <th className="border-b px-4 py-2">LuminAI</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              <tr>
+                <td className="px-4 py-2">Upload CSV/PDF/Image</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">✅</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Natural Language Insights</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">AI-generated Emails</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">✅</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Fraud Detection</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Recurring Billing Automation</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Audit Logs &amp; Scoring</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Workflow Builder</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Slack/Teams Integration</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">✅</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Whitelabel &amp; Multitenancy</td>
+                <td className="px-4 py-2">✅</td>
+                <td className="px-4 py-2">❌</td>
+                <td className="px-4 py-2">❌</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section className="py-12">
         <h2 className="text-3xl font-bold text-center mb-4">Progress Dashboard</h2>
         <div className="container mx-auto px-6">
           <ProgressDashboard />
