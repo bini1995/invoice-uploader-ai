@@ -158,75 +158,54 @@ export default function LandingPage() {
       </section>
       <section className="py-12">
         <h2 className="text-3xl font-bold text-center mb-8">
-          Why Teams Choose Us Over Rossum or LuminAI
+          Deep-Dive on Your Differentiators
         </h2>
-        <div className="container mx-auto overflow-x-auto px-6">
-          <table className="min-w-full text-sm text-left">
-            <thead>
-              <tr>
-                <th className="border-b px-4 py-2">Feature</th>
-                <th className="border-b px-4 py-2">Invoice Uploader AI</th>
-                <th className="border-b px-4 py-2">Rossum</th>
-                <th className="border-b px-4 py-2">LuminAI</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              <tr>
-                <td className="px-4 py-2">Upload CSV/PDF/Image</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">✅</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Natural Language Insights</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">AI-generated Emails</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">✅</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Fraud Detection</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Recurring Billing Automation</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Audit Logs &amp; Scoring</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Workflow Builder</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Slack/Teams Integration</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">✅</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2">Whitelabel &amp; Multitenancy</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
+          <Card className="text-center space-y-4 p-6">
+            <LightBulbIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">AI That Understands and Acts</h3>
+            <p className="text-sm">
+              Smart categorization, natural language invoice summaries and scoring with clear explanations.
+            </p>
+            <div className="flex justify-center space-x-2">
+              <Button asChild className="text-sm px-4 py-2">
+                <Link to="/onboarding">Try it</Link>
+              </Button>
+              <Button asChild variant="secondary" className="text-sm px-4 py-2">
+                <Link to="/sandbox">Learn more</Link>
+              </Button>
+            </div>
+          </Card>
+          <Card className="text-center space-y-4 p-6">
+            <BriefcaseIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">Built-In Finance Ops</h3>
+            <p className="text-sm">
+              Auto-send reminders, detect fraud signals and automate recurring invoices out of the box.
+            </p>
+            <div className="flex justify-center space-x-2">
+              <Button asChild className="text-sm px-4 py-2">
+                <Link to="/onboarding">Try it</Link>
+              </Button>
+              <Button asChild variant="secondary" className="text-sm px-4 py-2">
+                <Link to="/sandbox">Learn more</Link>
+              </Button>
+            </div>
+          </Card>
+          <Card className="text-center space-y-4 p-6">
+            <GlobeAltIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">Customizable &amp; Enterprise Ready</h3>
+            <p className="text-sm">
+              Build workflows, support multiple tenants and integrate with Slack or Teams complete with an audit trail.
+            </p>
+            <div className="flex justify-center space-x-2">
+              <Button asChild className="text-sm px-4 py-2">
+                <Link to="/onboarding">Try it</Link>
+              </Button>
+              <Button asChild variant="secondary" className="text-sm px-4 py-2">
+                <Link to="/sandbox">Learn more</Link>
+              </Button>
+            </div>
+          </Card>
         </div>
       </section>
       <section className="py-12">

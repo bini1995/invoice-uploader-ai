@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 const axios = require('axios');
-const { exportToQuickBooks, exportToSAP } = require('./erpExport');
+const { exportToErpA, exportToErpB } = require('./erpExport');
 
 function evalCondition(condition, payload) {
   try {
@@ -20,11 +20,11 @@ async function triggerAutomations(event, payload) {
     for (const rule of rows) {
       if (rule.condition && !evalCondition(rule.condition, payload)) continue;
       switch (rule.action) {
-        case 'export_quickbooks':
-          await exportToQuickBooks(payload.invoice);
+        case 'export_erp_a':
+          await exportToErpA(payload.invoice);
           break;
-        case 'export_sap':
-          await exportToSAP(payload.invoice);
+        case 'export_erp_b':
+          await exportToErpB(payload.invoice);
           break;
         case 'http_post':
           if (rule.config?.url) {
