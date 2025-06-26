@@ -373,6 +373,23 @@ Response:
 { "message": "Email sent successfully." }
 ```
 
+### AI Error Summary
+
+Have the AI translate CSV upload errors into plain English:
+
+```bash
+POST /api/invoices/summarize-errors
+{
+  "errors": ["Row 1: Missing vendor", "Row 2: Amount invalid"]
+}
+```
+
+Example response:
+
+```json
+{ "summary": "Row 1 is missing a vendor name. Row 2 has an invalid amount." }
+```
+
 ### Payment Request Form
 
 Request payment data:

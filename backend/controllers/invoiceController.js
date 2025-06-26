@@ -413,11 +413,40 @@ exports.uploadInvoice = async (req, res) => {
     fs.unlinkSync(req.file.path); // cleanup uploaded file
     await logActivity(req.user?.userId, 'upload_invoice', null, req.user?.username);
 
+    let summary = null;
+    if (errors.length && process.env.OPENROUTER_API_KEY) {
+      try {
+        const prompt = `You are a helpful assistant for a CSV invoice uploader tool. Given these validation errors, provide a short summary with possible fixes.\n\n${errors.join('\n')}`;
+        const aiRes = await axios.post(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            model: 'openai/gpt-3.5-turbo',
+            messages: [
+              { role: 'system', content: 'You explain CSV upload errors in plain English.' },
+              { role: 'user', content: prompt },
+            ],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+              'X-Title': 'invoice-uploader-ai',
+            },
+          }
+        );
+        summary = aiRes.data.choices?.[0]?.message?.content?.trim() || null;
+      } catch (e) {
+        console.error('AI summary error:', e.response?.data || e.message);
+      }
+    }
+
     res.json({
       message: 'Upload complete',
       inserted: validRows.length,
       errors,
       warnings,
+      summary,
     });
   } catch (err) {
     console.error(err);
