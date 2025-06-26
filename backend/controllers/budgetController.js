@@ -96,15 +96,56 @@ exports.getBudgetVsActual = async (req, res) => {
         'SELECT SUM(amount) AS sum FROM invoices WHERE department = $1 AND date >= $2 AND date < $3',
         [b.department, start, end]
       );
+      const spent = parseFloat(spendRes.rows[0].sum) || 0;
       result.push({
         department: b.department,
         budget: parseFloat(b.amount),
-        spent: parseFloat(spendRes.rows[0].sum) || 0,
+        spent,
+        remaining: parseFloat(b.amount) - spent,
       });
     }
     res.json({ data: result });
   } catch (err) {
     console.error('Budget vs actual error:', err);
     res.status(500).json({ message: 'Failed to fetch budget vs actual' });
+  }
+};
+
+// Forecast next month's spend by department using a simple
+// moving average of the last 3 months
+exports.getBudgetForecast = async (_req, res) => {
+  try {
+    const start = new Date();
+    start.setMonth(start.getMonth() - 3);
+    const budgetsRes = await pool.query(
+      "SELECT tag AS department, amount FROM budgets WHERE period='monthly' AND vendor IS NULL AND tag IS NOT NULL"
+    );
+    const spendRes = await pool.query(
+      `SELECT department, DATE_TRUNC('month', date) AS m, SUM(amount) AS total
+         FROM invoices
+        WHERE date >= $1 AND department IS NOT NULL
+        GROUP BY department, m`,
+      [start]
+    );
+    const map = {};
+    spendRes.rows.forEach(r => {
+      const d = r.department;
+      if (!map[d]) map[d] = [];
+      map[d].push(parseFloat(r.total));
+    });
+    const forecast = budgetsRes.rows.map(b => {
+      const totals = map[b.department] || [];
+      const avg = totals.reduce((a,c) => a + c, 0) / (totals.length || 1);
+      return {
+        department: b.department,
+        budget: parseFloat(b.amount),
+        forecast: avg,
+        overage: Math.max(0, avg - parseFloat(b.amount))
+      };
+    });
+    res.json({ forecast });
+  } catch (err) {
+    console.error('Budget forecast error:', err);
+    res.status(500).json({ message: 'Failed to forecast budgets' });
   }
 };

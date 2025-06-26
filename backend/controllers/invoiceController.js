@@ -210,6 +210,13 @@ exports.uploadInvoice = async (req, res) => {
     const errors = [];
     const warnings = [];
 
+    const deptBudgetsRes = await pool.query(
+      "SELECT tag, amount FROM budgets WHERE period='monthly' AND vendor IS NULL AND tag IS NOT NULL"
+    );
+    const deptBudgets = {};
+    deptBudgetsRes.rows.forEach(b => { deptBudgets[b.tag] = parseFloat(b.amount); });
+    const deptSpendCache = {};
+
     for (const [index, inv] of invoices.entries()) {
       const rowNum = index + 1;
 
@@ -293,6 +300,27 @@ exports.uploadInvoice = async (req, res) => {
       });
       const finalDept = ruleUpdates.department || department;
       const workflow = await getWorkflowForDepartment(finalDept, parseFloat(amount));
+
+      try {
+        if (deptBudgets[finalDept]) {
+          const d = new Date(date);
+          const start = new Date(d.getFullYear(), d.getMonth(), 1);
+          const end = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+          if (deptSpendCache[finalDept] === undefined) {
+            const r = await pool.query(
+              'SELECT SUM(amount) AS total FROM invoices WHERE department = $1 AND date >= $2 AND date < $3',
+              [finalDept, start, end]
+            );
+            deptSpendCache[finalDept] = parseFloat(r.rows[0].total || 0);
+          }
+          const projected = deptSpendCache[finalDept] + parseFloat(amount);
+          if (projected > deptBudgets[finalDept]) {
+            warnings.push(`Row ${rowNum}: ${finalDept} budget exceeded by this upload`);
+          }
+          deptSpendCache[finalDept] = projected;
+        }
+      } catch (e) { console.error('Budget guardrail check failed:', e.message); }
+
       const category = categorizeInvoice({ vendor, description: inv.description });
 
       const flags = { similarFile: false, dupCombo: false, offHours: false };

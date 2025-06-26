@@ -19,6 +19,8 @@ function Dashboard() {
   const [categories, setCategories] = useState([]);
   const [anomalies, setAnomalies] = useState([]);
   const [budget, setBudget] = useState([]);
+  const [remainingBudget, setRemainingBudget] = useState([]);
+  const [budgetForecast, setBudgetForecast] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,8 +52,14 @@ function Dashboard() {
       fetch(`${API_BASE}/api/invoices/budgets/department-report`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
-          if (ok) setBudget(d.data || []);
+          if (ok) {
+            setBudget(d.data || []);
+            setRemainingBudget((d.data || []).map(b => ({ department: b.department, remaining: b.remaining })));
+          }
         }),
+      fetch(`${API_BASE}/api/invoices/budgets/forecast`, { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => { if (ok) setBudgetForecast(d.forecast || []); }),
       fetch(`${API_BASE}/api/invoices/upload-heatmap`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
@@ -303,6 +311,44 @@ function Dashboard() {
                     <YAxis />
                     <Tooltip />
                     <Bar dataKey="spent" fill="#3b82f6" name="Spent" />
+                    <Bar dataKey="budget" fill="#ef4444" name="Budget" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </motion.div>
+            )}
+          </div>
+          <div className="h-64">
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Remaining Budget</h2>
+            {loading ? (
+              <Skeleton rows={1} className="h-full" height="h-full" />
+            ) : (
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={remainingBudget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="department" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="remaining" fill="#4ade80" name="Remaining" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </motion.div>
+            )}
+          </div>
+          <div className="h-64">
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Budget Forecast</h2>
+            {loading ? (
+              <Skeleton rows={1} className="h-full" height="h-full" />
+            ) : (
+              <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={budgetForecast} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="department" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="forecast" fill="#3b82f6" name="Forecast" />
                     <Bar dataKey="budget" fill="#ef4444" name="Budget" />
                   </BarChart>
                 </ResponsiveContainer>
