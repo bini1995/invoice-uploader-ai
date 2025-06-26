@@ -351,6 +351,12 @@ POST /api/invoices/42/vendor-reply
 }
 ```
 
+Optional fields:
+
+```json
+{ "tone": "formal" } // or "casual" for a more relaxed style
+```
+
 Example response:
 
 ```json
