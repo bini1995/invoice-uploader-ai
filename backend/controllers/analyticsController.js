@@ -509,3 +509,20 @@ exports.getInvoiceClusters = async (_req, res) => {
     res.status(500).json({ message: 'Failed to cluster invoices' });
   }
 };
+
+// Heatmap of invoice volume over time
+exports.getSpendHeatmap = async (req, res) => {
+  const { vendor, startDate, endDate, minAmount, maxAmount } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount });
+  try {
+    const result = await pool.query(
+      `SELECT date::date AS day, COUNT(*) AS count FROM invoices ${where} GROUP BY day ORDER BY day`,
+      params
+    );
+    const heatmap = result.rows.map(r => ({ day: r.day.toISOString().slice(0, 10), count: parseInt(r.count, 10) }));
+    res.json({ heatmap });
+  } catch (err) {
+    console.error('Spend heatmap error:', err);
+    res.status(500).json({ message: 'Failed to build spend heatmap' });
+  }
+};

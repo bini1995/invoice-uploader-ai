@@ -12,6 +12,7 @@ const {
   getApprovalStats,
   getApprovalTimeChart,
   getVendorSpend,
+  getSpendHeatmap,
   detectOutliers,
   getRealTimeDashboard,
   detectDuplicateInvoices,
@@ -36,6 +37,7 @@ router.post('/rules', authMiddleware, addRule);
 router.get('/approvals/stats', authMiddleware, getApprovalStats);
 router.get('/approvals/times', authMiddleware, getApprovalTimeChart);
 router.get('/spend/vendor', authMiddleware, getVendorSpend);
+router.get('/spend/heatmap', authMiddleware, getSpendHeatmap);
 router.get('/kpi/approval-time-vendor', authMiddleware, getApprovalTimeByVendor);
 router.get('/kpi/late-payments-trend', authMiddleware, getLatePaymentTrend);
 router.get('/kpi/over-budget', authMiddleware, getInvoicesOverBudget);

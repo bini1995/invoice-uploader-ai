@@ -12,16 +12,34 @@ function Reports() {
   const [maxAmount, setMaxAmount] = useState('');
   const [invoices, setInvoices] = useState([]);
   const [loadingReport, setLoadingReport] = useState(false);
+  const [loadingHeatmap, setLoadingHeatmap] = useState(false);
   const [loadingRules, setLoadingRules] = useState(true);
   const [threshold, setThreshold] = useState(5000);
   const [rules, setRules] = useState([]);
+  const [heatmap, setHeatmap] = useState([]);
 
-  const fetchReport = async () => {
-    setLoadingReport(true);
+  const fetchHeatmap = async () => {
+    setLoadingHeatmap(true);
     const params = new URLSearchParams();
     if (vendor) params.append('vendor', vendor);
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
+    if (minAmount) params.append('minAmount', minAmount);
+    if (maxAmount) params.append('maxAmount', maxAmount);
+    const res = await fetch(`${API_BASE}/api/analytics/spend/heatmap?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok) setHeatmap(data.heatmap || []);
+    setLoadingHeatmap(false);
+  };
+
+  const fetchReport = async (s = startDate, e = endDate) => {
+    setLoadingReport(true);
+    const params = new URLSearchParams();
+    if (vendor) params.append('vendor', vendor);
+    if (s) params.append('startDate', s);
+    if (e) params.append('endDate', e);
     if (minAmount) params.append('minAmount', minAmount);
     if (maxAmount) params.append('maxAmount', maxAmount);
     const res = await fetch(`${API_BASE}/api/analytics/report?${params.toString()}`, {
@@ -30,6 +48,7 @@ function Reports() {
     const data = await res.json();
     if (res.ok) setInvoices(data.invoices || []);
     setLoadingReport(false);
+    fetchHeatmap();
   };
 
   const exportPDF = async () => {
@@ -76,6 +95,22 @@ function Reports() {
     }
   }, [loadRules, token]);
 
+  useEffect(() => {
+    if (token) {
+      fetchHeatmap();
+    }
+  }, [token]);
+
+  const runReport = () => {
+    fetchReport();
+  };
+
+  const handleDayClick = (day) => {
+    setStartDate(day);
+    setEndDate(day);
+    fetchReport(day, day);
+  };
+
   return (
     <MainLayout title="Reports" helpTopic="reports">
       <div className="space-y-4 max-w-2xl">
@@ -89,7 +124,7 @@ function Reports() {
           <input type="number" value={maxAmount} onChange={e => setMaxAmount(e.target.value)} placeholder="Max" className="input" />
         </div>
         <div className="space-x-2">
-          <button onClick={fetchReport} className="btn btn-primary" title="Run Report">Run Report</button>
+          <button onClick={runReport} className="btn btn-primary" title="Run Report">Run Report</button>
           <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
         </div>
         <div>
@@ -133,6 +168,59 @@ function Reports() {
               )}
             </tbody>
           </table>
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Spend Heatmap</h2>
+          <div className="overflow-x-auto rounded-lg">
+            <table className="table-fixed border-collapse rounded-lg overflow-hidden text-xs">
+              <thead>
+                <tr>
+                  {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
+                    <th key={d} className="px-1 font-normal">{d}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  const map = Object.fromEntries(heatmap.map(h => [h.day, h.count]));
+                  const start = startDate ? new Date(startDate) : new Date(new Date().getFullYear(), 0, 1);
+                  const end = endDate ? new Date(endDate) : new Date(start.getFullYear(), 11, 31);
+                  const days = [];
+                  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    days.push(new Date(d));
+                  }
+                  const first = days[0] ? days[0].getDay() : 0;
+                  for (let i = 0; i < first; i++) days.unshift(null);
+                  const rows = [];
+                  while (days.length) rows.push(days.splice(0,7));
+                  const max = heatmap.reduce((m,h) => Math.max(m,h.count),0);
+                  return rows.map((week,i) => (
+                    <tr key={i} className="text-center">
+                      {week.map((date,j) => {
+                        if (!date) return <td key={j}></td>;
+                        const key = date.toISOString().slice(0,10);
+                        const count = map[key] || 0;
+                        const intensity = max ? count / max : 0;
+                        const bg = `rgba(34,197,94,${intensity})`;
+                        return (
+                          <td
+                            key={j}
+                            style={{ backgroundColor: bg }}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleDayClick(key)}
+                            title={`${count} invoices`}
+                          >
+                            {date.getDate()}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ));
+                })()}
+              </tbody>
+            </table>
+          </div>
+          {loadingHeatmap && <p className="text-sm">Loading heatmap...</p>}
         </div>
       </div>
     </MainLayout>
