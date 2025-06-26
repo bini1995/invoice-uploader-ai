@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
+import { motion, AnimatePresence } from 'framer-motion';
 import MainLayout from './components/MainLayout';
 import PreviewModal from './components/PreviewModal';
 import TagEditor from './components/TagEditor';
 import SuggestionChips from './components/SuggestionChips';
 import { Button } from './components/ui/Button';
+import { Input } from './components/ui/Input';
+import { Alert } from './components/ui/Alert';
 import ProgressBar from './components/ProgressBar';
 import { CircularProgress, Tooltip } from '@mui/material';
 import { API_BASE } from './api';
@@ -22,6 +25,7 @@ export default function UploadWizard() {
   const [tagSuggestions, setTagSuggestions] = useState({});
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState(null); // 'success' | 'error'
   const [fieldMap, setFieldMap] = useState({
     invoice_number: '',
     date: '',
@@ -96,6 +100,7 @@ export default function UploadWizard() {
     const formData = new FormData();
     formData.append('invoiceFile', blob, file.name);
     setUploading(true);
+    setUploadStatus(null);
     try {
       const res = await fetch(`${API_BASE}/api/invoices/upload`, {
         method: 'POST',
@@ -103,8 +108,10 @@ export default function UploadWizard() {
         body: formData,
       });
       await res.json();
+      setUploadStatus(res.ok ? 'success' : 'error');
     } catch (e) {
       console.error('Upload failed', e);
+      setUploadStatus('error');
     } finally {
       setUploading(false);
       setUploadProgress(100);
@@ -122,20 +129,41 @@ export default function UploadWizard() {
   return (
     <MainLayout title="Upload Wizard">
       <div className="max-w-3xl mx-auto space-y-6">
-        {step === 1 && (
-          <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow">
-            <h2 className="text-lg font-semibold">1. Select File</h2>
-            <input type="file" accept=".csv,.xls,.xlsx,.pdf" onChange={e => handleFile(e.target.files[0])} />
-            {file && (
-              <Button onClick={() => setPreviewModal(true)} variant="secondary">Preview</Button>
-            )}
-            {errors.length > 0 && <ul className="text-red-600 text-sm list-disc list-inside">{errors.map((e,i)=><li key={i}>{e}</li>)}</ul>}
-            {file && headers.length>0 && <Button onClick={() => setStep(2)}>Next</Button>}
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {step === 1 && (
+            <motion.div
+              key="step1"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
+            >
+              <h2 className="text-lg font-semibold">1. Select File</h2>
+              <Input type="file" accept=".csv,.xls,.xlsx,.pdf" onChange={e => handleFile(e.target.files[0])} />
+              {file && (
+                <Button onClick={() => setPreviewModal(true)} variant="secondary">Preview</Button>
+              )}
+              {errors.length > 0 && (
+                <Alert type="error">
+                  <ul className="list-disc list-inside">
+                    {errors.map((e,i)=>(<li key={i}>{e}</li>))}
+                  </ul>
+                </Alert>
+              )}
+              {file && headers.length>0 && <Button onClick={() => setStep(2)}>Next</Button>}
+            </motion.div>
+          )}
 
-        {step === 2 && (
-          <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow">
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
+            >
             <h2 className="text-lg font-semibold">2. Map Fields</h2>
             {ext !== 'pdf' ? (
               <>
@@ -169,11 +197,18 @@ export default function UploadWizard() {
             ) : (
               <Button onClick={() => setStep(3)}>Next</Button>
             )}
-          </div>
-        )}
+            </motion.div>
+          )}
 
-        {step === 3 && (
-          <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow">
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
+            >
             <h2 className="text-lg font-semibold">3. Review Data</h2>
             <div className="overflow-x-auto">
               <table className="table-auto text-xs w-full">
@@ -201,11 +236,18 @@ export default function UploadWizard() {
               </table>
             </div>
             <Button onClick={() => setStep(4)}>Next</Button>
-          </div>
-        )}
+            </motion.div>
+          )}
 
-        {step === 4 && (
-          <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow">
+          {step === 4 && (
+            <motion.div
+              key="step4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
+            >
             <h2 className="text-lg font-semibold">4. Tag & Categorize</h2>
             {rows.map((row, ri) => (
               <div key={ri} className="border p-2 rounded mb-2">
@@ -219,26 +261,39 @@ export default function UploadWizard() {
               </div>
             ))}
             <Button onClick={() => setStep(5)}>Next</Button>
-          </div>
-        )}
+            </motion.div>
+          )}
 
-        {step === 5 && (
-          <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow text-center">
-            <h2 className="text-lg font-semibold">5. Finalize Upload</h2>
-            <p className="text-sm">{rows.length} invoices, total ${totalAmount.toFixed(2)}</p>
-            {uploading && (
-              <div className="flex flex-col items-center space-y-2">
-                <CircularProgress size={24} />
-                <ProgressBar value={uploadProgress} />
-              </div>
-            )}
-            <Tooltip title="Submit invoices">
-              <span>
-                <Button onClick={handleUpload} disabled={uploading}>{uploading ? 'Uploading...' : 'Upload'}</Button>
-              </span>
-            </Tooltip>
-          </div>
-        )}
+          {step === 5 && (
+            <motion.div
+              key="step5"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow text-center"
+            >
+              <h2 className="text-lg font-semibold">5. Finalize Upload</h2>
+              <p className="text-sm">{rows.length} invoices, total ${totalAmount.toFixed(2)}</p>
+              {uploading && (
+                <div className="flex flex-col items-center space-y-2">
+                  <CircularProgress size={24} />
+                  <ProgressBar value={uploadProgress} />
+                </div>
+              )}
+              {uploadStatus && !uploading && (
+                <Alert type={uploadStatus === 'success' ? 'success' : 'error'}>
+                  {uploadStatus === 'success' ? 'Upload complete!' : 'Upload failed'}
+                </Alert>
+              )}
+              <Tooltip title="Submit invoices">
+                <span>
+                  <Button onClick={handleUpload} disabled={uploading}>{uploading ? 'Uploading...' : 'Upload'}</Button>
+                </span>
+              </Tooltip>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <PreviewModal
           open={previewModal}
