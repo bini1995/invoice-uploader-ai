@@ -28,7 +28,7 @@ npm install --legacy-peer-deps
 
 ## Features
 
-- Upload CSV invoice files
+- Upload CSV, PDF and Excel invoice files
 - In-app guided tour for new users
 - CSV import/export for invoices and vendors
 - See a clean display of parsed invoices
@@ -78,6 +78,7 @@ npm install --legacy-peer-deps
 - Batch actions with bulk approval and PDF export
 - Bulk edit/delete/archive options for faster table management
 - Multi-step upload wizard guides file selection, review, tagging and final confirmation
+- Drag-and-drop upload with real-time field mapping
 - AI explanations for why an invoice was flagged
 - Admin settings panel with auto-archive toggle, custom AI tone and upload limits
 - Invoice expiration auto-closes past-due invoices or flags them for review
