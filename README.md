@@ -55,6 +55,7 @@ npm install --legacy-peer-deps
 - Auto-routing invoices by vendor or tag
 - Smart auto-assignment routes invoices to the usual owner using vendor history
 - Budget threshold warnings
+- Budget guardrails with live upload warnings and budget forecasts
 - Anomaly detection dashboard
 - Automatic anomaly alerts with severity tiers
 - Fraud pattern detection for suspicious vendor activity
@@ -293,6 +294,7 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 
 - `POST /api/invoices/budgets` – create/update a monthly or quarterly budget by vendor or tag
 - `GET /api/invoices/budgets/warnings` – check if spending has exceeded 90% of a budget
+- `GET /api/invoices/budgets/forecast` – predict next month's spend by department
 - `GET /api/invoices/anomalies` – list vendors with unusual spending spikes
 - `GET /api/workflows` – list saved workflows
 - `POST /api/workflows` – create or update a workflow

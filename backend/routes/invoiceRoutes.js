@@ -98,7 +98,7 @@ const { suggestVendor, suggestVoucher } = require('../controllers/aiController')
 const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/aiController");
 const { flagSuspiciousInvoice } = require('../controllers/invoiceController');
 const { getActivityLogs, getInvoiceTimeline, exportComplianceReport, exportInvoiceHistory, exportVendorHistory } = require('../controllers/activityController');
-const { setBudget, getBudgets, checkBudgetWarnings, getBudgetVsActual } = require('../controllers/budgetController');
+const { setBudget, getBudgets, checkBudgetWarnings, getBudgetVsActual, getBudgetForecast } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns, fraudHeatmap } = require('../controllers/fraudController');
 const { vendorReply } = require('../controllers/vendorReplyController');
@@ -201,6 +201,7 @@ router.post('/budgets', authMiddleware, authorizeRoles('admin'), setBudget);
 router.get('/budgets', authMiddleware, authorizeRoles('admin'), getBudgets);
 router.get('/budgets/warnings', authMiddleware, checkBudgetWarnings);
 router.get('/budgets/department-report', authMiddleware, getBudgetVsActual);
+router.get('/budgets/forecast', authMiddleware, getBudgetForecast);
 router.get('/anomalies', authMiddleware, getAnomalies);
 router.get('/fraud/patterns', authMiddleware, authorizeRoles('admin'), detectPatterns);
 router.get('/fraud/heatmap', authMiddleware, authorizeRoles('admin'), fraudHeatmap);
