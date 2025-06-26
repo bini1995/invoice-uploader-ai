@@ -15,9 +15,9 @@ export default function Board() {
     const data = await res.json();
     if (res.ok) {
       setColumns({
-        pending: data.filter(i => i.approval_status === 'Pending' && !i.flagged),
+        pending: data.filter(i => i.approval_status === 'Pending'),
         approved: data.filter(i => i.approval_status === 'Approved'),
-        flagged: data.filter(i => i.flagged)
+        flagged: data.filter(i => i.approval_status === 'Flagged')
       });
     }
   }, [token]);

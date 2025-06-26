@@ -75,6 +75,7 @@ npm install --legacy-peer-deps
 - Private notes on invoices
 - Shared comment threads for team discussion
 - Approver reminders with escalation
+- Approval workflows track invoices needing review and record status (Pending, Flagged, Approved)
 - Smart reminders for overdue invoices and pending approvals (email, Slack/Teams & in-app)
 - Manual approval reminder emails can be triggered via `POST /api/reminders/approval`
 - Batch actions with bulk approval and PDF export
