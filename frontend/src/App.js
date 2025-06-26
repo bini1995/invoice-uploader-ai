@@ -114,6 +114,7 @@ const searchInputRef = useRef();
   const [errors, setErrors] = useState([]);
   const [aiSummary, setAiSummary] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [smartQuery, setSmartQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -250,6 +251,7 @@ const socket = useMemo(() => io(API_BASE), []);
   const activeFilters = useMemo(() => {
     const filters = [];
     if (searchTerm) filters.push(`Search: ${searchTerm}`);
+    if (smartQuery) filters.push(`NL: ${smartQuery}`);
     if (selectedVendor) filters.push(`Vendor: ${selectedVendor}`);
     if (selectedAssignee)
       filters.push(
@@ -261,7 +263,7 @@ const socket = useMemo(() => io(API_BASE), []);
     if (filterEndDate) filters.push(`To: ${filterEndDate}`);
     if (showArchived) filters.push('Archived');
     return filters;
-  }, [searchTerm, selectedVendor, selectedAssignee, minAmount, maxAmount, filterStartDate, filterEndDate, showArchived]);
+  }, [searchTerm, smartQuery, selectedVendor, selectedAssignee, minAmount, maxAmount, filterStartDate, filterEndDate, showArchived]);
 
 
   const addToast = (
@@ -1517,6 +1519,7 @@ useEffect(() => {
 
   const handleResetFilters = () => {
     setSearchTerm('');
+    setSmartQuery('');
     setSelectedVendor('');
     setSelectedAssignee('');
     setMinAmount('');
@@ -1564,6 +1567,34 @@ useEffect(() => {
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     addToast('📋 Copied to clipboard!');
+  };
+
+  const handleSmartSearch = async () => {
+    if (!smartQuery) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/invoices/smart-search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ query: smartQuery }),
+      });
+      const data = await res.json();
+      if (res.ok && data.filters) {
+        setSelectedVendor(data.filters.vendor || '');
+        setMinAmount(data.filters.minAmount ? String(data.filters.minAmount) : '');
+        setMaxAmount(data.filters.maxAmount ? String(data.filters.maxAmount) : '');
+        setFilterStartDate(data.filters.startDate || '');
+        setFilterEndDate(data.filters.endDate || '');
+        setSearchTerm('');
+      } else {
+        addToast(data.message || 'Failed to parse query', 'error');
+      }
+    } catch (err) {
+      console.error('Smart search failed:', err);
+      addToast('Failed to parse query', 'error');
+    }
   };
   
   
@@ -2028,6 +2059,9 @@ useEffect(() => {
         onUpload={() => fileInputRef.current?.click()}
         search={searchTerm}
         onSearchChange={setSearchTerm}
+        smartQuery={smartQuery}
+        onSmartQueryChange={setSmartQuery}
+        onSmartSearch={handleSmartSearch}
         onStartTour={() => setShowTour(true)}
         isOffline={isOffline}
         pendingCount={pendingCount}

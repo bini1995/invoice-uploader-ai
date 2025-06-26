@@ -1,5 +1,6 @@
 // backend/controllers/aiController.js
 const axios = require('axios');
+const chrono = require('chrono-node');
 require('dotenv').config();
 const pool = require("../config/db");
 const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
@@ -893,5 +894,35 @@ exports.suggestFixes = async (req, res) => {
   } catch (err) {
     console.error('Fix suggestion error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to generate fix suggestions' });
+  }
+};
+
+// Parse natural language search queries into filter parameters
+exports.smartSearchParse = (req, res) => {
+  try {
+    const { query } = req.body;
+    if (!query) return res.status(400).json({ message: 'Missing query text.' });
+    const filters = {};
+    const vendorMatch = query.match(/from\s+([\w\s&]+)/i);
+    if (vendorMatch) filters.vendor = vendorMatch[1].trim();
+    const gt = query.match(/>\s*\$?([0-9,\.]+)/);
+    if (gt) filters.minAmount = parseFloat(gt[1].replace(/,/g, ''));
+    const lt = query.match(/<\s*\$?([0-9,\.]+)/);
+    if (lt) filters.maxAmount = parseFloat(lt[1].replace(/,/g, ''));
+    const between = query.match(/\$?([0-9,\.]+)\s*-\s*\$?([0-9,\.]+)/);
+    if (between) {
+      filters.minAmount = parseFloat(between[1].replace(/,/g, ''));
+      filters.maxAmount = parseFloat(between[2].replace(/,/g, ''));
+    }
+    const range = chrono.parse(query);
+    if (range.length) {
+      const { start, end } = range[0];
+      if (start) filters.startDate = start.date().toISOString().slice(0, 10);
+      if (end) filters.endDate = end.date().toISOString().slice(0, 10);
+    }
+    res.json({ filters });
+  } catch (err) {
+    console.error('Smart search parse error:', err);
+    res.status(500).json({ message: 'Failed to parse query' });
   }
 };
