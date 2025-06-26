@@ -192,6 +192,10 @@ const socket = useMemo(() => io(API_BASE), []);
     return saved ? JSON.parse(saved) : [];
   });
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [pendingCount, setPendingCount] = useState(() => {
+    const saved = localStorage.getItem('pendingActions');
+    return saved ? JSON.parse(saved).length : 0;
+  });
   const [confirmData, setConfirmData] = useState(null);
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
   const [filterPresets, setFilterPresets] = useState(() => {
@@ -478,17 +482,31 @@ const socket = useMemo(() => io(API_BASE), []);
   const syncPendingActions = useCallback(async () => {
     const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
     if (!pending.length) return;
+    let failed = false;
+    const remaining = [];
     for (const action of pending) {
       try {
         await fetch(action.url, action.options);
       } catch (err) {
         console.error('Failed to sync action', action, err);
-        return;
+        failed = true;
+        remaining.push(action);
       }
     }
-    localStorage.removeItem('pendingActions');
+    if (remaining.length) {
+      localStorage.setItem('pendingActions', JSON.stringify(remaining));
+      setPendingCount(remaining.length);
+    } else {
+      localStorage.removeItem('pendingActions');
+      setPendingCount(0);
+    }
     fetchInvoices(showArchived, selectedAssignee);
-  }, [fetchInvoices, showArchived, selectedAssignee]);
+    if (failed) {
+      addToast('❌ Some offline actions failed to sync', 'error');
+    } else {
+      addToast(`✅ Synced ${pending.length} offline action(s)`);
+    }
+  }, [fetchInvoices, showArchived, selectedAssignee, addToast]);
 
   const handleBulkArchive = useCallback(() => {
     if (!selectedInvoices.length) return;
@@ -561,6 +579,7 @@ const socket = useMemo(() => io(API_BASE), []);
           const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
           pending.push({ url, options: { ...options, headers } });
           localStorage.setItem('pendingActions', JSON.stringify(pending));
+          setPendingCount(pending.length);
           addToast('⏸️ Action queued offline', 'error');
           throw err;
         }
@@ -577,7 +596,11 @@ const socket = useMemo(() => io(API_BASE), []);
       setIsOffline(false);
       syncPendingActions();
     };
-    const goOffline = () => setIsOffline(true);
+    const goOffline = () => {
+      setIsOffline(true);
+      const saved = localStorage.getItem('pendingActions');
+      setPendingCount(saved ? JSON.parse(saved).length : 0);
+    };
     window.addEventListener('online', goOnline);
     window.addEventListener('offline', goOffline);
     if (navigator.onLine) {
@@ -2006,6 +2029,8 @@ useEffect(() => {
         search={searchTerm}
         onSearchChange={setSearchTerm}
         onStartTour={() => setShowTour(true)}
+        isOffline={isOffline}
+        pendingCount={pendingCount}
       />
 
       {filterSidebarOpen && (
@@ -2171,7 +2196,7 @@ useEffect(() => {
 
       {isOffline && (
         <div className="bg-yellow-100 text-yellow-800 p-2 text-center mt-4">
-          Offline mode - changes will sync when you're online
+          Offline mode - {pendingCount} action{pendingCount === 1 ? '' : 's'} queued
         </div>
       )}
 
