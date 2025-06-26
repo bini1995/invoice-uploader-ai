@@ -156,6 +156,7 @@ npm start
 Set an `X-Tenant-Id` header on every API request. Invoices are filtered by this
 tenant ID and new uploads will be associated with it. The default tenant is
 `"default"` if no header is provided.
+Admin users can aggregate data across all tenants by sending `X-Tenant-Id: all`.
 
 ### Database Update
 

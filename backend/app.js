@@ -47,6 +47,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/swagger.json');
 const { WebSocketServer } = require('ws');
 const { setupWSConnection } = require('y-websocket/bin/utils.js');
+const tenantContext = require('./middleware/tenantMiddleware');
 const { parse } = require('url');
 
 const app = express();                      // create the app
@@ -59,6 +60,7 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.use(cors());
 app.use(express.json());                    // allow reading JSON data
+app.use(tenantContext);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(auditLog);
 app.use('/api/:tenantId/invoices', invoiceRoutes);

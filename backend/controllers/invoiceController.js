@@ -376,7 +376,7 @@ exports.uploadInvoice = async (req, res) => {
       }
     }
 
-    const tenantId = req.params.tenantId || req.headers['x-tenant-id'] || 'default';
+    const tenantId = req.tenantId;
     for (const inv of validRows) {
       const approvalChain = inv.approval_chain || ['Manager','Finance','CFO'];
       const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
@@ -577,7 +577,7 @@ exports.getAllInvoices = async (req, res) => {
     const vendor = req.query.vendor;
     const team = req.query.team;
     const status = req.query.status;
-    const tenantId = req.params.tenantId || req.headers['x-tenant-id'] || req.query.tenant || 'default';
+    const tenantId = req.query.tenant || req.tenantId;
     const conditions = [];
     const params = [];
     if (req.user?.role === 'legal') {
@@ -1033,7 +1033,7 @@ exports.getSharedDashboard = async (req, res) => {
     if (share.rows.length === 0) return res.status(404).json({ message: 'Invalid token' });
     const { filters } = share.rows[0];
     const { vendor, team, status, tenant: tenantFilter, startDate, endDate } = filters || {};
-    const tenant = req.params.tenantId || tenantFilter;
+    const tenant = req.tenantId || tenantFilter;
     const conditions = [];
     const params = [];
     if (vendor) {
@@ -2220,7 +2220,7 @@ exports.getDashboardData = async (req, res) => {
   const client = await pool.connect();
   try {
     const { vendor, team, status, tenant: tenantQuery, startDate, endDate } = req.query;
-    const tenant = req.params.tenantId || tenantQuery;
+    const tenant = req.tenantId || tenantQuery;
     const conditions = [];
     const params = [];
     if (vendor) {
