@@ -59,6 +59,7 @@ npm install --legacy-peer-deps
 - Anomaly detection dashboard
 - Automatic anomaly alerts with severity tiers
 - Fraud pattern detection for suspicious vendor activity
+- ML-based anomaly scoring using Isolation Forest with admin feedback loop
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications
 - Invoice duplication prevention using content hashes
@@ -310,6 +311,8 @@ interactive expression builder. Test expressions are sent to `POST /api/workflow
 to see how rules would route a sample invoice.
 The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `GET /api/invoices/fraud/flagged` – list flagged invoices with reasons
+- `GET /api/invoices/fraud/ml-detect` – list invoices with high anomaly scores
+- `POST /api/invoices/fraud/:id/label` – mark invoice as confirmed fraud or not
 - `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
 - `GET /api/:tenantId/export-templates` – list saved CSV templates
 - `POST /api/:tenantId/export-templates` – create a new export template
