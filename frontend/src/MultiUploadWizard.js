@@ -10,11 +10,26 @@ import { API_BASE } from './api';
 export default function MultiUploadWizard() {
   const token = localStorage.getItem('token') || '';
   const [step, setStep] = useState(1);
-  const [files, setFiles] = useState([]); // [{file, headers, rows, errors: [{index,messages,summary}], tags:{}}]
+  const [files, setFiles] = useState([]); // [{file, headers, rows, errors: [{index,messages,fields,summary}], tags:{}}]
   const [active, setActive] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const required = ['invoice_number','date','amount','vendor'];
+
+  const validateRow = async(row)=>{
+    try{
+      const res = await fetch(`${API_BASE}/api/validation/validate-row`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
+        body: JSON.stringify(row)
+      });
+      const data = await res.json();
+      return Array.isArray(data.errors)?data.errors:[];
+    }catch(e){
+      console.error('validate error',e);
+      return [];
+    }
+  };
 
   const parseFiles = async(fileList)=>{
     const arr = Array.from(fileList);
@@ -31,27 +46,46 @@ export default function MultiUploadWizard() {
       });
       const rowErrors=[];
       for(const [i,row] of rows.entries()){
-        const errs=[];
-        required.forEach(h=>{if(!row[h]) errs.push(`${h} missing`);});
-        if(row.amount && isNaN(parseFloat(row.amount))) errs.push('amount invalid');
-        if(row.date && isNaN(Date.parse(row.date))) errs.push('date invalid');
-        if(errs.length){
+        const errs = await validateRow(row);
+        const messages = errs.map(e=>e.message);
+        const fields = {};
+        errs.forEach(e=>{if(e.field) fields[e.field]=e.message;});
+        let summary='';
+        if(messages.length){
           try{
             const res = await fetch(`${API_BASE}/api/invoices/summarize-errors`,{
               method:'POST',
               headers:{'Content-Type':'application/json'},
-              body: JSON.stringify({ errors: errs })
+              body: JSON.stringify({ errors: messages })
             });
             const data = await res.json();
-            rowErrors.push({index:i,messages:errs,summary:data.summary});
+            summary=data.summary;
           }catch(e){
-            rowErrors.push({index:i,messages:errs,summary:'AI summary failed'});
+            summary='AI summary failed';
           }
+        }
+        if(messages.length){
+          rowErrors.push({index:i,messages:messages,fields,summary});
         }
       }
       parsed.push({file,headers,rows,errors:rowErrors,tags:{}});
     }
     setFiles(parsed);
+  };
+
+  const handleCellChange = async(fi, ri, field, val)=>{
+    setFiles(prev=>prev.map((f,idx)=>idx!==fi?f:{...f,rows:f.rows.map((r,i)=>i===ri?{...r,[field]:val}:r)}));
+    const row = {...files[fi].rows[ri], [field]: val};
+    const errs = await validateRow(row);
+    const messages = errs.map(e=>e.message);
+    const fields={};
+    errs.forEach(e=>{if(e.field) fields[e.field]=e.message;});
+    setFiles(prev=>prev.map((f,idx)=>{
+      if(idx!==fi) return f;
+      const others = f.errors.filter(e=>e.index!==ri);
+      if(messages.length) others.push({index:ri,messages,fields,summary:f.errors.find(e=>e.index===ri)?.summary||''});
+      return {...f,errors:others};
+    }));
   };
 
   const handleUpload = async()=>{
@@ -133,18 +167,22 @@ export default function MultiUploadWizard() {
                     <tr>{f.headers.map(h=>(<th key={h} className="border px-1 py-0.5 text-left">{h}</th>))}<th className="border px-1 py-0.5">AI Hint</th></tr>
                   </thead>
                   <tbody>
-                    {f.rows.map((row,ri)=>(
-                      <tr key={ri} className={f.errors.find(e=>e.index===ri)?'bg-red-50':''}>
+                    {f.rows.map((row,ri)=>{
+                      const errObj = f.errors.find(e=>e.index===ri);
+                      return (
+                      <tr key={ri} className={errObj?'bg-red-50':''}>
                         {f.headers.map(h=>(
-                          <td key={h} className="border px-1 py-0.5">
-                            <input className="input text-xs w-full" value={row[h]} onChange={e=>{const val=e.target.value;setFiles(prev=>prev.map((f2,idx)=>idx!==fi?f2:{...f2,rows:f2.rows.map((r,i)=>i===ri?{...r,[h]:val}:r)}));}} />
+                          <td key={h} className={`border px-1 py-0.5 ${errObj?.fields?.[h]?'bg-red-100':''}`}>
+                            <input className="input text-xs w-full" value={row[h]} onChange={e=>handleCellChange(fi,ri,h,e.target.value)} />
+                            {errObj?.fields?.[h] && (<div className="text-red-500 text-[10px]">{errObj.fields[h]}</div>)}
                           </td>
                         ))}
                         <td className="border px-1 py-0.5 text-xs w-48">
                           {f.errors.find(e=>e.index===ri)?.summary || ''}
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
