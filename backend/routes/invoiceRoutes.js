@@ -96,6 +96,7 @@ const { smartDraftEmail } = require('../controllers/emailController');
 const { summarizeVendorData } = require('../controllers/aiController');
 const { suggestVendor, suggestVoucher } = require('../controllers/aiController');
 const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/aiController");
+const { smartSearchParse } = require('../controllers/aiController');
 const { flagSuspiciousInvoice } = require('../controllers/invoiceController');
 const { getActivityLogs, getInvoiceTimeline, exportComplianceReport, exportInvoiceHistory, exportVendorHistory } = require('../controllers/activityController');
 const { setBudget, getBudgets, checkBudgetWarnings, getBudgetVsActual, getBudgetForecast } = require('../controllers/budgetController');
@@ -125,6 +126,7 @@ router.delete('/:id', authMiddleware, authorizeRoles('admin'), deleteInvoiceById
 router.get('/search', searchInvoicesByVendor);
 router.post('/nl-query', authMiddleware, naturalLanguageQuery);
 router.post('/nl-search', authMiddleware, naturalLanguageSearch);
+router.post('/smart-search', authMiddleware, smartSearchParse);
 router.post('/nl-chart', authMiddleware, nlChartQuery);
 router.post('/quality-score', authMiddleware, invoiceQualityScore);
 router.post('/payment-risk', authMiddleware, paymentRiskScore);
