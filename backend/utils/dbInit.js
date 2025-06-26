@@ -243,6 +243,19 @@ async function initDb() {
       vendor TEXT PRIMARY KEY,
       country TEXT
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS report_schedules (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL,
+      vendor TEXT,
+      department TEXT,
+      start_date DATE,
+      end_date DATE,
+      cron TEXT NOT NULL DEFAULT '0 8 * * *',
+      active BOOLEAN DEFAULT TRUE,
+      last_run TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }
