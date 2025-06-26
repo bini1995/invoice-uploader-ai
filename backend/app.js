@@ -41,6 +41,7 @@ const { loadModel, trainFromCorrections } = require('./utils/ocrAgent');
 const { startEmailSync } = require('./utils/emailSync');
 const { loadSchedules } = require('./utils/automationScheduler');
 const { scheduleReports } = require('./utils/reportScheduler');
+const { scheduleAnomalyScan } = require('./utils/anomalyScanner');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/swagger.json');
 const { WebSocketServer } = require('ws');
@@ -97,6 +98,7 @@ app.use(Sentry.Handlers.errorHandler());
   await loadSchedules();
   startEmailSync();
   scheduleReports();
+  scheduleAnomalyScan();
 
   // Run auto-archive daily
   autoArchiveOldInvoices();

@@ -56,6 +56,7 @@ npm install --legacy-peer-deps
 - Smart auto-assignment routes invoices to the usual owner using vendor history
 - Budget threshold warnings
 - Anomaly detection dashboard
+- Automatic anomaly alerts with severity tiers
 - Fraud pattern detection for suspicious vendor activity
 - Timeline view of invoice changes
 - Recurring invoice detection with notifications

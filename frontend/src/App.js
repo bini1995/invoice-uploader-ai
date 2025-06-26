@@ -295,7 +295,28 @@ const socket = useMemo(() => io(API_BASE), []);
   }, [chatHistory]);
 
   const markNotificationsRead = () => {
+    const headers = { Authorization: `Bearer ${token}` };
+    notifications
+      .filter((n) => !n.read && n.id)
+      .forEach((n) => {
+        fetch(`${API_BASE}/api/notifications/${n.id}/read`, {
+          method: 'PATCH',
+          headers,
+        }).catch(() => {});
+      });
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  const handleNotificationsOpen = async () => {
+    const headers = { Authorization: `Bearer ${token}` };
+    try {
+      const res = await fetch(`${API_BASE}/api/notifications`, { headers });
+      const data = await res.json();
+      if (res.ok) setNotifications(data);
+    } catch (err) {
+      console.error('Notifications fetch error:', err);
+    }
+    markNotificationsRead();
   };
 
   const fetchInvoices = useCallback(
@@ -1976,7 +1997,7 @@ useEffect(() => {
         tenant={tenant}
         onTenantChange={setTenant}
         notifications={notifications}
-        onNotificationsOpen={markNotificationsRead}
+        onNotificationsOpen={handleNotificationsOpen}
         role={role}
         onLogout={handleLogout}
         token={token}
