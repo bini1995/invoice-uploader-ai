@@ -17,7 +17,7 @@ const { submitHashToBlockchain } = require('../utils/blockchain');
 const { getWorkflowForDepartment } = require('../utils/workflows');
 const { evaluateWorkflowRules } = require('../utils/workflowRulesEngine');
 const { getExchangeRate } = require('../utils/exchangeRates');
-const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
+const { sendSlackNotification, sendTeamsNotification, sendEmailNotification } = require('../utils/notify');
 const { triggerAutomations } = require('../utils/automationEngine');
 const { broadcastMessage } = require('../utils/chatServer');
 const { recordInvoiceVersion } = require('../utils/versionLogger');
@@ -920,7 +920,11 @@ exports.setFlaggedStatus = async (req, res) => {
   const { flagged } = req.body || {};
   try {
     const before = await pool.query('SELECT * FROM invoices WHERE id = $1', [id]);
-    const result = await pool.query('UPDATE invoices SET flagged = $1 WHERE id = $2 RETURNING *', [flagged === true, id]);
+    const status = flagged === true ? 'Flagged' : 'Pending';
+    const result = await pool.query(
+      'UPDATE invoices SET flagged = $1, approval_status = $2 WHERE id = $3 RETURNING *',
+      [flagged === true, status, id]
+    );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Invoice not found' });
     }
@@ -934,6 +938,10 @@ exports.setFlaggedStatus = async (req, res) => {
     if (before.rows.length) {
       await recordInvoiceVersion(id, before.rows[0], after, req.user?.userId, req.user?.username);
     }
+    const msg = flagged ? `Invoice ${id} flagged for review.` : `Invoice ${id} unflagged.`;
+    await sendSlackNotification?.(msg);
+    await sendTeamsNotification?.(msg);
+    await sendEmailNotification?.(null, 'Invoice Update', msg);
     res.json({ message: 'Flag status updated', invoice: after });
   } catch (err) {
     console.error('Flag status error:', err);
@@ -1226,6 +1234,7 @@ exports.approveInvoice = async (req, res) => {
     const msg = `Invoice ${id} step ${step} approved. ${nextLabel}`;
     await sendSlackNotification(msg);
     await sendTeamsNotification(msg);
+    await sendEmailNotification?.(null, 'Invoice Approved', msg);
     if (status === 'Approved') {
       await triggerAutomations('invoice.approved', { invoice: { ...invoice, ...result.rows[0], id: parseInt(id,10) } });
     }
