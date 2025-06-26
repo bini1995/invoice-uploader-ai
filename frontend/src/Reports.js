@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
+import CashflowSimulation from './components/CashflowSimulation';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
@@ -221,6 +222,10 @@ function Reports() {
             </table>
           </div>
           {loadingHeatmap && <p className="text-sm">Loading heatmap...</p>}
+        </div>
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Cash Flow Simulation</h2>
+          <CashflowSimulation token={token} />
         </div>
       </div>
     </MainLayout>
