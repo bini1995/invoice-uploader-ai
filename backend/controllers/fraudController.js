@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { detectAnomalies } = require('../utils/mlDetector');
 
 exports.detectPatterns = async (req, res) => {
   try {
@@ -74,5 +75,36 @@ exports.flaggedInvoices = async (_req, res) => {
   } catch (err) {
     console.error('Flagged invoices fetch error:', err);
     res.status(500).json({ message: 'Failed to fetch flagged invoices' });
+  }
+};
+
+exports.mlDetect = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, vendor, amount, created_at FROM invoices'
+    );
+    const anomalies = detectAnomalies(rows);
+    res.json({ anomalies });
+  } catch (err) {
+    console.error('ML fraud detection error:', err);
+    res.status(500).json({ message: 'Failed to run ML detection' });
+  }
+};
+
+exports.labelFraud = async (req, res) => {
+  const { id } = req.params;
+  const { label } = req.body || {};
+  try {
+    await pool.query(
+      'INSERT INTO fraud_training (invoice_id, label) VALUES ($1,$2)',
+      [id, !!label]
+    );
+    if (label) {
+      await pool.query('UPDATE invoices SET flagged = TRUE WHERE id = $1', [id]);
+    }
+    res.json({ message: 'Label recorded' });
+  } catch (err) {
+    console.error('Label fraud error:', err);
+    res.status(500).json({ message: 'Failed to record label' });
   }
 };
