@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
@@ -8,6 +9,12 @@ import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
+const METRIC_LABELS = {
+  total: '💵 Total Invoiced This Month',
+  pending: '🧾 Invoices Pending',
+  anomalies: '⚠️ Anomalies Found',
+  ai: '🤖 AI Suggestions Available',
+};
 
 function Dashboard() {
   const token = localStorage.getItem('token') || '';
@@ -23,6 +30,35 @@ function Dashboard() {
   const [budgetForecast, setBudgetForecast] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cashFlowInterval, setCashFlowInterval] = useState(
+    () => localStorage.getItem('dashboardCashFlowInterval') || 'monthly'
+  );
+  const [metricsOrder, setMetricsOrder] = useState(() => {
+    const saved = localStorage.getItem('dashboardMetricsOrder');
+    return saved
+      ? JSON.parse(saved)
+      : ['total', 'pending', 'anomalies', 'ai'];
+  });
+  const [hiddenMetrics, setHiddenMetrics] = useState(() => {
+    const saved = localStorage.getItem('dashboardHiddenMetrics');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+  const [customizeOpen, setCustomizeOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('dashboardCashFlowInterval', cashFlowInterval);
+  }, [cashFlowInterval]);
+
+  useEffect(() => {
+    localStorage.setItem('dashboardMetricsOrder', JSON.stringify(metricsOrder));
+  }, [metricsOrder]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      'dashboardHiddenMetrics',
+      JSON.stringify(Array.from(hiddenMetrics))
+    );
+  }, [hiddenMetrics]);
 
   useEffect(() => {
     if (!token) return;
@@ -39,7 +75,7 @@ function Dashboard() {
         .then(({ ok, d }) => {
           if (ok) setCategories(d.byTag || []);
         }),
-      fetch(`${API_BASE}/api/invoices/cash-flow?interval=monthly`, { headers })
+      fetch(`${API_BASE}/api/invoices/cash-flow?interval=${cashFlowInterval}`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setCashFlow(d.data || []);
@@ -76,7 +112,7 @@ function Dashboard() {
           if (ok) setApprovalStats(d);
         }),
     ]).finally(() => setLoading(false));
-  }, [token]);
+  }, [token, cashFlowInterval]);
 
   const handleExportPDF = async () => {
     const headers = { Authorization: `Bearer ${token}` };
@@ -108,6 +144,23 @@ function Dashboard() {
     alert('Approval reminder emails sent');
   };
 
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    const items = Array.from(metricsOrder);
+    const [moved] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, moved);
+    setMetricsOrder(items);
+  };
+
+  const toggleMetric = (m) => {
+    setHiddenMetrics((prev) => {
+      const next = new Set(prev);
+      if (next.has(m)) next.delete(m);
+      else next.add(m);
+      return next;
+    });
+  };
+
   const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
   let max = 0;
   heatmap.forEach(({ day, hour, count }) => {
@@ -125,54 +178,85 @@ function Dashboard() {
             Send Approval Reminders
           </button>
         )}
+        <button onClick={() => setCustomizeOpen((c) => !c)} className="underline">
+          {customizeOpen ? 'Close Settings' : 'Customize'}
+        </button>
       </div>
+      {customizeOpen && (
+        <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded shadow text-left space-y-2">
+          <div className="space-y-1">
+            {metricsOrder.map((m) => (
+              <label key={m} className="block text-sm">
+                <input
+                  type="checkbox"
+                  className="mr-1"
+                  checked={!hiddenMetrics.has(m)}
+                  onChange={() => toggleMetric(m)}
+                />
+                {METRIC_LABELS[m]}
+              </label>
+            ))}
+          </div>
+          <div className="text-sm space-x-2">
+            <label>Cash Flow Interval:</label>
+            <select
+              value={cashFlowInterval}
+              onChange={(e) => setCashFlowInterval(e.target.value)}
+              className="border p-1 text-sm"
+            >
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+          <p className="text-xs text-gray-500">Drag metric cards to reorder</p>
+        </div>
+      )}
       {!token ? (
         <p className="text-center text-gray-600">Please log in from the main app.</p>
       ) : (
         <div className="space-y-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {loading ? (
-              <Skeleton rows={1} className="h-20 col-span-2 md:col-span-4" />
-            ) : (
-              <>
-                <motion.div
-                  whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }}
-                  className="p-4 bg-white dark:bg-gray-800 rounded shadow transition"
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="metrics" direction="horizontal">
+              {(provided) => (
+                <div
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
                 >
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    💵 Total Invoiced This Month
-                  </div>
-                  <div className="text-xl font-semibold">
-                    {stats?.totalInvoicedThisMonth?.toFixed(2) || 0}
-                  </div>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }} className="p-4 bg-white dark:bg-gray-800 rounded shadow transition">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    🧾 Invoices Pending
-                  </div>
-                  <div className="text-xl font-semibold">
-                    {stats?.invoicesPending || 0}
-                  </div>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }} className="p-4 bg-white dark:bg-gray-800 rounded shadow transition">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    ⚠️ Anomalies Found
-                  </div>
-                  <div className="text-xl font-semibold">
-                    {stats?.anomaliesFound || 0}
-                  </div>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }} className="p-4 bg-white dark:bg-gray-800 rounded shadow transition">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    🤖 AI Suggestions Available
-                  </div>
-                  <div className="text-xl font-semibold">
-                    {stats?.aiSuggestions || 0}
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </div>
+                  {loading ? (
+                    <Skeleton rows={1} className="h-20 col-span-2 md:col-span-4" />
+                  ) : (
+                    metricsOrder.map((m, index) =>
+                      hiddenMetrics.has(m) ? null : (
+                        <Draggable key={m} draggableId={m} index={index} isDragDisabled={!customizeOpen}>
+                          {(prov) => (
+                            <motion.div
+                              ref={prov.innerRef}
+                              {...prov.draggableProps}
+                              {...prov.dragHandleProps}
+                              whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }}
+                              className="p-4 bg-white dark:bg-gray-800 rounded shadow transition"
+                            >
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {METRIC_LABELS[m]}
+                              </div>
+                              <div className="text-xl font-semibold">
+                                {m === 'total' && (stats?.totalInvoicedThisMonth?.toFixed(2) || 0)}
+                                {m === 'pending' && (stats?.invoicesPending || 0)}
+                                {m === 'anomalies' && (stats?.anomaliesFound || 0)}
+                                {m === 'ai' && (stats?.aiSuggestions || 0)}
+                              </div>
+                            </motion.div>
+                          )}
+                        </Draggable>
+                      )
+                    )
+                  )}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
           {approvalStats && (
             <div className="text-center text-sm text-gray-700 dark:text-gray-300">
               🎉 You've approved {approvalStats.total} invoices this week! Streak: {approvalStats.streak} days
@@ -206,6 +290,17 @@ function Dashboard() {
             )}
           </div>
           <div className="h-64">
+            <div className="text-right mb-1 text-sm">
+              Interval:
+              <select
+                value={cashFlowInterval}
+                onChange={(e) => setCashFlowInterval(e.target.value)}
+                className="ml-2 border p-1 text-sm"
+              >
+                <option value="monthly">Monthly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : (
