@@ -436,72 +436,47 @@ export default function LandingPage() {
       <footer className="bg-gray-100 dark:bg-gray-900 p-8 text-gray-600 dark:text-gray-400">
         <div className="container mx-auto grid md:grid-cols-4 gap-8 text-sm">
           <div>
-            <h3 className="font-semibold mb-2">About Us</h3>
-            <p className="text-xs">
-              Invoice Uploader AI simplifies accounts payable with automation and
-              AI-driven insights.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2">Quick Links</h3>
+            <h3 className="font-semibold mb-2">Product</h3>
             <ul className="space-y-1">
               <li>
-                <Link to="/invoices" className="hover:underline">
-                  Dashboard
-                </Link>
+                <a href="#features" className="hover:underline">Features</a>
               </li>
               <li>
-                <Link to="/reports" className="hover:underline">
-                  Reports
-                </Link>
+                <a href="#pricing" className="hover:underline">Pricing</a>
               </li>
               <li>
-                <Link to="/onboarding" className="hover:underline">
-                  Sign Up
-                </Link>
-              </li>
-              <li>
-                <a href="/api-docs" className="hover:underline">
-                  API Docs
-                </a>
+                <a href="#how-it-works" className="hover:underline">How It Works</a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-2">Follow</h3>
-            <div className="flex space-x-4">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="hover:text-indigo-600 transition-colors"
-              >
-                <AtSymbolIcon className="w-5 h-5" />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="hover:text-indigo-600 transition-colors"
-              >
-                <BriefcaseIcon className="w-5 h-5" />
-              </a>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="hover:text-indigo-600 transition-colors"
-              >
-                <CodeBracketSquareIcon className="w-5 h-5" />
-              </a>
-            </div>
+            <h3 className="font-semibold mb-2">Company</h3>
+            <ul className="space-y-1">
+              <li>
+                <a href="#about" className="hover:underline">About</a>
+              </li>
+              <li>
+                <a href="mailto:contact@example.com" className="hover:underline">Contact</a>
+              </li>
+              <li>
+                <Link to="/blog" className="hover:underline">Blog</Link>
+              </li>
+            </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-2">Newsletter</h3>
-            <form className="flex space-x-2">
+            <h3 className="font-semibold mb-2">Legal</h3>
+            <ul className="space-y-1">
+              <li>
+                <Link to="/terms" className="hover:underline">Terms of Service</Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-2">Resources</h3>
+            <form className="flex space-x-2 mb-2" aria-label="Subscribe to updates">
               <input
                 type="email"
                 placeholder="you@example.com"
@@ -509,9 +484,17 @@ export default function LandingPage() {
               />
               <Button type="submit" className="px-3 flex items-center">
                 <EnvelopeIcon className="w-4 h-4 mr-1" />
-                Sign Up
+                Subscribe
               </Button>
             </form>
+            <ul className="space-y-1">
+              <li>
+                <a href="/api-docs" className="hover:underline">API Docs</a>
+              </li>
+              <li>
+                <a href="#resources" className="hover:underline">Help Center</a>
+              </li>
+            </ul>
           </div>
         </div>
         <p className="text-center mt-8 text-xs">
