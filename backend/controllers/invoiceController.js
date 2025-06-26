@@ -5,6 +5,7 @@ const JSZip = require('jszip');
 const { parseCSV } = require('../utils/csvParser');
 const { parsePDF } = require('../utils/pdfParser');
 const { parseImage } = require('../utils/imageParser');
+const { parseExcel } = require('../utils/excelParser');
 const openai = require("../config/openai"); // ✅ re-use the config
 const axios = require('axios');
 const { applyRules } = require('../utils/rulesEngine');
@@ -95,6 +96,8 @@ exports.parseInvoiceSample = async (req, res) => {
       invoices = await parseCSV(req.file.path);
     } else if (ext === '.pdf') {
       invoices = await parsePDF(req.file.path);
+    } else if (ext === '.xls' || ext === '.xlsx') {
+      invoices = await parseExcel(req.file.path);
     } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
       invoices = await parseImage(req.file.path);
     } else {
@@ -160,7 +163,7 @@ exports.uploadInvoice = async (req, res) => {
     }
 
     const ext = path.extname(req.file.originalname).toLowerCase();
-    if (ext === '.csv' && req.file.size > settings.csvSizeLimitMB * 1024 * 1024) {
+    if ((ext === '.csv' || ext === '.xls' || ext === '.xlsx') && req.file.size > settings.csvSizeLimitMB * 1024 * 1024) {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: `CSV exceeds ${settings.csvSizeLimitMB}MB limit` });
     }
@@ -177,6 +180,8 @@ exports.uploadInvoice = async (req, res) => {
       invoices = await parseCSV(req.file.path);
     } else if (ext === '.pdf') {
       invoices = await parsePDF(req.file.path);
+    } else if (ext === '.xls' || ext === '.xlsx') {
+      invoices = await parseExcel(req.file.path);
     } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
       invoices = await parseImage(req.file.path);
     } else {
