@@ -41,7 +41,14 @@ exports.vendorReply = async (req, res) => {
     }
 
     const tone = (req.body.tone || settings.emailTone || 'professional').toLowerCase();
-    const toneText = tone === 'friendly' ? 'friendly' : tone === 'assertive' ? 'assertive' : 'professional';
+    const toneMap = {
+      friendly: 'friendly',
+      assertive: 'assertive',
+      formal: 'formal',
+      casual: 'casual',
+      professional: 'professional',
+    };
+    const toneText = toneMap[tone] || 'professional';
     const prompt = `Write a short, ${toneText} email to vendor ${inv.vendor} letting them know their invoice number ${inv.invoice_number} dated ${inv.date.toISOString().split('T')[0]} for $${inv.amount} was ${status}. Reason: ${why}. Offer guidance on how to correct and resubmit.`;
 
     const completion = await openai.chat.completions.create({
