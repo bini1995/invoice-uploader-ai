@@ -39,6 +39,7 @@ export default function Navbar({
   onStartTour,
   isOffline = false,
   pendingCount = 0,
+  activeFilterCount = 0,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -106,11 +107,16 @@ export default function Navbar({
             <button
               id="filterToggle"
               onClick={onToggleFilters}
-              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+              className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
               title="Filters"
               aria-label="Toggle filters"
             >
               <AdjustmentsHorizontalIcon className="h-6 w-6" />
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-[10px] flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
           )}
           {token && (
