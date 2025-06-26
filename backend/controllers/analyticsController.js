@@ -1,13 +1,18 @@
 const pool = require('../config/db');
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
+const { loadReportSchedules } = require('../utils/reportScheduler');
 
-function buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount }) {
+function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount }) {
   const params = [];
   const conditions = [];
   if (vendor) {
     params.push(`%${vendor}%`);
     conditions.push(`LOWER(vendor) LIKE LOWER($${params.length})`);
+  }
+  if (department) {
+    params.push(`%${department}%`);
+    conditions.push(`LOWER(department) LIKE LOWER($${params.length})`);
   }
   if (startDate) {
     params.push(startDate);
@@ -29,9 +34,11 @@ function buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount }) 
   return { where, params };
 }
 
+exports.buildFilterQuery = buildFilterQuery;
+
 exports.getReport = async (req, res) => {
-  const { vendor, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
   try {
     const result = await pool.query(
       `SELECT id, invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
@@ -45,8 +52,8 @@ exports.getReport = async (req, res) => {
 };
 
 exports.exportReportPDF = async (req, res) => {
-  const { vendor, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
   try {
     const result = await pool.query(
       `SELECT invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
@@ -268,8 +275,8 @@ exports.getVendorSpend = async (req, res) => {
 
 // Export report as Excel
 exports.exportReportExcel = async (req, res) => {
-  const { vendor, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
   try {
     const result = await pool.query(
       `SELECT invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
@@ -512,8 +519,8 @@ exports.getInvoiceClusters = async (_req, res) => {
 
 // Heatmap of invoice volume over time
 exports.getSpendHeatmap = async (req, res) => {
-  const { vendor, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
   try {
     const result = await pool.query(
       `SELECT date::date AS day, COUNT(*) AS count FROM invoices ${where} GROUP BY day ORDER BY day`,
@@ -524,5 +531,43 @@ exports.getSpendHeatmap = async (req, res) => {
   } catch (err) {
     console.error('Spend heatmap error:', err);
     res.status(500).json({ message: 'Failed to build spend heatmap' });
+  }
+};
+
+exports.listReportSchedules = async (_req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM report_schedules ORDER BY id DESC');
+    res.json({ schedules: rows });
+  } catch (err) {
+    console.error('List report schedules error:', err);
+    res.status(500).json({ message: 'Failed to fetch schedules' });
+  }
+};
+
+exports.createReportSchedule = async (req, res) => {
+  const { email, vendor, department, start_date, end_date, cron } = req.body || {};
+  if (!email) return res.status(400).json({ message: 'email required' });
+  try {
+    const result = await pool.query(
+      `INSERT INTO report_schedules (email, vendor, department, start_date, end_date, cron) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+      [email, vendor || null, department || null, start_date || null, end_date || null, cron || '0 8 * * *']
+    );
+    await loadReportSchedules();
+    res.json({ schedule: result.rows[0] });
+  } catch (err) {
+    console.error('Create report schedule error:', err);
+    res.status(500).json({ message: 'Failed to create schedule' });
+  }
+};
+
+exports.deleteReportSchedule = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    await pool.query('DELETE FROM report_schedules WHERE id = $1', [id]);
+    await loadReportSchedules();
+    res.json({ message: 'Schedule deleted' });
+  } catch (err) {
+    console.error('Delete report schedule error:', err);
+    res.status(500).json({ message: 'Failed to delete schedule' });
   }
 };

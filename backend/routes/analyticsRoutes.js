@@ -20,7 +20,10 @@ const {
   getLatePaymentTrend,
   getInvoicesOverBudget,
   getRiskHeatmap,
-  getInvoiceClusters
+  getInvoiceClusters,
+  listReportSchedules,
+  createReportSchedule,
+  deleteReportSchedule
 } = require('../controllers/analyticsController');
 const { listRules, addRule } = require('../controllers/rulesController');
 const { authMiddleware } = require('../controllers/userController');
@@ -28,6 +31,9 @@ const { authMiddleware } = require('../controllers/userController');
 router.get('/report', authMiddleware, getReport);
 router.get('/report/pdf', authMiddleware, exportReportPDF);
 router.get('/report/excel', authMiddleware, exportReportExcel);
+router.get('/report/schedules', authMiddleware, listReportSchedules);
+router.post('/report/schedules', authMiddleware, createReportSchedule);
+router.delete('/report/schedules/:id', authMiddleware, deleteReportSchedule);
 router.get('/trends', authMiddleware, getTrends);
 router.get('/aging', authMiddleware, getAgingReport);
 router.get('/cash-flow/predict', authMiddleware, predictCashFlowRisk);
