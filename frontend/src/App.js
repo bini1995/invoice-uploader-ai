@@ -2031,6 +2031,7 @@ useEffect(() => {
         onStartTour={() => setShowTour(true)}
         isOffline={isOffline}
         pendingCount={pendingCount}
+        activeFilterCount={activeFilters.length}
       />
 
       {filterSidebarOpen && (
@@ -2056,7 +2057,7 @@ useEffect(() => {
               ✖
             </button>
             <h2 className="text-xl font-semibold">Filters</h2>
-            <div className="flex flex-col space-y-4">
+            <div className="space-y-4">
               {/* Search moved to global toolbar */}
               <label htmlFor="archivedToggle" className="flex items-center space-x-2 text-sm mb-4">
                 <input
@@ -2068,87 +2069,89 @@ useEffect(() => {
                 />
                 <span>Show Archived</span>
               </label>
-              <div className="flex flex-col mb-4">
-                <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Vendor</label>
-                <select
-                  id="vendorSelect"
-                  value={selectedVendor}
-                  onChange={(e) => setSelectedVendor(e.target.value)}
-                  className="input"
-                >
-                  <option value="">All Vendors</option>
-                  {vendorList.map((vendor, idx) => (
-                    <option key={idx} value={vendor}>
-                      {vendor}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-col mb-4">
-                <label htmlFor="assigneeSelect" className="text-xs font-medium mb-1">Assignee</label>
-                <select
-                  id="assigneeSelect"
-                  value={selectedAssignee}
-                  onChange={(e) => setSelectedAssignee(e.target.value)}
-                  className="input"
-                >
-                  <option value="">All Assignees</option>
-                  <option value="unassigned">Unassigned</option>
-                  {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
-                    <option key={idx} value={person}>
-                      {person}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <fieldset className="flex flex-col mb-4 p-2 border border-gray-200 dark:border-gray-700 rounded">
-                <legend className="text-xs font-medium mb-2">Amount Range</legend>
-                <div className="flex flex-col mb-2">
-                  <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
-                  <input
-                    id="minAmount"
-                    type="number"
-                    min="0"
-                    value={minAmount}
-                    onChange={(e) => setMinAmount(e.target.value)}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Vendor</label>
+                  <select
+                    id="vendorSelect"
+                    value={selectedVendor}
+                    onChange={(e) => setSelectedVendor(e.target.value)}
                     className="input"
-                  />
+                  >
+                    <option value="">All Vendors</option>
+                    {vendorList.map((vendor, idx) => (
+                      <option key={idx} value={vendor}>
+                        {vendor}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
-                  <input
-                    id="maxAmount"
-                    type="number"
-                    min="0"
-                    value={maxAmount}
-                    onChange={(e) => setMaxAmount(e.target.value)}
+                  <label htmlFor="assigneeSelect" className="text-xs font-medium mb-1">Assignee</label>
+                  <select
+                    id="assigneeSelect"
+                    value={selectedAssignee}
+                    onChange={(e) => setSelectedAssignee(e.target.value)}
                     className="input"
-                  />
+                  >
+                    <option value="">All Assignees</option>
+                    <option value="unassigned">Unassigned</option>
+                    {[...new Set([...teamMembers, ...assigneeList])].map((person, idx) => (
+                      <option key={idx} value={person}>
+                        {person}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </fieldset>
-              <fieldset className="flex flex-col mb-4 p-2 border border-gray-200 dark:border-gray-700 rounded">
-                <legend className="text-xs font-medium mb-2">Date Range</legend>
-                <div className="flex flex-col mb-2">
-                  <label htmlFor="startDate" className="text-xs font-medium mb-1">Start Date</label>
-                  <input
-                    id="startDate"
-                    type="date"
-                    value={filterStartDate}
-                    onChange={(e) => setFilterStartDate(e.target.value)}
-                    className="input"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label htmlFor="endDate" className="text-xs font-medium mb-1">End Date</label>
-                  <input
-                    id="endDate"
-                    type="date"
-                    value={filterEndDate}
-                    onChange={(e) => setFilterEndDate(e.target.value)}
-                    className="input"
-                  />
-                </div>
-              </fieldset>
+                <fieldset className="flex flex-col p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <legend className="text-xs font-medium mb-2">Amount Range</legend>
+                  <div className="flex flex-col mb-2">
+                    <label htmlFor="minAmount" className="text-xs font-medium mb-1">Min Amount</label>
+                    <input
+                      id="minAmount"
+                      type="number"
+                      min="0"
+                      value={minAmount}
+                      onChange={(e) => setMinAmount(e.target.value)}
+                      className="input"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="maxAmount" className="text-xs font-medium mb-1">Max Amount</label>
+                    <input
+                      id="maxAmount"
+                      type="number"
+                      min="0"
+                      value={maxAmount}
+                      onChange={(e) => setMaxAmount(e.target.value)}
+                      className="input"
+                    />
+                  </div>
+                </fieldset>
+                <fieldset className="flex flex-col p-2 border border-gray-200 dark:border-gray-700 rounded">
+                  <legend className="text-xs font-medium mb-2">Date Range</legend>
+                  <div className="flex flex-col mb-2">
+                    <label htmlFor="startDate" className="text-xs font-medium mb-1">Start Date</label>
+                    <input
+                      id="startDate"
+                      type="date"
+                      value={filterStartDate}
+                      onChange={(e) => setFilterStartDate(e.target.value)}
+                      className="input"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="endDate" className="text-xs font-medium mb-1">End Date</label>
+                    <input
+                      id="endDate"
+                      type="date"
+                      value={filterEndDate}
+                      onChange={(e) => setFilterEndDate(e.target.value)}
+                      className="input"
+                    />
+                  </div>
+                </fieldset>
+              </div>
               <div className="flex space-x-2 mb-4">
                 <input
                   type="text"
@@ -2765,7 +2768,7 @@ useEffect(() => {
                 <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded border">
                   <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b p-2 flex flex-wrap items-center gap-2">
                     {activeFilters.map((f, idx) => (
-                      <span key={idx} className="bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 rounded">
+                      <span key={idx} className="bg-indigo-100 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-100 text-xs px-2 py-1 rounded">
                         {f}
                       </span>
                     ))}
