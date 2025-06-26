@@ -93,6 +93,23 @@
         },
         "responses": { "200": { "description": "Vendor suggestion" } }
       }
+    },
+    "/api/validation/validate-row": {
+      "post": {
+        "summary": "Validate an invoice row",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Validation result" } }
+      }
+    },
+    "/api/validation/rules": {
+      "get": { "summary": "List validation rules", "responses": { "200": { "description": "Rules" } } },
+      "post": { "summary": "Add validation rule", "responses": { "200": { "description": "Rule added" } } }
     }
   }
 }

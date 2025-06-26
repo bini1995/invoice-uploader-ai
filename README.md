@@ -33,6 +33,7 @@ npm install --legacy-peer-deps
 - CSV import/export for invoices and vendors
 - See a clean display of parsed invoices
 - Get validation feedback for bad rows
+- Real-time field validation highlights column errors as you type
 - AI-generated summaries of common CSV issues (via OpenRouter)
 - AI-generated summaries of common CSV issues with "Possible Fixes" and "Warnings"
 - Query invoices using natural language (via OpenRouter)

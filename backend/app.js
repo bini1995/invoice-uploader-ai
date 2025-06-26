@@ -28,6 +28,7 @@ const automationRoutes = require('./routes/automationRoutes');
 const tenantRoutes = require('./routes/tenantRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
+const validationRoutes = require('./routes/validationRoutes');
 const { auditLog } = require('./middleware/auditMiddleware');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
@@ -81,6 +82,7 @@ app.use('/api/automations', automationRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/invites', inviteRoutes);
+app.use('/api/validation', validationRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
