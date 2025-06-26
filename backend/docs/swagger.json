@@ -72,6 +72,27 @@
           "200": { "description": "Summary text" }
         }
       }
+    },
+    "/api/vendors/ai-match": {
+      "post": {
+        "summary": "AI vendor matching",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "vendor": { "type": "string" },
+                  "invoice_number": { "type": "string" },
+                  "amount": { "type": "number" }
+                },
+                "required": ["vendor"]
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Vendor suggestion" } }
+      }
     }
   }
 }

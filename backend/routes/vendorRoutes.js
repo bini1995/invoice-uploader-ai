@@ -5,6 +5,7 @@ const {
   updateVendorNotes,
   getVendorInfo,
   matchVendors,
+  aiVendorMatch,
   predictVendorBehavior,
   exportVendorsCSV,
   importVendorsCSV,
@@ -12,6 +13,7 @@ const {
   getVendorAnalytics,
   updateVendorCountry,
   getVendorRiskProfile,
+  vendorMatchFeedback,
 } = require('../controllers/vendorController');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -21,6 +23,8 @@ router.get('/', authMiddleware, listVendors);
 router.get('/export', authMiddleware, authorizeRoles('admin'), exportVendorsCSV);
 router.post('/import', authMiddleware, authorizeRoles('admin'), upload.single('file'), importVendorsCSV);
 router.get('/match', authMiddleware, matchVendors);
+router.post('/ai-match', authMiddleware, aiVendorMatch);
+router.post('/suggestions/:id/feedback', authMiddleware, vendorMatchFeedback);
 router.get('/behavior-flags', authMiddleware, authorizeRoles('admin'), getBehaviorFlags);
 router.patch('/:vendor/notes', authMiddleware, authorizeRoles('admin'), updateVendorNotes);
 router.get('/:vendor/info', authMiddleware, getVendorInfo);

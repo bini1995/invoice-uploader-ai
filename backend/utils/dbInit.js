@@ -104,6 +104,16 @@ async function initDb() {
       notes TEXT
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS vendor_suggestions (
+      id SERIAL PRIMARY KEY,
+      invoice_id INTEGER REFERENCES invoices(id) ON DELETE SET NULL,
+      input_vendor TEXT NOT NULL,
+      suggested_vendor TEXT NOT NULL,
+      confidence NUMERIC,
+      accepted BOOLEAN,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(`CREATE TABLE IF NOT EXISTS workflows (
       department TEXT PRIMARY KEY,
       approval_chain JSONB NOT NULL
