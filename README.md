@@ -241,6 +241,18 @@ CREATE TABLE purchase_orders (
 );
 ```
 
+Create a `cashflow_scenarios` table to store saved payment delay simulations:
+
+```sql
+CREATE TABLE cashflow_scenarios (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  delay_days INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
 ### Auto-Archive Rule
 
 The backend automatically archives invoices older than 90 days
@@ -304,6 +316,9 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `POST /api/invoices/payment-behavior` – predict expected payment date and confidence
 - `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
 - `POST /api/invoices/cash-flow/scenario` – recalculate cash flow under payment delay scenarios
+- `GET /api/scenarios` – list saved cash flow scenarios
+- `POST /api/scenarios` – save a cash flow scenario
+- `GET /api/scenarios/:id` – run a saved scenario
 - `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
 - `GET /api/invoices/:id/payment-request` – download a JSON payload for a payment request form
 - `GET /api/invoices/:id/payment-request/pdf` – download a PDF payment request
