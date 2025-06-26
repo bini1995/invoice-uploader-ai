@@ -3,7 +3,7 @@ const path = require('path');
 const pool = require('../config/db');
 
 exports.uploadLogo = (req, res) => {
-  const tenantId = req.params.tenantId || 'default';
+  const tenantId = req.tenantId;
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
@@ -17,7 +17,7 @@ exports.uploadLogo = (req, res) => {
 };
 
 exports.getLogo = (req, res) => {
-  const tenantId = req.params.tenantId || 'default';
+  const tenantId = req.tenantId;
   const file = path.join(__dirname, '../uploads/logos', `${tenantId}.png`);
   if (fs.existsSync(file)) {
     return res.sendFile(file);
@@ -26,7 +26,7 @@ exports.getLogo = (req, res) => {
 };
 
 exports.setAccentColor = async (req, res) => {
-  const tenantId = req.params.tenantId || 'default';
+  const tenantId = req.tenantId;
   const { color } = req.body || {};
   if (!color) return res.status(400).json({ message: 'Color required' });
   try {
@@ -44,7 +44,7 @@ exports.setAccentColor = async (req, res) => {
 };
 
 exports.getAccentColor = async (req, res) => {
-  const tenantId = req.params.tenantId || 'default';
+  const tenantId = req.tenantId;
   try {
     const { rows } = await pool.query(
       'SELECT accent_color FROM tenant_branding WHERE tenant_id = $1',

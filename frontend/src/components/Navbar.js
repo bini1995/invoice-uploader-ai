@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
@@ -42,6 +42,7 @@ export default function Navbar({
   const [userOpen, setUserOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [darkMode, setDarkMode] = useDarkMode();
+  const [tenantName, setTenantName] = useState(tenant);
   const menuRef = useRef(null);
   const userRef = useRef(null);
   useOutsideClick(menuRef, () => setMenuOpen(false));
@@ -54,6 +55,14 @@ export default function Navbar({
     .filter(Boolean)
     .map((c) => c[0].toUpperCase() + c.slice(1));
 
+  useEffect(() => {
+    if (!token) return;
+    fetch(`/api/tenants/${tenant}/info`, { headers: { Authorization: `Bearer ${token}`, 'X-Tenant-Id': tenant } })
+      .then(r => r.ok ? r.json() : { name: tenant })
+      .then(d => setTenantName(d.name || tenant))
+      .catch(() => setTenantName(tenant));
+  }, [tenant, token]);
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow z-20">
       <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
@@ -61,6 +70,7 @@ export default function Navbar({
           <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img src={`/api/${tenant}/logo`} alt="logo" className="h-5 w-5" />
             <span className="font-semibold text-sm">{t('title')}</span>
+            <span className="ml-1 text-xs opacity-80">{tenantName}</span>
           </Link>
           {crumbs.length > 0 && (
             <span className="text-xs opacity-80">/ {crumbs.join(' / ')}</span>

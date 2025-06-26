@@ -239,6 +239,14 @@ async function initDb() {
       accent_color TEXT
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS tenants (
+      tenant_id TEXT PRIMARY KEY,
+      name TEXT NOT NULL
+    )`);
+    await pool.query(
+      `INSERT INTO tenants (tenant_id, name) VALUES ('default','Default Account') ON CONFLICT (tenant_id) DO NOTHING`
+    );
+
     await pool.query(`CREATE TABLE IF NOT EXISTS vendor_profiles (
       vendor TEXT PRIMARY KEY,
       country TEXT

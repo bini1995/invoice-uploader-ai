@@ -3,7 +3,7 @@ const pool = require('../config/db');
 
 exports.getTemplates = async (req, res) => {
   const userId = req.user?.userId;
-  const tenantId = req.params.tenantId || 'default';
+  const tenantId = req.tenantId;
   try {
     const result = await pool.query(
       'SELECT id, name, columns FROM export_templates WHERE user_id = $1 AND tenant_id = $2 ORDER BY id DESC',
@@ -18,7 +18,7 @@ exports.getTemplates = async (req, res) => {
 
 exports.createTemplate = async (req, res) => {
   const userId = req.user?.userId;
-  const tenantId = req.params.tenantId || 'default';
+  const tenantId = req.tenantId;
   const { name, columns } = req.body || {};
   if (!name || !Array.isArray(columns) || columns.length === 0) {
     return res.status(400).json({ message: 'name and columns required' });
@@ -49,7 +49,7 @@ exports.deleteTemplate = async (req, res) => {
 
 exports.exportWithTemplate = async (req, res) => {
   const userId = req.user?.userId;
-  const tenantId = req.params.tenantId || 'default';
+  const tenantId = req.tenantId;
   const id = parseInt(req.params.id, 10);
   try {
     const tpl = await pool.query(
