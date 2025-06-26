@@ -34,6 +34,8 @@ import ProblemSolutionSection from './components/ProblemSolutionSection';
 import ScheduleDemoModal from './components/ScheduleDemoModal';
 import SocialProofSection from './components/SocialProofSection';
 import CsvUploadFlowDemo from './components/CsvUploadFlowDemo';
+import BlogSection from './components/BlogSection';
+import ChatWidget from './components/ChatWidget';
 
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false);
@@ -295,6 +297,7 @@ export default function LandingPage() {
           ]}
         />
       </section>
+      <BlogSection />
       <section className="py-12 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-2">Security &amp; Compliance</h2>
         <p className="text-center mb-8 text-indigo-600 dark:text-indigo-400 font-medium">
@@ -515,6 +518,7 @@ export default function LandingPage() {
           © {new Date().getFullYear()} Invoice Uploader AI
         </p>
       </footer>
+      <ChatWidget />
       <ScheduleDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   );
