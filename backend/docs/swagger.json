@@ -48,6 +48,30 @@
           "200": { "description": "Upload result" }
         }
       }
+    },
+    "/api/invoices/summarize-errors": {
+      "post": {
+        "summary": "AI summarize CSV errors",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "errors": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                },
+                "required": ["errors"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Summary text" }
+        }
+      }
     }
   }
 }
