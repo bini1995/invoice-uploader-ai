@@ -90,6 +90,83 @@ exports.matchVendors = async (req, res) => {
   }
 };
 
+exports.aiVendorMatch = async (req, res) => {
+  const { vendor, invoice_id, invoice_number, amount } = req.body || {};
+  if (!vendor)
+    return res.status(400).json({ message: 'Missing vendor text.' });
+  try {
+    const result = await pool.query('SELECT DISTINCT vendor FROM invoices');
+    const matches = result.rows
+      .map((r) => ({
+        vendor: r.vendor,
+        distance: levenshtein.get(r.vendor.toLowerCase(), vendor.toLowerCase()),
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 5);
+    let best = matches[0];
+    let suggestion = best.vendor;
+    let confidence = 1 - best.distance / Math.max(best.vendor.length, vendor.length);
+
+    if (process.env.OPENROUTER_API_KEY) {
+      try {
+        const prompt = `Vendor text: "${vendor}". Possible matches: ${matches
+          .map((m) => m.vendor)
+          .join(', ')}. Invoice #: ${invoice_number || 'unknown'}, Amount: $$
+          {amount || 'unknown'}. Respond with JSON {"vendor": "name", "confidence": 0-1}.`;
+        const aiRes = await axios.post(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            model: 'openai/gpt-3.5-turbo',
+            messages: [
+              { role: 'system', content: 'You pick the best vendor match.' },
+              { role: 'user', content: prompt },
+            ],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+              'X-Title': 'invoice-uploader-ai',
+            },
+          }
+        );
+        const parsed = JSON.parse(aiRes.data.choices?.[0]?.message?.content || '{}');
+        if (parsed.vendor) suggestion = parsed.vendor;
+        if (parsed.confidence) confidence = parseFloat(parsed.confidence);
+      } catch (e) {
+        console.error('AI vendor match error:', e.response?.data || e.message);
+      }
+    }
+
+    const insert = await pool.query(
+      `INSERT INTO vendor_suggestions (invoice_id, input_vendor, suggested_vendor, confidence)
+       VALUES ($1,$2,$3,$4) RETURNING id`,
+      [invoice_id || null, vendor, suggestion, confidence]
+    );
+
+    res.json({ suggestion_id: insert.rows[0].id, vendor: suggestion, confidence });
+  } catch (err) {
+    console.error('Vendor AI match error:', err);
+    res.status(500).json({ message: 'Failed to match vendor' });
+  }
+};
+
+exports.vendorMatchFeedback = async (req, res) => {
+  const { id } = req.params;
+  const { accepted } = req.body || {};
+  if (!id || typeof accepted === 'undefined') {
+    return res.status(400).json({ message: 'Missing suggestion id or accepted' });
+  }
+  try {
+    await pool.query('UPDATE vendor_suggestions SET accepted = $1 WHERE id = $2', [accepted, id]);
+    res.json({ message: 'Feedback recorded' });
+  } catch (err) {
+    console.error('Vendor match feedback error:', err);
+    res.status(500).json({ message: 'Failed to record feedback' });
+  }
+};
+
 exports.predictVendorBehavior = async (req, res) => {
   const { vendor } = req.params;
   try {

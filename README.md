@@ -115,6 +115,7 @@ npm install --legacy-peer-deps
 - Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
 - Vendor management page with notes and spending totals per vendor
 - Smart vendor matching for inconsistent spellings
+- AI vendor matching with confidence scores and accept/reject feedback
 - Team member roles view with profile avatars
 - Shareable collaborator mode with comment-only or editor access
 - Export template builder for custom CSV layouts
@@ -388,6 +389,25 @@ Example response:
 
 ```json
 { "summary": "Row 1 is missing a vendor name. Row 2 has an invalid amount." }
+```
+
+### AI Vendor Matching
+
+Get AI help choosing the correct vendor when names are incomplete or misspelled.
+
+```bash
+POST /api/vendors/ai-match
+{
+  "vendor": "Acme Co",
+  "invoice_number": "12345",
+  "amount": 99.50
+}
+```
+
+Example response:
+
+```json
+{ "suggestion_id": 1, "vendor": "Acme Corporation", "confidence": 0.92 }
 ```
 
 ### Payment Request Form
