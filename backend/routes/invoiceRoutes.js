@@ -99,6 +99,7 @@ const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/
 const { smartSearchParse } = require('../controllers/aiController');
 const { flagSuspiciousInvoice } = require('../controllers/invoiceController');
 const { getActivityLogs, getInvoiceTimeline, exportComplianceReport, exportInvoiceHistory, exportVendorHistory } = require('../controllers/activityController');
+const { getAuditTrail, updateAuditEntry, deleteAuditEntry } = require('../controllers/auditController');
 const { setBudget, getBudgets, checkBudgetWarnings, getBudgetVsActual, getBudgetForecast } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
 const { detectPatterns, fraudHeatmap, mlDetect, labelFraud } = require('../controllers/fraudController');
@@ -199,6 +200,9 @@ router.get('/logs/export', authMiddleware, authorizeRoles('admin'), exportCompli
 router.get('/logs/invoice/:id/export', authMiddleware, authorizeRoles('admin'), exportInvoiceHistory);
 router.get('/logs/vendor/:vendor/export', authMiddleware, authorizeRoles('admin'), exportVendorHistory);
 router.get('/:id/timeline', authMiddleware, getInvoiceTimeline);
+router.get('/audit', authMiddleware, authorizeRoles('admin'), getAuditTrail);
+router.patch('/audit/:id', authMiddleware, authorizeRoles('admin'), updateAuditEntry);
+router.delete('/audit/:id', authMiddleware, authorizeRoles('admin'), deleteAuditEntry);
 router.post('/budgets', authMiddleware, authorizeRoles('admin'), setBudget);
 router.get('/budgets', authMiddleware, authorizeRoles('admin'), getBudgets);
 router.get('/budgets/warnings', authMiddleware, checkBudgetWarnings);
