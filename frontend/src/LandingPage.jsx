@@ -47,7 +47,7 @@ export default function LandingPage() {
         <div className="container mx-auto flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
             <DocumentArrowUpIcon className="w-6 h-6 text-indigo-600" />
-            <span className="font-bold text-lg">Invoice Uploader AI</span>
+            <span className="font-bold text-lg">ClarifyOps</span>
           </div>
           <div className="hidden md:flex items-center space-x-6 text-sm">
             <a href="#product" className="hover:text-indigo-600">Product</a>
@@ -102,7 +102,7 @@ export default function LandingPage() {
             <thead>
               <tr>
                 <th className="border-b px-4 py-2 text-left">Feature</th>
-                <th className="border-b px-4 py-2">Invoice Uploader AI</th>
+                <th className="border-b px-4 py-2">ClarifyOps</th>
                 <th className="border-b px-4 py-2">Competitor A</th>
                 <th className="border-b px-4 py-2">Competitor B</th>
               </tr>
@@ -374,7 +374,7 @@ export default function LandingPage() {
                 <a href="#about" className="hover:underline">About</a>
               </li>
               <li>
-                <a href="mailto:contact@example.com" className="hover:underline">Contact</a>
+                <a href="mailto:contact@clarifyops.com" className="hover:underline">Contact</a>
               </li>
               <li>
                 <Link to="/blog" className="hover:underline">Blog</Link>
@@ -416,7 +416,7 @@ export default function LandingPage() {
           </div>
         </div>
         <p className="text-center mt-8 text-xs">
-          © {new Date().getFullYear()} Invoice Uploader AI
+          © {new Date().getFullYear()} ClarifyOps
         </p>
       </footer>
       <ChatWidget />
