@@ -2244,7 +2244,7 @@ useEffect(() => {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-1">
             <DocumentArrowDownIcon className="w-6 h-6" />
-            <span>Invoice Uploader AI</span>
+            <span>ClarifyOps</span>
           </h1>
           <LiveFeed token={token} tenant={tenant} />
         </div>

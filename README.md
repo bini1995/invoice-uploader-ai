@@ -1,4 +1,4 @@
-# Invoice Uploader + AI Error Summarizer
+# ClarifyOps Invoice Uploader + AI Error Summarizer
 
 This is a full-stack invoice uploader tool with AI-powered CSV error summarization, built using:
 
