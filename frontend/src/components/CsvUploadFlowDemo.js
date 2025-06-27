@@ -25,7 +25,7 @@ export default function CsvUploadFlowDemo() {
       setIndex((i) => (i + 1) % steps.length);
     }, 2500);
     return () => clearInterval(id);
-  }, []);
+  }, [steps.length]);
 
   const { title, img } = steps[index];
 

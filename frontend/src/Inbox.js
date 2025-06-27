@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import { motion } from 'framer-motion';
@@ -17,7 +17,7 @@ export default function Inbox() {
 
   const headers = { Authorization: `Bearer ${token}` };
 
-  const fetchInvoices = async () => {
+  const fetchInvoices = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     try {
@@ -28,9 +28,11 @@ export default function Inbox() {
       console.error('Inbox fetch error:', err);
     }
     setLoading(false);
-  };
+  }, [token, tenant]);
 
-  useEffect(() => { fetchInvoices(); }, [token, tenant]);
+  useEffect(() => {
+    fetchInvoices();
+  }, [fetchInvoices]);
 
   const approve = async (id) => {
     await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/approve`, {

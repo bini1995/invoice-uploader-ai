@@ -44,7 +44,7 @@ export default function CollaborativeCommentInput({ invoiceId, onSubmit, onChang
       provider.destroy();
       ydoc.destroy();
     };
-  }, [invoiceId]);
+  }, [invoiceId, onChange]);
 
   const updateCursor = () => {
     const ta = textareaRef.current;

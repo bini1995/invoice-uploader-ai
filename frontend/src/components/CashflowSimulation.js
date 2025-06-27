@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Skeleton from './Skeleton';
 import { API_BASE } from '../api';
@@ -9,7 +9,7 @@ export default function CashflowSimulation({ token }) {
   const [loading, setLoading] = useState(false);
   const [scenarios, setScenarios] = useState([]);
 
-  const runSim = async (d) => {
+  const runSim = useCallback(async (d) => {
     if (!token) return;
     setLoading(true);
     const res = await fetch(`${API_BASE}/api/invoices/cash-flow/scenario`, {
@@ -20,16 +20,16 @@ export default function CashflowSimulation({ token }) {
     const data = await res.json();
     if (res.ok) setResult(data);
     setLoading(false);
-  };
+  }, [token]);
 
-  const fetchScenarios = async () => {
+  const fetchScenarios = useCallback(async () => {
     if (!token) return;
     const res = await fetch(`${API_BASE}/api/scenarios`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     if (res.ok) setScenarios(data.scenarios || []);
-  };
+  }, [token]);
 
   const saveScenario = async () => {
     if (!token) return;
@@ -41,8 +41,12 @@ export default function CashflowSimulation({ token }) {
     fetchScenarios();
   };
 
-  useEffect(() => { runSim(delay); }, [delay]);
-  useEffect(() => { fetchScenarios(); }, [token]);
+  useEffect(() => {
+    runSim(delay);
+  }, [delay, runSim]);
+  useEffect(() => {
+    fetchScenarios();
+  }, [token, fetchScenarios]);
 
   const chartData = () => {
     if (!result) return [];

@@ -12,7 +12,7 @@ export default function Login({ onLogin, addToast }) {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch('/api/invoices/login', {
+      const res = await fetch(`${API_BASE}/api/invoices/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
