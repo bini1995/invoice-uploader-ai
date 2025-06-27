@@ -19,7 +19,7 @@ function Reports() {
   const [rules, setRules] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
 
-  const fetchHeatmap = async () => {
+  const fetchHeatmap = useCallback(async () => {
     setLoadingHeatmap(true);
     const params = new URLSearchParams();
     if (vendor) params.append('vendor', vendor);
@@ -33,7 +33,7 @@ function Reports() {
     const data = await res.json();
     if (res.ok) setHeatmap(data.heatmap || []);
     setLoadingHeatmap(false);
-  };
+  }, [vendor, startDate, endDate, minAmount, maxAmount, token]);
 
   const fetchReport = async (s = startDate, e = endDate) => {
     setLoadingReport(true);
@@ -100,7 +100,7 @@ function Reports() {
     if (token) {
       fetchHeatmap();
     }
-  }, [token]);
+  }, [fetchHeatmap, token]);
 
   const runReport = () => {
     fetchReport();

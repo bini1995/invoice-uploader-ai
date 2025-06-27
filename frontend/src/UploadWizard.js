@@ -124,7 +124,7 @@ export default function UploadWizard() {
     if (step === 4) {
       rows.forEach((_, idx) => handleSuggest(idx));
     }
-  }, [step]);
+  }, [step, rows, handleSuggest]);
 
   return (
     <MainLayout title="Upload Wizard">

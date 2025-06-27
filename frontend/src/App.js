@@ -266,16 +266,17 @@ const socket = useMemo(() => io(API_BASE), []);
   }, [searchTerm, smartQuery, selectedVendor, selectedAssignee, minAmount, maxAmount, filterStartDate, filterEndDate, showArchived]);
 
 
-  const addToast = (
-    text,
-    type = 'success',
-    options = { duration: 3000, actionText: null, onAction: null }
-  ) => {
-    const id = Date.now();
-    const toast = {
-      id,
+  const addToast = useCallback(
+    (
       text,
-      type,
+      type = 'success',
+      options = { duration: 3000, actionText: null, onAction: null }
+    ) => {
+      const id = Date.now();
+      const toast = {
+        id,
+        text,
+        type,
       actionText: options.actionText,
       onAction: options.onAction,
     };
@@ -284,8 +285,10 @@ const socket = useMemo(() => io(API_BASE), []);
       setToasts((t) => t.filter((toast) => toast.id !== id));
     }, options.duration);
 
-    return () => clearTimeout(timeout);
-  };
+      return () => clearTimeout(timeout);
+    },
+    []
+  );
 
   const addNotification = (text) => {
     const n = { id: Date.now(), text, read: false };

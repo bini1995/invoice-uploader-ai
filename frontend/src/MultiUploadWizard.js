@@ -14,7 +14,6 @@ export default function MultiUploadWizard() {
   const [active, setActive] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const required = ['invoice_number','date','amount','vendor'];
 
   const validateRow = async(row)=>{
     try{

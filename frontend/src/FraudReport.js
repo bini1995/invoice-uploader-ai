@@ -12,7 +12,7 @@ function FraudReport() {
   const fetchFlagged = useCallback(async () => {
     if (!token) return;
     setLoading(true);
-    const res = await fetch('http://localhost:3000/api/invoices/fraud/flagged', {
+    const res = await fetch(`${API_BASE}/api/invoices/fraud/flagged`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -21,7 +21,7 @@ function FraudReport() {
   }, [token]);
 
   const loadExplanation = async (id) => {
-    const res = await fetch(`http://localhost:3000/api/invoices/${id}/flag-explanation`, {
+    const res = await fetch(`${API_BASE}/api/invoices/${id}/flag-explanation`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
