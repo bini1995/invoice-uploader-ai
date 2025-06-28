@@ -31,7 +31,7 @@ import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import BulkSummary from './components/BulkSummary';
 import ActionToolbar from './components/ActionToolbar';
-import FloatingActionPanel from './components/FloatingActionPanel';
+import AIAssistantPanel from './components/AIAssistantPanel';
 import InvoiceSnapshotView from './components/InvoiceSnapshotView';
 import SuccessAnimation from './components/SuccessAnimation';
 import Joyride from 'react-joyride';
@@ -50,6 +50,10 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   ArrowUturnUpIcon,
+  ChatBubbleLeftRightIcon,
+  DocumentTextIcon,
+  FingerPrintIcon,
+  Squares2X2Icon,
   CheckCircleIcon,
   ClockIcon,
   CurrencyDollarIcon,
@@ -61,6 +65,7 @@ import {
   TrashIcon,
   XCircleIcon,
   CloudArrowUpIcon,
+  MicrophoneIcon,
 } from '@heroicons/react/24/outline';
 
 const teamMembers = ['Alice', 'Bob', 'Charlie'];
@@ -1406,6 +1411,11 @@ useEffect(() => {
       setLoadingAssistant(false);
     }
   };
+
+  const handleSummary = () => addToast('Summary builder coming soon');
+  const handlePattern = () => addToast('Pattern recognition coming soon');
+  const handleCategorize = () => addToast('Automated categorization coming soon');
+  const handleTagging = () => addToast('Smart tagging & routing coming soon');
   
 
   const handleDelete = (id) => {
@@ -3349,11 +3359,22 @@ useEffect(() => {
       </main>
       {token && (
         <>
-          <FloatingActionPanel
-            onUpload={openUploadPreview}
+          <button
+            onClick={openUploadPreview}
+            className="fixed bottom-4 right-20 p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white z-30"
+            title="Upload Invoice"
+            aria-label="Upload invoice"
+          >
+            <ArrowUpTrayIcon className="w-6 h-6" />
+          </button>
+          <AIAssistantPanel
             onAsk={() => setAssistantOpen(true)}
             onVoice={startVoiceCommand}
             onFeature={() => setFeatureOpen(true)}
+            onSummary={handleSummary}
+            onPattern={handlePattern}
+            onCategorize={handleCategorize}
+            onTagging={handleTagging}
           />
           <ChatSidebar
             open={assistantOpen}
