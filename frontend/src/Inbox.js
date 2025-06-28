@@ -229,9 +229,15 @@ export default function Inbox() {
     <MainLayout title="Inbox" helpTopic="inbox" collapseSidebar={focusMode}>
       {selectedRows.length > 0 && (
         <div className="mb-2 flex gap-2">
-          <button onClick={bulkApprove} className="btn bg-green-600 text-white text-xs">Approve All</button>
-          <button onClick={bulkReject} className="btn bg-red-600 text-white text-xs">Reject All</button>
-          <button onClick={bulkAssign} className="btn bg-indigo-600 text-white text-xs">Assign</button>
+          <button onClick={bulkApprove} className="btn btn-ghost text-xs flex items-center gap-1">
+            <CheckCircleIcon className="w-4 h-4" /> Approve All
+          </button>
+          <button onClick={bulkReject} className="btn btn-ghost text-xs flex items-center gap-1">
+            <XCircleIcon className="w-4 h-4" /> Reject All
+          </button>
+          <button onClick={bulkAssign} className="btn btn-ghost text-xs flex items-center gap-1">
+            <Cog6ToothIcon className="w-4 h-4" /> Assign
+          </button>
         </div>
       )}
       <div className="flex flex-wrap gap-4 mb-4 items-end">
@@ -282,26 +288,26 @@ export default function Inbox() {
       <table className="min-w-full text-sm border rounded-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center">
-            <th className="px-2 py-2">
+            <th className="px-3 py-4">
               <input type="checkbox" onChange={toggleSelectAll} checked={selectedRows.length === sortedInvoices.length && sortedInvoices.length > 0} />
             </th>
-            <th className="px-2 py-2"></th>
-            <th className="px-2 py-2" title="Invoice #">
+            <th className="px-3 py-4"></th>
+            <th className="px-3 py-4" title="Invoice #">
               <DocumentTextIcon className="w-4 h-4 mx-auto" />
               <span className="sr-only">Invoice #</span>
             </th>
-            <th className="px-2 py-2" title="Vendor">
+            <th className="px-3 py-4" title="Vendor">
               <BuildingOfficeIcon className="w-4 h-4 mx-auto" />
               <span className="sr-only">Vendor</span>
             </th>
-            <th className="px-2 py-2" title="Amount">
+            <th className="px-3 py-4" title="Amount">
               <CurrencyDollarIcon className="w-4 h-4 mx-auto" />
               <span className="sr-only">Amount</span>
             </th>
-            <th className="px-2 py-2">Status</th>
-            <th className="px-2 py-2">Assignee</th>
-            <th className="px-2 py-2">AI</th>
-            <th className="px-2 py-2" title="Set status">
+            <th className="px-3 py-4">Status</th>
+            <th className="px-3 py-4">Assignee</th>
+            <th className="px-3 py-4">AI</th>
+            <th className="px-3 py-4" title="Set status">
               <Cog6ToothIcon className="w-4 h-4 mx-auto" />
               <span className="sr-only">Set status</span>
             </th>
@@ -324,7 +330,7 @@ export default function Inbox() {
               return (
                 <React.Fragment key={inv.id}>
                   <motion.tr
-                    className={`border-t hover:bg-gray-50 hover:shadow-sm transition-shadow ${borderColor} border-l-4`}
+                    className={`border-t transition-shadow ${borderColor} border-l-4 odd:bg-gray-50 even:bg-gray-100 hover:bg-gray-200`}
                     drag="x"
                     dragConstraints={{ left: -120, right: 0 }}
                     onDragEnd={(e, info) => {
@@ -332,33 +338,33 @@ export default function Inbox() {
                     }}
                     whileDrag={{ scale: 1.02 }}
                   >
-                    <td className="px-2 py-2 text-center">
+                    <td className="px-3 py-4 text-center">
                       <input type="checkbox" checked={selectedRows.includes(inv.id)} onChange={() => toggleSelect(inv.id)} />
                     </td>
-                    <td className="px-2 py-2 text-center">
+                    <td className="px-3 py-4 text-center">
                       <button onClick={() => toggleExpand(inv.id)}>
                         <ChevronDownIcon className={`w-4 h-4 transition-transform ${expandedRows.includes(inv.id) ? 'rotate-180' : ''}`} />
                       </button>
                     </td>
-                    <td className="px-3 py-2">{inv.invoice_number}</td>
-                    <td className="px-3 py-2">{inv.vendor}</td>
-                    <td className="px-3 py-2">${inv.amount}</td>
-                    <td className="px-3 py-2">{statusBadge(status)}</td>
-                    <td className="px-3 py-2 text-center">
+                    <td className="px-3 py-4">{inv.invoice_number}</td>
+                    <td className="px-3 py-4">{inv.vendor}</td>
+                    <td className="px-3 py-4">${inv.amount}</td>
+                    <td className="px-3 py-4">{statusBadge(status)}</td>
+                    <td className="px-3 py-4 text-center">
                       {inv.assignee ? (
                         <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${inv.assignee}`} alt={inv.assignee} className="h-6 w-6 rounded-full mx-auto" />
                       ) : (
                         <span className="text-xs text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="px-3 py-2 text-center">
+                    <td className="px-3 py-4 text-center">
                       {inv.flag_reason && (
                         <Tippy content={`AI flag: ${inv.flag_reason}`}>
                           <LightBulbIcon className="w-4 h-4 text-yellow-500 inline" />
                         </Tippy>
                       )}
                     </td>
-                    <td className="px-3 py-2 space-x-1 flex justify-center relative">
+                    <td className="px-3 py-4 space-x-1 flex justify-center relative">
                       <select
                         value={inv.approval_status || 'Pending'}
                         onChange={(e) => updateStatus(inv.id, e.target.value)}
@@ -370,7 +376,7 @@ export default function Inbox() {
                       </select>
                       <button
                         onClick={() => openCopilot(inv)}
-                        className="btn bg-indigo-600 hover:bg-indigo-700 text-white p-1 relative"
+                        className="btn btn-ghost p-1 relative"
                         title="Chat"
                       >
                         <ChatBubbleLeftRightIcon className="w-4 h-4" />
@@ -380,7 +386,7 @@ export default function Inbox() {
                       </button>
                       <button
                         onClick={() => suggestAction(inv.id)}
-                        className="btn bg-yellow-500 hover:bg-yellow-600 text-white p-1"
+                        className="btn btn-ghost p-1"
                         title="Suggest"
                       >
                         <LightBulbIcon className="w-4 h-4" />
@@ -388,7 +394,7 @@ export default function Inbox() {
                     </td>
                   </motion.tr>
                   {expandedRows.includes(inv.id) && (
-                    <tr className="bg-gray-50">
+                    <tr className="bg-gray-100">
                       <td></td>
                       <td colSpan="8" className="px-4 py-2 text-xs text-left">
                         PO#: {inv.po_number || inv.po_id || 'N/A'} | Tags: {inv.tags?.join(', ') || 'None'} | Uploaded:{' '}

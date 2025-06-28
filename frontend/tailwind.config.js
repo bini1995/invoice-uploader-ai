@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"InterVariable"', 'Inter', 'ui-sans-serif', 'system-ui'],
+        sans: ['"InterVariable"', 'Inter', '"Work Sans"', 'ui-sans-serif', 'system-ui'],
       },
       colors: {
         primary: colors.indigo,
