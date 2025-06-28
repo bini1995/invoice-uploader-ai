@@ -16,7 +16,7 @@ exports.listVendors = async (_req, res) => {
     );
     const notesRes = await pool.query('SELECT vendor, notes FROM vendor_notes');
     const profileRes = await pool.query(
-      'SELECT vendor, contact_email, category FROM vendor_profiles'
+      'SELECT vendor, contact_email, category, contact_name FROM vendor_profiles'
     );
 
     const map = {};
@@ -35,6 +35,7 @@ exports.listVendors = async (_req, res) => {
       if (!map[r.vendor]) map[r.vendor] = { vendor: r.vendor, total_spend: 0 };
       map[r.vendor].contact_email = r.contact_email || '';
       map[r.vendor].category = r.category || '';
+      map[r.vendor].contact_name = r.contact_name || '';
     });
 
     const vendors = Object.values(map).sort((a, b) =>
@@ -338,12 +339,18 @@ exports.getVendorAnalytics = async (req, res) => {
     const total = parseInt(riskRes.rows[0].total, 10) || 1;
     const risk = Math.round((overdue / total) * 100);
     const quality = 100 - risk;
+    const notesRes = await pool.query('SELECT notes FROM vendor_notes WHERE vendor=$1', [vendor]);
+    const profileRes = await pool.query('SELECT contact_email, category, contact_name FROM vendor_profiles WHERE vendor=$1', [vendor]);
     res.json({
       invoices: invoicesRes.rows,
       avg_payment_time: avgPay,
       spend: spendRes.rows.map(r => ({ month: r.month, total: parseFloat(r.total) })),
       risk_score: risk,
       quality_score: quality,
+      notes: notesRes.rows[0]?.notes ? decryptSensitive(notesRes.rows[0].notes) : '',
+      contact_email: profileRes.rows[0]?.contact_email || '',
+      contact_name: profileRes.rows[0]?.contact_name || '',
+      category: profileRes.rows[0]?.category || ''
     });
   } catch (err) {
     console.error('Vendor analytics error:', err);
@@ -371,18 +378,19 @@ exports.updateVendorCountry = async (req, res) => {
 
 exports.updateVendorProfile = async (req, res) => {
   const { vendor } = req.params;
-  const { contact_email, category } = req.body || {};
-  if (!contact_email && !category) {
+  const { contact_email, category, contact_name } = req.body || {};
+  if (!contact_email && !category && !contact_name) {
     return res.status(400).json({ message: 'no fields provided' });
   }
   try {
     await pool.query(
-      `INSERT INTO vendor_profiles (vendor, contact_email, category)
-       VALUES ($1,$2,$3)
+      `INSERT INTO vendor_profiles (vendor, contact_email, category, contact_name)
+       VALUES ($1,$2,$3,$4)
        ON CONFLICT (vendor) DO UPDATE SET
          contact_email = COALESCE($2, vendor_profiles.contact_email),
-         category = COALESCE($3, vendor_profiles.category)`,
-      [vendor, contact_email || null, category || null]
+         category = COALESCE($3, vendor_profiles.category),
+         contact_name = COALESCE($4, vendor_profiles.contact_name)`,
+      [vendor, contact_email || null, category || null, contact_name || null]
     );
     res.json({ message: 'Profile updated' });
   } catch (err) {

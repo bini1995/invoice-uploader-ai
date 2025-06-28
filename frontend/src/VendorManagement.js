@@ -4,6 +4,7 @@ import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import InvoiceDetailModal from './components/InvoiceDetailModal';
+import VendorDetailModal from './components/VendorDetailModal';
 import {
   PencilSquareIcon,
   DocumentChartBarIcon,
@@ -22,6 +23,7 @@ function VendorManagement() {
   const [newVendor, setNewVendor] = useState('');
   const [newNotes, setNewNotes] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [newContactName, setNewContactName] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [filterSpend, setFilterSpend] = useState('');
   const [filterLastDate, setFilterLastDate] = useState('');
@@ -32,6 +34,7 @@ function VendorManagement() {
   const [showTop, setShowTop] = useState(false);
   const [profileVendor, setProfileVendor] = useState(null);
   const [detailInvoice, setDetailInvoice] = useState(null);
+  const [detailVendor, setDetailVendor] = useState(null);
 
   const headers = useMemo(
     () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }),
@@ -74,12 +77,13 @@ function VendorManagement() {
     await fetch(`${API_BASE}/api/vendors/${encodeURIComponent(newVendor)}/profile`, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify({ contact_email: newEmail, category: newCategory })
+      body: JSON.stringify({ contact_email: newEmail, category: newCategory, contact_name: newContactName })
     });
     setShowAdd(false);
     setNewVendor('');
     setNewNotes('');
     setNewEmail('');
+    setNewContactName('');
     setNewCategory('');
     fetchVendors();
   };
@@ -153,6 +157,12 @@ function VendorManagement() {
               placeholder="Notes"
               value={newNotes}
               onChange={e => setNewNotes(e.target.value)}
+            />
+            <input
+              className="input w-full"
+              placeholder="Contact name"
+              value={newContactName}
+              onChange={e => setNewContactName(e.target.value)}
             />
             <input
               className="input w-full"
@@ -273,7 +283,7 @@ function VendorManagement() {
                 </td>
                 <td className="p-2 flex space-x-2">
                   <button onClick={() => setEditingVendor(v.vendor)} title="Edit"><PencilSquareIcon className="w-4 h-4" /></button>
-                  <button onClick={() => setProfileVendor(v.vendor)} title="Dashboard"><DocumentChartBarIcon className="w-4 h-4" /></button>
+                  <button onClick={() => setDetailVendor(v.vendor)} title="Details"><DocumentChartBarIcon className="w-4 h-4" /></button>
                   <button onClick={() => navigate(`/invoices?vendor=${encodeURIComponent(v.vendor)}`)} title="View Invoices"><EyeIcon className="w-4 h-4" /></button>
                   <button onClick={async () => { if (window.confirm('Delete vendor?')) { await fetch(`${API_BASE}/api/vendors/${encodeURIComponent(v.vendor)}`, { method: 'DELETE', headers }); fetchVendors(); } }} title="Delete"><TrashIcon className="w-4 h-4 text-red-600" /></button>
                 </td>
@@ -284,6 +294,7 @@ function VendorManagement() {
       </table>
       </div>
       <VendorProfilePanel vendor={profileVendor} open={!!profileVendor} onClose={() => setProfileVendor(null)} token={token} />
+      <VendorDetailModal vendor={detailVendor} open={!!detailVendor} onClose={() => setDetailVendor(null)} token={token} />
       <InvoiceDetailModal open={!!detailInvoice} invoice={detailInvoice} onClose={() => setDetailInvoice(null)} token={token} onUpdate={() => {}} />
     </MainLayout>
   );
