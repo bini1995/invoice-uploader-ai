@@ -30,6 +30,7 @@ import SuggestionChips from './components/SuggestionChips';
 import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import BulkSummary from './components/BulkSummary';
+import ActionToolbar from './components/ActionToolbar';
 import FloatingActionPanel from './components/FloatingActionPanel';
 import InvoiceSnapshotView from './components/InvoiceSnapshotView';
 import SuccessAnimation from './components/SuccessAnimation';
@@ -2491,138 +2492,26 @@ useEffect(() => {
                         </div>
                       )}
 
-                     {/* Upload/Export Action Buttons */}
-                      <div className="flex flex-col mt-6 gap-4">
-                        <h2 className="text-xl font-bold text-gray-800 mb-2">Invoice Actions</h2>
-                        <hr className="mb-4" />
-                        <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl shadow-lg bg-white dark:bg-gray-800">
-                          {role === 'admin' && (
-                            <Button
-                              onClick={handleUpload}
-                              disabled={!token}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                            >
-                              <ArrowUpTrayIcon className="w-4 h-4" />
-                              <span>{loading ? 'Submitting...' : 'Submit'}</span>
-                            </Button>
-                          )}
+                     {/* Action Toolbar */}
+                      <ActionToolbar
+                        role={role}
+                        token={token}
+                        loading={loading}
+                        loadingVendor={loadingVendor}
+                        loadingInsights={loadingInsights}
+                        onUpload={handleUpload}
+                        onVendorSummary={handleVendorSummary}
+                        onMonthlyInsights={handleMonthlyInsights}
+                        onExportFiltered={handleExport}
+                        onExportAll={handleExportAll}
+                        onExportDashboard={handleExportDashboardPDF}
+                        onExportArchived={handleExportArchived}
+                        onReset={handleResetFilters}
+                        onClear={handleClearAll}
+                        onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
+                        activeFilterCount={activeFilters.length}
+                      />
 
-                          <div className="flex flex-wrap items-center gap-2 border-l pl-4">
-                            <Button
-                              onClick={handleVendorSummary}
-                              disabled={!token}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                              title="Vendor Insights"
-                            >
-                              <LightBulbIcon className="w-4 h-4" />
-                              <span>{loadingVendor ? 'Loading...' : 'Vendor'}</span>
-                            </Button>
-                            <Button
-                              onClick={handleMonthlyInsights}
-                              disabled={!token}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                              title="Monthly Insights"
-                            >
-                              <ClockIcon className="w-4 h-4" />
-                              <span>{loadingInsights ? 'Loading...' : 'Monthly'}</span>
-                            </Button>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-2 border-l pl-4">
-                            <Button
-                              onClick={handleExport}
-                              disabled={!token}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                            >
-                              <ArrowDownTrayIcon className="w-4 h-4" />
-                              <span>Filtered CSV</span>
-                            </Button>
-                            <Button
-                              onClick={handleExportAll}
-                              disabled={!token}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                            >
-                              <ArrowDownTrayIcon className="w-4 h-4" />
-                              <span>All CSV</span>
-                            </Button>
-                            <Button
-                              onClick={handleExportDashboardPDF}
-                              disabled={!token}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                            >
-                              <DocumentArrowDownIcon className="w-4 h-4" />
-                              <span>Dashboard</span>
-                            </Button>
-                            <Button
-                              onClick={handleExportArchived}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                            >
-                              <ArchiveBoxIcon className="w-4 h-4" />
-                              <span>Archived</span>
-                            </Button>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-2 border-l pl-4">
-                            <Button
-                              onClick={handleResetFilters}
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center space-x-1"
-                              title="Reset Filters"
-                            >
-                              <ArrowPathIcon className="w-4 h-4" />
-                              <span>Reset</span>
-                            </Button>
-                            {role === 'admin' && (
-                              <Button
-                                onClick={handleClearAll}
-                                disabled={!token}
-                                variant="outline"
-                                size="sm"
-                                className="flex items-center space-x-1 text-red-600"
-                              >
-                                <TrashIcon className="w-4 h-4" />
-                                <span>Clear</span>
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-
-                      </div>
-
-                      {vendorList.length > 0 && (
-                          <div className="mb-4">
-                            <label className="mr-2 font-medium">Filter by Vendor:</label>
-                            <select
-                              value={selectedVendor}
-                              onChange={(e) => setSelectedVendor(e.target.value)}
-                              className="input p-1"
-                            >
-                              <option value="">All Vendors</option>
-                              {vendorList.map((vendor, idx) => (
-                                <option key={idx} value={vendor}>
-                                  {vendor}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
-
-             
                       <div className="flex justify-end mb-2 space-x-4">
                         <button
                           onClick={() => setShowChart(!showChart)}
