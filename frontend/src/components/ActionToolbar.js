@@ -35,13 +35,11 @@ export default function ActionToolbar({
 }) {
   const [exportOpen, setExportOpen] = useState(false);
   const [insightsOpen, setInsightsOpen] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(false);
   const exportRef = useRef(null);
   const insightsRef = useRef(null);
   const filterRef = useRef(null);
   useOutsideClick(exportRef, () => setExportOpen(false));
   useOutsideClick(insightsRef, () => setInsightsOpen(false));
-  useOutsideClick(filterRef, () => setFilterOpen(false));
 
   return (
     <div className="sticky top-16 z-10 bg-white dark:bg-gray-800 border-b p-2 flex items-center gap-2 shadow">
@@ -110,7 +108,6 @@ export default function ActionToolbar({
           <Button
             onClick={() => {
               if (onToggleFilters) onToggleFilters();
-              else setFilterOpen((o) => !o);
             }}
             size="icon"
             variant="outline"
