@@ -28,7 +28,7 @@ export default function Inbox() {
       console.error('Inbox fetch error:', err);
     }
     setLoading(false);
-  }, [token, tenant]);
+  }, [token, tenant, headers]);
 
   useEffect(() => {
     fetchInvoices();
