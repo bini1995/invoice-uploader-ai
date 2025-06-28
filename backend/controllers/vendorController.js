@@ -12,19 +12,19 @@ const countryRisk = {
 exports.listVendors = async (_req, res) => {
   try {
     const result = await pool.query(`
-      SELECT i.vendor,
+      SELECT COALESCE(v.vendor, i.vendor) AS vendor,
              MAX(i.date) AS last_invoice,
              SUM(i.amount) AS total_spend,
-             v.notes
+             MAX(v.notes) AS notes
       FROM invoices i
-      LEFT JOIN vendor_notes v ON LOWER(v.vendor) = LOWER(i.vendor)
-      GROUP BY i.vendor, v.notes
-      ORDER BY i.vendor
+      FULL OUTER JOIN vendor_notes v ON LOWER(v.vendor) = LOWER(i.vendor)
+      GROUP BY COALESCE(v.vendor, i.vendor)
+      ORDER BY vendor
     `);
     const vendors = result.rows.map(r => ({
       vendor: r.vendor,
       last_invoice: r.last_invoice,
-      total_spend: parseFloat(r.total_spend),
+      total_spend: parseFloat(r.total_spend) || 0,
       notes: r.notes ? decryptSensitive(r.notes) : ''
     }));
     res.json({ vendors });
