@@ -35,6 +35,7 @@ function VendorManagement() {
   const [profileVendor, setProfileVendor] = useState(null);
   const [detailInvoice, setDetailInvoice] = useState(null);
   const [detailVendor, setDetailVendor] = useState(null);
+  const [duplicates, setDuplicates] = useState([]);
 
   const headers = useMemo(
     () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }),
@@ -55,7 +56,16 @@ function VendorManagement() {
     setLoading(false);
   }, [headers, showTop]);
 
+  const fetchDuplicates = useCallback(async () => {
+    const res = await fetch(`${API_BASE}/api/vendors/duplicates`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      setDuplicates(data.duplicates || []);
+    }
+  }, [headers]);
+
   useEffect(() => { if (token) fetchVendors(); }, [fetchVendors, token, showTop]);
+  useEffect(() => { if (token) fetchDuplicates(); }, [fetchDuplicates, token]);
 
   const saveNotes = async (vendor) => {
     const notes = notesInput[vendor] ?? '';
@@ -187,6 +197,16 @@ function VendorManagement() {
           </div>
         </div>
       )}
+      {duplicates.length > 0 && (
+        <div className="bg-yellow-100 dark:bg-yellow-900 p-2 rounded mb-2 text-sm">
+          <p className="font-semibold mb-1">Possible Duplicates:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            {duplicates.map((d, i) => (
+              <li key={i}>{d.vendor1} &amp; {d.vendor2}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="flex flex-wrap gap-4 items-end mt-4 mb-2">
         <div>
           <label className="text-sm">Min Spend</label>
@@ -223,6 +243,7 @@ function VendorManagement() {
             <th className="p-2">Status</th>
             <th className="p-2">Contact Email</th>
             <th className="p-2">Category</th>
+            <th className="p-2">Tags</th>
             <th className="p-2">Notes</th>
             <th className="p-2">Actions</th>
           </tr>
@@ -230,7 +251,7 @@ function VendorManagement() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="6" className="p-4"><Skeleton rows={5} height="h-4" /></td>
+              <td colSpan="9" className="p-4"><Skeleton rows={5} height="h-4" /></td>
             </tr>
           ) : (
             filteredVendors.map(v => (
@@ -264,6 +285,11 @@ function VendorManagement() {
                 </td>
                 <td className="p-2">{v.contact_email || '-'}</td>
                 <td className="p-2">{v.category || '-'}</td>
+                <td className="p-2 space-x-1">
+                  {v.tags && v.tags.map((t, i) => (
+                    <span key={i} className="bg-gray-200 dark:bg-gray-600 px-1 rounded text-xs">{t}</span>
+                  ))}
+                </td>
                 <td className="p-2">
                   {editingVendor === v.vendor ? (
                     <div className="space-y-1">
