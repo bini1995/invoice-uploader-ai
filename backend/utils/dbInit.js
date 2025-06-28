@@ -258,8 +258,12 @@ async function initDb() {
 
     await pool.query(`CREATE TABLE IF NOT EXISTS vendor_profiles (
       vendor TEXT PRIMARY KEY,
-      country TEXT
+      country TEXT,
+      contact_email TEXT,
+      category TEXT
     )`);
+    await pool.query(`ALTER TABLE vendor_profiles ADD COLUMN IF NOT EXISTS contact_email TEXT`);
+    await pool.query(`ALTER TABLE vendor_profiles ADD COLUMN IF NOT EXISTS category TEXT`);
 
     await pool.query(`CREATE TABLE IF NOT EXISTS report_schedules (
       id SERIAL PRIMARY KEY,
