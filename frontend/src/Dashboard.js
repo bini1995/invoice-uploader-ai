@@ -22,6 +22,7 @@ import VendorProfilePanel from './components/VendorProfilePanel';
 import MainLayout from './components/MainLayout';
 import StatCard from './components/StatCard.jsx';
 import LiveFeed from './components/LiveFeed';
+import OnboardingChecklist from './components/OnboardingChecklist';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowTrendingUpIcon,
@@ -62,6 +63,7 @@ function Dashboard() {
   const [insights, setInsights] = useState([]);
   const [trends, setTrends] = useState([]);
   const [flaggedTrend, setFlaggedTrend] = useState([]);
+  const [graphView, setGraphView] = useState('spend');
   const [pendingInvoices, setPendingInvoices] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -405,7 +407,7 @@ function Dashboard() {
           <div className="h-64">
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
-            ) : (
+            ) : vendors.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -418,6 +420,8 @@ function Dashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               </motion.div>
+            ) : (
+              <p className="text-center mt-24 text-sm text-gray-600">No vendor data yet</p>
             )}
           </div>
           <div className="h-64">
@@ -434,7 +438,7 @@ function Dashboard() {
             </div>
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
-            ) : (
+            ) : cashFlow.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={cashFlow}>
@@ -446,6 +450,8 @@ function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </motion.div>
+            ) : (
+              <p className="text-center mt-24 text-sm text-gray-600">No cash flow data</p>
             )}
           </div>
           <div>
@@ -489,11 +495,22 @@ function Dashboard() {
         </div>
         <div>
           <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Trends &amp; Insights</h2>
+          <div className="text-right mb-1 text-sm">
+            View:
+            <select
+              value={graphView}
+              onChange={(e) => setGraphView(e.target.value)}
+              className="ml-1 border p-1 text-sm"
+            >
+              <option value="spend">Spend Trends</option>
+              <option value="anomaly">Anomaly Trend</option>
+            </select>
+          </div>
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="h-48">
+            <div className="h-48 md:col-span-2">
               {loading ? (
                 <Skeleton rows={1} className="h-full" />
-              ) : (
+              ) : graphView === 'spend' ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={trends}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -503,10 +520,7 @@ function Dashboard() {
                     <Line type="monotone" dataKey="total" stroke="#3b82f6" />
                   </LineChart>
                 </ResponsiveContainer>
-              )}
-            </div>
-            <div className="h-48">
-              {flaggedTrend.length ? (
+              ) : flaggedTrend.length ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={flaggedTrend}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -517,7 +531,7 @@ function Dashboard() {
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-sm text-gray-600">No flagged invoices</p>
+                <p className="text-sm text-gray-600 mt-16">No flagged invoices</p>
               )}
             </div>
             <div>
@@ -533,7 +547,7 @@ function Dashboard() {
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Spend by Category</h2>
             {loading ? (
               <Skeleton rows={1} className="h-64" />
-            ) : (
+            ) : categories.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
@@ -546,6 +560,8 @@ function Dashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               </motion.div>
+            ) : (
+              <p className="text-center mt-24 text-sm text-gray-600">No category data</p>
             )}
           </div>
           <div>
@@ -570,7 +586,7 @@ function Dashboard() {
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Budget vs Actual</h2>
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
-            ) : (
+            ) : budget.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={budget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -583,13 +599,15 @@ function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </motion.div>
+            ) : (
+              <p className="text-center mt-24 text-sm text-gray-600">No budget data</p>
             )}
           </div>
           <div className="h-64">
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Remaining Budget</h2>
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
-            ) : (
+            ) : remainingBudget.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={remainingBudget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -601,13 +619,15 @@ function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </motion.div>
+            ) : (
+              <p className="text-center mt-24 text-sm text-gray-600">No budget data</p>
             )}
           </div>
           <div className="h-64">
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Budget Forecast</h2>
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
-            ) : (
+            ) : budgetForecast.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={budgetForecast} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -621,15 +641,20 @@ function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </motion.div>
-          )}
+            ) : (
+              <p className="text-center mt-24 text-sm text-gray-600">No forecast data</p>
+            )}
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <div>
-            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">AI Activity Feed</h2>
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">AI Assistant Feed</h2>
             <LiveFeed token={token} tenant={tenant} />
           </div>
+          <OnboardingChecklist />
           <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Alerts &amp; Tasks</h2>
+            <h2 className="text-lg font-semibold mb-2 flex items-center text-gray-800 dark:text-gray-100">
+              <ExclamationTriangleIcon className="w-5 h-5 text-red-500 mr-1" /> Alerts &amp; Tasks
+            </h2>
             <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300">
               {tasks.length ? tasks.map((t, i) => (<li key={i}>{t}</li>)) : <li>No tasks</li>}
             </ul>
