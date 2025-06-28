@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import DataTable from './components/DataTable';
 import { API_BASE } from './api';
 
 function Archive() {
@@ -53,6 +54,38 @@ function Archive() {
     }
   };
 
+  const columns = useMemo(
+    () => [
+      { accessorKey: 'invoice_number', header: '#' },
+      {
+        accessorKey: 'date',
+        header: 'Date',
+        cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+      },
+      { accessorKey: 'vendor', header: 'Vendor' },
+      {
+        accessorKey: 'amount',
+        header: 'Amount',
+        cell: (info) => `$${info.getValue()}`,
+      },
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => (
+          <button
+            onClick={() => handleRestore(row.original.id)}
+            className="btn btn-primary text-xs px-2 py-1"
+            title="Restore"
+          >
+            Restore
+          </button>
+        ),
+        size: 100,
+      },
+    ],
+    [handleRestore]
+  );
+
   return (
     <MainLayout title="Invoice Archive" helpTopic="archive">
       <div className="space-y-4">
@@ -66,38 +99,19 @@ function Archive() {
           </label>
         </div>
         <div className="overflow-x-auto rounded-lg">
-        <table className="min-w-full border text-sm rounded-lg overflow-hidden">
-          <thead>
-            <tr className="bg-gray-200 dark:bg-gray-700">
-              <th className="px-2 py-1">#</th>
-              <th className="px-2 py-1">Date</th>
-              <th className="px-2 py-1">Vendor</th>
-              <th className="px-2 py-1">Amount</th>
-              <th className="px-2 py-1">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="5" className="p-4"><Skeleton rows={5} height="h-4" /></td>
-              </tr>
-            ) : (
-              filtered.map((inv) => (
-                <tr key={inv.id} className="border-t hover:bg-gray-100">
-                  <td className="px-2 py-1">{inv.invoice_number}</td>
-                  <td className="px-2 py-1">{new Date(inv.date).toLocaleDateString()}</td>
-                  <td className="px-2 py-1">{inv.vendor}</td>
-                  <td className="px-2 py-1">${inv.amount}</td>
-                  <td className="px-2 py-1">
-                    <button onClick={() => handleRestore(inv.id)} className="btn btn-primary text-xs px-2 py-1" title="Restore">
-                      Restore
-                    </button>
+          {loading ? (
+            <table className="min-w-full border text-sm rounded-lg overflow-hidden">
+              <tbody>
+                <tr>
+                  <td colSpan="5" className="p-4">
+                    <Skeleton rows={5} height="h-4" />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </tbody>
+            </table>
+          ) : (
+            <DataTable columns={columns} data={filtered} />
+          )}
         </div>
       </div>
     </MainLayout>

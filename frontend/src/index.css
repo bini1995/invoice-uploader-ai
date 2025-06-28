@@ -91,3 +91,17 @@ code {
 .high-contrast .card {
   @apply bg-black text-yellow-300 border border-yellow-400;
 }
+
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+.resizer.isResizing {
+  background-color: rgb(156 163 175); /* gray-400 */
+}
