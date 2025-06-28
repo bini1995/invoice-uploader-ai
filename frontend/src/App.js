@@ -18,6 +18,7 @@ import {
 } from 'recharts';
 import Login from './Login';
 import Spinner from './components/Spinner';
+import DateRangeSlider from './components/ui/DateRangeSlider';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
@@ -2197,6 +2198,14 @@ useEffect(() => {
                       className="input"
                     />
                   </div>
+                  <DateRangeSlider
+                    startDate={filterStartDate}
+                    endDate={filterEndDate}
+                    onChange={([start, end]) => {
+                      setFilterStartDate(start);
+                      setFilterEndDate(end);
+                    }}
+                  />
                 </fieldset>
               </div>
               <div className="flex space-x-2 mb-4">
