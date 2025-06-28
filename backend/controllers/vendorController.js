@@ -38,9 +38,26 @@ exports.listVendors = async (_req, res) => {
       map[r.vendor].contact_name = r.contact_name || '';
     });
 
+    const lateRes = await pool.query(
+      `SELECT vendor, COUNT(*) AS overdue
+       FROM invoices
+       WHERE due_date < NOW() AND payment_status != 'Paid'
+       GROUP BY vendor`
+    );
+    const overdueMap = {};
+    lateRes.rows.forEach((r) => {
+      overdueMap[r.vendor] = parseInt(r.overdue, 10);
+    });
+
     const vendors = Object.values(map).sort((a, b) =>
       a.vendor.localeCompare(b.vendor)
     );
+    vendors.forEach((v) => {
+      v.tags = [];
+      if (overdueMap[v.vendor] > 0) v.tags.push('Late Payer');
+      if (!v.last_invoice || (Date.now() - new Date(v.last_invoice)) / 86400000 > 90)
+        v.tags.push('Inactive 90+ Days');
+    });
     res.json({ vendors });
   } catch (err) {
     console.error('List vendors error:', err);
@@ -446,5 +463,54 @@ exports.getVendorRiskProfile = async (req, res) => {
   } catch (err) {
     console.error('Vendor risk error:', err);
     res.status(500).json({ message: 'Failed to compute risk' });
+  }
+};
+
+exports.getDuplicateVendors = async (_req, res) => {
+  try {
+    const result = await pool.query('SELECT DISTINCT vendor FROM invoices');
+    const vendors = result.rows.map((r) => r.vendor);
+    const duplicates = [];
+    for (let i = 0; i < vendors.length; i++) {
+      for (let j = i + 1; j < vendors.length; j++) {
+        const a = vendors[i];
+        const b = vendors[j];
+        if (!a || !b) continue;
+        const dist = levenshtein.get(a.toLowerCase(), b.toLowerCase());
+        const thresh = Math.floor(Math.min(a.length, b.length) * 0.3);
+        if (dist > 0 && dist <= thresh) duplicates.push({ vendor1: a, vendor2: b, distance: dist });
+      }
+    }
+    res.json({ duplicates });
+  } catch (err) {
+    console.error('Vendor duplicate detect error:', err);
+    res.status(500).json({ message: 'Failed to detect duplicates' });
+  }
+};
+
+exports.getVendorAnomalies = async (req, res) => {
+  const { vendor } = req.params;
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+  try {
+    const { rows } = await pool.query(
+      `SELECT DATE_TRUNC('month', date) AS m, SUM(amount) AS total
+       FROM invoices WHERE LOWER(vendor)=LOWER($1) AND date >= $2
+       GROUP BY m ORDER BY m`,
+      [vendor, start]
+    );
+    const months = rows.map((r) => ({ month: r.m, total: parseFloat(r.total) }));
+    const anomalies = [];
+    for (let i = 1; i < months.length; i++) {
+      const prev = months.slice(0, i).map((m) => m.total);
+      const avg = prev.reduce((a, b) => a + b, 0) / prev.length;
+      if (avg && months[i].total > avg * 1.5) {
+        anomalies.push({ month: months[i].month, total: months[i].total, avg });
+      }
+    }
+    res.json({ months, anomalies });
+  } catch (err) {
+    console.error('Vendor anomaly history error:', err);
+    res.status(500).json({ message: 'Failed to fetch anomaly history' });
   }
 };

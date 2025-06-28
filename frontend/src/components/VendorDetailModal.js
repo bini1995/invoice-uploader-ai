@@ -4,6 +4,7 @@ import { API_BASE } from '../api';
 export default function VendorDetailModal({ vendor, open, onClose, token }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [anomalies, setAnomalies] = useState([]);
 
   useEffect(() => {
     if (!open || !vendor) return;
@@ -12,9 +13,11 @@ export default function VendorDetailModal({ vendor, open, onClose, token }) {
     Promise.all([
       fetch(`${API_BASE}/api/vendors/${encodeURIComponent(vendor)}/profile`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/vendors/${encodeURIComponent(vendor)}/info`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/vendors/${encodeURIComponent(vendor)}/anomalies`, { headers }).then(r => r.json()),
     ])
-      .then(([profile, info]) => {
+      .then(([profile, info, anomaly]) => {
         setData({ ...profile, info });
+        setAnomalies(anomaly?.anomalies || []);
       })
       .catch(err => console.error('Vendor detail error:', err))
       .finally(() => setLoading(false));
@@ -46,6 +49,19 @@ export default function VendorDetailModal({ vendor, open, onClose, token }) {
             <div className="text-sm mb-1"><span className="font-medium">Health:</span> {health}</div>
             <div className="text-sm mb-1"><span className="font-medium">Notes:</span> {data?.notes || 'None'}</div>
             <div className="text-sm mb-2"><span className="font-medium">Info:</span> {data?.info?.description || '-'}</div>
+            {anomalies.length > 0 && (
+              <div className="mb-2">
+                <h3 className="font-semibold text-sm mb-1">Anomaly History</h3>
+                <ul className="text-sm max-h-32 overflow-y-auto space-y-1">
+                  {anomalies.map((a, i) => (
+                    <li key={i} className="border-b pb-1">
+                      {new Date(a.month).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })} - ${' '}
+                      {a.total.toFixed(2)} (avg {a.avg.toFixed(2)})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div>
               <h3 className="font-semibold text-sm mb-1">Invoice Timeline</h3>
               <ul className="text-sm max-h-40 overflow-y-auto space-y-1">
