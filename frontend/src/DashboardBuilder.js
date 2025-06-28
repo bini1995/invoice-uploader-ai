@@ -39,7 +39,11 @@ export default function DashboardBuilder() {
           const id = list[0].id;
           fetch(`${API_BASE}/api/invoices/${id}/timeline`, { headers })
             .then((res) => res.json())
-            .then((data) => setTimeline(data))
+            .then((data) => {
+              if (Array.isArray(data)) setTimeline(data);
+              else if (Array.isArray(data.timeline)) setTimeline(data.timeline);
+              else setTimeline([]);
+            })
             .catch(() => {});
         }
       })
@@ -124,9 +128,12 @@ export default function DashboardBuilder() {
                           <>
                             <h2 className="text-lg font-semibold mb-2">Approval Timeline</h2>
                             <ul className="text-sm max-h-48 overflow-y-auto">
-                              {timeline.map((t, i) => (
-                                <li key={i}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
-                              ))}
+                              {Array.isArray(timeline) &&
+                                timeline.map((t, i) => (
+                                  <li key={i}>
+                                    {new Date(t.created_at).toLocaleString()} - {t.action}
+                                  </li>
+                                ))}
                             </ul>
                           </>
                         )}
