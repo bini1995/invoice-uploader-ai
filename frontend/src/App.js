@@ -406,9 +406,7 @@ const socket = useMemo(() => io(API_BASE), []);
       } finally {
         setLoadingInvoices(false);
       }
-  },
-  [token, socket]
-  );
+  }, [token, socket, addToast]);
 
   const handleArchive = useCallback(
     (id) => {
@@ -435,9 +433,7 @@ const socket = useMemo(() => io(API_BASE), []);
           }
         },
       });
-    },
-    [token]
-  );
+  }, [token, addToast]);
 
   const handleUnarchive = async (id) => {
     try {
@@ -482,7 +478,7 @@ const socket = useMemo(() => io(API_BASE), []);
       console.error('🚩 Flagging failed:', err);
       addToast('🚩 ⚠️ Failed to flag invoice.', 'error');
     }
-  }, [token]);
+  }, [token, addToast]);
 
   const syncPendingActions = useCallback(async () => {
     const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
@@ -594,7 +590,7 @@ const socket = useMemo(() => io(API_BASE), []);
     return () => {
       window.fetch = orig;
     };
-  }, [tenant, token, syncPendingActions]);
+  }, [tenant, token, syncPendingActions, addToast]);
 
   useEffect(() => {
     const goOnline = () => {
@@ -1216,7 +1212,7 @@ useEffect(() => {
       console.error('Cash flow fetch error:', err);
       addToast('Failed to fetch cash flow', 'error');
     }
-  }, [token, cashFlowInterval]);
+  }, [token, cashFlowInterval, addToast]);
 
   const fetchTopVendors = useCallback(async () => {
     try {
@@ -1243,7 +1239,7 @@ useEffect(() => {
       console.error('Top vendors fetch error:', err);
       addToast('Failed to fetch top vendors', 'error');
     }
-  }, [token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
+  }, [token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, addToast]);
 
   const fetchTagReport = useCallback(async () => {
     try {
@@ -1269,7 +1265,7 @@ useEffect(() => {
       console.error('Tag report fetch error:', err);
       addToast('Failed to fetch tag report', 'error');
     }
-  }, [token, filterType, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount]);
+  }, [token, filterType, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, addToast]);
 
   useEffect(() => {
     if (showChart && token) {
