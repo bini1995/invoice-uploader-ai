@@ -6,6 +6,14 @@ import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import MainLayout from './components/MainLayout';
+import StatCard from './components/StatCard.jsx';
+import { useNavigate } from 'react-router-dom';
+import {
+  ArrowTrendingUpIcon,
+  InboxIcon,
+  ExclamationTriangleIcon,
+  SparklesIcon,
+} from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
@@ -28,8 +36,10 @@ function Dashboard() {
   const [budget, setBudget] = useState([]);
   const [remainingBudget, setRemainingBudget] = useState([]);
   const [budgetForecast, setBudgetForecast] = useState([]);
+  const [insights, setInsights] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [cashFlowInterval, setCashFlowInterval] = useState(
     () => localStorage.getItem('dashboardCashFlowInterval') || 'monthly'
   );
@@ -106,6 +116,11 @@ function Dashboard() {
         .then(({ ok, d }) => {
           if (ok) setStats(d);
         }),
+      fetch(`${API_BASE}/api/invoices/monthly-insights`, { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) setInsights(d.vendorTotals || []);
+        }),
       fetch(`${API_BASE}/api/analytics/approvals/stats`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
@@ -160,6 +175,14 @@ function Dashboard() {
       return next;
     });
   };
+
+  const percentChange = React.useMemo(() => {
+    if (cashFlow.length < 2) return 0;
+    const last = cashFlow[cashFlow.length - 1].total;
+    const prev = cashFlow[cashFlow.length - 2].total || 0;
+    if (prev === 0) return 0;
+    return ((last - prev) / prev) * 100;
+  }, [cashFlow]);
 
   const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
   let max = 0;
@@ -230,23 +253,53 @@ function Dashboard() {
                       hiddenMetrics.has(m) ? null : (
                         <Draggable key={m} draggableId={m} index={index} isDragDisabled={!customizeOpen}>
                           {(prov) => (
-                            <motion.div
-                              ref={prov.innerRef}
-                              {...prov.draggableProps}
-                              {...prov.dragHandleProps}
-                              whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.15)' }}
-                              className="p-4 bg-white dark:bg-gray-800 rounded shadow transition"
-                            >
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {METRIC_LABELS[m]}
-                              </div>
-                              <div className="text-xl font-semibold">
-                                {m === 'total' && (stats?.totalInvoicedThisMonth?.toFixed(2) || 0)}
-                                {m === 'pending' && (stats?.invoicesPending || 0)}
-                                {m === 'anomalies' && (stats?.anomaliesFound || 0)}
-                                {m === 'ai' && (stats?.aiSuggestions || 0)}
-                              </div>
-                            </motion.div>
+                            <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
+                              {m === 'total' && (
+                                <StatCard
+                                  icon={<ArrowTrendingUpIcon className="w-5 h-5" />}
+                                  title="Total Invoiced"
+                                  value={`$${stats?.totalInvoicedThisMonth?.toFixed(2) || 0}`}
+                                  subtext={`${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(1)}% from last month`}
+                                  trend={percentChange}
+                                  cta="View Report"
+                                  onCta={() => navigate('/analytics')}
+                                />
+                              )}
+                              {m === 'pending' && (
+                                <StatCard
+                                  icon={<InboxIcon className="w-5 h-5" />}
+                                  title="Invoices Pending"
+                                  value={stats?.invoicesPending || 0}
+                                  cta="Go to Inbox"
+                                  onCta={() => navigate('/inbox')}
+                                />
+                              )}
+                              {m === 'anomalies' && (
+                                <StatCard
+                                  icon={<ExclamationTriangleIcon className="w-5 h-5" />}
+                                  title="Anomalies Found"
+                                  value={stats?.anomaliesFound || 0}
+                                  badge={stats?.anomaliesFound > 0}
+                                  cta={stats?.anomaliesFound > 0 ? 'Review Now' : undefined}
+                                  onCta={() => navigate('/audit')}
+                                />
+                              )}
+                              {m === 'ai' && (
+                                <StatCard
+                                  icon={<SparklesIcon className="w-5 h-5" />}
+                                  title="AI Suggestions"
+                                  value={stats?.aiSuggestions || 0}
+                                  cta="Explore Suggestions"
+                                  onCta={() => navigate('/analytics')}
+                                >
+                                  {insights && insights.slice(0, 2).map((v) => (
+                                    <div key={v.vendor} className="text-xs text-gray-500">
+                                      {v.vendor}: ${v.total.toFixed(2)}
+                                    </div>
+                                  ))}
+                                </StatCard>
+                              )}
+                            </div>
                           )}
                         </Draggable>
                       )
