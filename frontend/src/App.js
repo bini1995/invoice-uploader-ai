@@ -3263,118 +3263,142 @@ useEffect(() => {
                     Array.from({ length: 4 }).map((_, idx) => (
                       <div key={idx} className="h-32 bg-gray-200 rounded animate-pulse" />
                     ))
-                  ) : sortedInvoices.map((inv) => (
-                    <div
-                    key={inv.id}
-                    onClick={() => openInvoiceDetails(inv)}
-                    className={`border rounded-lg p-4 shadow-md flex flex-col space-y-2 ${
-                      inv.archived ? 'bg-gray-100 text-gray-600 italic' : 'bg-white'
-                    } ${
-                      role === 'approver' && (inv.approval_status || 'Pending') === 'Pending'
-                        ? 'bg-yellow-100 dark:bg-yellow-900'
-                        : ''
-                    }`}
-                  >
-                      <img src="/logo192.png" alt="preview" className="w-full h-32 object-contain rounded" />
-                      <div className="text-sm font-semibold">#{inv.invoice_number} {duplicateFlags[inv.id] && <span className="text-yellow-500">⚠️</span>} {inv.flagged && <FlaggedBadge id={inv.id} />}</div>
-                      <div className="text-sm">💰 {inv.amount}</div>
-                      <div className="text-sm">📅 {new Date(inv.date).toLocaleDateString()}</div>
-                      <div className="text-sm">🏢 {inv.vendor}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setVendorPanelVendor(inv.vendor); }}
-                          className="ml-1 text-indigo-600 underline text-xs"
-                          title="Profile"
-                        >
-                          Info
-                        </button>
-                      </div>
-                      <TagEditor
-                        tags={inv.tags || []}
-                        colorMap={tagColors}
-                        onAddTag={(tag) => handleAddTag(inv.id, tag)}
-                        onRemoveTag={(tag) => handleRemoveTag(inv.id, tag)}
-                      />
-                      <div className="mt-2 flex flex-wrap gap-2">
-                      {!inv.archived && role === 'approver' && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleArchive(inv.id); }}
-                          className="bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"
-                          title="Archive"
-                        >
-                          <ArchiveBoxIcon className="w-4 h-4" />
-                        </button>
-                      )}
-                      {role === 'admin' && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleDelete(inv.id); }}
-                          className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
-                          title="Delete"
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </button>
-                      )}
-                      {(role === 'approver' || role === 'admin') && (
-                        <>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleApprove(inv.id); }}
-                            className="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
-                            title="Approve"
-                          >
-                            <CheckCircleIcon className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleReject(inv.id); }}
-                            className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
-                            title="Reject"
-                          >
-                            <XCircleIcon className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handlePaymentRequest(inv.id); }}
-                            className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
-                            disabled={paymentRequestId === inv.id}
-                          >
-                            {paymentRequestId === inv.id ? (
-                              <Spinner className="h-3 w-3" />
-                            ) : (
-                              <CurrencyDollarIcon className="w-4 h-4" />
-                            )}
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleExplainInvoice(inv); }}
-                            className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
-                            title="Explain"
-                          >
-                            🧠
-                          </button>
-                        </>
-                      )}
-                    </div>
-
-                    <div className="text-xs mt-1">Status: {inv.approval_status || 'Pending'}</div>
-                    <div className="mt-1 space-y-1">
-                      {inv.comments?.map((c, i) => (
-                        <div key={i} className="text-xs bg-gray-100 rounded p-1">{c.text}</div>
-                      ))}
-                      {role !== 'viewer' && (
-                        <div className="flex mt-1">
-                          <CollaborativeCommentInput
-                            invoiceId={inv.id}
-                            onChange={(v) => setCommentInputs((p) => ({ ...p, [inv.id]: v }))}
-                            onSubmit={(text) => { handleAddComment(inv.id, text); }}
-                          />
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleAddComment(inv.id, commentInputs[inv.id]); }}
-                            className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded"
-                          >
-                            Post
-                          </button>
+                  ) : sortedInvoices.map((inv) => {
+                    const status = inv.flagged ? 'Flagged' : inv.approval_status || 'Pending';
+                    const statusClass =
+                      status === 'Approved'
+                        ? 'text-green-800 bg-green-100'
+                        : status === 'Flagged' || status === 'Rejected'
+                        ? 'text-red-800 bg-red-100'
+                        : 'text-yellow-800 bg-yellow-100';
+                    return (
+                      <div
+                        key={inv.id}
+                        onClick={() => openInvoiceDetails(inv)}
+                        className={`border rounded-lg p-4 shadow-md flex flex-col h-full space-y-2 ${
+                          inv.archived ? 'bg-gray-100 text-gray-600 italic' : 'bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <img src="/logo192.png" alt="logo" className="w-8 h-8 object-contain rounded" />
+                          <span className="text-sm font-semibold">{inv.vendor}</span>
                         </div>
-                      )}
-                    </div>
-
-                    </div>
-                  ))}
+                        <div className="flex-1 text-sm space-y-1">
+                          <div>
+                            #{inv.invoice_number} {duplicateFlags[inv.id] && <span className="text-yellow-500">⚠️</span>} {inv.flagged && <FlaggedBadge id={inv.id} />}
+                          </div>
+                          <div>💰 {inv.amount}</div>
+                          <div>📅 {new Date(inv.date).toLocaleDateString()}</div>
+                          <TagEditor
+                            tags={inv.tags || []}
+                            colorMap={tagColors}
+                            onAddTag={(tag) => handleAddTag(inv.id, tag)}
+                            onRemoveTag={(tag) => handleRemoveTag(inv.id, tag)}
+                          />
+                          {inv.comments?.map((c, i) => (
+                            <div key={i} className="text-xs bg-gray-100 rounded p-1">{c.text}</div>
+                          ))}
+                          {role !== 'viewer' && (
+                            <div className="flex mt-1">
+                              <CollaborativeCommentInput
+                                invoiceId={inv.id}
+                                onChange={(v) => setCommentInputs((p) => ({ ...p, [inv.id]: v }))}
+                                onSubmit={(text) => {
+                                  handleAddComment(inv.id, text);
+                                }}
+                              />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAddComment(inv.id, commentInputs[inv.id]);
+                                }}
+                                className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded"
+                              >
+                                Post
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${statusClass}`}>{status}</span>
+                          <div className="flex space-x-1">
+                            {!inv.archived && role === 'approver' && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleArchive(inv.id);
+                                }}
+                                className="bg-gray-600 text-white px-2 py-1 rounded text-xs hover:bg-gray-700"
+                                title="Archive"
+                              >
+                                <ArchiveBoxIcon className="w-4 h-4" />
+                              </button>
+                            )}
+                            {role === 'admin' && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(inv.id);
+                                }}
+                                className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+                                title="Delete"
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                              </button>
+                            )}
+                            {(role === 'approver' || role === 'admin') && (
+                              <>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleApprove(inv.id);
+                                  }}
+                                  className="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
+                                  title="Approve"
+                                >
+                                  <CheckCircleIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReject(inv.id);
+                                  }}
+                                  className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                                  title="Reject"
+                                >
+                                  <XCircleIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handlePaymentRequest(inv.id);
+                                  }}
+                                  className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
+                                  disabled={paymentRequestId === inv.id}
+                                >
+                                  {paymentRequestId === inv.id ? (
+                                    <Spinner className="h-3 w-3" />
+                                  ) : (
+                                    <CurrencyDollarIcon className="w-4 h-4" />
+                                  )}
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleExplainInvoice(inv);
+                                  }}
+                                  className="bg-indigo-500 text-white px-2 py-1 rounded text-xs hover:bg-indigo-600"
+                                  title="Explain"
+                                >
+                                  🧠
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 ) : null)}
