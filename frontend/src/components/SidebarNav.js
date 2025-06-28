@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Home,
@@ -15,14 +15,17 @@ import {
   FileBarChart2,
 } from 'lucide-react';
 
-export default function SidebarNav({ notifications = [] }) {
+export default function SidebarNav({ notifications = [], collapsed = false }) {
   const location = useLocation();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(!collapsed);
+  useEffect(() => {
+    if (collapsed) setOpen(false);
+  }, [collapsed]);
   const unread = notifications.filter(n => !n.read).length;
   const role = localStorage.getItem('role') || '';
 
   return (
-    <aside className="hidden sm:block bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-lg w-64 p-4 space-y-2">
+    <aside className={`hidden sm:block bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-lg ${open ? 'w-64' : 'w-16'} p-4 space-y-2 transition-all`}>
       <button
         onClick={() => setOpen(!open)}
         className="w-full text-left font-semibold mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"

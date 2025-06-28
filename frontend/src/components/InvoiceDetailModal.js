@@ -11,6 +11,21 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
   const [vendorSuggestions, setVendorSuggestions] = useState([]);
   const [amountSuggestions, setAmountSuggestions] = useState([]);
 
+  const startDictation = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech recognition not supported');
+      return;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = 'en-US';
+    rec.onresult = (e) => {
+      const text = Array.from(e.results).map(r => r[0].transcript).join(' ');
+      setCommentInput(text);
+    };
+    rec.start();
+  };
+
   useEffect(() => {
     if (invoice) {
       setForm({
@@ -213,6 +228,9 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
               className="input text-xs flex-1 px-1"
               placeholder="Add comment"
             />
+            <button onClick={startDictation} className="bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 ml-1 rounded" title="Dictate">
+              🗣
+            </button>
             <button onClick={handleAddComment} className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded">Post</button>
           </div>
         </div>

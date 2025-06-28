@@ -37,6 +37,7 @@ export default function Inbox() {
   const [endDate, setEndDate] = useState('');
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
+  const [showPrioritized, setShowPrioritized] = useState(false);
 
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
@@ -81,6 +82,30 @@ export default function Inbox() {
     await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/archive`, {
       method: 'PATCH',
       headers,
+    }).catch(() => {});
+    fetchInvoices();
+  };
+
+  const suggestAction = async (id) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/think-suggestion`, {
+        method: 'POST',
+        headers,
+      });
+      const data = await res.json();
+      if (res.ok && data.suggestion) {
+        alert(data.suggestion);
+      }
+    } catch (e) {
+      console.error('Suggestion error', e);
+    }
+  };
+
+  const updateStatus = async (id, status) => {
+    await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/update`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify({ field: 'approval_status', value: status }),
     }).catch(() => {});
     fetchInvoices();
   };
@@ -174,6 +199,11 @@ export default function Inbox() {
     .filter((inv) => (showFlaggedOnly ? inv.flagged : true));
 
   const sortedInvoices = [...filteredInvoices].sort((a, b) => {
+    if (showPrioritized) {
+      const riskA = (a.flagged ? 2 : 0) + (a.risk_score ?? 0);
+      const riskB = (b.flagged ? 2 : 0) + (b.risk_score ?? 0);
+      return riskB - riskA;
+    }
     if (sortBy === 'value') {
       return parseFloat(b.amount) - parseFloat(a.amount);
     }
@@ -193,8 +223,10 @@ export default function Inbox() {
     return <span className={`${base} bg-yellow-100 text-yellow-800`}>🟡 Review Needed</span>;
   };
 
+  const focusMode = copilotOpen || expandedRows.length > 0 || selectedRows.length > 0;
+
   return (
-    <MainLayout title="Inbox" helpTopic="inbox">
+    <MainLayout title="Inbox" helpTopic="inbox" collapseSidebar={focusMode}>
       {selectedRows.length > 0 && (
         <div className="mb-2 flex gap-2">
           <button onClick={bulkApprove} className="btn bg-green-600 text-white text-xs">Approve All</button>
@@ -233,6 +265,10 @@ export default function Inbox() {
           <input type="checkbox" checked={showFlaggedOnly} onChange={() => setShowFlaggedOnly(!showFlaggedOnly)} />
           Show Flagged Only
         </label>
+        <label className="text-xs flex items-center gap-1">
+          <input type="checkbox" checked={showPrioritized} onChange={() => setShowPrioritized(!showPrioritized)} />
+          🔮 Show AI-prioritized view
+        </label>
         <div className="flex flex-col">
           <label className="text-xs font-medium mb-1">Sort By</label>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="input">
@@ -265,9 +301,9 @@ export default function Inbox() {
             <th className="px-2 py-2">Status</th>
             <th className="px-2 py-2">Assignee</th>
             <th className="px-2 py-2">AI</th>
-            <th className="px-2 py-2" title="Actions">
+            <th className="px-2 py-2" title="Set status">
               <Cog6ToothIcon className="w-4 h-4 mx-auto" />
-              <span className="sr-only">Actions</span>
+              <span className="sr-only">Set status</span>
             </th>
           </tr>
         </thead>
@@ -323,20 +359,15 @@ export default function Inbox() {
                       )}
                     </td>
                     <td className="px-3 py-2 space-x-1 flex justify-center relative">
-                      <button
-                        onClick={() => approve(inv.id)}
-                        className="btn bg-green-600 hover:bg-green-700 text-white p-1"
-                        title="Approve"
+                      <select
+                        value={inv.approval_status || 'Pending'}
+                        onChange={(e) => updateStatus(inv.id, e.target.value)}
+                        className="input text-xs"
                       >
-                        <CheckCircleIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => reject(inv.id)}
-                        className="btn bg-red-600 hover:bg-red-700 text-white p-1"
-                        title="Reject"
-                      >
-                        <XCircleIcon className="w-4 h-4" />
-                      </button>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Needs Info">Needs Info</option>
+                      </select>
                       <button
                         onClick={() => openCopilot(inv)}
                         className="btn bg-indigo-600 hover:bg-indigo-700 text-white p-1 relative"
@@ -346,6 +377,13 @@ export default function Inbox() {
                         {Array.isArray(inv.comments) && inv.comments.length > 0 && (
                           <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-[10px] flex items-center justify-center">{inv.comments.length}</span>
                         )}
+                      </button>
+                      <button
+                        onClick={() => suggestAction(inv.id)}
+                        className="btn bg-yellow-500 hover:bg-yellow-600 text-white p-1"
+                        title="Suggest"
+                      >
+                        <LightBulbIcon className="w-4 h-4" />
                       </button>
                     </td>
                   </motion.tr>
