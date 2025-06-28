@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  LineChart,
+  Line,
+} from 'recharts';
 import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import MainLayout from './components/MainLayout';
 import StatCard from './components/StatCard.jsx';
+import LiveFeed from './components/LiveFeed';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowTrendingUpIcon,
@@ -33,6 +48,7 @@ const METRIC_LABELS = {
 
 function Dashboard() {
   const token = localStorage.getItem('token') || '';
+  const tenant = localStorage.getItem('tenant') || 'default';
   const [vendors, setVendors] = useState([]);
   const [cashFlow, setCashFlow] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
@@ -44,6 +60,9 @@ function Dashboard() {
   const [remainingBudget, setRemainingBudget] = useState([]);
   const [budgetForecast, setBudgetForecast] = useState([]);
   const [insights, setInsights] = useState([]);
+  const [trends, setTrends] = useState([]);
+  const [flaggedTrend, setFlaggedTrend] = useState([]);
+  const [pendingInvoices, setPendingInvoices] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -133,6 +152,31 @@ function Dashboard() {
         .then(({ ok, d }) => {
           if (ok) setApprovalStats(d);
         }),
+      fetch(`${API_BASE}/api/analytics/trends`, { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) setTrends(d.trends || []);
+        }),
+      fetch(`${API_BASE}/api/invoices/fraud/flagged`, { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok) {
+            const counts = {};
+            (d.invoices || []).forEach((inv) => {
+              const month = inv.date?.slice(0, 7);
+              if (month) counts[month] = (counts[month] || 0) + 1;
+            });
+            const arr = Object.entries(counts)
+              .map(([m, c]) => ({ month: `${m}-01`, count: c }))
+              .sort((a, b) => new Date(a.month) - new Date(b.month));
+            setFlaggedTrend(arr);
+          }
+        }),
+      fetch(`${API_BASE}/api/invoices?status=Pending`, { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (ok && Array.isArray(d)) setPendingInvoices(d.slice(0, 5));
+        }),
     ]).finally(() => setLoading(false));
   }, [token, cashFlowInterval]);
 
@@ -197,6 +241,17 @@ function Dashboard() {
     grid[day][hour] = count;
     if (count > max) max = count;
   });
+
+  const tasks = React.useMemo(() => {
+    const list = [];
+    if (stats?.invoicesPending) {
+      list.push(`${stats.invoicesPending} invoices pending review`);
+    }
+    if (anomalies?.length) {
+      list.push(`New anomaly found in ${anomalies[0].vendor}`);
+    }
+    return list;
+  }, [stats, anomalies]);
 
   return (
     <MainLayout title="AI Dashboard">
@@ -421,17 +476,59 @@ function Dashboard() {
             </div>
           </div>
           <div>
-            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Highest Vendor Expenses</h2>
-            <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300">
-              {vendors.map(v => (
-                <li key={v.vendor}>
-                  <button onClick={() => setSelectedVendor(v.vendor)} className="underline">
-                    {v.vendor}
-                  </button>: ${v.total.toFixed(2)}
-                </li>
-              ))}
-            </ul>
+          <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Highest Vendor Expenses</h2>
+          <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300">
+            {vendors.map(v => (
+              <li key={v.vendor}>
+                <button onClick={() => setSelectedVendor(v.vendor)} className="underline">
+                  {v.vendor}
+                </button>: ${v.total.toFixed(2)}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Trends &amp; Insights</h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="h-48">
+              {loading ? (
+                <Skeleton rows={1} className="h-full" />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={trends}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" tickFormatter={(v) => new Date(v).toLocaleDateString('en-US', { month: 'short' })} />
+                    <YAxis />
+                    <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
+                    <Line type="monotone" dataKey="total" stroke="#3b82f6" />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            <div className="h-48">
+              {flaggedTrend.length ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={flaggedTrend}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" tickFormatter={(v) => new Date(v).toLocaleDateString('en-US', { month: 'short' })} />
+                    <YAxis />
+                    <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
+                    <Line type="monotone" dataKey="count" stroke="#ef4444" />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-sm text-gray-600">No flagged invoices</p>
+              )}
+            </div>
+            <div>
+              <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300">
+                {vendors.slice(0, 5).map(v => (
+                  <li key={v.vendor}>{v.vendor}: ${v.total.toFixed(2)}</li>
+                ))}
+              </ul>
+            </div>
           </div>
+        </div>
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Spend by Category</h2>
             {loading ? (
@@ -524,11 +621,23 @@ function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </motion.div>
-            )}
-          </div>
-          <VendorProfilePanel vendor={selectedVendor} open={!!selectedVendor} onClose={() => setSelectedVendor(null)} token={token} />
+          )}
         </div>
-      )}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">AI Activity Feed</h2>
+            <LiveFeed token={token} tenant={tenant} />
+          </div>
+          <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Alerts &amp; Tasks</h2>
+            <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300">
+              {tasks.length ? tasks.map((t, i) => (<li key={i}>{t}</li>)) : <li>No tasks</li>}
+            </ul>
+          </div>
+        </div>
+        <VendorProfilePanel vendor={selectedVendor} open={!!selectedVendor} onClose={() => setSelectedVendor(null)} token={token} />
+      </div>
+    )}
     </MainLayout>
   );
 }
