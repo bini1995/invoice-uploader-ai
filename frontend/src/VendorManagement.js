@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import EmptyState from './components/EmptyState';
+import DummyDataButton from './components/DummyDataButton';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import InvoiceDetailModal from './components/InvoiceDetailModal';
 import VendorDetailModal from './components/VendorDetailModal';
@@ -36,6 +38,7 @@ function VendorManagement() {
   const [detailInvoice, setDetailInvoice] = useState(null);
   const [detailVendor, setDetailVendor] = useState(null);
   const [duplicates, setDuplicates] = useState([]);
+  const exampleVendors = ['Acme Corp', 'Globex', 'Soylent', 'Initech'];
 
   const headers = useMemo(
     () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }),
@@ -252,6 +255,29 @@ function VendorManagement() {
           {loading ? (
             <tr>
               <td colSpan="9" className="p-4"><Skeleton rows={5} height="h-4" /></td>
+            </tr>
+          ) : filteredVendors.length === 0 ? (
+            <tr>
+              <td colSpan="9">
+                <EmptyState
+                  headline="No vendors added yet."
+                  description="Start by uploading your first invoice or manually adding a vendor."
+                  cta="Add Vendor"
+                  onCta={() => setShowAdd(true)}
+                >
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm">Example vendors:</p>
+                    <ul className="list-disc list-inside text-sm">
+                      {exampleVendors.map(v => (
+                        <li key={v}>{v}</li>
+                      ))}
+                    </ul>
+                    <div className="mt-2">
+                      <DummyDataButton />
+                    </div>
+                  </div>
+                </EmptyState>
+              </td>
             </tr>
           ) : (
             filteredVendors.map(v => (
