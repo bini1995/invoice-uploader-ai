@@ -29,6 +29,14 @@ export default function Inbox() {
   const [loadingChat, setLoadingChat] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
+  const [vendorList, setVendorList] = useState([]);
+  const [assigneeList, setAssigneeList] = useState([]);
+  const [selectedVendor, setSelectedVendor] = useState('');
+  const [selectedAssignee, setSelectedAssignee] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
+  const [sortBy, setSortBy] = useState('newest');
 
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
@@ -38,7 +46,11 @@ export default function Inbox() {
     try {
       const res = await fetch(`${API_BASE}/api/${tenant}/invoices?status=Pending`, { headers });
       const data = await res.json();
-      if (res.ok) setInvoices(data);
+      if (res.ok) {
+        setInvoices(data);
+        setVendorList([...new Set(data.map((i) => i.vendor).filter(Boolean))]);
+        setAssigneeList([...new Set(data.map((i) => i.assignee).filter(Boolean))]);
+      }
     } catch (err) {
       console.error('Inbox fetch error:', err);
     }
@@ -147,12 +159,31 @@ export default function Inbox() {
   };
 
   const toggleSelectAll = () => {
-    if (selectedRows.length === invoices.length) {
+    if (selectedRows.length === sortedInvoices.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(invoices.map((i) => i.id));
+      setSelectedRows(sortedInvoices.map((i) => i.id));
     }
   };
+
+  const filteredInvoices = invoices
+    .filter((inv) => !selectedVendor || inv.vendor === selectedVendor)
+    .filter((inv) => !selectedAssignee || inv.assignee === selectedAssignee)
+    .filter((inv) => !startDate || new Date(inv.date) >= new Date(startDate))
+    .filter((inv) => !endDate || new Date(inv.date) <= new Date(endDate))
+    .filter((inv) => (showFlaggedOnly ? inv.flagged : true));
+
+  const sortedInvoices = [...filteredInvoices].sort((a, b) => {
+    if (sortBy === 'value') {
+      return parseFloat(b.amount) - parseFloat(a.amount);
+    }
+    if (sortBy === 'risk') {
+      const aRisk = a.risk_score ?? 0;
+      const bRisk = b.risk_score ?? 0;
+      return bRisk - aRisk;
+    }
+    return new Date(b.date) - new Date(a.date);
+  });
 
   const statusBadge = (s) => {
     const base = 'px-2 py-1 rounded text-xs font-medium';
@@ -171,12 +202,52 @@ export default function Inbox() {
           <button onClick={bulkAssign} className="btn bg-indigo-600 text-white text-xs">Assign</button>
         </div>
       )}
+      <div className="flex flex-wrap gap-4 mb-4 items-end">
+        <div className="flex flex-col">
+          <label className="text-xs font-medium mb-1">Vendor</label>
+          <select value={selectedVendor} onChange={(e) => setSelectedVendor(e.target.value)} className="input">
+            <option value="">All</option>
+            {vendorList.map((v) => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col">
+          <label className="text-xs font-medium mb-1">Assignee</label>
+          <select value={selectedAssignee} onChange={(e) => setSelectedAssignee(e.target.value)} className="input">
+            <option value="">All</option>
+            {assigneeList.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col">
+          <label className="text-xs font-medium mb-1">Start</label>
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="input" />
+        </div>
+        <div className="flex flex-col">
+          <label className="text-xs font-medium mb-1">End</label>
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="input" />
+        </div>
+        <label className="text-xs flex items-center gap-1">
+          <input type="checkbox" checked={showFlaggedOnly} onChange={() => setShowFlaggedOnly(!showFlaggedOnly)} />
+          Show Flagged Only
+        </label>
+        <div className="flex flex-col">
+          <label className="text-xs font-medium mb-1">Sort By</label>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="input">
+            <option value="newest">Newest</option>
+            <option value="value">Highest Value</option>
+            <option value="risk">AI Risk Score</option>
+          </select>
+        </div>
+      </div>
       <div className="overflow-x-auto rounded-lg">
       <table className="min-w-full text-sm border rounded-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center">
             <th className="px-2 py-2">
-              <input type="checkbox" onChange={toggleSelectAll} checked={selectedRows.length === invoices.length && invoices.length > 0} />
+              <input type="checkbox" onChange={toggleSelectAll} checked={selectedRows.length === sortedInvoices.length && sortedInvoices.length > 0} />
             </th>
             <th className="px-2 py-2"></th>
             <th className="px-2 py-2" title="Invoice #">
@@ -206,7 +277,7 @@ export default function Inbox() {
               <td colSpan="9" className="p-4"><Skeleton rows={5} height="h-4" /></td>
             </tr>
           ) : (
-            invoices.map((inv) => {
+            sortedInvoices.map((inv) => {
               const status = inv.flagged ? 'Flagged' : inv.approval_status || 'Pending';
               const borderColor =
                 status === 'Approved'
