@@ -5,7 +5,7 @@
 
 :root {
   --accent-color: #4338ca;
-  --font-base: 'InterVariable', 'Inter', ui-sans-serif, system-ui;
+  --font-base: 'InterVariable', 'Inter', 'Work Sans', ui-sans-serif, system-ui;
 }
 
 
@@ -59,6 +59,9 @@ code {
   }
   .btn-secondary {
     @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-100;
   }
   .btn-danger {
     @apply bg-red-500 text-white hover:bg-red-600;

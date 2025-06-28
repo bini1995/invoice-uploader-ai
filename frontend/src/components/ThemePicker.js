@@ -73,6 +73,7 @@ export default function ThemePicker({ darkMode, setDarkMode, tenant = 'default' 
             <label className="block font-medium mb-1">Font</label>
             <select value={font} onChange={e => setFont(e.target.value)} className="input w-full">
               <option value="Inter">Inter</option>
+              <option value="Work Sans">Work Sans</option>
               <option value="Roboto">Roboto</option>
               <option value="Open Sans">Open Sans</option>
             </select>
