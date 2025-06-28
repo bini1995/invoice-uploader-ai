@@ -23,6 +23,11 @@ function VendorManagement() {
   const [newNotes, setNewNotes] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newCategory, setNewCategory] = useState('');
+  const [filterSpend, setFilterSpend] = useState('');
+  const [filterLastDate, setFilterLastDate] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterNotesOnly, setFilterNotesOnly] = useState(false);
+  const [sortBy, setSortBy] = useState('name');
   const [editingVendor, setEditingVendor] = useState(null);
   const [showTop, setShowTop] = useState(false);
   const [profileVendor, setProfileVendor] = useState(null);
@@ -78,6 +83,36 @@ function VendorManagement() {
     setNewCategory('');
     fetchVendors();
   };
+
+  const filteredVendors = useMemo(() => {
+    let list = [...vendors];
+    if (filterSpend) {
+      const min = parseFloat(filterSpend) || 0;
+      list = list.filter(v => v.total_spend >= min);
+    }
+    if (filterLastDate) {
+      const since = new Date(filterLastDate);
+      list = list.filter(v => v.last_invoice && new Date(v.last_invoice) >= since);
+    }
+    if (filterCategory) {
+      const cat = filterCategory.toLowerCase();
+      list = list.filter(v => (v.category || '').toLowerCase().includes(cat));
+    }
+    if (filterNotesOnly) {
+      list = list.filter(v => (v.notes || '').trim().length > 0);
+    }
+    switch (sortBy) {
+      case 'recent':
+        list.sort((a, b) => new Date(b.last_invoice || 0) - new Date(a.last_invoice || 0));
+        break;
+      case 'spender':
+        list.sort((a, b) => b.total_spend - a.total_spend);
+        break;
+      default:
+        list.sort((a, b) => a.vendor.localeCompare(b.vendor));
+    }
+    return list;
+  }, [vendors, filterSpend, filterLastDate, filterCategory, filterNotesOnly, sortBy]);
 
   if (!token) {
     return (
@@ -142,7 +177,33 @@ function VendorManagement() {
           </div>
         </div>
       )}
-      <div className="overflow-x-auto rounded-lg mt-4">
+      <div className="flex flex-wrap gap-4 items-end mt-4 mb-2">
+        <div>
+          <label className="text-sm">Min Spend</label>
+          <input type="number" className="input w-full" value={filterSpend} onChange={e => setFilterSpend(e.target.value)} placeholder="0" />
+        </div>
+        <div>
+          <label className="text-sm">Last Invoice After</label>
+          <input type="date" className="input w-full" value={filterLastDate} onChange={e => setFilterLastDate(e.target.value)} />
+        </div>
+        <div>
+          <label className="text-sm">Category</label>
+          <input className="input w-full" value={filterCategory} onChange={e => setFilterCategory(e.target.value)} />
+        </div>
+        <div className="flex items-center mt-4">
+          <input id="notesOnly" type="checkbox" className="mr-1" checked={filterNotesOnly} onChange={e => setFilterNotesOnly(e.target.checked)} />
+          <label htmlFor="notesOnly" className="text-sm">Notes only</label>
+        </div>
+        <div>
+          <label className="text-sm">Sort By</label>
+          <select className="input w-full" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+            <option value="name">Vendor name A-Z</option>
+            <option value="recent">Most recently active</option>
+            <option value="spender">Top spender</option>
+          </select>
+        </div>
+      </div>
+      <div className="overflow-x-auto rounded-lg">
       <table className="w-full text-left border rounded-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700">
@@ -162,7 +223,7 @@ function VendorManagement() {
               <td colSpan="6" className="p-4"><Skeleton rows={5} height="h-4" /></td>
             </tr>
           ) : (
-            vendors.map(v => (
+            filteredVendors.map(v => (
               <tr key={v.vendor} className="border-t odd:bg-white even:bg-gray-50 dark:odd:bg-gray-800 dark:even:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
                 <td className="p-2 flex items-center gap-2">
                   <img
