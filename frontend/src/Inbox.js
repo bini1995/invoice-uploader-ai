@@ -292,31 +292,21 @@ export default function Inbox() {
               <input type="checkbox" onChange={toggleSelectAll} checked={selectedRows.length === sortedInvoices.length && sortedInvoices.length > 0} />
             </th>
             <th className="px-3 py-4"></th>
-            <th className="px-3 py-4" title="Invoice #">
-              <DocumentTextIcon className="w-4 h-4 mx-auto" />
-              <span className="sr-only">Invoice #</span>
-            </th>
-            <th className="px-3 py-4" title="Vendor">
-              <BuildingOfficeIcon className="w-4 h-4 mx-auto" />
-              <span className="sr-only">Vendor</span>
-            </th>
-            <th className="px-3 py-4" title="Amount">
-              <CurrencyDollarIcon className="w-4 h-4 mx-auto" />
-              <span className="sr-only">Amount</span>
-            </th>
+            <th className="px-3 py-4">Invoice #</th>
+            <th className="px-3 py-4">Vendor</th>
+            <th className="px-3 py-4">Uploaded</th>
+            <th className="px-3 py-4">Amount</th>
             <th className="px-3 py-4">Status</th>
             <th className="px-3 py-4">Assignee</th>
-            <th className="px-3 py-4">AI</th>
-            <th className="px-3 py-4" title="Set status">
-              <Cog6ToothIcon className="w-4 h-4 mx-auto" />
-              <span className="sr-only">Set status</span>
-            </th>
+            <th className="px-3 py-4">Tags</th>
+            <th className="px-3 py-4">AI Flag</th>
+            <th className="px-3 py-4">Actions</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="9" className="p-4"><Skeleton rows={5} height="h-4" /></td>
+              <td colSpan="11" className="p-4"><Skeleton rows={5} height="h-4" /></td>
             </tr>
           ) : (
             sortedInvoices.map((inv) => {
@@ -348,6 +338,9 @@ export default function Inbox() {
                     </td>
                     <td className="px-3 py-4">{inv.invoice_number}</td>
                     <td className="px-3 py-4">{inv.vendor}</td>
+                    <td className="px-3 py-4">
+                      {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : '-'}
+                    </td>
                     <td className="px-3 py-4">${inv.amount}</td>
                     <td className="px-3 py-4">{statusBadge(status)}</td>
                     <td className="px-3 py-4 text-center">
@@ -357,6 +350,7 @@ export default function Inbox() {
                         <span className="text-xs text-gray-500">-</span>
                       )}
                     </td>
+                    <td className="px-3 py-4 text-xs">{inv.tags?.join(', ') || '-'}</td>
                     <td className="px-3 py-4 text-center">
                       {inv.flag_reason && (
                         <Tippy content={`AI flag: ${inv.flag_reason}`}>
@@ -396,7 +390,7 @@ export default function Inbox() {
                   {expandedRows.includes(inv.id) && (
                     <tr className="bg-gray-100">
                       <td></td>
-                      <td colSpan="8" className="px-4 py-2 text-xs text-left">
+                      <td colSpan="10" className="px-4 py-2 text-xs text-left">
                         PO#: {inv.po_number || inv.po_id || 'N/A'} | Tags: {inv.tags?.join(', ') || 'None'} | Uploaded:{' '}
                         {inv.created_at ? new Date(inv.created_at).toLocaleString() : 'Unknown'}
                       </td>
