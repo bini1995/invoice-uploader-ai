@@ -3,14 +3,13 @@ import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
 import CashflowSimulation from './components/CashflowSimulation';
+import StatCard from './components/StatCard.jsx';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
   const [vendor, setVendor] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [minAmount, setMinAmount] = useState('');
-  const [maxAmount, setMaxAmount] = useState('');
   const [invoices, setInvoices] = useState([]);
   const [loadingReport, setLoadingReport] = useState(false);
   const [loadingHeatmap, setLoadingHeatmap] = useState(false);
@@ -18,6 +17,10 @@ function Reports() {
   const [threshold, setThreshold] = useState(5000);
   const [rules, setRules] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
+  const [vendorList, setVendorList] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [tag, setTag] = useState('');
+  const [summary, setSummary] = useState({ totalInvoices: 0, flagged: 0, totalAmount: 0 });
 
   const fetchHeatmap = useCallback(async () => {
     setLoadingHeatmap(true);
@@ -25,15 +28,14 @@ function Reports() {
     if (vendor) params.append('vendor', vendor);
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    if (minAmount) params.append('minAmount', minAmount);
-    if (maxAmount) params.append('maxAmount', maxAmount);
+    if (tag) params.append('tag', tag);
     const res = await fetch(`${API_BASE}/api/analytics/spend/heatmap?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
     if (res.ok) setHeatmap(data.heatmap || []);
     setLoadingHeatmap(false);
-  }, [vendor, startDate, endDate, minAmount, maxAmount, token]);
+  }, [vendor, startDate, endDate, tag, token]);
 
   const fetchReport = async (s = startDate, e = endDate) => {
     setLoadingReport(true);
@@ -41,8 +43,7 @@ function Reports() {
     if (vendor) params.append('vendor', vendor);
     if (s) params.append('startDate', s);
     if (e) params.append('endDate', e);
-    if (minAmount) params.append('minAmount', minAmount);
-    if (maxAmount) params.append('maxAmount', maxAmount);
+    if (tag) params.append('tag', tag);
     const res = await fetch(`${API_BASE}/api/analytics/report?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -52,13 +53,51 @@ function Reports() {
     fetchHeatmap();
   };
 
+  const fetchVendors = useCallback(async () => {
+    if (!token) return;
+    const res = await fetch(`${API_BASE}/api/vendors`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok) setVendorList(data.vendors.map(v => v.vendor));
+  }, [token]);
+
+  const fetchTags = useCallback(async () => {
+    if (!token) return;
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    const res = await fetch(`${API_BASE}/api/invoices/spending-by-tag?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok) setTags(data.byTag.map(t => t.tag));
+  }, [token, startDate, endDate]);
+
+  const fetchSummary = useCallback(async () => {
+    if (!token) return;
+    const params = new URLSearchParams();
+    if (vendor) params.append('vendor', vendor);
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (tag) params.append('tag', tag);
+    const res = await fetch(`${API_BASE}/api/invoices/dashboard?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok) setSummary({
+      totalInvoices: data.totalInvoices || 0,
+      flagged: data.aiSuggestions || 0,
+      totalAmount: data.totalAmount || 0
+    });
+  }, [token, vendor, startDate, endDate, tag]);
+
   const exportPDF = async () => {
     const params = new URLSearchParams();
     if (vendor) params.append('vendor', vendor);
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    if (minAmount) params.append('minAmount', minAmount);
-    if (maxAmount) params.append('maxAmount', maxAmount);
+    if (tag) params.append('tag', tag);
     const res = await fetch(`${API_BASE}/api/analytics/report/pdf?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -98,12 +137,31 @@ function Reports() {
 
   useEffect(() => {
     if (token) {
+      fetchVendors();
+    }
+  }, [fetchVendors, token]);
+
+  useEffect(() => {
+    if (token) {
       fetchHeatmap();
     }
   }, [fetchHeatmap, token]);
 
+  useEffect(() => {
+    if (token) {
+      fetchSummary();
+    }
+  }, [fetchSummary, token, vendor, startDate, endDate, tag]);
+
+  useEffect(() => {
+    if (token) {
+      fetchTags();
+    }
+  }, [fetchTags, token, startDate, endDate]);
+
   const runReport = () => {
     fetchReport();
+    fetchSummary();
   };
 
   const handleDayClick = (day) => {
@@ -115,18 +173,34 @@ function Reports() {
   return (
     <MainLayout title="Reports" helpTopic="reports">
       <div className="space-y-4 max-w-2xl">
-        <div className="grid grid-cols-2 gap-2">
-          <input value={vendor} onChange={e => setVendor(e.target.value)} placeholder="Vendor" className="input" />
-          <div className="flex space-x-2">
-            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="input w-full" />
-            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="input w-full" />
+        <div className="sticky top-16 z-10 bg-white dark:bg-gray-800 border-b p-2 flex flex-wrap items-end gap-2">
+          <select value={vendor} onChange={e => setVendor(e.target.value)} className="input">
+            <option value="">All Vendors</option>
+            {vendorList.map(v => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+          </select>
+          <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="input" />
+          <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="input" />
+          <div className="flex flex-wrap gap-1">
+            {tags.map(t => (
+              <button
+                key={t}
+                onClick={() => setTag(t)}
+                className={`px-2 py-0.5 rounded text-xs ${tag === t ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-800'}`}
+              >
+                {t}
+              </button>
+            ))}
           </div>
-          <input type="number" value={minAmount} onChange={e => setMinAmount(e.target.value)} placeholder="Min" className="input" />
-          <input type="number" value={maxAmount} onChange={e => setMaxAmount(e.target.value)} placeholder="Max" className="input" />
-        </div>
-        <div className="space-x-2">
-          <button onClick={runReport} className="btn btn-primary" title="Run Report">Run Report</button>
+          <button onClick={runReport} className="btn btn-primary ml-auto" title="Apply Filters">Apply</button>
           <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mt-4">
+          <StatCard title="Total Invoices" value={summary.totalInvoices} />
+          <StatCard title="% Flagged" value={`${summary.totalInvoices ? Math.round((summary.flagged / summary.totalInvoices) * 100) : 0}%`} />
+          <StatCard title="Total $ Spent" value={`$${summary.totalAmount.toFixed(2)}`} />
         </div>
         <div>
           <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
