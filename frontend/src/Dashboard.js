@@ -13,6 +13,7 @@ import {
   InboxIcon,
   ExclamationTriangleIcon,
   SparklesIcon,
+  DocumentArrowUpIcon,
 } from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
 
@@ -316,13 +317,13 @@ function Dashboard() {
             </div>
           )}
           {vendors.length === 0 && !loading && (
-            <EmptyState message="No data yet. Here are some sample vendors to explore:" onCta={null}>
-              <ul className="list-disc list-inside text-gray-600 text-sm mt-2">
-                <li>Acme Corp</li>
-                <li>Globex Inc</li>
-                <li>Soylent Corp</li>
-              </ul>
-            </EmptyState>
+            <EmptyState
+              icon={<DocumentArrowUpIcon className="w-16 h-16 text-gray-400" />}
+              headline="Let's get started!"
+              description="Upload your first invoice to begin tracking spend, surfacing anomalies, and unlocking AI insights."
+              cta="Upload Invoice"
+              onCta={() => navigate('/upload')}
+            />
           )}
           <div className="h-64">
             {loading ? (

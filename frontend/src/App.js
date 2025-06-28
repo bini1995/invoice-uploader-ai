@@ -2806,7 +2806,12 @@ useEffect(() => {
               ) : sortedInvoices.length === 0 ? (
                 <tr>
                   <td colSpan={role !== 'viewer' ? 14 : 13}>
-                    <EmptyState onCta={() => fileInputRef.current?.click()} message="Start by uploading your first invoice!" />
+                    <EmptyState
+                      onCta={() => fileInputRef.current?.click()}
+                      headline="Let's get started!"
+                      description="Upload your first invoice to begin tracking spend, surfacing anomalies, and unlocking AI insights."
+                      cta="Upload Invoice"
+                    />
                   </td>
                 </tr>
               ) : (
