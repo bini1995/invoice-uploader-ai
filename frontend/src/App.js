@@ -50,7 +50,6 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   ArrowUturnUpIcon,
-  ArrowPathIcon,
   CheckCircleIcon,
   ClockIcon,
   CurrencyDollarIcon,
