@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -76,7 +76,7 @@ export default function UploadWizard() {
     parseFile(f);
   };
 
-  const handleSuggest = async (rowIdx) => {
+  const handleSuggest = useCallback(async (rowIdx) => {
     const invoice = rows[rowIdx];
     try {
       const res = await fetch(`${API_BASE}/api/invoices/suggest-tags`, {
@@ -91,7 +91,7 @@ export default function UploadWizard() {
     } catch (e) {
       console.error('Suggest tags failed', e);
     }
-  };
+  }, [rows, token]);
 
   const handleUpload = async () => {
     if (!file) return;

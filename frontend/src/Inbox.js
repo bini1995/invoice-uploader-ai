@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import { motion } from 'framer-motion';
@@ -15,7 +15,7 @@ export default function Inbox() {
   const [chatHistory, setChatHistory] = useState([]);
   const [loadingChat, setLoadingChat] = useState(false);
 
-  const headers = { Authorization: `Bearer ${token}` };
+  const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
   const fetchInvoices = useCallback(async () => {
     if (!token) return;
