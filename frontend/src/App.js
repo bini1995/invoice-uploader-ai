@@ -60,6 +60,7 @@ import {
   EyeIcon,
   TrashIcon,
   XCircleIcon,
+  CloudArrowUpIcon,
 } from '@heroicons/react/24/outline';
 
 const teamMembers = ['Alice', 'Bob', 'Charlie'];
@@ -2249,8 +2250,11 @@ useEffect(() => {
           <>
 
 <div className="mt-6 mb-6">
-  <fieldset className="border border-gray-300 p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800 flex flex-col gap-4">
-    <legend className="text-xl font-bold px-2">Upload Invoice</legend>
+  <fieldset className="p-6 rounded-xl shadow-xl bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-700 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+    <legend className="text-xl font-bold px-2 flex items-center gap-1">
+      <CloudArrowUpIcon className="w-5 h-5 text-indigo-600" />
+      <span>Upload Invoice</span>
+    </legend>
     <ol className="flex space-x-4 text-sm text-gray-600 mb-2">
       <li className="flex items-center space-x-1">
         <ArrowUpTrayIcon className="w-4 h-4 text-indigo-500" />
@@ -2267,7 +2271,7 @@ useEffect(() => {
     </ol>
     <motion.div
       id="uploadArea"
-      className={`border-2 border-dashed rounded-md p-4 cursor-pointer ${dragActive ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500' : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600'}`}
+      className={`transition-colors border-2 border-dashed rounded-lg p-6 text-center cursor-pointer shadow-inner ${dragActive ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-500' : 'bg-white/60 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600'}`}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
       onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
@@ -2275,7 +2279,10 @@ useEffect(() => {
       onClick={() => fileInputRef.current.click()}
       whileHover={{ scale: 1.02 }}
     >
-      <p className="text-sm text-gray-600 dark:text-gray-300">Drag & drop CSV/PDF/Image here or tap to select or capture</p>
+      <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+        <CloudArrowUpIcon className="w-5 h-5" />
+        <span>Drag & drop CSV/PDF/Image here or tap to select or capture</span>
+      </div>
       <input
         type="file"
         multiple
