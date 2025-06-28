@@ -14,7 +14,13 @@ import {
   ExclamationTriangleIcon,
   SparklesIcon,
   DocumentArrowUpIcon,
+  ArrowDownTrayIcon,
+  ShareIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
+import Tippy from '@tippyjs/react';
+import ButtonDropdown, { MenuItem } from './components/ButtonDropdown';
+import { Button } from './components/ui/Button';
 import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
@@ -194,17 +200,33 @@ function Dashboard() {
 
   return (
     <MainLayout title="AI Dashboard">
-      <div className="mb-4 text-right space-x-2">
-        <button onClick={handleExportPDF} className="underline">Export PDF</button>
-        <button onClick={handleShare} className="underline">Share Link</button>
-        {stats?.invoicesPending > 0 && (
-          <button onClick={handleApprovalReminders} className="underline">
-            Send Approval Reminders
-          </button>
+      <div className="mb-4 flex justify-end gap-2">
+        <Tippy content="Export PDF" placement="bottom">
+          <Button onClick={handleExportPDF} size="icon" variant="outline">
+            <ArrowDownTrayIcon className="w-5 h-5" />
+          </Button>
+        </Tippy>
+        {(vendors.length > 0 || cashFlow.length > 0 || stats) && (
+          <Tippy content="Share Link" placement="bottom">
+            <Button onClick={handleShare} size="icon" variant="outline">
+              <ShareIcon className="w-5 h-5" />
+            </Button>
+          </Tippy>
         )}
-        <button onClick={() => setCustomizeOpen((c) => !c)} className="underline">
-          {customizeOpen ? 'Close Settings' : 'Customize'}
-        </button>
+        {stats?.invoicesPending > 0 && (
+          <Tippy content="Send Approval Reminders" placement="bottom">
+            <Button onClick={handleApprovalReminders} size="icon" variant="outline">
+              <InboxIcon className="w-5 h-5" />
+            </Button>
+          </Tippy>
+        )}
+        <ButtonDropdown
+          icon={<Cog6ToothIcon className="w-5 h-5" />}
+          label="Customize View"
+        >
+          <MenuItem onClick={() => setCustomizeOpen((o) => !o)}>Show/Hide Cards</MenuItem>
+          <MenuItem onClick={() => setCustomizeOpen(true)}>Change Time Range</MenuItem>
+        </ButtonDropdown>
       </div>
       {customizeOpen && (
         <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded shadow text-left space-y-2">
