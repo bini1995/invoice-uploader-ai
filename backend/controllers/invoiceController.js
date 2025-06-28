@@ -1428,7 +1428,7 @@ exports.updateInvoiceField = async (req, res) => {
   const { id } = req.params;
   const { field, value } = req.body;
 
-  if (!['amount', 'vendor', 'date', 'priority', 'currency', 'vat_percent', 'vat_amount', 'expires_at', 'expired'].includes(field)) {
+  if (!['amount', 'vendor', 'date', 'priority', 'currency', 'vat_percent', 'vat_amount', 'expires_at', 'expired', 'approval_status'].includes(field)) {
     return res.status(400).json({ message: 'Invalid field to update.' });
   }
 
