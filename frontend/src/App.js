@@ -1640,7 +1640,9 @@ useEffect(() => {
       });
       const data = await res.json();
       setTimelineInvoice(id);
-      setTimeline(data);
+      if (Array.isArray(data)) setTimeline(data);
+      else if (Array.isArray(data.timeline)) setTimeline(data.timeline);
+      else setTimeline([]);
       setShowTimeline(true);
     } catch (err) {
       console.error('Timeline fetch failed:', err);
@@ -2018,9 +2020,10 @@ useEffect(() => {
           <div className="bg-white dark:bg-gray-800 p-4 rounded w-96">
             <h2 className="text-lg font-semibold mb-2">Timeline for #{timelineInvoice}</h2>
             <ul className="text-sm max-h-60 overflow-y-auto">
-              {timeline.map((t, i) => (
-                <li key={i}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
-              ))}
+              {Array.isArray(timeline) &&
+                timeline.map((t, i) => (
+                  <li key={i}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
+                ))}
             </ul>
             <button onClick={() => setShowTimeline(false)} className="mt-2 bg-indigo-600 text-white px-3 py-1 rounded" title="Close">Close</button>
           </div>

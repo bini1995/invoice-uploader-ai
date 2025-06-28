@@ -25,7 +25,11 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
           headers: { Authorization: `Bearer ${token}` },
         })
           .then((res) => res.json())
-          .then((data) => setTimeline(data))
+          .then((data) => {
+            if (Array.isArray(data)) setTimeline(data);
+            else if (Array.isArray(data.timeline)) setTimeline(data.timeline);
+            else setTimeline([]);
+          })
           .catch((err) => console.error('Timeline fetch failed:', err));
       }
     }
@@ -188,9 +192,10 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
             {invoice.approval_history?.map((h, i) => (
               <li key={i}>{new Date(h.date).toLocaleString()} - {h.step} {h.status}</li>
             ))}
-            {timeline.map((t, i) => (
-              <li key={`tl-${i}`}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
-            ))}
+            {Array.isArray(timeline) &&
+              timeline.map((t, i) => (
+                <li key={`tl-${i}`}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>
+              ))}
           </ul>
         </div>
         <div className="mt-3">
