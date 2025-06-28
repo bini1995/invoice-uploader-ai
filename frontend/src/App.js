@@ -2250,6 +2250,8 @@ useEffect(() => {
           <>
 
 <div className="mt-6 mb-6">
+  <h2 className="text-xl font-bold text-gray-800 mb-2">Upload New Invoice</h2>
+  <hr className="mb-4" />
   <fieldset className="p-6 rounded-xl shadow-xl bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-700 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
     <legend className="text-xl font-bold px-2 flex items-center gap-1">
       <CloudArrowUpIcon className="w-5 h-5 text-indigo-600" />
@@ -2488,7 +2490,8 @@ useEffect(() => {
 
                      {/* Upload/Export Action Buttons */}
                       <div className="flex flex-col mt-6 gap-4">
-                        <h2 className="text-xl font-bold">Actions</h2>
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">Invoice Actions</h2>
+                        <hr className="mb-4" />
                         <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl shadow-lg bg-white dark:bg-gray-800">
                           {role === 'admin' && (
                             <Button
@@ -2801,6 +2804,8 @@ useEffect(() => {
                       </div>
                       </>
                     )}
+                <h2 className="text-xl font-bold text-gray-800 mb-2">Invoices</h2>
+                <hr className="mb-4" />
                 <div className="flex justify-between items-center mt-6 mb-2 text-sm text-gray-700">
                   <span>Total Invoices: <strong>{totalInvoices}</strong></span>
                   <span>Total Amount: <strong>${totalAmount}</strong></span>
