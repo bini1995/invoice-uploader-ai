@@ -1,5 +1,6 @@
 /* eslint-disable no-use-before-define */
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { API_BASE } from './api';
 import LiveFeed from './components/LiveFeed';
@@ -134,14 +135,21 @@ const [loginError, setLoginError] = useState('');
 const [vendorSummary, setVendorSummary] = useState('');
 const [monthlyInsights, setMonthlyInsights] = useState(null);
 const socket = useMemo(() => io(API_BASE), []);
+const location = useLocation();
   const [vendorSuggestions, setVendorSuggestions] = useState({});
   const [suspicionFlags] = useState({});
   const [duplicateFlags, setDuplicateFlags] = useState({});
   const [showArchived, setShowArchived] = useState(false);
-  const [vendorList, setVendorList] = useState([]);
-  const [assigneeList, setAssigneeList] = useState([]);
-  const [selectedVendor, setSelectedVendor] = useState('');
-  const [selectedAssignee, setSelectedAssignee] = useState('');
+const [vendorList, setVendorList] = useState([]);
+const [assigneeList, setAssigneeList] = useState([]);
+const [selectedVendor, setSelectedVendor] = useState('');
+const [selectedAssignee, setSelectedAssignee] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const v = params.get('vendor');
+    if (v) setSelectedVendor(v);
+  }, [location.search]);
   const [tenant, setTenant] = useState(() => localStorage.getItem('tenant') || 'default');
   const [recentInvoices, setRecentInvoices] = useState([]);
   const [selectedInvoices, setSelectedInvoices] = useState([]);

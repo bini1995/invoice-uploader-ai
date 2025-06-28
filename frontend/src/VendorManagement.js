@@ -1,16 +1,32 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import VendorProfilePanel from './components/VendorProfilePanel';
+import InvoiceDetailModal from './components/InvoiceDetailModal';
+import {
+  PencilSquareIcon,
+  DocumentChartBarIcon,
+  EyeIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
 
 function VendorManagement() {
   const token = localStorage.getItem('token') || '';
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [notesInput, setNotesInput] = useState({});
   const [showAdd, setShowAdd] = useState(false);
   const [newVendor, setNewVendor] = useState('');
   const [newNotes, setNewNotes] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+  const [editingVendor, setEditingVendor] = useState(null);
+  const [showTop, setShowTop] = useState(false);
+  const [profileVendor, setProfileVendor] = useState(null);
+  const [detailInvoice, setDetailInvoice] = useState(null);
 
   const headers = useMemo(
     () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }),
@@ -21,11 +37,17 @@ function VendorManagement() {
     setLoading(true);
     const res = await fetch(`${API_BASE}/api/vendors`, { headers });
     const data = await res.json();
-    if (res.ok) setVendors(data.vendors || []);
+    if (res.ok) {
+      let list = data.vendors || [];
+      if (showTop) {
+        list = [...list].sort((a, b) => b.total_spend - a.total_spend).slice(0, 5);
+      }
+      setVendors(list);
+    }
     setLoading(false);
-  }, [headers]);
+  }, [headers, showTop]);
 
-  useEffect(() => { if (token) fetchVendors(); }, [fetchVendors, token]);
+  useEffect(() => { if (token) fetchVendors(); }, [fetchVendors, token, showTop]);
 
   const saveNotes = async (vendor) => {
     const notes = notesInput[vendor] ?? '';
@@ -44,9 +66,16 @@ function VendorManagement() {
       headers,
       body: JSON.stringify({ notes: newNotes })
     });
+    await fetch(`${API_BASE}/api/vendors/${encodeURIComponent(newVendor)}/profile`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ contact_email: newEmail, category: newCategory })
+    });
     setShowAdd(false);
     setNewVendor('');
     setNewNotes('');
+    setNewEmail('');
+    setNewCategory('');
     fetchVendors();
   };
 
@@ -68,6 +97,12 @@ function VendorManagement() {
       >
         +
       </button>
+      <button
+        onClick={() => setShowTop(t => !t)}
+        className="fixed top-24 right-20 bg-gray-200 dark:bg-gray-700 p-2 rounded shadow z-20"
+      >
+        {showTop ? 'All Vendors' : 'Top 5'}
+      </button>
       {showAdd && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg space-y-2 w-80">
@@ -83,6 +118,18 @@ function VendorManagement() {
               placeholder="Notes"
               value={newNotes}
               onChange={e => setNewNotes(e.target.value)}
+            />
+            <input
+              className="input w-full"
+              placeholder="Contact email"
+              value={newEmail}
+              onChange={e => setNewEmail(e.target.value)}
+            />
+            <input
+              className="input w-full"
+              placeholder="Category"
+              value={newCategory}
+              onChange={e => setNewCategory(e.target.value)}
             />
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowAdd(false)} className="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded">
@@ -103,6 +150,8 @@ function VendorManagement() {
             <th className="p-2">Last Invoice</th>
             <th className="p-2">Total Spend</th>
             <th className="p-2">Status</th>
+            <th className="p-2">Contact Email</th>
+            <th className="p-2">Category</th>
             <th className="p-2">Notes</th>
             <th className="p-2">Actions</th>
           </tr>
@@ -121,33 +170,51 @@ function VendorManagement() {
                     alt={v.vendor}
                     className="h-6 w-6 rounded-full"
                   />
-                  {v.vendor}
-                </td>
-                <td className="p-2">{v.last_invoice ? new Date(v.last_invoice).toLocaleDateString() : '-'}</td>
-                <td className="p-2">${v.total_spend.toFixed(2)}</td>
-                <td className="p-2 space-x-1">
-                  {v.total_spend > 10000 && (
-                    <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full">High Spend</span>
-                  )}
-                  {(!v.last_invoice || (Date.now() - new Date(v.last_invoice)) / 86400000 > 90) && (
-                    <span className="bg-gray-200 text-gray-800 text-xs font-medium px-2 py-0.5 rounded-full">Inactive</span>
-                  )}
-                </td>
-                <td className="p-2">
-                  <textarea
-                    className="input w-full p-1"
-                    value={notesInput[v.vendor] ?? v.notes}
-                    onChange={e => setNotesInput({ ...notesInput, [v.vendor]: e.target.value })}
-                  />
-                </td>
-                <td className="p-2">
-                  <button
-                    onClick={() => saveNotes(v.vendor)}
-                    className="bg-indigo-600 text-white px-3 py-1 rounded"
-                    title="Save"
-                  >
-                    Save
+                  <button onClick={() => setProfileVendor(v.vendor)} className="text-indigo-600 underline">
+                    {v.vendor}
                   </button>
+                </td>
+                <td className="p-2">
+                  {v.last_invoice ? (
+                    <button className="underline" onClick={async () => {
+                      const res = await fetch(`${API_BASE}/api/invoices/search?vendor=${encodeURIComponent(v.vendor)}`, { headers });
+                      const data = await res.json();
+                      if (Array.isArray(data) && data.length) setDetailInvoice(data[0]);
+                    }}>
+                      {new Date(v.last_invoice).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </button>
+                  ) : (
+                    '-'
+                  )}
+                </td>
+                <td className="p-2">${v.total_spend.toLocaleString()}</td>
+                <td className="p-2">
+                  {v.total_spend > 20000 ? 'Flagged' : (!v.last_invoice || (Date.now() - new Date(v.last_invoice)) / 86400000 > 90) ? 'Inactive' : 'Active'}
+                </td>
+                <td className="p-2">{v.contact_email || '-'}</td>
+                <td className="p-2">{v.category || '-'}</td>
+                <td className="p-2">
+                  {editingVendor === v.vendor ? (
+                    <div className="space-y-1">
+                      <textarea
+                        className="input w-full p-1"
+                        value={notesInput[v.vendor] ?? v.notes}
+                        onChange={e => setNotesInput({ ...notesInput, [v.vendor]: e.target.value })}
+                      />
+                      <button className="bg-indigo-600 text-white px-2 py-0.5 rounded text-sm" onClick={() => { saveNotes(v.vendor); setEditingVendor(null); }}>Save</button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span>{(v.notes || '').slice(0,30)}{v.notes && v.notes.length>30 && '…'}</span>
+                      <button onClick={() => setEditingVendor(v.vendor)} title="Edit"><PencilSquareIcon className="w-4 h-4" /></button>
+                    </div>
+                  )}
+                </td>
+                <td className="p-2 flex space-x-2">
+                  <button onClick={() => setEditingVendor(v.vendor)} title="Edit"><PencilSquareIcon className="w-4 h-4" /></button>
+                  <button onClick={() => setProfileVendor(v.vendor)} title="Dashboard"><DocumentChartBarIcon className="w-4 h-4" /></button>
+                  <button onClick={() => navigate(`/invoices?vendor=${encodeURIComponent(v.vendor)}`)} title="View Invoices"><EyeIcon className="w-4 h-4" /></button>
+                  <button onClick={async () => { if (window.confirm('Delete vendor?')) { await fetch(`${API_BASE}/api/vendors/${encodeURIComponent(v.vendor)}`, { method: 'DELETE', headers }); fetchVendors(); } }} title="Delete"><TrashIcon className="w-4 h-4 text-red-600" /></button>
                 </td>
               </tr>
             ))
@@ -155,6 +222,8 @@ function VendorManagement() {
         </tbody>
       </table>
       </div>
+      <VendorProfilePanel vendor={profileVendor} open={!!profileVendor} onClose={() => setProfileVendor(null)} token={token} />
+      <InvoiceDetailModal open={!!detailInvoice} invoice={detailInvoice} onClose={() => setDetailInvoice(null)} token={token} onUpdate={() => {}} />
     </MainLayout>
   );
 }

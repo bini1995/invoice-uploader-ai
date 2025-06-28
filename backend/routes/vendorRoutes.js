@@ -12,6 +12,8 @@ const {
   getBehaviorFlags,
   getVendorAnalytics,
   updateVendorCountry,
+  updateVendorProfile,
+  deleteVendor,
   getVendorRiskProfile,
   vendorMatchFeedback,
 } = require('../controllers/vendorController');
@@ -31,6 +33,8 @@ router.get('/:vendor/info', authMiddleware, getVendorInfo);
 router.get('/:vendor/predict', authMiddleware, predictVendorBehavior);
 router.get('/:vendor/profile', authMiddleware, getVendorAnalytics);
 router.patch('/:vendor/country', authMiddleware, authorizeRoles('admin'), updateVendorCountry);
+router.patch('/:vendor/profile', authMiddleware, authorizeRoles('admin'), updateVendorProfile);
+router.delete('/:vendor', authMiddleware, authorizeRoles('admin'), deleteVendor);
 router.get('/:vendor/risk', authMiddleware, authorizeRoles('admin'), getVendorRiskProfile);
 
 module.exports = router;

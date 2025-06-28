@@ -11,22 +11,35 @@ const countryRisk = {
 
 exports.listVendors = async (_req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT COALESCE(v.vendor, i.vendor) AS vendor,
-             MAX(i.date) AS last_invoice,
-             SUM(i.amount) AS total_spend,
-             MAX(v.notes) AS notes
-      FROM invoices i
-      FULL OUTER JOIN vendor_notes v ON LOWER(v.vendor) = LOWER(i.vendor)
-      GROUP BY COALESCE(v.vendor, i.vendor)
-      ORDER BY vendor
-    `);
-    const vendors = result.rows.map(r => ({
-      vendor: r.vendor,
-      last_invoice: r.last_invoice,
-      total_spend: parseFloat(r.total_spend) || 0,
-      notes: r.notes ? decryptSensitive(r.notes) : ''
-    }));
+    const invoiceRes = await pool.query(
+      'SELECT vendor, MAX(date) AS last_invoice, SUM(amount) AS total_spend FROM invoices GROUP BY vendor'
+    );
+    const notesRes = await pool.query('SELECT vendor, notes FROM vendor_notes');
+    const profileRes = await pool.query(
+      'SELECT vendor, contact_email, category FROM vendor_profiles'
+    );
+
+    const map = {};
+    invoiceRes.rows.forEach((r) => {
+      map[r.vendor] = {
+        vendor: r.vendor,
+        last_invoice: r.last_invoice,
+        total_spend: parseFloat(r.total_spend) || 0,
+      };
+    });
+    notesRes.rows.forEach((r) => {
+      if (!map[r.vendor]) map[r.vendor] = { vendor: r.vendor, total_spend: 0 };
+      map[r.vendor].notes = r.notes ? decryptSensitive(r.notes) : '';
+    });
+    profileRes.rows.forEach((r) => {
+      if (!map[r.vendor]) map[r.vendor] = { vendor: r.vendor, total_spend: 0 };
+      map[r.vendor].contact_email = r.contact_email || '';
+      map[r.vendor].category = r.category || '';
+    });
+
+    const vendors = Object.values(map).sort((a, b) =>
+      a.vendor.localeCompare(b.vendor)
+    );
     res.json({ vendors });
   } catch (err) {
     console.error('List vendors error:', err);
@@ -353,6 +366,40 @@ exports.updateVendorCountry = async (req, res) => {
   } catch (err) {
     console.error('Vendor country update error:', err);
     res.status(500).json({ message: 'Failed to update country' });
+  }
+};
+
+exports.updateVendorProfile = async (req, res) => {
+  const { vendor } = req.params;
+  const { contact_email, category } = req.body || {};
+  if (!contact_email && !category) {
+    return res.status(400).json({ message: 'no fields provided' });
+  }
+  try {
+    await pool.query(
+      `INSERT INTO vendor_profiles (vendor, contact_email, category)
+       VALUES ($1,$2,$3)
+       ON CONFLICT (vendor) DO UPDATE SET
+         contact_email = COALESCE($2, vendor_profiles.contact_email),
+         category = COALESCE($3, vendor_profiles.category)`,
+      [vendor, contact_email || null, category || null]
+    );
+    res.json({ message: 'Profile updated' });
+  } catch (err) {
+    console.error('Vendor profile update error:', err);
+    res.status(500).json({ message: 'Failed to update profile' });
+  }
+};
+
+exports.deleteVendor = async (req, res) => {
+  const { vendor } = req.params;
+  try {
+    await pool.query('DELETE FROM vendor_notes WHERE vendor=$1', [vendor]);
+    await pool.query('DELETE FROM vendor_profiles WHERE vendor=$1', [vendor]);
+    res.json({ message: 'Vendor deleted' });
+  } catch (err) {
+    console.error('Delete vendor error:', err);
+    res.status(500).json({ message: 'Failed to delete vendor' });
   }
 };
 
