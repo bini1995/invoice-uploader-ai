@@ -1,5 +1,8 @@
 import React from 'react';
-import { TrendingUpIcon, TrendingDownIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+} from '@heroicons/react/24/outline';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { cn } from '../lib/utils';
@@ -18,9 +21,9 @@ export default function StatCard({
   const TrendIcon =
     typeof trend === 'number'
       ? trend > 0
-        ? TrendingUpIcon
+        ? ArrowTrendingUpIcon
         : trend < 0
-        ? TrendingDownIcon
+        ? ArrowTrendingDownIcon
         : null
       : null;
   const trendColor =
