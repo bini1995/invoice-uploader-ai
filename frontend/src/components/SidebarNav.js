@@ -75,7 +75,7 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
               className={`nav-link border-l-4 ${location.pathname === '/analytics' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <BarChart2 className="w-5 h-5" />
-              <span>Analytics Hub</span>
+              <span>AI Spend Analytics Hub</span>
             </Link>
             <Link
               to="/audit"

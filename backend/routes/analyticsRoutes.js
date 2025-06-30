@@ -25,7 +25,7 @@ const {
   createReportSchedule,
   deleteReportSchedule
 } = require('../controllers/analyticsController');
-const { listRules, addRule } = require('../controllers/rulesController');
+const { listRules, addRule, updateRule, deleteRule } = require('../controllers/rulesController');
 const { authMiddleware } = require('../controllers/userController');
 
 router.get('/report', authMiddleware, getReport);
@@ -40,6 +40,8 @@ router.get('/cash-flow/predict', authMiddleware, predictCashFlowRisk);
 router.get('/cash-flow/forecast', authMiddleware, forecastCashFlow);
 router.get('/rules', authMiddleware, listRules);
 router.post('/rules', authMiddleware, addRule);
+router.put('/rules/:idx', authMiddleware, updateRule);
+router.delete('/rules/:idx', authMiddleware, deleteRule);
 router.get('/approvals/stats', authMiddleware, getApprovalStats);
 router.get('/approvals/times', authMiddleware, getApprovalTimeChart);
 router.get('/spend/vendor', authMiddleware, getVendorSpend);
