@@ -20,7 +20,13 @@ function Reports() {
   const [vendorList, setVendorList] = useState([]);
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState('');
-  const [summary, setSummary] = useState({ totalInvoices: 0, flagged: 0, totalAmount: 0 });
+  const [summary, setSummary] = useState({
+    totalInvoices: 0,
+    anomalies: 0,
+    totalAmount: 0,
+    avgPerVendor: 0,
+    topVendor: '',
+  });
 
   const fetchHeatmap = useCallback(async () => {
     setLoadingHeatmap(true);
@@ -81,15 +87,36 @@ function Reports() {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (tag) params.append('tag', tag);
-    const res = await fetch(`${API_BASE}/api/invoices/dashboard?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (res.ok) setSummary({
-      totalInvoices: data.totalInvoices || 0,
-      flagged: data.aiSuggestions || 0,
-      totalAmount: data.totalAmount || 0
-    });
+
+    const [dashRes, quickRes, vendorRes] = await Promise.all([
+      fetch(`${API_BASE}/api/invoices/dashboard?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+      fetch(`${API_BASE}/api/invoices/quick-stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+      fetch(`${API_BASE}/api/analytics/spend/vendor?${new URLSearchParams({ startDate, endDate }).toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+    ]);
+
+    const dashData = await dashRes.json();
+    const quickData = await quickRes.json();
+    const vendorData = await vendorRes.json();
+
+    if (dashRes.ok && quickRes.ok && vendorRes.ok) {
+      const vendors = vendorData.byVendor || [];
+      const totalVendorSpend = vendors.reduce((s, v) => s + v.total, 0);
+      const avgPerVendor = vendors.length ? totalVendorSpend / vendors.length : 0;
+      const top = vendors.reduce((a, v) => (v.total > a.total ? v : a), { vendor: '', total: 0 });
+      setSummary({
+        totalInvoices: dashData.totalInvoices || 0,
+        anomalies: quickData.anomaliesFound || 0,
+        totalAmount: dashData.totalAmount || 0,
+        avgPerVendor,
+        topVendor: top.vendor || ''
+      });
+    }
   }, [token, vendor, startDate, endDate, tag]);
 
   const exportPDF = async () => {
@@ -171,7 +198,7 @@ function Reports() {
   };
 
   return (
-    <MainLayout title="Reports" helpTopic="reports">
+    <MainLayout title="AI Spend Analytics Hub" helpTopic="reports">
       <div className="space-y-4 max-w-2xl">
         <div className="sticky top-16 z-10 bg-white dark:bg-gray-800 border-b p-2 flex flex-wrap items-end gap-2">
           <select value={vendor} onChange={e => setVendor(e.target.value)} className="input">
@@ -197,10 +224,17 @@ function Reports() {
           <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
           <StatCard title="Total Invoices" value={summary.totalInvoices} />
-          <StatCard title="% Flagged" value={`${summary.totalInvoices ? Math.round((summary.flagged / summary.totalInvoices) * 100) : 0}%`} />
+          <div title="% of invoices that triggered AI anomaly detection, fraud suspicion, or policy mismatch.">
+            <StatCard
+              title="% Anomalies"
+              value={`${summary.totalInvoices ? Math.round((summary.anomalies / summary.totalInvoices) * 100) : 0}%`}
+            />
+          </div>
           <StatCard title="Total $ Spent" value={`$${summary.totalAmount.toFixed(2)}`} />
+          <StatCard title="Avg Spend per Vendor" value={`$${summary.avgPerVendor.toFixed(2)}`} />
+          <StatCard title="Top Spending Vendor" value={summary.topVendor || 'N/A'} />
         </div>
         <div>
           <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
