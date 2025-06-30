@@ -46,7 +46,7 @@ const { scheduleAnomalyScan } = require('./utils/anomalyScanner');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./docs/swagger.json');
 const { WebSocketServer } = require('ws');
-const { setupWSConnection } = require('y-websocket/bin/utils.js');
+const { setupWSConnection } = require('@y/websocket-server/utils');
 const tenantContext = require('./middleware/tenantMiddleware');
 const { parse } = require('url');
 
