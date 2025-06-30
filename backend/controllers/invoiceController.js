@@ -286,11 +286,12 @@ exports.uploadInvoice = async (req, res) => {
       const vatAmount = parseFloat(((originalAmount * vatPercent) / 100).toFixed(2));
       const expiresAt = inv.expires_at || req.body.expires_at ||
         (req.body.expiration_days ? new Date(new Date(date).getTime() + parseInt(req.body.expiration_days) * 24 * 60 * 60 * 1000) : null);
-      const withRules = applyRules({
+      const withRules = await applyRules({
         invoice_number,
         date: new Date(date),
         amount: convertedAmount,
         vendor,
+        due_date: inv.due_date || inv.dueDate || null,
       });
       const ruleUpdates = await evaluateWorkflowRules({
         invoice_number,
@@ -1810,7 +1811,7 @@ exports.autoCategorizeInvoice = async (req, res) => {
       return res.status(404).json({ message: 'Invoice not found' });
     }
     let invoice = result.rows[0];
-    invoice = applyRules(invoice);
+    invoice = await applyRules(invoice);
     let tags = invoice.tags || [];
     if (invoice.tags) {
       tags = Array.from(new Set([...tags, ...(invoice.tags || [])]));

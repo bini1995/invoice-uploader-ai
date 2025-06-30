@@ -4,6 +4,7 @@ import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
 import CashflowSimulation from './components/CashflowSimulation';
 import StatCard from './components/StatCard.jsx';
+import RuleModal from './components/RuleModal';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
@@ -14,8 +15,10 @@ function Reports() {
   const [loadingReport, setLoadingReport] = useState(false);
   const [loadingHeatmap, setLoadingHeatmap] = useState(false);
   const [loadingRules, setLoadingRules] = useState(true);
-  const [threshold, setThreshold] = useState(5000);
   const [rules, setRules] = useState([]);
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [ruleForm, setRuleForm] = useState({ type: 'spend', amount: 1000 });
+  const [editIndex, setEditIndex] = useState(null);
   const [heatmap, setHeatmap] = useState([]);
   const [vendorList, setVendorList] = useState([]);
   const [tags, setTags] = useState([]); // available tag options
@@ -146,13 +149,52 @@ function Reports() {
     setLoadingRules(false);
   }, [token]);
 
-  const addAmountRule = async () => {
-    await fetch(`${API_BASE}/api/analytics/rules`, {
-      method: 'POST',
+  const saveRule = async (data) => {
+    const body =
+      data.type === 'spend'
+        ? { amountGreaterThan: parseFloat(data.amount), flagReason: `Amount over $${data.amount}` }
+        : data.type === 'newVendor'
+        ? { newVendor: true, flagReason: 'Vendor not seen before' }
+        : data.type === 'pastDue'
+        ? { pastDue: true, flagReason: 'Invoice past due' }
+        : { duplicateId: true, flagReason: 'Duplicate invoice ID' };
+    const method = editIndex === null ? 'POST' : 'PUT';
+    const url = editIndex === null ? `${API_BASE}/api/analytics/rules` : `${API_BASE}/api/analytics/rules/${editIndex}`;
+    await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ amountGreaterThan: parseFloat(threshold), flagReason: `Amount over $${threshold}` })
+      body: JSON.stringify(body)
+    });
+    setShowRuleModal(false);
+    setEditIndex(null);
+    loadRules();
+  };
+
+  const deleteRule = async (idx) => {
+    await fetch(`${API_BASE}/api/analytics/rules/${idx}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
     });
     loadRules();
+  };
+
+  const openNewRule = () => {
+    setEditIndex(null);
+    setRuleForm({ type: 'spend', amount: 1000 });
+    setShowRuleModal(true);
+  };
+
+  const openEditRule = (idx) => {
+    const r = rules[idx];
+    if (!r) return;
+    let type = 'spend';
+    if (r.amountGreaterThan) type = 'spend';
+    else if (r.newVendor) type = 'newVendor';
+    else if (r.pastDue) type = 'pastDue';
+    else if (r.duplicateId) type = 'duplicate';
+    setRuleForm({ type, amount: r.amountGreaterThan || 1000 });
+    setEditIndex(idx);
+    setShowRuleModal(true);
   };
 
   const applyQuickRange = (range) => {
@@ -266,16 +308,24 @@ function Reports() {
           <StatCard title="Top Spending Vendor" value={summary.topVendor || 'N/A'} />
         </div>
         <div>
-          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Auto-Flag Rule</h2>
-          <div className="flex space-x-2 items-center">
-            <input type="number" value={threshold} onChange={e => setThreshold(e.target.value)} className="input w-32" />
-            <button onClick={addAmountRule} className="btn btn-primary" title="Set Threshold">Set Threshold</button>
+          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">AI Threshold Rules</h2>
+          <div className="flex justify-between items-center mb-2">
+            <button onClick={openNewRule} className="btn btn-primary" title="Add Rule">+ Add Rule</button>
           </div>
-          <ul className="list-disc pl-5 mt-2 text-gray-700 dark:text-gray-300">
+          <ul className="space-y-1 text-gray-700 dark:text-gray-300">
             {loadingRules ? (
               <Skeleton rows={2} height="h-4" />
             ) : (
-              rules.map((r, i) => <li key={i}>{r.flagReason}</li>)
+              rules.map((r, i) => (
+                <li key={i} className="flex justify-between items-center">
+                  <span>{r.flagReason}</span>
+                  <span className="text-xs ml-2">Triggered: {r.triggered}</span>
+                  <div className="space-x-1">
+                    <button onClick={() => openEditRule(i)} className="btn btn-xs">Edit</button>
+                    <button onClick={() => deleteRule(i)} className="btn btn-xs">Delete</button>
+                  </div>
+                </li>
+              ))
             )}
           </ul>
         </div>
@@ -365,6 +415,12 @@ function Reports() {
           <CashflowSimulation token={token} />
         </div>
       </div>
+      <RuleModal
+        open={showRuleModal}
+        onClose={() => setShowRuleModal(false)}
+        onSave={saveRule}
+        initial={ruleForm}
+      />
     </MainLayout>
   );
 }
