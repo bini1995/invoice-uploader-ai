@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Skeleton from './Skeleton';
 import { API_BASE } from '../api';
@@ -8,6 +8,8 @@ export default function CashflowSimulation({ token }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [scenarios, setScenarios] = useState([]);
+  const [metrics, setMetrics] = useState(null);
+  const chartRef = useRef(null);
 
   const runSim = useCallback(async (d) => {
     if (!token) return;
@@ -48,6 +50,27 @@ export default function CashflowSimulation({ token }) {
     fetchScenarios();
   }, [token, fetchScenarios]);
 
+  useEffect(() => {
+    if (!result) return;
+    const startingCash = 100000;
+    const mapBase = Object.fromEntries(result.baseline.map(b => [b.date, b.total]));
+    const mapScenario = Object.fromEntries(result.scenario.map(s => [s.date, s.total]));
+    const dates = Array.from(new Set([...result.baseline.map(b => b.date), ...result.scenario.map(s => s.date)])).sort();
+    let cumBase = startingCash;
+    let cumScen = startingCash;
+    let dip = 0;
+    for (const d of dates) {
+      cumBase -= mapBase[d] || 0;
+      cumScen -= mapScenario[d] || 0;
+      const diff = cumScen - cumBase;
+      if (diff < dip) dip = diff;
+    }
+    const burn = result.baseline.reduce((a, b) => a + b.total, 0) / (result.baseline.length || 1);
+    const scenBurn = result.scenario.reduce((a, b) => a + b.total, 0) / (result.scenario.length || 1);
+    const daysLeft = scenBurn ? Math.floor(startingCash / scenBurn) : 0;
+    setMetrics({ cashDip: Math.abs(dip), burnRate: burn, daysToZero: daysLeft });
+  }, [result]);
+
   const chartData = () => {
     if (!result) return [];
     const mapScenario = Object.fromEntries(result.scenario.map((s) => [s.date, s.total]));
@@ -56,6 +79,20 @@ export default function CashflowSimulation({ token }) {
       baseline: b.total,
       scenario: mapScenario[b.date] ?? b.total,
     }));
+  };
+
+  const exportPDF = () => {
+    if (!chartRef.current) return;
+    const svg = chartRef.current.querySelector('svg');
+    if (!svg) return;
+    const data = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const win = window.open('', '', 'width=800,height=600');
+    if (win) {
+      win.document.write(`<img src="${url}" onload="window.print();window.close();" />`);
+      win.document.close();
+    }
   };
 
   return (
@@ -76,7 +113,7 @@ export default function CashflowSimulation({ token }) {
           Save
         </button>
       </div>
-      <div className="h-64">
+      <div className="h-64" ref={chartRef}>
         {loading || !result ? (
           <Skeleton rows={1} className="h-full" />
         ) : (
@@ -91,6 +128,16 @@ export default function CashflowSimulation({ token }) {
             </LineChart>
           </ResponsiveContainer>
         )}
+      </div>
+      {metrics && (
+        <div className="grid grid-cols-3 gap-2 text-sm">
+          <div>{`Projected dip: $${metrics.cashDip.toFixed(2)}`}</div>
+          <div>{`Burn rate: $${metrics.burnRate.toFixed(2)}/day`}</div>
+          <div>{`Days to 0: ${metrics.daysToZero}`}</div>
+        </div>
+      )}
+      <div>
+        <button onClick={exportPDF} className="btn btn-primary btn-xs mt-1">Export PDF</button>
       </div>
       {scenarios.length > 0 && (
         <div>
