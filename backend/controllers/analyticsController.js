@@ -3,12 +3,18 @@ const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const { loadReportSchedules } = require('../utils/reportScheduler');
 
-function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount }) {
+function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag }) {
   const params = [];
   const conditions = [];
   if (vendor) {
-    params.push(`%${vendor}%`);
-    conditions.push(`LOWER(vendor) LIKE LOWER($${params.length})`);
+    const vendors = Array.isArray(vendor) ? vendor : vendor.split(',').map(v => v.trim()).filter(Boolean);
+    if (vendors.length) {
+      const ors = vendors.map(v => {
+        params.push(`%${v}%`);
+        return `LOWER(vendor) LIKE LOWER($${params.length})`;
+      });
+      conditions.push(`(${ors.join(' OR ')})`);
+    }
   }
   if (department) {
     params.push(`%${department}%`);
@@ -30,6 +36,16 @@ function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, m
     params.push(maxAmount);
     conditions.push(`amount <= $${params.length}`);
   }
+  if (tag) {
+    const tags = Array.isArray(tag) ? tag : tag.split(',').map(t => t.trim()).filter(Boolean);
+    if (tags.length) {
+      const ors = tags.map(t => {
+        params.push(t);
+        return `tags ? $${params.length}`;
+      });
+      conditions.push(`(${ors.join(' OR ')})`);
+    }
+  }
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
   return { where, params };
 }
@@ -37,8 +53,8 @@ function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, m
 exports.buildFilterQuery = buildFilterQuery;
 
 exports.getReport = async (req, res) => {
-  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
     const result = await pool.query(
       `SELECT id, invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
@@ -52,8 +68,8 @@ exports.getReport = async (req, res) => {
 };
 
 exports.exportReportPDF = async (req, res) => {
-  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
     const result = await pool.query(
       `SELECT invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
@@ -275,8 +291,8 @@ exports.getVendorSpend = async (req, res) => {
 
 // Export report as Excel
 exports.exportReportExcel = async (req, res) => {
-  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
     const result = await pool.query(
       `SELECT invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
@@ -519,8 +535,8 @@ exports.getInvoiceClusters = async (_req, res) => {
 
 // Heatmap of invoice volume over time
 exports.getSpendHeatmap = async (req, res) => {
-  const { vendor, department, startDate, endDate, minAmount, maxAmount } = req.query;
-  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount });
+  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
     const result = await pool.query(
       `SELECT date::date AS day, COUNT(*) AS count FROM invoices ${where} GROUP BY day ORDER BY day`,
