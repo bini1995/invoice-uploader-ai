@@ -533,17 +533,23 @@ exports.getInvoiceClusters = async (_req, res) => {
   }
 };
 
-// Heatmap of invoice volume over time
+// Heatmap of spending over time
 exports.getSpendHeatmap = async (req, res) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
-    const result = await pool.query(
-      `SELECT date::date AS day, COUNT(*) AS count FROM invoices ${where} GROUP BY day ORDER BY day`,
+    const spendRes = await pool.query(
+      `SELECT date::date AS day, SUM(amount) AS total FROM invoices ${where} GROUP BY day ORDER BY day`,
       params
     );
-    const heatmap = result.rows.map(r => ({ day: r.day.toISOString().slice(0, 10), count: parseInt(r.count, 10) }));
-    res.json({ heatmap });
+    const flaggedWhere = where ? `${where} AND flagged = TRUE` : 'WHERE flagged = TRUE';
+    const flaggedRes = await pool.query(
+      `SELECT date::date AS day FROM invoices ${flaggedWhere} GROUP BY day`,
+      params
+    );
+    const heatmap = spendRes.rows.map(r => ({ day: r.day.toISOString().slice(0, 10), total: parseFloat(r.total) }));
+    const flaggedDays = flaggedRes.rows.map(r => r.day.toISOString().slice(0, 10));
+    res.json({ heatmap, flaggedDays });
   } catch (err) {
     console.error('Spend heatmap error:', err);
     res.status(500).json({ message: 'Failed to build spend heatmap' });

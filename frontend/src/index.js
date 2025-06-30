@@ -6,7 +6,7 @@ import AdaptiveDashboard from './AdaptiveDashboard';
 import SharedDashboard from './SharedDashboard';
 import DashboardBuilder from './DashboardBuilder';
 import ExportTemplateBuilder from './ExportTemplateBuilder';
-import Reports from './Reports';
+import AISpendAnalyticsHub from './AISpendAnalyticsHub';
 import AuditDashboard from './AuditDashboard';
 import FraudReport from './FraudReport';
 import Archive from './Archive';
@@ -101,7 +101,7 @@ function AnimatedRoutes() {
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
         <Route path="/invoices" element={<PageWrapper><App /></PageWrapper>} />
         <Route path="/inbox" element={<PageWrapper><Inbox /></PageWrapper>} />
-        <Route path="/analytics" element={<PageWrapper><Reports /></PageWrapper>} />
+        <Route path="/analytics" element={<PageWrapper><AISpendAnalyticsHub /></PageWrapper>} />
         <Route path="/audit" element={<PageWrapper><AuditDashboard /></PageWrapper>} />
         <Route path="/fraud" element={<PageWrapper><FraudReport /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />

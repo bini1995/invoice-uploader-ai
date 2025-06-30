@@ -6,7 +6,7 @@ import CashflowSimulation from './components/CashflowSimulation';
 import StatCard from './components/StatCard.jsx';
 import RuleModal from './components/RuleModal';
 
-function Reports() {
+function AISpendAnalyticsHub() {
   const token = localStorage.getItem('token') || '';
   const [vendors, setVendors] = useState([]);
   const [startDate, setStartDate] = useState('');
@@ -20,6 +20,8 @@ function Reports() {
   const [ruleForm, setRuleForm] = useState({ type: 'spend', amount: 1000 });
   const [editIndex, setEditIndex] = useState(null);
   const [heatmap, setHeatmap] = useState([]);
+  const [anomalyDays, setAnomalyDays] = useState([]);
+  const [highlightAnomalies, setHighlightAnomalies] = useState(false);
   const [vendorList, setVendorList] = useState([]);
   const [tags, setTags] = useState([]); // available tag options
   const [selectedTags, setSelectedTags] = useState([]);
@@ -42,7 +44,10 @@ function Reports() {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
-    if (res.ok) setHeatmap(data.heatmap || []);
+    if (res.ok) {
+      setHeatmap(data.heatmap || []);
+      setAnomalyDays(data.flaggedDays || []);
+    }
     setLoadingHeatmap(false);
   }, [vendors, startDate, endDate, selectedTags, token]);
 
@@ -358,7 +363,18 @@ function Reports() {
           </table>
         </div>
         <div>
-          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Spend Heatmap</h2>
+          <div className="flex items-center mb-1">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 flex-1">Spend Heatmap</h2>
+            <label className="text-sm flex items-center">
+              <input
+                type="checkbox"
+                className="mr-1"
+                checked={highlightAnomalies}
+                onChange={(e) => setHighlightAnomalies(e.target.checked)}
+              />
+              Highlight anomaly days
+            </label>
+          </div>
           <div className="overflow-x-auto rounded-lg">
             <table className="table-fixed border-collapse rounded-lg overflow-hidden text-xs">
               <thead>
@@ -370,7 +386,7 @@ function Reports() {
               </thead>
               <tbody>
                 {(() => {
-                  const map = Object.fromEntries(heatmap.map(h => [h.day, h.count]));
+                  const map = Object.fromEntries(heatmap.map(h => [h.day, h.total]));
                   const start = startDate ? new Date(startDate) : new Date(new Date().getFullYear(), 0, 1);
                   const end = endDate ? new Date(endDate) : new Date(start.getFullYear(), 11, 31);
                   const days = [];
@@ -381,22 +397,22 @@ function Reports() {
                   for (let i = 0; i < first; i++) days.unshift(null);
                   const rows = [];
                   while (days.length) rows.push(days.splice(0,7));
-                  const max = heatmap.reduce((m,h) => Math.max(m,h.count),0);
+                  const max = heatmap.reduce((m,h) => Math.max(m,h.total),0);
                   return rows.map((week,i) => (
                     <tr key={i} className="text-center">
                       {week.map((date,j) => {
                         if (!date) return <td key={j}></td>;
                         const key = date.toISOString().slice(0,10);
-                        const count = map[key] || 0;
-                        const intensity = max ? count / max : 0;
+                        const amt = map[key] || 0;
+                        const intensity = max ? amt / max : 0;
                         const bg = `rgba(34,197,94,${intensity})`;
                         return (
                           <td
                             key={j}
-                            style={{ backgroundColor: bg }}
+                            style={{ backgroundColor: bg, border: highlightAnomalies && anomalyDays.includes(key) ? '2px solid red' : undefined }}
                             className="w-6 h-6 cursor-pointer"
                             onClick={() => handleDayClick(key)}
-                            title={`${count} invoices`}
+                            title={`${date.toLocaleDateString()}: $${amt.toFixed(2)}`}
                           >
                             {date.getDate()}
                           </td>
@@ -425,4 +441,4 @@ function Reports() {
   );
 }
 
-export default Reports;
+export default AISpendAnalyticsHub;
