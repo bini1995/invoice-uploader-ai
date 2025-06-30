@@ -427,7 +427,8 @@ function AISpendAnalyticsHub() {
           {loadingHeatmap && <p className="text-sm">Loading heatmap...</p>}
         </div>
         <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Cash Flow Simulation</h2>
+          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Cash Flow Stress Test</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Use slider to project how delays impact available cash.</p>
           <CashflowSimulation token={token} />
         </div>
       </div>
