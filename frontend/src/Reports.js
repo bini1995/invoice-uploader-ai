@@ -7,7 +7,7 @@ import StatCard from './components/StatCard.jsx';
 
 function Reports() {
   const token = localStorage.getItem('token') || '';
-  const [vendor, setVendor] = useState('');
+  const [vendors, setVendors] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [invoices, setInvoices] = useState([]);
@@ -18,8 +18,8 @@ function Reports() {
   const [rules, setRules] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
   const [vendorList, setVendorList] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [tag, setTag] = useState('');
+  const [tags, setTags] = useState([]); // available tag options
+  const [selectedTags, setSelectedTags] = useState([]);
   const [summary, setSummary] = useState({
     totalInvoices: 0,
     anomalies: 0,
@@ -31,25 +31,25 @@ function Reports() {
   const fetchHeatmap = useCallback(async () => {
     setLoadingHeatmap(true);
     const params = new URLSearchParams();
-    if (vendor) params.append('vendor', vendor);
+    if (vendors.length) params.append('vendor', vendors.join(','));
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    if (tag) params.append('tag', tag);
+    if (selectedTags.length) params.append('tag', selectedTags.join(','));
     const res = await fetch(`${API_BASE}/api/analytics/spend/heatmap?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
     if (res.ok) setHeatmap(data.heatmap || []);
     setLoadingHeatmap(false);
-  }, [vendor, startDate, endDate, tag, token]);
+  }, [vendors, startDate, endDate, selectedTags, token]);
 
   const fetchReport = async (s = startDate, e = endDate) => {
     setLoadingReport(true);
     const params = new URLSearchParams();
-    if (vendor) params.append('vendor', vendor);
+    if (vendors.length) params.append('vendor', vendors.join(','));
     if (s) params.append('startDate', s);
     if (e) params.append('endDate', e);
-    if (tag) params.append('tag', tag);
+    if (selectedTags.length) params.append('tag', selectedTags.join(','));
     const res = await fetch(`${API_BASE}/api/analytics/report?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -83,10 +83,10 @@ function Reports() {
   const fetchSummary = useCallback(async () => {
     if (!token) return;
     const params = new URLSearchParams();
-    if (vendor) params.append('vendor', vendor);
+    if (vendors.length) params.append('vendor', vendors.join(','));
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    if (tag) params.append('tag', tag);
+    if (selectedTags.length) params.append('tag', selectedTags.join(','));
 
     const [dashRes, quickRes, vendorRes] = await Promise.all([
       fetch(`${API_BASE}/api/invoices/dashboard?${params.toString()}`, {
@@ -117,14 +117,14 @@ function Reports() {
         topVendor: top.vendor || ''
       });
     }
-  }, [token, vendor, startDate, endDate, tag]);
+  }, [token, vendors, startDate, endDate, selectedTags]);
 
   const exportPDF = async () => {
     const params = new URLSearchParams();
-    if (vendor) params.append('vendor', vendor);
+    if (vendors.length) params.append('vendor', vendors.join(','));
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    if (tag) params.append('tag', tag);
+    if (selectedTags.length) params.append('tag', selectedTags.join(','));
     const res = await fetch(`${API_BASE}/api/analytics/report/pdf?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -155,6 +155,27 @@ function Reports() {
     loadRules();
   };
 
+  const applyQuickRange = (range) => {
+    const now = new Date();
+    let start, end;
+    if (range === '7d') {
+      end = new Date(now);
+      start = new Date(now);
+      start.setDate(start.getDate() - 6);
+    } else if (range === 'lastMonth') {
+      start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth(), 0);
+    } else if (range === 'quarter') {
+      const q = Math.floor(now.getMonth() / 3);
+      start = new Date(now.getFullYear(), q * 3, 1);
+      end = new Date(now.getFullYear(), q * 3 + 3, 0);
+    }
+    setStartDate(start.toISOString().slice(0, 10));
+    setEndDate(end.toISOString().slice(0, 10));
+    fetchReport(start.toISOString().slice(0, 10), end.toISOString().slice(0, 10));
+    fetchSummary();
+  };
+
   useEffect(() => {
     if (token) {
       setLoadingRules(true);
@@ -178,7 +199,7 @@ function Reports() {
     if (token) {
       fetchSummary();
     }
-  }, [fetchSummary, token, vendor, startDate, endDate, tag]);
+  }, [fetchSummary, token, vendors, startDate, endDate, selectedTags]);
 
   useEffect(() => {
     if (token) {
@@ -201,25 +222,33 @@ function Reports() {
     <MainLayout title="AI Spend Analytics Hub" helpTopic="reports">
       <div className="space-y-4 max-w-2xl">
         <div className="sticky top-16 z-10 bg-white dark:bg-gray-800 border-b p-2 flex flex-wrap items-end gap-2">
-          <select value={vendor} onChange={e => setVendor(e.target.value)} className="input">
-            <option value="">All Vendors</option>
+          <select
+            multiple
+            value={vendors}
+            onChange={e => setVendors(Array.from(e.target.selectedOptions).map(o => o.value))}
+            className="input"
+          >
             {vendorList.map(v => (
               <option key={v} value={v}>{v}</option>
             ))}
           </select>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="input" />
           <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="input" />
-          <div className="flex flex-wrap gap-1">
-            {tags.map(t => (
-              <button
-                key={t}
-                onClick={() => setTag(t)}
-                className={`px-2 py-0.5 rounded text-xs ${tag === t ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-800'}`}
-              >
-                {t}
-              </button>
-            ))}
+          <div className="flex space-x-1">
+            <button onClick={() => applyQuickRange('7d')} className="btn btn-xs">Last 7 Days</button>
+            <button onClick={() => applyQuickRange('lastMonth')} className="btn btn-xs">Last Month</button>
+            <button onClick={() => applyQuickRange('quarter')} className="btn btn-xs">This Quarter</button>
           </div>
+          <select
+            multiple
+            value={selectedTags}
+            onChange={e => setSelectedTags(Array.from(e.target.selectedOptions).map(o => o.value))}
+            className="input"
+          >
+            {tags.map(t => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
           <button onClick={runReport} className="btn btn-primary ml-auto" title="Apply Filters">Apply</button>
           <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
         </div>
