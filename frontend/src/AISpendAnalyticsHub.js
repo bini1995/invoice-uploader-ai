@@ -25,6 +25,7 @@ function AISpendAnalyticsHub() {
   const [vendorList, setVendorList] = useState([]);
   const [tags, setTags] = useState([]); // available tag options
   const [selectedTags, setSelectedTags] = useState([]);
+  const [includeAI, setIncludeAI] = useState(false);
   const [summary, setSummary] = useState({
     totalInvoices: 0,
     anomalies: 0,
@@ -133,6 +134,7 @@ function AISpendAnalyticsHub() {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
     if (selectedTags.length) params.append('tag', selectedTags.join(','));
+    if (includeAI) params.append('includeInsights', 'true');
     const res = await fetch(`${API_BASE}/api/analytics/report/pdf?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -141,6 +143,24 @@ function AISpendAnalyticsHub() {
     const a = document.createElement('a');
     a.href = url;
     a.download = 'report.pdf';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const exportCSV = async () => {
+    const params = new URLSearchParams();
+    if (vendors.length) params.append('vendor', vendors.join(','));
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (selectedTags.length) params.append('tag', selectedTags.join(','));
+    const res = await fetch(`${API_BASE}/api/analytics/report/csv?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'report.csv';
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -297,7 +317,17 @@ function AISpendAnalyticsHub() {
             ))}
           </select>
           <button onClick={runReport} className="btn btn-primary ml-auto" title="Apply Filters">Apply</button>
+          <label className="text-sm flex items-center ml-2">
+            <input
+              type="checkbox"
+              className="mr-1"
+              checked={includeAI}
+              onChange={e => setIncludeAI(e.target.checked)}
+            />
+            Include AI Insights?
+          </label>
           <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
+          <button onClick={exportCSV} className="btn btn-primary bg-blue-700 hover:bg-blue-800" title="Export CSV">Export CSV</button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">

@@ -2,6 +2,7 @@ const pool = require('../config/db');
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const { loadReportSchedules } = require('../utils/reportScheduler');
+const openai = require('../config/openai');
 
 function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag }) {
   const params = [];
@@ -68,7 +69,7 @@ exports.getReport = async (req, res) => {
 };
 
 exports.exportReportPDF = async (req, res) => {
-  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
+  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag, includeInsights } = req.query;
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
     const result = await pool.query(
@@ -88,6 +89,36 @@ exports.exportReportPDF = async (req, res) => {
       doc.text(`Amount: $${parseFloat(inv.amount).toFixed(2)}`);
       doc.moveDown();
     });
+
+    if (includeInsights === 'true') {
+      try {
+        const totals = {};
+        result.rows.forEach(r => {
+          totals[r.vendor] = (totals[r.vendor] || 0) + parseFloat(r.amount);
+        });
+        const formatted = Object.entries(totals)
+          .map(([v, t]) => `- ${v}: $${t.toFixed(2)}`)
+          .join('\n');
+        const completion = await openai.chat.completions.create({
+          model: 'openai/gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'You analyze business spending data.' },
+            { role: 'user', content: `Provide a short summary of vendor spending patterns:\n\n${formatted}` }
+          ],
+          temperature: 0.5,
+        });
+        const summary = completion.choices[0].message.content.trim();
+        doc.addPage();
+        doc.fontSize(16).text('AI Insights', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(summary);
+      } catch (aiErr) {
+        console.error('AI insights error:', aiErr);
+        doc.addPage();
+        doc.fontSize(16).text('AI Insights Unavailable', { align: 'center' });
+      }
+    }
+
     doc.end();
   } catch (err) {
     console.error('Report PDF error:', err);
@@ -313,6 +344,26 @@ exports.exportReportExcel = async (req, res) => {
     res.send(buffer);
   } catch (err) {
     console.error('Report Excel error:', err);
+    res.status(500).json({ message: 'Failed to export report' });
+  }
+};
+
+exports.exportReportCSV = async (req, res) => {
+  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
+  const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
+  try {
+    const result = await pool.query(
+      `SELECT invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
+      params
+    );
+    const { Parser } = require('json2csv');
+    const parser = new Parser({ fields: ['invoice_number', 'date', 'vendor', 'amount'] });
+    const csv = parser.parse(result.rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="report.csv"');
+    res.send(csv);
+  } catch (err) {
+    console.error('Report CSV error:', err);
     res.status(500).json({ message: 'Failed to export report' });
   }
 };
