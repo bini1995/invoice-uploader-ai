@@ -720,3 +720,14 @@ exports.getDashboardRecommendations = async (_req, res) => {
     client.release();
   }
 };
+
+// Cross-referenced fraud/audit alerts
+exports.getCrossAlerts = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT i.id, i.invoice_number, i.vendor, a.username, a.created_at FROM invoices i JOIN audit_logs a ON a.invoice_id = i.id AND a.action = 'flag_invoice' WHERE i.flagged = TRUE ORDER BY a.created_at DESC LIMIT 5`);
+    res.json({ alerts: rows });
+  } catch (err) {
+    console.error('Cross alerts error:', err);
+    res.status(500).json({ message: 'Failed to fetch cross alerts' });
+  }
+};

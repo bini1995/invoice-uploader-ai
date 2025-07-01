@@ -23,6 +23,7 @@ const {
   getInvoicesOverBudget,
   getRiskHeatmap,
   getInvoiceClusters,
+  getCrossAlerts,
   listReportSchedules,
   createReportSchedule,
   deleteReportSchedule
@@ -56,6 +57,7 @@ router.get('/metadata', authMiddleware, getDashboardMetadata);
 router.get('/outliers', authMiddleware, detectOutliers);
 router.get('/dashboard/realtime', authMiddleware, getRealTimeDashboard);
 router.get('/dashboard/recommendations', authMiddleware, getDashboardRecommendations);
+router.get('/dashboard/cross-alerts', authMiddleware, getCrossAlerts);
 router.get('/anomalies/duplicates', authMiddleware, detectDuplicateInvoices);
 router.get('/risk/heatmap', authMiddleware, getRiskHeatmap);
 router.get('/risk/clusters', authMiddleware, getInvoiceClusters);

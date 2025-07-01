@@ -36,6 +36,8 @@ export default function AdaptiveDashboard() {
   const [alerts, setAlerts] = useState([]);
   const [suggestion, setSuggestion] = useState('');
   const [recs, setRecs] = useState(null);
+  const [forecast, setForecast] = useState(null);
+  const [view, setView] = useState('suggestions');
   const [cardOrder, setCardOrder] = useState(() => {
     const saved = localStorage.getItem('adaptiveCardOrder');
     return saved ? JSON.parse(saved) : ['vendors', 'flagged', 'processing'];
@@ -65,13 +67,16 @@ export default function AdaptiveDashboard() {
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${curStart}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/dashboard/recommendations`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/analytics/dashboard/cross-alerts`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/analytics/cash-flow/forecast`, { headers }).then(r => r.json()),
     ])
-      .then(([m, pm, v, c, l, flagged, vendorList, prevTimes, curTimes, rec]) => {
+      .then(([m, pm, v, c, l, flagged, vendorList, prevTimes, curTimes, rec, cross, fc]) => {
         setMeta(m);
         setPrevMeta(pm);
         setVendors(v.topVendors || []);
         setCashFlow(c.data || []);
         setLogs(Array.isArray(l) ? l : []);
+        setForecast(fc || null);
 
         const newAlerts = [];
         if (Array.isArray(flagged.invoices)) {
@@ -93,6 +98,12 @@ export default function AdaptiveDashboard() {
         if (vendorList?.vendors) {
           const inactive = vendorList.vendors.find(v => v.last_invoice && (Date.now() - new Date(v.last_invoice)) / 86400000 > 30);
           if (inactive) newAlerts.push(`Check in with vendor ${inactive.vendor}?`);
+        }
+
+        if (Array.isArray(cross.alerts)) {
+          cross.alerts.forEach(a => {
+            newAlerts.push(`Fraud flag: #${a.invoice_number} by ${a.vendor} (flagged by ${a.username})`);
+          });
         }
 
         if (Array.isArray(prevTimes.approvals) && Array.isArray(curTimes.approvals)) {
@@ -229,12 +240,16 @@ export default function AdaptiveDashboard() {
             {a}
           </div>
         ))}
-        {suggestion && (
+        <div className="flex gap-2">
+          <button onClick={() => setView('suggestions')} className={`btn px-2 py-1 ${view==='suggestions' ? 'btn-primary' : 'btn-secondary'}`}>AI Suggestions</button>
+          <button onClick={() => setView('forecast')} className={`btn px-2 py-1 ${view==='forecast' ? 'btn-primary' : 'btn-secondary'}`}>Forecast View</button>
+        </div>
+        {view==='suggestions' && suggestion && (
           <div className="p-3 bg-yellow-100 text-yellow-700 rounded-md">
             {suggestion}
           </div>
         )}
-        {recs && (
+        {view==='suggestions' && recs && (
           <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-2">
             <h2 className="font-semibold">Personalized Recommendations</h2>
             <div className="text-sm font-medium">Top vendors to monitor:</div>
@@ -317,6 +332,19 @@ export default function AdaptiveDashboard() {
             </ResponsiveContainer>
           )}
         </div>
+        {view === 'forecast' && forecast && (
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={[...forecast.history, { month: 'Next', total: forecast.forecastNextMonth }]}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tickFormatter={(v) => (v === 'Next' ? v : new Date(v).toLocaleDateString())} />
+                <YAxis />
+                <Tooltip labelFormatter={(v) => (v === 'Next' ? v : new Date(v).toLocaleDateString())} />
+                <Line type="monotone" dataKey="total" stroke="#10b981" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
         <div>
           <h2 className="font-semibold mb-2">Recent Activity</h2>
           <ul className="space-y-1 text-sm">
