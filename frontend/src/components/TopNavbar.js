@@ -8,7 +8,7 @@ import HighContrastToggle from './HighContrastToggle';
 export default function TopNavbar({ title, helpTopic }) {
   const token = localStorage.getItem('token') || '';
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-2 z-20">
+    <nav className="sticky top-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex justify-between items-center p-2 z-20">
       <h1 className="text-xl font-bold flex items-center gap-1">
         {title}
         {helpTopic && (
