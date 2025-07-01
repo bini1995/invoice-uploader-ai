@@ -661,3 +661,62 @@ exports.deleteReportSchedule = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete schedule' });
   }
 };
+
+// Personalized dashboard recommendations
+exports.getDashboardRecommendations = async (_req, res) => {
+  const client = await pool.connect();
+  try {
+    const now = new Date();
+    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+
+    // Top vendors by spend this week
+    const topRes = await client.query(
+      `SELECT vendor, SUM(amount) AS total
+         FROM invoices
+        WHERE date >= $1
+        GROUP BY vendor
+        ORDER BY total DESC
+        LIMIT 3`,
+      [weekStart]
+    );
+    const topVendors = topRes.rows.map(r => ({ vendor: r.vendor, total: parseFloat(r.total) }));
+
+    // Invoices approaching due date within 7 days
+    const upcoming = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const dueRes = await client.query(
+      `SELECT id, invoice_number, vendor, due_date, amount
+         FROM invoices
+        WHERE payment_status != 'Paid'
+          AND due_date IS NOT NULL
+          AND due_date <= $1
+          AND due_date >= $2
+        ORDER BY due_date
+        LIMIT 5`,
+      [upcoming, now]
+    );
+    const dueSoon = dueRes.rows.map(r => ({
+      id: r.id,
+      invoice_number: r.invoice_number,
+      vendor: r.vendor,
+      due_date: r.due_date,
+      amount: parseFloat(r.amount)
+    }));
+
+    // Suggest budget threshold based on recent 4-week average spend
+    const fourWeeksAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 28);
+    const spendRes = await client.query(
+      `SELECT SUM(amount) AS total FROM invoices WHERE date >= $1`,
+      [fourWeeksAgo]
+    );
+    const total = parseFloat(spendRes.rows[0].total || 0);
+    const avgWeekly = total / 4 || 0;
+    const suggestedThreshold = Math.round(avgWeekly * 1.2);
+
+    res.json({ topVendors, dueSoon, suggestedThreshold });
+  } catch (err) {
+    console.error('Dashboard recommendations error:', err);
+    res.status(500).json({ message: 'Failed to fetch recommendations' });
+  } finally {
+    client.release();
+  }
+};

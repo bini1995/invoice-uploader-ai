@@ -32,6 +32,7 @@ export default function AdaptiveDashboard() {
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState([]);
   const [suggestion, setSuggestion] = useState('');
+  const [recs, setRecs] = useState(null);
 
   useEffect(() => {
     if (!token) return;
@@ -52,8 +53,9 @@ export default function AdaptiveDashboard() {
       fetch(`${API_BASE}/api/vendors`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${curStart}`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/analytics/dashboard/recommendations`, { headers }).then(r => r.json()),
     ])
-      .then(([m, pm, v, c, l, flagged, vendorList, prevTimes, curTimes]) => {
+      .then(([m, pm, v, c, l, flagged, vendorList, prevTimes, curTimes, rec]) => {
         setMeta(m);
         setPrevMeta(pm);
         setVendors(v.topVendors || []);
@@ -91,6 +93,7 @@ export default function AdaptiveDashboard() {
           }
         }
         setAlerts(newAlerts);
+        setRecs(rec || null);
       })
       .finally(() => setLoading(false));
   }, [token]);
@@ -106,6 +109,30 @@ export default function AdaptiveDashboard() {
         {suggestion && (
           <div className="p-3 bg-yellow-100 text-yellow-700 rounded-md">
             {suggestion}
+          </div>
+        )}
+        {recs && (
+          <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-2">
+            <h2 className="font-semibold">Personalized Recommendations</h2>
+            <div className="text-sm font-medium">Top vendors to monitor:</div>
+            <ul className="list-disc list-inside text-sm">
+              {recs.topVendors.map(v => (
+                <li key={v.vendor}>{v.vendor} - ${v.total.toFixed(2)}</li>
+              ))}
+            </ul>
+            {recs.dueSoon.length > 0 && (
+              <>
+                <div className="text-sm font-medium mt-2">Invoices nearing due date:</div>
+                <ul className="list-disc list-inside text-sm">
+                  {recs.dueSoon.map(inv => (
+                    <li key={inv.id}>#{inv.invoice_number} {inv.vendor} due {new Date(inv.due_date).toLocaleDateString()}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <div className="text-sm font-medium mt-2">
+              Suggested threshold update: ${recs.suggestedThreshold}
+            </div>
           </div>
         )}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
