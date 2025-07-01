@@ -58,7 +58,9 @@ exports.getReport = async (req, res) => {
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
     const result = await pool.query(
-      `SELECT id, invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
+      `SELECT id, invoice_number, date, vendor, amount, approval_status, flagged, flag_reason
+       FROM invoices ${where}
+       ORDER BY date DESC`,
       params
     );
     res.json({ invoices: result.rows });

@@ -5,6 +5,7 @@ import { API_BASE } from './api';
 import CashflowSimulation from './components/CashflowSimulation';
 import StatCard from './components/StatCard.jsx';
 import RuleModal from './components/RuleModal';
+import InvoiceDetailModal from './components/InvoiceDetailModal';
 
 function AISpendAnalyticsHub() {
   const token = localStorage.getItem('token') || '';
@@ -33,6 +34,7 @@ function AISpendAnalyticsHub() {
     avgPerVendor: 0,
     topVendor: '',
   });
+  const [detailInvoice, setDetailInvoice] = useState(null);
 
   const fetchHeatmap = useCallback(async () => {
     setLoadingHeatmap(true);
@@ -163,6 +165,18 @@ function AISpendAnalyticsHub() {
     a.download = 'report.csv';
     a.click();
     window.URL.revokeObjectURL(url);
+  };
+
+  const updateInvoice = async (id, field, value) => {
+    try {
+      await fetch(`${API_BASE}/api/invoices/${id}/update`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ field, value })
+      });
+    } catch (e) {
+      console.error('Update invoice failed:', e);
+    }
   };
 
   const loadRules = useCallback(async () => {
@@ -368,24 +382,32 @@ function AISpendAnalyticsHub() {
           <table className="min-w-full border text-sm rounded-lg overflow-hidden">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700">
-                <th className="px-2 py-1">#</th>
                 <th className="px-2 py-1">Date</th>
                 <th className="px-2 py-1">Vendor</th>
                 <th className="px-2 py-1">Amount</th>
+                <th className="px-2 py-1">Status</th>
+                <th className="px-2 py-1">AI Flag</th>
+                <th className="px-2 py-1">Reason</th>
               </tr>
             </thead>
             <tbody>
               {loadingReport ? (
                 <tr>
-                  <td colSpan="4" className="p-4"><Skeleton rows={5} height="h-4" /></td>
+                  <td colSpan="6" className="p-4"><Skeleton rows={5} height="h-4" /></td>
                 </tr>
               ) : (
                 invoices.map(inv => (
-                  <tr key={inv.id} className="border-t hover:bg-gray-100">
-                    <td className="px-2 py-1">{inv.invoice_number}</td>
+                  <tr
+                    key={inv.id}
+                    className="border-t hover:bg-gray-100 cursor-pointer"
+                    onClick={() => setDetailInvoice(inv)}
+                  >
                     <td className="px-2 py-1">{new Date(inv.date).toLocaleDateString()}</td>
                     <td className="px-2 py-1">{inv.vendor}</td>
                     <td className="px-2 py-1">${inv.amount}</td>
+                    <td className="px-2 py-1">{inv.approval_status || 'Pending'}</td>
+                    <td className="px-2 py-1">{inv.flagged ? 'Yes' : 'No'}</td>
+                    <td className="px-2 py-1">{inv.flag_reason || '-'}</td>
                   </tr>
                 ))
               )}
@@ -467,6 +489,13 @@ function AISpendAnalyticsHub() {
         onClose={() => setShowRuleModal(false)}
         onSave={saveRule}
         initial={ruleForm}
+      />
+      <InvoiceDetailModal
+        open={!!detailInvoice}
+        invoice={detailInvoice}
+        onClose={() => setDetailInvoice(null)}
+        onUpdate={updateInvoice}
+        token={token}
       />
     </MainLayout>
   );
