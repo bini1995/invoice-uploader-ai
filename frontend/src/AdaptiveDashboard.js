@@ -289,11 +289,11 @@ export default function AdaptiveDashboard() {
             <h2 className="font-semibold">Personalized Recommendations</h2>
             <div className="text-sm font-medium">Top vendors to monitor:</div>
             <ul className="list-disc list-inside text-sm">
-              {recs.topVendors.map(v => (
+              {(recs.topVendors || []).map(v => (
                 <li key={v.vendor}>{v.vendor} - ${v.total.toFixed(2)}</li>
               ))}
             </ul>
-            {recs.dueSoon.length > 0 && (
+            {Array.isArray(recs.dueSoon) && recs.dueSoon.length > 0 && (
               <>
                 <div className="text-sm font-medium mt-2">Invoices nearing due date:</div>
                 <ul className="list-disc list-inside text-sm">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import DataTable from './components/DataTable';
@@ -44,15 +44,18 @@ function Archive() {
     return true;
   });
 
-  const handleRestore = async (id) => {
-    const res = await fetch(`${API_BASE}/api/invoices/${id}/unarchive`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      setInvoices((inv) => inv.filter((i) => i.id !== id));
-    }
-  };
+  const handleRestore = useCallback(
+    async (id) => {
+      const res = await fetch(`${API_BASE}/api/invoices/${id}/unarchive`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        setInvoices((inv) => inv.filter((i) => i.id !== id));
+      }
+    },
+    [token]
+  );
 
   const columns = useMemo(
     () => [

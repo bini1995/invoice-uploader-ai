@@ -64,7 +64,6 @@ function Dashboard() {
   const [trends, setTrends] = useState([]);
   const [flaggedTrend, setFlaggedTrend] = useState([]);
   const [graphView, setGraphView] = useState('spend');
-  const [pendingInvoices, setPendingInvoices] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -173,11 +172,6 @@ function Dashboard() {
               .sort((a, b) => new Date(a.month) - new Date(b.month));
             setFlaggedTrend(arr);
           }
-        }),
-      fetch(`${API_BASE}/api/invoices?status=Pending`, { headers })
-        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
-        .then(({ ok, d }) => {
-          if (ok && Array.isArray(d)) setPendingInvoices(d.slice(0, 5));
         }),
     ]).finally(() => setLoading(false));
   }, [token, cashFlowInterval]);
