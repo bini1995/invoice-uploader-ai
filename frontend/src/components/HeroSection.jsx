@@ -15,7 +15,7 @@ export default function HeroSection({ onRequestDemo }) {
           className="space-y-6 text-center md:text-left"
         >
           <h1 className="text-5xl md:text-6xl font-extrabold">
-            AI-Powered Invoice Automation for Teams That Scale
+            ClarifyOps – AI Invoice Automation for Growing Teams
           </h1>
           <p className="text-lg max-w-xl mx-auto md:mx-0">
             Reduce manual effort by 80% and integrate seamlessly into your workflow.
@@ -23,7 +23,7 @@ export default function HeroSection({ onRequestDemo }) {
           <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 justify-center md:justify-start">
             <Button className="text-lg px-8 py-3" onClick={onRequestDemo}>Request Demo</Button>
             <Button asChild variant="secondary" className="text-lg px-8 py-3">
-              <a href="/free-trial">Try It Free</a>
+              <a href="/free-trial">Start Free Trial</a>
             </Button>
           </div>
           <PartnerLogos />
