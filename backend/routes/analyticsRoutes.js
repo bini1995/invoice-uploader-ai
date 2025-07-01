@@ -4,6 +4,7 @@ const {
   getReport,
   exportReportPDF,
   exportReportExcel,
+  exportReportCSV,
   getTrends,
   getAgingReport,
   predictCashFlowRisk,
@@ -31,6 +32,7 @@ const { authMiddleware } = require('../controllers/userController');
 router.get('/report', authMiddleware, getReport);
 router.get('/report/pdf', authMiddleware, exportReportPDF);
 router.get('/report/excel', authMiddleware, exportReportExcel);
+router.get('/report/csv', authMiddleware, exportReportCSV);
 router.get('/report/schedules', authMiddleware, listReportSchedules);
 router.post('/report/schedules', authMiddleware, createReportSchedule);
 router.delete('/report/schedules/:id', authMiddleware, deleteReportSchedule);
