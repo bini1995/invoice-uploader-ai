@@ -3,6 +3,9 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import VendorProfilePanel from './components/VendorProfilePanel';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
+import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
@@ -33,6 +36,14 @@ export default function AdaptiveDashboard() {
   const [alerts, setAlerts] = useState([]);
   const [suggestion, setSuggestion] = useState('');
   const [recs, setRecs] = useState(null);
+  const [cardOrder, setCardOrder] = useState(() => {
+    const saved = localStorage.getItem('adaptiveCardOrder');
+    return saved ? JSON.parse(saved) : ['vendors', 'flagged', 'processing'];
+  });
+  const [pinned, setPinned] = useState(() => {
+    const saved = localStorage.getItem('adaptivePinned');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
 
   useEffect(() => {
     if (!token) return;
@@ -98,6 +109,118 @@ export default function AdaptiveDashboard() {
       .finally(() => setLoading(false));
   }, [token]);
 
+  useEffect(() => {
+    localStorage.setItem('adaptiveCardOrder', JSON.stringify(cardOrder));
+  }, [cardOrder]);
+
+  useEffect(() => {
+    localStorage.setItem('adaptivePinned', JSON.stringify(Array.from(pinned)));
+  }, [pinned]);
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    const items = Array.from(cardOrder);
+    const [moved] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, moved);
+    setCardOrder(items);
+  };
+
+  const togglePin = (key) => {
+    setPinned((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const renderCard = (key) => {
+    if (key === 'vendors') {
+      return (
+        <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
+          <div className="text-sm text-gray-500 flex items-center justify-between">
+            <span>🚀 Total Vendors</span>
+            <div className="flex items-center gap-1">
+              {prevMeta && <Sparkline prev={prevMeta.totalVendors} cur={meta?.totalVendors} />}
+              <button onClick={() => togglePin('vendors')} aria-label="Pin Vendors">
+                {pinned.has('vendors') ? (
+                  <StarSolid className="w-4 h-4 text-yellow-400" />
+                ) : (
+                  <StarOutline className="w-4 h-4 text-gray-400" />
+                )}
+              </button>
+            </div>
+          </div>
+          <div className="text-xl font-semibold flex items-center justify-between">
+            <span>{meta?.totalVendors ?? 0}</span>
+            {prevMeta && (
+              <span className="text-xs">{meta.totalVendors - prevMeta.totalVendors >= 0 ? '▲' : '▼'}</span>
+            )}
+          </div>
+        </div>
+      );
+    }
+    if (key === 'flagged') {
+      return (
+        <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
+          <div className="text-sm text-gray-500 flex items-center justify-between">
+            <span>🚩 Flagged Invoices</span>
+            <div className="flex items-center gap-1">
+              {prevMeta && <Sparkline prev={prevMeta.flaggedItems} cur={meta?.flaggedItems} />}
+              <button onClick={() => togglePin('flagged')} aria-label="Pin Flagged">
+                {pinned.has('flagged') ? (
+                  <StarSolid className="w-4 h-4 text-yellow-400" />
+                ) : (
+                  <StarOutline className="w-4 h-4 text-gray-400" />
+                )}
+              </button>
+            </div>
+          </div>
+          <div className="text-xl font-semibold flex items-center justify-between">
+            <span>{meta?.flaggedItems ?? 0}</span>
+            {prevMeta && (
+              <span className="text-xs">{meta.flaggedItems - prevMeta.flaggedItems >= 0 ? '▲' : '▼'}</span>
+            )}
+          </div>
+        </div>
+      );
+    }
+    if (key === 'processing') {
+      return (
+        <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
+          <div className="text-sm text-gray-500 flex items-center justify-between">
+            <span>⏱ Avg. Processing (hrs)</span>
+            <div className="flex items-center gap-1">
+              {prevMeta && <Sparkline prev={prevMeta.avgProcessingHours} cur={meta?.avgProcessingHours} />}
+              <button onClick={() => togglePin('processing')} aria-label="Pin Processing">
+                {pinned.has('processing') ? (
+                  <StarSolid className="w-4 h-4 text-yellow-400" />
+                ) : (
+                  <StarOutline className="w-4 h-4 text-gray-400" />
+                )}
+              </button>
+            </div>
+          </div>
+          <div
+            className={`text-xl font-semibold flex items-center justify-between ${
+              meta && meta.avgProcessingHours <= 24
+                ? 'text-green-600'
+                : meta && meta.avgProcessingHours > 48
+                ? 'text-red-600'
+                : 'text-yellow-600'
+            }`}
+          >
+            <span>{meta?.avgProcessingHours ?? 0}</span>
+            {prevMeta && (
+              <span className="text-xs">{meta.avgProcessingHours - prevMeta.avgProcessingHours >= 0 ? '▲' : '▼'}</span>
+            )}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <MainLayout title="Adaptive Dashboard">
       <div className="space-y-8">
@@ -135,50 +258,34 @@ export default function AdaptiveDashboard() {
             </div>
           </div>
         )}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {loading ? (
-            <Skeleton rows={1} className="h-20 col-span-2 md:col-span-3" />
-          ) : (
-            <>
-              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
-                <div className="text-sm text-gray-500 flex items-center justify-between">
-                  <span>🚀 Total Vendors</span>
-                  {prevMeta && <Sparkline prev={prevMeta.totalVendors} cur={meta?.totalVendors} />}
-                </div>
-                <div className="text-xl font-semibold flex items-center justify-between">
-                  <span>{meta?.totalVendors ?? 0}</span>
-                  {prevMeta && (
-                    <span className="text-xs">{meta.totalVendors - prevMeta.totalVendors >= 0 ? '▲' : '▼'}</span>
-                  )}
-                </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="cards" direction="horizontal">
+            {(provided) => (
+              <div
+                className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {loading ? (
+                  <Skeleton rows={1} className="h-20 col-span-2 md:col-span-3" />
+                ) : (
+                  [...cardOrder.filter((c) => pinned.has(c)), ...cardOrder.filter((c) => !pinned.has(c))].map(
+                    (key, index) => (
+                      <Draggable key={key} draggableId={key} index={index}>
+                        {(prov) => (
+                          <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
+                            {renderCard(key)}
+                          </div>
+                        )}
+                      </Draggable>
+                    )
+                  )
+                )}
+                {provided.placeholder}
               </div>
-              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
-                <div className="text-sm text-gray-500 flex items-center justify-between">
-                  <span>🚩 Flagged Invoices</span>
-                  {prevMeta && <Sparkline prev={prevMeta.flaggedItems} cur={meta?.flaggedItems} />}
-                </div>
-                <div className="text-xl font-semibold flex items-center justify-between">
-                  <span>{meta?.flaggedItems ?? 0}</span>
-                  {prevMeta && (
-                    <span className="text-xs">{meta.flaggedItems - prevMeta.flaggedItems >= 0 ? '▲' : '▼'}</span>
-                  )}
-                </div>
-              </div>
-              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
-                <div className="text-sm text-gray-500 flex items-center justify-between">
-                  <span>⏱ Avg. Processing (hrs)</span>
-                  {prevMeta && <Sparkline prev={prevMeta.avgProcessingHours} cur={meta?.avgProcessingHours} />}
-                </div>
-                <div className={`text-xl font-semibold flex items-center justify-between ${meta && meta.avgProcessingHours <= 24 ? 'text-green-600' : meta && meta.avgProcessingHours > 48 ? 'text-red-600' : 'text-yellow-600'}` }>
-                  <span>{meta?.avgProcessingHours ?? 0}</span>
-                  {prevMeta && (
-                    <span className="text-xs">{meta.avgProcessingHours - prevMeta.avgProcessingHours >= 0 ? '▲' : '▼'}</span>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+            )}
+          </Droppable>
+        </DragDropContext>
         <div className="h-64">
           {loading ? (
             <Skeleton rows={1} className="h-full" />

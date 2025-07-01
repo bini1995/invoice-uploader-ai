@@ -71,7 +71,7 @@ npm install --legacy-peer-deps
 - Analytics and reports page with filtering and PDF export
 - Trend reports for monthly spend and aging invoices
 - Customizable dashboards with date filters and export options
-- Adaptive dashboard with context-aware alerts and AI suggestions
+- Adaptive dashboard with context-aware alerts, AI suggestions and draggable KPI cards
 - Custom KPI dashboards per department or vendor with charts like approval time by vendor, late payments trend and invoices over budget
 - Public shareable dashboards accessible via secure link
 - ML predictions highlight cash-flow problem areas
