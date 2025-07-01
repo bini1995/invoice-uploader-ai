@@ -11,7 +11,7 @@ export default function MainLayout({ title, helpTopic, children, collapseSidebar
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       <SidebarNav notifications={notifications} collapsed={collapseSidebar} />
-      <div className="flex-1 pt-16 pb-16 sm:pb-0">
+      <div className="flex-1 pb-16 sm:pb-0">
         <TopNavbar title={title} helpTopic={helpTopic} />
         <div className="container mx-auto px-6 py-8">
           {children}
