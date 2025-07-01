@@ -52,10 +52,6 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   ArrowUturnUpIcon,
-  ChatBubbleLeftRightIcon,
-  DocumentTextIcon,
-  FingerPrintIcon,
-  Squares2X2Icon,
   CheckCircleIcon,
   ClockIcon,
   CurrencyDollarIcon,
@@ -67,7 +63,6 @@ import {
   TrashIcon,
   XCircleIcon,
   CloudArrowUpIcon,
-  MicrophoneIcon,
 } from '@heroicons/react/24/outline';
 
 const teamMembers = ['Alice', 'Bob', 'Charlie'];

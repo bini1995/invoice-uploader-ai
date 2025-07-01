@@ -56,7 +56,12 @@ export default function LandingPage() {
             <a href="#pricing" className="hover:text-indigo-600">Pricing</a>
             <a href="#resources" className="hover:text-indigo-600">Resources</a>
           </div>
-          <Button className="hidden sm:block" onClick={() => setDemoOpen(true)}>Request Demo</Button>
+          <div className="hidden sm:flex items-center space-x-2">
+            <Button onClick={() => setDemoOpen(true)}>Request Demo</Button>
+            <Button asChild variant="secondary">
+              <Link to="/login">Log In</Link>
+            </Button>
+          </div>
         </div>
       </nav>
       <HeroSection onRequestDemo={() => setDemoOpen(true)} />

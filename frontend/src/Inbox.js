@@ -5,9 +5,6 @@ import { motion } from 'framer-motion';
 import ChatSidebar from './components/ChatSidebar';
 import { API_BASE } from './api';
 import {
-  DocumentTextIcon,
-  BuildingOfficeIcon,
-  CurrencyDollarIcon,
   Cog6ToothIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -62,21 +59,6 @@ export default function Inbox() {
     fetchInvoices();
   }, [fetchInvoices]);
 
-  const approve = async (id) => {
-    await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/approve`, {
-      method: 'PATCH',
-      headers
-    }).catch(() => {});
-    fetchInvoices();
-  };
-
-  const reject = async (id) => {
-    await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/reject`, {
-      method: 'PATCH',
-      headers
-    }).catch(() => {});
-    fetchInvoices();
-  };
 
   const archive = async (id) => {
     await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/archive`, {
