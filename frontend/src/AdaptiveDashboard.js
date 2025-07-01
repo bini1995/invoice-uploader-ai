@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import VendorProfilePanel from './components/VendorProfilePanel';
+import RuleModal from './components/RuleModal';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
@@ -46,6 +48,8 @@ export default function AdaptiveDashboard() {
     const saved = localStorage.getItem('adaptivePinned');
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [ruleForm, setRuleForm] = useState({ type: 'spend', amount: 1000 });
 
   useEffect(() => {
     if (!token) return;
@@ -143,6 +147,32 @@ export default function AdaptiveDashboard() {
       else next.add(key);
       return next;
     });
+  };
+
+  const openNewRule = () => {
+    setRuleForm({ type: 'spend', amount: 1000 });
+    setShowRuleModal(true);
+  };
+
+  const saveRule = async (data) => {
+    const body =
+      data.type === 'spend'
+        ? { amountGreaterThan: parseFloat(data.amount), flagReason: `Amount over $${data.amount}` }
+        : data.type === 'newVendor'
+        ? { newVendor: true, flagReason: 'Vendor not seen before' }
+        : data.type === 'pastDue'
+        ? { pastDue: true, flagReason: 'Invoice past due' }
+        : { duplicateId: true, flagReason: 'Duplicate invoice ID' };
+    try {
+      await fetch(`${API_BASE}/api/analytics/rules`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body),
+      });
+    } catch (e) {
+      console.error('Save rule failed:', e);
+    }
+    setShowRuleModal(false);
   };
 
   const renderCard = (key) => {
@@ -243,6 +273,11 @@ export default function AdaptiveDashboard() {
         <div className="flex gap-2">
           <button onClick={() => setView('suggestions')} className={`btn px-2 py-1 ${view==='suggestions' ? 'btn-primary' : 'btn-secondary'}`}>AI Suggestions</button>
           <button onClick={() => setView('forecast')} className={`btn px-2 py-1 ${view==='forecast' ? 'btn-primary' : 'btn-secondary'}`}>Forecast View</button>
+        </div>
+        <div className="p-4 bg-white dark:bg-gray-800 rounded shadow flex flex-wrap gap-2">
+          <button onClick={openNewRule} className="btn btn-primary">Set New Auto-Flag Rule</button>
+          <Link to="/upload-wizard" className="btn btn-secondary">Upload Bulk CSV</Link>
+          <Link to="/analytics" className="btn btn-secondary">View Analytics Hub Summary</Link>
         </div>
         {view==='suggestions' && suggestion && (
           <div className="p-3 bg-yellow-100 text-yellow-700 rounded-md">
@@ -361,6 +396,12 @@ export default function AdaptiveDashboard() {
           </ul>
         </div>
         <VendorProfilePanel vendor={selectedVendor} open={!!selectedVendor} onClose={() => setSelectedVendor(null)} token={token} />
+        <RuleModal
+          open={showRuleModal}
+          onClose={() => setShowRuleModal(false)}
+          onSave={saveRule}
+          initial={ruleForm}
+        />
       </div>
     </MainLayout>
   );
