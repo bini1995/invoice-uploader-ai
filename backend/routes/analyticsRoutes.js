@@ -16,6 +16,7 @@ const {
   getSpendHeatmap,
   detectOutliers,
   getRealTimeDashboard,
+  getDashboardRecommendations,
   detectDuplicateInvoices,
   getApprovalTimeByVendor,
   getLatePaymentTrend,
@@ -54,6 +55,7 @@ router.get('/kpi/over-budget', authMiddleware, getInvoicesOverBudget);
 router.get('/metadata', authMiddleware, getDashboardMetadata);
 router.get('/outliers', authMiddleware, detectOutliers);
 router.get('/dashboard/realtime', authMiddleware, getRealTimeDashboard);
+router.get('/dashboard/recommendations', authMiddleware, getDashboardRecommendations);
 router.get('/anomalies/duplicates', authMiddleware, detectDuplicateInvoices);
 router.get('/risk/heatmap', authMiddleware, getRiskHeatmap);
 router.get('/risk/clusters', authMiddleware, getInvoiceClusters);
