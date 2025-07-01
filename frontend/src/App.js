@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { API_BASE } from './api';
 import LiveFeed from './components/LiveFeed';
@@ -1613,9 +1613,12 @@ useEffect(() => {
   
   
 
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     setToken(null);
+    navigate('/');
   };
 
   const handleSuggestVendor = async (invoice) => {

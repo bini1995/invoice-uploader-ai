@@ -44,7 +44,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <nav className="sticky top-0 bg-white/80 backdrop-blur dark:bg-gray-900/80 shadow z-30">
-        <div className="container mx-auto flex justify-between items-center p-4">
+        <div className="container mx-auto flex justify-between items-center p-2">
           <div className="flex items-center space-x-2">
             <DocumentArrowUpIcon className="w-6 h-6 text-indigo-600" />
             <span className="font-bold text-lg">ClarifyOps</span>
