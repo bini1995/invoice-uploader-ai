@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import VendorProfilePanel from './components/VendorProfilePanel';
@@ -7,9 +7,24 @@ import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
+function Sparkline({ prev = 0, cur = 0 }) {
+  const data = [
+    { name: 'prev', v: prev },
+    { name: 'cur', v: cur }
+  ];
+  return (
+    <ResponsiveContainer width={60} height={20}>
+      <LineChart data={data} margin={{ top: 4, bottom: 4 }}>
+        <Line type="monotone" dataKey="v" stroke="#3b82f6" dot={false} strokeWidth={2} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
 export default function AdaptiveDashboard() {
   const token = localStorage.getItem('token') || '';
   const [meta, setMeta] = useState(null);
+  const [prevMeta, setPrevMeta] = useState(null);
   const [vendors, setVendors] = useState([]);
   const [cashFlow, setCashFlow] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -28,7 +43,8 @@ export default function AdaptiveDashboard() {
     const prevEnd = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().slice(0,10);
 
     Promise.all([
-      fetch(`${API_BASE}/api/analytics/metadata`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/analytics/metadata?startDate=${curStart}`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/analytics/metadata?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/invoices/top-vendors`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/invoices/cash-flow?interval=monthly`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/invoices/logs?limit=20`, { headers }).then(r => r.json()),
@@ -37,8 +53,9 @@ export default function AdaptiveDashboard() {
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${curStart}`, { headers }).then(r => r.json()),
     ])
-      .then(([m, v, c, l, flagged, vendorList, prevTimes, curTimes]) => {
+      .then(([m, pm, v, c, l, flagged, vendorList, prevTimes, curTimes]) => {
         setMeta(m);
+        setPrevMeta(pm);
         setVendors(v.topVendors || []);
         setCashFlow(c.data || []);
         setLogs(Array.isArray(l) ? l : []);
@@ -96,17 +113,41 @@ export default function AdaptiveDashboard() {
             <Skeleton rows={1} className="h-20 col-span-2 md:col-span-3" />
           ) : (
             <>
-              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
-                <div className="text-sm text-gray-500">🚀 Total Vendors</div>
-                <div className="text-xl font-semibold">{meta?.totalVendors ?? 0}</div>
+              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
+                <div className="text-sm text-gray-500 flex items-center justify-between">
+                  <span>🚀 Total Vendors</span>
+                  {prevMeta && <Sparkline prev={prevMeta.totalVendors} cur={meta?.totalVendors} />}
+                </div>
+                <div className="text-xl font-semibold flex items-center justify-between">
+                  <span>{meta?.totalVendors ?? 0}</span>
+                  {prevMeta && (
+                    <span className="text-xs">{meta.totalVendors - prevMeta.totalVendors >= 0 ? '▲' : '▼'}</span>
+                  )}
+                </div>
               </div>
-              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
-                <div className="text-sm text-gray-500">🚩 Flagged Invoices</div>
-                <div className="text-xl font-semibold">{meta?.flaggedItems ?? 0}</div>
+              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
+                <div className="text-sm text-gray-500 flex items-center justify-between">
+                  <span>🚩 Flagged Invoices</span>
+                  {prevMeta && <Sparkline prev={prevMeta.flaggedItems} cur={meta?.flaggedItems} />}
+                </div>
+                <div className="text-xl font-semibold flex items-center justify-between">
+                  <span>{meta?.flaggedItems ?? 0}</span>
+                  {prevMeta && (
+                    <span className="text-xs">{meta.flaggedItems - prevMeta.flaggedItems >= 0 ? '▲' : '▼'}</span>
+                  )}
+                </div>
               </div>
-              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
-                <div className="text-sm text-gray-500">⏱ Avg. Processing (hrs)</div>
-                <div className="text-xl font-semibold">{meta?.avgProcessingHours ?? 0}</div>
+              <div className="p-4 bg-white dark:bg-gray-800 rounded shadow space-y-1">
+                <div className="text-sm text-gray-500 flex items-center justify-between">
+                  <span>⏱ Avg. Processing (hrs)</span>
+                  {prevMeta && <Sparkline prev={prevMeta.avgProcessingHours} cur={meta?.avgProcessingHours} />}
+                </div>
+                <div className={`text-xl font-semibold flex items-center justify-between ${meta && meta.avgProcessingHours <= 24 ? 'text-green-600' : meta && meta.avgProcessingHours > 48 ? 'text-red-600' : 'text-yellow-600'}` }>
+                  <span>{meta?.avgProcessingHours ?? 0}</span>
+                  {prevMeta && (
+                    <span className="text-xs">{meta.avgProcessingHours - prevMeta.avgProcessingHours >= 0 ? '▲' : '▼'}</span>
+                  )}
+                </div>
               </div>
             </>
           )}

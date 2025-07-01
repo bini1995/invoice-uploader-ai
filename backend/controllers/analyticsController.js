@@ -260,13 +260,28 @@ exports.getApprovalStats = async (req, res) => {
 };
 
 // Aggregate metadata for adaptive dashboard
-exports.getDashboardMetadata = async (_req, res) => {
+exports.getDashboardMetadata = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const params = [];
+  const conditions = [];
+  if (startDate) { params.push(startDate); conditions.push(`date >= $${params.length}`); }
+  if (endDate) { params.push(endDate); conditions.push(`date <= $${params.length}`); }
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
   try {
-    const vendorRes = await pool.query('SELECT COUNT(DISTINCT vendor) AS count FROM invoices');
-    const flaggedRes = await pool.query('SELECT COUNT(*) AS count FROM invoices WHERE flagged = TRUE');
+    const vendorRes = await pool.query(
+      `SELECT COUNT(DISTINCT vendor) AS count FROM invoices ${where}`,
+      params
+    );
+    const flaggedWhere = conditions.length ? `${where} AND flagged = TRUE` : 'WHERE flagged = TRUE';
+    const flaggedRes = await pool.query(
+      `SELECT COUNT(*) AS count FROM invoices ${flaggedWhere}`,
+      params
+    );
+    const procWhere = where ? `${where} AND updated_at IS NOT NULL` : 'WHERE updated_at IS NOT NULL';
     const procRes = await pool.query(
       `SELECT AVG(EXTRACT(EPOCH FROM (COALESCE(updated_at, NOW()) - created_at))) AS avg_seconds
-       FROM invoices WHERE updated_at IS NOT NULL`
+       FROM invoices ${procWhere}`,
+      params
     );
     const avgSeconds = parseFloat(procRes.rows[0].avg_seconds) || 0;
     res.json({
