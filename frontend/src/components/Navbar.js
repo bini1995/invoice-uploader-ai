@@ -70,7 +70,7 @@ export default function Navbar({
   }, [tenant, token]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow z-20">
+    <nav className="sticky top-0 z-30 bg-indigo-700 dark:bg-indigo-900 text-white shadow">
       <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
           <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>

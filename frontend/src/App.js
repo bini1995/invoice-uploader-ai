@@ -2095,12 +2095,12 @@ useEffect(() => {
         />
       )}
 
-      <div className="pt-16 flex flex-col md:flex-row md:gap-4 min-h-screen">
+      <div className="flex flex-col md:flex-row md:gap-4 min-h-screen">
         {token && (
           <aside
           className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
             filterSidebarOpen ? '' : 'hidden md:block'
-          } border-r border-gray-200 dark:border-gray-700 max-h-screen overflow-y-auto sticky top-16 z-40`}
+          } border-r border-gray-200 dark:border-gray-700 max-h-screen overflow-y-auto sticky top-0 z-40`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
             <SidebarNav notifications={notifications} />

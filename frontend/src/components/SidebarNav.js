@@ -25,7 +25,9 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
   const role = localStorage.getItem('role') || '';
 
   return (
-    <aside className={`hidden sm:block bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-lg ${open ? 'w-64' : 'w-16'} p-4 space-y-2 transition-all`}>
+    <aside
+      className={`hidden sm:block sticky top-0 self-start h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-lg ${open ? 'w-64' : 'w-16'} p-4 space-y-2 transition-all`}
+    >
       <button
         onClick={() => setOpen(!open)}
         className="w-full text-left font-semibold mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
