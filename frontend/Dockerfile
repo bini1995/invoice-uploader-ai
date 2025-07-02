@@ -1,12 +1,15 @@
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+# Use Nginx to serve static files
+FROM nginx:stable-alpine
 
-FROM nginx:alpine
-WORKDIR /usr/share/nginx/html
-COPY --from=build /app/build .
+# Remove default Nginx static files
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy locally built frontend files into Nginx's public directory
+COPY build /usr/share/nginx/html
+
+# Expose the default Nginx port
 EXPOSE 80
+
+# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
+
