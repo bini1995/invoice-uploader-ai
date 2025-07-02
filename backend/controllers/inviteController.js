@@ -38,10 +38,10 @@ exports.acceptInvite = async (req, res) => {
     ) {
       return res.status(400).json({ message: 'Invalid or expired invite' });
     }
-    if (userExists(username)) {
+    if (await userExists(username)) {
       return res.status(400).json({ message: 'User exists' });
     }
-    const user = createUser(username, password, rows[0].role);
+    const user = await createUser(username, password, rows[0].role);
     await pool.query('UPDATE invites SET used = TRUE WHERE token = $1', [token]);
     res.json({ id: user.id, username: user.username, role: user.role });
   } catch (err) {
