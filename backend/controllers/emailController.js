@@ -30,7 +30,7 @@ exports.sendSummaryEmail = async (req, res) => {
   }
 };
 
-const openai = require('../config/openai');
+const openai = require('../config/openrouter');
 const { getTrainingSamples } = require('../utils/emailTrainer');
 
 exports.smartDraftEmail = async (req, res) => {

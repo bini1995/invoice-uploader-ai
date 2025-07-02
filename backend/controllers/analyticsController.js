@@ -2,7 +2,7 @@ const pool = require('../config/db');
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const { loadReportSchedules } = require('../utils/reportScheduler');
-const openai = require('../config/openai');
+const openai = require('../config/openrouter');
 
 function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag }) {
   const params = [];

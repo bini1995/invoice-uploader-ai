@@ -144,7 +144,8 @@ npm install --legacy-peer-deps
 ```bash
 cd backend
 npm install
-cp .env.example .env   # Make sure to add your DATABASE_URL and OPENROUTER_API_KEY
+cp .env.example .env   # Add your DATABASE_URL and OpenRouter API key
+# Set either OPENROUTER_API_KEY or OPENAI_API_KEY in .env
 # Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
 # Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields
 # Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts

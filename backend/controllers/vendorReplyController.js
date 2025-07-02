@@ -1,4 +1,4 @@
-const openai = require('../config/openai');
+const openai = require('../config/openrouter');
 const { sendMail } = require('../utils/email');
 const pool = require('../config/db');
 const settings = require('../config/settings');
