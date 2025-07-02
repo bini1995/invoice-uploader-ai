@@ -2,7 +2,7 @@ const fs = require('fs');
 const pdfParse = require('pdf-parse');
 const { fromPath } = require('pdf2pic');
 const { createWorker } = require('tesseract.js');
-const openai = require('../config/openai');
+const openai = require('../config/openrouter');
 
 async function ocrImage(path) {
   const worker = await createWorker();

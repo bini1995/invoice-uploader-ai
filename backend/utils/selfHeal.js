@@ -1,4 +1,4 @@
-const openai = require('../config/openai');
+const openai = require('../config/openrouter');
 
 async function selfHealInvoices(invoices) {
   if (!process.env.OPENROUTER_API_KEY) return invoices;
