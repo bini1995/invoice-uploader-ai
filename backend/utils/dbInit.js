@@ -1,7 +1,23 @@
 const pool = require('../config/db');
+const bcrypt = require('bcryptjs');
 
 async function initDb() {
   try {
+    await pool.query(`CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
+    const adminHash = bcrypt.hashSync('password123', 10);
+    await pool.query(
+      `INSERT INTO users (username, password_hash, role)
+       VALUES ('admin', $1, 'admin')
+       ON CONFLICT (username) DO NOTHING`,
+      [adminHash]
+    );
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS assignee TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS approval_status TEXT DEFAULT 'Pending'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS approval_history JSONB DEFAULT '[]'");
