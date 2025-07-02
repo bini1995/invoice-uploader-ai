@@ -5,11 +5,19 @@ const { AsyncLocalStorage } = require('async_hooks');
 require('dotenv').config(); // so we can read from .env
 
 // Create a connection pool using info from your .env file
-const pool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    'postgres://postgres:postgres@localhost:5432/invoices',
-});
+const dbConfig = {
+  host: process.env.DB_HOST || 'db',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  database: process.env.DB_NAME || 'invoices',
+};
+
+if (process.env.DATABASE_URL) {
+  dbConfig.connectionString = process.env.DATABASE_URL;
+}
+
+const pool = new Pool(dbConfig);
 
 const als = new AsyncLocalStorage();
 
