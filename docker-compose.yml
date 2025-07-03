@@ -8,8 +8,15 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: invoices_db
+      REDIS_URL: redis://redis:6379
     depends_on:
-      - postgres
+      - db
       - redis
     restart: always
     volumes:
