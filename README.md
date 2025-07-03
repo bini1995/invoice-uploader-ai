@@ -550,3 +550,25 @@ cd frontend
 rm -rf node_modules package-lock.json
 npm install --legacy-peer-deps
 ```
+
+**`Database init error: connect ECONNREFUSED ::1:5433`**
+
+This happens when the backend tries to reach PostgreSQL on the IPv6 loopback address. Ensure your `.env` or deployment settings point to the `db` service by setting `DB_HOST=db` and `DB_PORT=5432` (or set `DATABASE_URL=postgres://postgres:postgres@db:5432/invoices_db`).
+
+1. Check that `backend/app.js` begins with `require('dotenv').config();` so environment variables are loaded.
+2. In `backend/config/db.js` the `Pool` should read connection info from `process.env` (`DB_HOST`, `DB_PORT`, etc. or `DATABASE_URL`).
+3. After updating `.env`, rebuild the containers:
+
+   ```bash
+   docker-compose down
+   docker-compose up --build
+   ```
+4. Verify inside the running backend container that `DATABASE_URL`, `DB_HOST`,
+   and `DB_PORT` show the expected values:
+
+   ```bash
+   docker-compose exec backend env | grep -E 'DATABASE_URL|DB_HOST|DB_PORT'
+   ```
+   If `DATABASE_URL` still points to `localhost:5433`, override it in your `.env`
+   or remove the variable so the `DB_HOST` and `DB_PORT` values are used.
+

@@ -13,9 +13,27 @@ const dbConfig = {
   database: process.env.DB_NAME || 'invoices_db',
 };
 
+// If a full connection string is provided, use it unless it points to localhost
+// which would fail inside Docker. In that case, rebuild using DB_* settings.
 if (process.env.DATABASE_URL) {
-  dbConfig.connectionString = process.env.DATABASE_URL;
+  try {
+    const url = new URL(process.env.DATABASE_URL);
+    const badHosts = ['localhost', '127.0.0.1', '::1'];
+    const needsOverride = badHosts.includes(url.hostname) || url.port === '5433';
+    if (needsOverride) {
+      url.hostname = process.env.DB_HOST || 'db';
+      url.port = process.env.DB_PORT || '5432';
+      dbConfig.connectionString = url.toString();
+    } else {
+      dbConfig.connectionString = process.env.DATABASE_URL;
+    }
+  } catch (err) {
+    // Fallback to using it raw if URL parsing fails
+    dbConfig.connectionString = process.env.DATABASE_URL;
+  }
 }
+
+console.log('Postgres config:', dbConfig);
 
 const pool = new Pool(dbConfig);
 
