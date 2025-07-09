@@ -7,7 +7,7 @@ export default function DarkModeToggle() {
   return (
     <button
       onClick={() => setDarkMode(!darkMode)}
-      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+      className="p-2 ml-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
       aria-label="Toggle dark mode"
       title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
