@@ -6,6 +6,7 @@ const http = require('http');
 require('dotenv').config();                 // load environment variables
 const Sentry = require('@sentry/node');
 const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
+const authRoutes = require('./routes/authRoutes');
 const exportTemplateRoutes = require('./routes/exportTemplateRoutes');
 const brandingRoutes = require('./routes/brandingRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
@@ -63,6 +64,7 @@ app.use(express.json());                    // allow reading JSON data
 app.use(tenantContext);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(auditLog);
+app.use('/api/invoices', authRoutes);
 app.use('/api/:tenantId/invoices', invoiceRoutes);
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);

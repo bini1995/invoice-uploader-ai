@@ -3,6 +3,20 @@ const bcrypt = require('bcryptjs');
 
 async function initDb() {
   try {
+    await pool.query(`CREATE TABLE IF NOT EXISTS invoices (
+      id SERIAL PRIMARY KEY,
+      invoice_number TEXT,
+      date DATE,
+      amount NUMERIC,
+      vendor TEXT,
+      tags JSONB DEFAULT '[]',
+      file_name TEXT,
+      due_date DATE,
+      paid BOOLEAN DEFAULT FALSE,
+      archived BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP
+    )`);
     await pool.query(`CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       username TEXT UNIQUE NOT NULL,
@@ -174,9 +188,16 @@ async function initDb() {
       vat_percent NUMERIC,
       description TEXT,
       interval_days INTEGER NOT NULL,
-      next_run TIMESTAMP NOT NULL,
+      next_send TIMESTAMP NOT NULL,
       user_id INTEGER
     )`);
+    // Ensure the new next_send column exists even on older installations
+    try {
+      await pool.query('ALTER TABLE recurring_templates RENAME COLUMN next_run TO next_send');
+    } catch (err) {
+      if (err.code !== '42703') throw err; // ignore if column doesn't exist
+    }
+    await pool.query('ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS next_send TIMESTAMP');
     await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
     await pool.query("ALTER TABLE recurring_templates ADD COLUMN IF NOT EXISTS vat_percent NUMERIC");
 

@@ -12,15 +12,13 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: postgres
+      DB_PASSWORD: TATA1tata1
       DB_NAME: invoices_db
       REDIS_URL: redis://redis:6379
     depends_on:
       - db
       - redis
     restart: always
-    volumes:
-      - .:/app
 
   frontend:
     build: ./frontend
@@ -28,7 +26,7 @@ services:
     ports:
       - "3001:80"
     environment:
-      - REACT_APP_API_BASE_URL=https://clarifyops.com
+      - REACT_APP_API_BASE_URL=https://clarifyops.com/api
     restart: unless-stopped
 
   db:
@@ -36,7 +34,7 @@ services:
     container_name: clarifyops-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: TATA1tata1
       POSTGRES_DB: invoices_db
     ports:
       - "5432:5432"
@@ -49,6 +47,20 @@ services:
     container_name: clarifyops-redis
     ports:
       - "6379:6379"
+
+  nginx:
+    image: nginx:1.28
+    container_name: clarifyops-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
 
 volumes:
   db-data:
