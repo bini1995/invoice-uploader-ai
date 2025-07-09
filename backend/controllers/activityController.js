@@ -143,3 +143,43 @@ exports.exportVendorHistory = async (req, res) => {
     res.status(500).json({ message: 'Failed to export vendor history' });
   }
 };
+
+exports.exportActivityLogsCSV = async (req, res) => {
+  try {
+    const { start, end, vendor, action, limit } = req.query;
+    let query = 'SELECT a.* FROM activity_logs a';
+    const params = [];
+    const conditions = [];
+    let joinInvoices = false;
+    if (vendor) joinInvoices = true;
+    if (joinInvoices) query += ' JOIN invoices i ON a.invoice_id = i.id';
+    if (vendor) {
+      params.push(vendor);
+      conditions.push(`LOWER(i.vendor) = LOWER($${params.length})`);
+    }
+    if (action) {
+      params.push(action);
+      conditions.push(`a.action = $${params.length}`);
+    }
+    if (start) {
+      params.push(start);
+      conditions.push(`a.created_at >= $${params.length}`);
+    }
+    if (end) {
+      params.push(end);
+      conditions.push(`a.created_at <= $${params.length}`);
+    }
+    const where = conditions.length ? ' WHERE ' + conditions.join(' AND ') : '';
+    const lim = parseInt(limit, 10);
+    const limitClause = lim ? ` LIMIT ${lim}` : '';
+    const result = await pool.query(`${query}${where} ORDER BY a.created_at DESC${limitClause}`, params);
+    const parser = new Parser();
+    const csv = parser.parse(result.rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="activity_logs.csv"');
+    res.send(csv);
+  } catch (err) {
+    console.error('Activity logs export error:', err);
+    res.status(500).json({ message: 'Failed to export logs' });
+  }
+};
