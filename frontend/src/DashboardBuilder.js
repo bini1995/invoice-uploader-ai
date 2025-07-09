@@ -7,6 +7,28 @@ import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
+// Demo fallbacks for empty API responses
+const DEMO_VENDORS = [
+  { vendor: 'Vendor A', total: 23 },
+  { vendor: 'Vendor B', total: 17 },
+  { vendor: 'Vendor C', total: 9 },
+];
+
+const DEMO_TIMELINE = [
+  {
+    created_at: '2024-07-01T09:00:00Z',
+    action: 'Invoice DEMO-1 uploaded',
+  },
+  {
+    created_at: '2024-07-02T15:30:00Z',
+    action: 'Invoice DEMO-1 approved',
+  },
+  {
+    created_at: '2024-07-03T11:45:00Z',
+    action: 'Payment processed',
+  },
+];
+
 const DEFAULT_WIDGETS = ['Top Vendors', 'Anomaly Heatmap', 'Approval Timeline'];
 
 export default function DashboardBuilder() {
@@ -29,10 +51,13 @@ export default function DashboardBuilder() {
     fetch(`${API_BASE}/api/invoices/top-vendors`, { headers })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
-        if (ok) setVendors(d.topVendors || []);
-        else setVendors([]);
+        if (ok && Array.isArray(d.topVendors) && d.topVendors.length) {
+          setVendors(d.topVendors);
+        } else {
+          setVendors(DEMO_VENDORS);
+        }
       })
-      .catch(() => setVendors([]))
+      .catch(() => setVendors(DEMO_VENDORS))
       .finally(() => setLoadingVendors(false));
 
     setLoadingHeatmap(true);
@@ -54,19 +79,23 @@ export default function DashboardBuilder() {
           fetch(`${API_BASE}/api/invoices/${id}/timeline`, { headers })
             .then((res) => res.json())
             .then((data) => {
-              if (Array.isArray(data)) setTimeline(data);
-              else if (Array.isArray(data.timeline)) setTimeline(data.timeline);
-              else setTimeline([]);
+              if (Array.isArray(data) && data.length) {
+                setTimeline(data);
+              } else if (Array.isArray(data.timeline) && data.timeline.length) {
+                setTimeline(data.timeline);
+              } else {
+                setTimeline(DEMO_TIMELINE);
+              }
             })
-            .catch(() => setTimeline([]))
+            .catch(() => setTimeline(DEMO_TIMELINE))
             .finally(() => setLoadingTimeline(false));
         } else {
-          setTimeline([]);
+          setTimeline(DEMO_TIMELINE);
           setLoadingTimeline(false);
         }
       })
       .catch(() => {
-        setTimeline([]);
+        setTimeline(DEMO_TIMELINE);
         setLoadingTimeline(false);
       });
   }, [token]);

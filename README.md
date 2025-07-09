@@ -496,6 +496,16 @@ Invites expire automatically and grant the specified role (viewer or editor).
 
 The app registers a service worker so you can view and stage invoices even without a network connection. Any actions you take while offline are queued in local storage and automatically synced when the browser comes back online. Install the PWA from your browser's "Add to home screen" option for the best experience.
 
+### Demo Chart Data
+
+If your database is empty, the dashboard charts now display sample data automatically. To generate more realistic demo data in the backend, log in as an admin and click **Seed Dummy Data** on the Vendors page or call:
+
+```bash
+POST /api/invoices/seed-dummy
+```
+
+This inserts a few demo invoices so charts like *Top Vendors* and *Approval Timeline* look populated during testing.
+
 ### Docker Deployment
 
 Run the entire stack in Docker containers:
