@@ -7,7 +7,8 @@
   "main": "app.js",
   "scripts": {
     "start": "PORT=3000 node app.js",
-    "lint": "echo \"No lint configured\""
+    "lint": "echo \"No lint configured\"",
+    "seed-dummy": "node utils/seedDummyData.js"
   },
   "dependencies": {
     "@sentry/node": "^7.103.0",
