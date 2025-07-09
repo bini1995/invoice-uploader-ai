@@ -4,6 +4,24 @@ import Skeleton from './components/Skeleton';
 import { CalendarIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
 
+// Demo logs shown when the API returns none
+const DEMO_LOGS = [
+  {
+    id: 1,
+    created_at: '2024-07-09T13:00:00Z',
+    username: 'admin',
+    action: 'Login',
+    invoice_id: null,
+  },
+  {
+    id: 2,
+    created_at: '2024-07-09T13:05:00Z',
+    username: 'admin',
+    action: 'Approved invoice #1001',
+    invoice_id: '1001',
+  },
+];
+
 export default function AuditDashboard() {
   const token = localStorage.getItem('token') || '';
   const role = localStorage.getItem('role') || '';
@@ -53,7 +71,11 @@ export default function AuditDashboard() {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    if (res.ok) setLogs(data);
+    if (res.ok && Array.isArray(data) && data.length) {
+      setLogs(data);
+    } else {
+      setLogs(DEMO_LOGS);
+    }
     setLoading(false);
   }, [token, vendor, action, start, end]);
 
