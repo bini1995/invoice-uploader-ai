@@ -68,7 +68,7 @@ export default function DashboardBuilder() {
 
   return (
     <MainLayout title="Dashboard Builder">
-      <h1 className="text-xl font-semibold mb-4">Dashboard Builder</h1>
+      <h1 className="text-xl font-semibold mb-4">Create Your Dashboard</h1>
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="widgets">
             {(provided) => (
@@ -80,7 +80,7 @@ export default function DashboardBuilder() {
                         ref={prov.innerRef}
                         {...prov.draggableProps}
                         {...prov.dragHandleProps}
-                        className="bg-white dark:bg-gray-800 p-4 rounded shadow"
+                        className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-4"
                       >
                         {w === 'Top Vendors' && (
                           <>

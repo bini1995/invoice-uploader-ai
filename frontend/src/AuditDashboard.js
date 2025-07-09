@@ -38,15 +38,15 @@ export default function AuditDashboard() {
   return (
     <MainLayout title="Audit Dashboard" helpTopic="audit">
       <div className="space-y-4">
-        <div className="flex flex-wrap items-end space-x-2">
+        <div className="flex flex-wrap items-end space-x-2 mb-2">
           <input value={vendor} onChange={e=>setVendor(e.target.value)} placeholder="Vendor" className="input" />
           <input value={action} onChange={e=>setAction(e.target.value)} placeholder="Action" className="input" />
           <input type="date" value={start} onChange={e=>setStart(e.target.value)} className="input" />
           <input type="date" value={end} onChange={e=>setEnd(e.target.value)} className="input" />
           <button onClick={fetchLogs} className="btn btn-primary px-3 py-1">Search</button>
         </div>
-        <div className="overflow-x-auto rounded-lg">
-        <table className="min-w-full text-sm border rounded-lg overflow-hidden">
+        <div className="overflow-x-auto rounded-xl shadow-md p-4 mb-4">
+        <table className="min-w-full text-sm border rounded-xl overflow-hidden">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700">
               <th className="px-2 py-1">Time</th>
