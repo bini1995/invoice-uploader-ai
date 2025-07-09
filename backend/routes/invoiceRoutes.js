@@ -98,7 +98,7 @@ const { suggestVendor, suggestVoucher } = require('../controllers/aiController')
 const { naturalLanguageQuery, naturalLanguageSearch } = require("../controllers/aiController");
 const { smartSearchParse } = require('../controllers/aiController');
 const { flagSuspiciousInvoice } = require('../controllers/invoiceController');
-const { getActivityLogs, getInvoiceTimeline, exportComplianceReport, exportInvoiceHistory, exportVendorHistory } = require('../controllers/activityController');
+const { getActivityLogs, getInvoiceTimeline, exportComplianceReport, exportInvoiceHistory, exportVendorHistory, exportActivityLogsCSV } = require('../controllers/activityController');
 const { getAuditTrail, updateAuditEntry, deleteAuditEntry } = require('../controllers/auditController');
 const { setBudget, getBudgets, checkBudgetWarnings, getBudgetVsActual, getBudgetForecast } = require('../controllers/budgetController');
 const { getAnomalies } = require('../controllers/anomalyController');
@@ -197,6 +197,7 @@ router.patch('/:id/review-flag', authMiddleware, authorizeRoles('admin','approve
 router.patch('/:id/flag', authMiddleware, authorizeRoles('approver'), setFlaggedStatus);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
 router.get('/logs/export', authMiddleware, authorizeRoles('admin'), exportComplianceReport);
+router.get('/logs/export-csv', authMiddleware, authorizeRoles('admin'), exportActivityLogsCSV);
 router.get('/logs/invoice/:id/export', authMiddleware, authorizeRoles('admin'), exportInvoiceHistory);
 router.get('/logs/vendor/:vendor/export', authMiddleware, authorizeRoles('admin'), exportVendorHistory);
 router.get('/:id/timeline', authMiddleware, getInvoiceTimeline);
