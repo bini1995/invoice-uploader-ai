@@ -505,7 +505,13 @@ cp .env.example .env
 docker-compose up --build
 ```
 
-The frontend is served on `http://localhost:3001` while the API runs on `http://localhost:3000`.
+The new `nginx` service proxies API requests to the backend so you can simply visit
+`http://localhost` (or your domain) to reach the app. The frontend container
+handles client‑side routing and is still available on `http://localhost:3001`
+if you need it directly, while the API runs on `http://localhost:3000`.
+The proxy keeps the `/api` prefix when forwarding requests so routes like
+`/api/invoices/login` resolve correctly and all other paths are passed through to
+the frontend container which serves `index.html` for unknown routes.
 
 ### Troubleshooting
 
