@@ -504,7 +504,14 @@ If your database is empty, the dashboard charts now display sample data automati
 POST /api/invoices/seed-dummy
 ```
 
-This inserts a few demo invoices so charts like *Top Vendors* and *Approval Timeline* look populated during testing.
+This inserts a few demo invoices so charts like *Top Vendors* and *Approval Timeline* look populated during testing. If you prefer to seed from the command line instead of hitting the API, run:
+
+```bash
+cd backend
+npm run seed-dummy
+```
+
+Make sure you log in again to obtain a fresh token if you see a `401` response when calling the endpoint.
 
 ### Docker Deployment
 
