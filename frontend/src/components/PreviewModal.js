@@ -7,7 +7,7 @@ export default function PreviewModal({ open, onClose, onConfirm, data }) {
       <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96 max-w-full transition-all duration-300 ease-in-out">
         <h2 className="text-lg font-semibold mb-2">Preview {data.name}</h2>
         <div className="overflow-x-auto max-h-60 border rounded-lg">
-          <table className="table-auto text-xs w-full rounded-lg overflow-hidden">
+          <table className="table-auto text-xs w-full rounded-lg overflow-hidden table-striped table-hover">
             <thead>
               <tr>
                 {data.preview[0].map((h, i) => (

@@ -428,7 +428,7 @@ function AISpendAnalyticsHub() {
             </label>
           </div>
           <div className="overflow-x-auto rounded-lg">
-            <table className="table-fixed border-collapse rounded-lg overflow-hidden text-xs">
+            <table className="table-fixed border-collapse rounded-lg overflow-hidden text-xs table-striped table-hover w-full">
               <thead>
                 <tr>
                   {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (

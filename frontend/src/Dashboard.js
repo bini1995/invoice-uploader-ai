@@ -19,6 +19,7 @@ import {
 import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
+import FloatingButton from './components/FloatingButton';
 import MainLayout from './components/MainLayout';
 import StatCard from './components/StatCard.jsx';
 import LiveFeed from './components/LiveFeed';
@@ -403,16 +404,18 @@ function Dashboard() {
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : vendors.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={vendors} dataKey="total" nameKey="vendor" outerRadius={80}>
-                      {vendors.map((_, i) => (
-                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="overflow-x-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={vendors} dataKey="total" nameKey="vendor" outerRadius={80}>
+                        {vendors.map((_, i) => (
+                          <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </motion.div>
             ) : (
               <p className="text-center mt-24 text-sm text-gray-600">No vendor data yet</p>
@@ -434,15 +437,17 @@ function Dashboard() {
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : cashFlow.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={cashFlow}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="period" tickFormatter={(v) => new Date(v).toLocaleDateString()} />
-                    <YAxis />
-                    <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
-                    <Bar dataKey="total" fill="#3b82f6" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="overflow-x-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={cashFlow}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="period" tickFormatter={(v) => new Date(v).toLocaleDateString()} />
+                      <YAxis />
+                      <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
+                      <Bar dataKey="total" fill="#3b82f6" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </motion.div>
             ) : (
               <p className="text-center mt-24 text-sm text-gray-600">No cash flow data</p>
@@ -451,7 +456,7 @@ function Dashboard() {
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Suspicious Pattern Heatmap</h2>
             <div className="overflow-x-auto rounded-lg">
-              <table className="table-fixed border-collapse rounded-lg overflow-hidden">
+              <table className="table-fixed border-collapse rounded-lg overflow-hidden table-striped table-hover w-full">
                 <thead>
                   <tr>
                     <th></th>
@@ -543,16 +548,18 @@ function Dashboard() {
               <Skeleton rows={1} className="h-64" />
             ) : categories.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie data={categories} dataKey="total" nameKey="tag" outerRadius={80}>
-                      {categories.map((_, i) => (
-                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="overflow-x-auto">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie data={categories} dataKey="total" nameKey="tag" outerRadius={80}>
+                        {categories.map((_, i) => (
+                          <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </motion.div>
             ) : (
               <p className="text-center mt-24 text-sm text-gray-600">No category data</p>
@@ -561,17 +568,19 @@ function Dashboard() {
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Unusual Invoice Spikes</h2>
             {anomalies.length ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={anomalies} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="vendor" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="avg" fill="#3b82f6" name="Avg" />
-                  <Bar dataKey="last" fill="#ef4444" name="Last" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="overflow-x-auto">
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={anomalies} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="vendor" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="avg" fill="#3b82f6" name="Avg" />
+                    <Bar dataKey="last" fill="#ef4444" name="Last" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             ) : (
               <p className="text-sm text-gray-600">No anomalies detected</p>
             )}
@@ -582,16 +591,18 @@ function Dashboard() {
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : budget.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={budget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="department" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="spent" fill="#3b82f6" name="Spent" />
-                    <Bar dataKey="budget" fill="#ef4444" name="Budget" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="overflow-x-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={budget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="department" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="spent" fill="#3b82f6" name="Spent" />
+                      <Bar dataKey="budget" fill="#ef4444" name="Budget" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </motion.div>
             ) : (
               <p className="text-center mt-24 text-sm text-gray-600">No budget data</p>
@@ -603,15 +614,17 @@ function Dashboard() {
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : remainingBudget.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={remainingBudget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="department" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="remaining" fill="#4ade80" name="Remaining" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="overflow-x-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={remainingBudget} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="department" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="remaining" fill="#4ade80" name="Remaining" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </motion.div>
             ) : (
               <p className="text-center mt-24 text-sm text-gray-600">No budget data</p>
@@ -623,17 +636,19 @@ function Dashboard() {
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : budgetForecast.length ? (
               <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={budgetForecast} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="department" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="forecast" fill="#3b82f6" name="Forecast" />
-                    <Bar dataKey="budget" fill="#ef4444" name="Budget" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="overflow-x-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={budgetForecast} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="department" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="forecast" fill="#3b82f6" name="Forecast" />
+                      <Bar dataKey="budget" fill="#ef4444" name="Budget" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </motion.div>
             ) : (
               <p className="text-center mt-24 text-sm text-gray-600">No forecast data</p>
@@ -658,6 +673,7 @@ function Dashboard() {
       </div>
     )}
     </MainLayout>
+    <FloatingButton onClick={() => navigate('/upload-wizard')} />
   );
 }
 

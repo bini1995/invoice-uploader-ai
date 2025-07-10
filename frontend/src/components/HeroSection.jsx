@@ -6,7 +6,15 @@ import { Button } from './ui/Button';
 
 export default function HeroSection({ onRequestDemo }) {
   return (
-    <section id="product" className="px-6 py-16 flex items-center justify-center">
+    <section
+      id="product"
+      className="relative overflow-hidden min-h-[70vh] px-6 py-20 flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-black"
+    >
+      <img
+        src="/logo512.png"
+        alt="logo watermark"
+        className="hidden md:block absolute right-10 bottom-0 w-1/2 max-w-md opacity-10 pointer-events-none select-none"
+      />
       <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -14,10 +22,10 @@ export default function HeroSection({ onRequestDemo }) {
           transition={{ duration: 0.6 }}
           className="space-y-6 text-center md:text-left"
         >
-          <h1 className="text-5xl md:text-6xl font-extrabold">
-            ClarifyOps – AI Invoice Automation for Growing Teams
+          <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
+            ClarifyOps – AI Invoice Automation
           </h1>
-          <p className="text-lg max-w-xl mx-auto md:mx-0">
+          <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
             Reduce manual effort by 80% and integrate seamlessly into your workflow.
           </p>
           <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 justify-center md:justify-start">
