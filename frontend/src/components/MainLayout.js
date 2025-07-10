@@ -8,12 +8,13 @@ export default function MainLayout({ title, helpTopic, children, collapseSidebar
     const saved = localStorage.getItem('notifications');
     return saved ? JSON.parse(saved) : [];
   });
+  const sidebarOffset = collapseSidebar ? 'ml-16' : 'ml-64';
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
       <SidebarNav notifications={notifications} collapsed={collapseSidebar} />
-      <div className="flex-1 pb-16 sm:pb-0">
+      <div className={`flex-1 flex flex-col overflow-y-auto pb-16 sm:pb-0 ${sidebarOffset}`}>
         <TopNavbar title={title} helpTopic={helpTopic} />
-        <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-6 py-8 flex-grow">
           {children}
         </div>
       </div>

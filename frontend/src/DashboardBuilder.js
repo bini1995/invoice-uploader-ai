@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, ScatterChart, Scatter, XAxis, YAxis, ZAxis } from 'recharts';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import { API_BASE } from './api';
@@ -109,10 +109,10 @@ export default function DashboardBuilder() {
     localStorage.setItem('dashboardLayout', JSON.stringify(items));
   };
 
-  const grid = Array.from({ length: 7 }, () => Array(24).fill(0));
+  const heatData = [];
   let max = 0;
   heatmap.forEach(({ day, hour, count }) => {
-    grid[day][hour] = count;
+    heatData.push({ day, hour, count });
     if (count > max) max = count;
   });
 
@@ -138,7 +138,7 @@ export default function DashboardBuilder() {
                             {loadingVendors ? (
                               <Skeleton rows={1} className="h-40" />
                             ) : vendors.length === 0 ? (
-                              <p className="text-sm text-gray-500">No vendor insights yet — upload invoices to get started.</p>
+                              <p className="text-center text-sm text-gray-400 italic">No vendor data yet. Upload invoices to get started.</p>
                             ) : (
                               <ResponsiveContainer width="100%" height={200}>
                                 <PieChart>
@@ -158,37 +158,27 @@ export default function DashboardBuilder() {
                             <h2 className="text-lg font-semibold mb-2">Anomaly Heatmap</h2>
                             {loadingHeatmap ? (
                               <Skeleton rows={7} className="h-32" />
+                            ) : heatData.length === 0 ? (
+                              <p className="text-center text-sm text-gray-400 italic">No upload activity yet.</p>
                             ) : (
-                              <table className="table-fixed border-collapse rounded-lg overflow-hidden text-xs">
-                                <thead>
-                                  <tr>
-                                    <th></th>
-                                    {Array.from({ length: 24 }).map((_, h) => (
-                                      <th key={h} className="px-1 font-normal">{h}</th>
-                                    ))}
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {grid.map((row, d) => (
-                                    <tr key={d} className="text-center">
-                                      <td className="pr-1 font-normal">{['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]}</td>
-                                      {row.map((c, h) => {
-                                        const pct = max ? c / max : 0;
-                                        const bg = pct ? `rgba(220,38,38,${pct})` : '#f3f4f6';
-                                        return (
-                                          <td key={h} className="w-4 h-4">
-                                            <div
-                                              title={`${c} uploads at ${h}:00`}
-                                              style={{ backgroundColor: bg }}
-                                              className="w-full h-full rounded"
-                                            ></div>
-                                          </td>
-                                        );
-                                      })}
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                              <ResponsiveContainer width="100%" height={200}>
+                                <ScatterChart margin={{ top: 10, right: 10 }}>
+                                  <XAxis type="number" dataKey="hour" domain={[0, 23]} tickCount={6} />
+                                  <YAxis type="number" dataKey="day" domain={[0, 6]} tickFormatter={(d) => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d]} />
+                                  <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                                  <Scatter data={heatData} shape={({ cx, cy, payload }) => (
+                                    <rect
+                                      x={cx - 8}
+                                      y={cy - 8}
+                                      width={16}
+                                      height={16}
+                                      rx={2}
+                                      ry={2}
+                                      fill={`rgba(220,38,38,${max ? payload.count / max : 0})`}
+                                    />
+                                  )} />
+                                </ScatterChart>
+                              </ResponsiveContainer>
                             )}
                           </>
                         )}
