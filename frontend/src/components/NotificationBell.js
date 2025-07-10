@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { BellIcon } from '@heroicons/react/24/outline';
 import useOutsideClick from '../hooks/useOutsideClick';
 
 export default function NotificationBell({ notifications = [], onOpen }) {
@@ -15,14 +16,14 @@ export default function NotificationBell({ notifications = [], onOpen }) {
   return (
     <div className="relative" ref={wrapperRef}>
       <button
-        className="text-xl focus:outline-none"
+        className="relative focus:outline-none"
         onClick={handleToggle}
         aria-label="Notifications"
         title="Notifications"
       >
-        🔔
+        <BellIcon className="h-6 w-6" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1 text-xs">
+          <span className="absolute -top-1 -right-1 flex items-center justify-center h-4 w-4 text-[10px] bg-red-600 text-white rounded-full ring-2 ring-indigo-700">
             {unreadCount}
           </span>
         )}
