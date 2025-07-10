@@ -8,8 +8,13 @@ export default function HeroSection({ onRequestDemo }) {
   return (
     <section
       id="product"
-      className="min-h-[70vh] px-6 py-20 flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-black"
+      className="relative overflow-hidden min-h-[70vh] px-6 py-20 flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-black"
     >
+      <img
+        src="/logo512.png"
+        alt="logo watermark"
+        className="hidden md:block absolute right-10 bottom-0 w-1/2 max-w-md opacity-10 pointer-events-none select-none"
+      />
       <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

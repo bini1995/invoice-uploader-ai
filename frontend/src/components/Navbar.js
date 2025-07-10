@@ -74,7 +74,15 @@ export default function Navbar({
       <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
           <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
-            <img src={`/api/${tenant}/logo`} alt="logo" className="h-5 w-5" />
+            <img
+              src={`/api/${tenant}/logo`}
+              alt="logo"
+              className="h-5 w-5"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/logo192.png';
+              }}
+            />
             <span className="font-semibold text-sm">{t('title')}</span>
             <span className="ml-1 text-xs opacity-80">{tenantName}</span>
           </Link>
