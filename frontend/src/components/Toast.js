@@ -3,7 +3,7 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 export default function Toast({ message, type, actionText, onAction }) {
   const base =
-    'px-4 py-2 rounded shadow-lg text-white mb-2 flex items-center space-x-2';
+    'px-4 py-2 rounded-md shadow-lg ring-1 ring-black/20 text-white mb-2 flex items-center space-x-2 backdrop-blur-sm';
   const color = type === 'error' ? 'bg-red-600' : 'bg-green-600';
   const Icon = type === 'error' ? XCircleIcon : CheckCircleIcon;
   return (
