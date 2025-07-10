@@ -672,8 +672,8 @@ function Dashboard() {
         <VendorProfilePanel vendor={selectedVendor} open={!!selectedVendor} onClose={() => setSelectedVendor(null)} token={token} />
       </div>
     )}
-    </MainLayout>
     <FloatingButton onClick={() => navigate('/upload-wizard')} />
+    </MainLayout>
   );
 }
 
