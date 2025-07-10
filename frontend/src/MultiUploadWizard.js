@@ -131,7 +131,7 @@ export default function MultiUploadWizard() {
             </div>
             {files[active] && (
               <div className="overflow-x-auto max-h-60 border rounded">
-                <table className="table-auto text-xs w-full">
+                <table className="table-auto text-xs w-full table-striped table-hover">
                   <thead>
                     <tr>
                       {files[active].headers.map(h => (
@@ -161,7 +161,7 @@ export default function MultiUploadWizard() {
             {files.map((f,fi)=>(
               <div key={fi} className="mb-4">
                 <div className="font-medium text-sm mb-1">{f.file.name}</div>
-                <table className="table-auto text-xs w-full mb-2">
+                <table className="table-auto text-xs w-full mb-2 table-striped table-hover">
                   <thead>
                     <tr>{f.headers.map(h=>(<th key={h} className="border px-1 py-0.5 text-left">{h}</th>))}<th className="border px-1 py-0.5">AI Hint</th></tr>
                   </thead>

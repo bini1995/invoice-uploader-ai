@@ -36,7 +36,7 @@ export default function StatCard({
       : 'text-gray-500';
 
   return (
-    <Card className="p-4 flex flex-col gap-1 relative">
+    <Card className="p-6 flex flex-col gap-2 relative">
       <div className="flex items-start gap-1">
         {icon && <span className="text-indigo-600">{icon}</span>}
         <span className="text-xs text-gray-500 dark:text-gray-400 flex-1">
@@ -46,7 +46,7 @@ export default function StatCard({
           <span className="w-2 h-2 rounded-full bg-red-500" />
         )}
       </div>
-      <div className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+      <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">
         {value}
       </div>
       {subtext && (

@@ -19,6 +19,7 @@ import {
 import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
+import FloatingButton from './components/FloatingButton';
 import MainLayout from './components/MainLayout';
 import StatCard from './components/StatCard.jsx';
 import LiveFeed from './components/LiveFeed';
@@ -451,7 +452,7 @@ function Dashboard() {
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Suspicious Pattern Heatmap</h2>
             <div className="overflow-x-auto rounded-lg">
-              <table className="table-fixed border-collapse rounded-lg overflow-hidden">
+              <table className="table-fixed border-collapse rounded-lg overflow-hidden table-striped table-hover w-full">
                 <thead>
                   <tr>
                     <th></th>
@@ -658,6 +659,7 @@ function Dashboard() {
       </div>
     )}
     </MainLayout>
+    <FloatingButton onClick={() => navigate('/upload-wizard')} />
   );
 }
 

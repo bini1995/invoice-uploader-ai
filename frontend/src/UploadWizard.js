@@ -211,7 +211,7 @@ export default function UploadWizard() {
             >
             <h2 className="text-lg font-semibold">3. Review Data</h2>
             <div className="overflow-x-auto">
-              <table className="table-auto text-xs w-full">
+              <table className="table-auto text-xs w-full table-striped table-hover">
                 <thead>
                   <tr>{headers.map(h => <th key={h} className="border px-1 py-0.5 text-left">{h}</th>)}</tr>
                 </thead>

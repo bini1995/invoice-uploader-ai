@@ -10,7 +10,7 @@ export default function TopNavbar({ title, helpTopic }) {
   const token = localStorage.getItem('token') || '';
   const { t } = useTranslation();
   return (
-    <header className="sticky top-0 z-30 h-12 bg-indigo-700 dark:bg-indigo-900 text-white shadow flex items-center justify-between px-4">
+    <header className="sticky top-0 z-30 h-12 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow flex items-center justify-between px-4">
       <h1 className="text-lg font-semibold flex items-center space-x-2">
         <img src="/logo192.png" alt="logo" className="h-6 w-6" />
         <span>{t('title')}</span>

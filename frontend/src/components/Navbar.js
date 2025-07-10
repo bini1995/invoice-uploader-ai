@@ -70,7 +70,7 @@ export default function Navbar({
   }, [tenant, token]);
 
   return (
-    <nav className="sticky top-0 z-30 bg-indigo-700 dark:bg-indigo-900 text-white shadow">
+    <nav className="sticky top-0 z-30 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow">
       <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
           <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
@@ -217,7 +217,11 @@ export default function Navbar({
                   title="Account"
                   aria-label="Account"
                 >
-                  <UserCircleIcon className="h-6 w-6" />
+                  <img
+                    src="https://source.boringavatars.com/beam/120/bini?colors=5B21B6,4338CA"
+                    alt="avatar"
+                    className="h-6 w-6 rounded-full"
+                  />
                   <span className="text-sm">Bini</span>
                 </button>
                 {userOpen && (
