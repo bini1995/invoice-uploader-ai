@@ -70,7 +70,7 @@ code {
     @apply bg-yellow-400 text-black hover:bg-yellow-500;
   }
   .nav-link {
-    @apply flex items-center gap-2 px-3 py-2 rounded-full transition shadow-sm hover:shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400;
+    @apply flex items-center space-x-2 px-4 py-2 rounded transition text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400;
   }
   .input {
     @apply border border-gray-300 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none;

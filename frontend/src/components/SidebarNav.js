@@ -13,6 +13,8 @@ import {
   Flag,
   Inbox,
   FileBarChart2,
+  ChevronLeft,
+  Menu,
 } from 'lucide-react';
 
 export default function SidebarNav({ notifications = [], collapsed = false }) {
@@ -26,14 +28,14 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
 
   return (
     <aside
-      className={`hidden sm:block sticky top-0 self-start h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-lg ${open ? 'w-64' : 'w-16'} p-4 space-y-2 transition-all`}
+      className={`hidden sm:block fixed top-0 left-0 h-full bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-lg border-r z-20 ${open ? 'w-64' : 'w-16'} p-4 space-y-2 transition-all`}
     >
       <button
         onClick={() => setOpen(!open)}
-        className="w-full text-left font-semibold mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        aria-expanded={open}
+        className="w-8 h-8 flex items-center justify-center rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        aria-label="Toggle sidebar"
       >
-        Menu
+        {open ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
         {open && (
           <nav className="space-y-1 text-sm">

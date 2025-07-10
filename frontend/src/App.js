@@ -2280,7 +2280,7 @@ useEffect(() => {
 <div className="mt-6 mb-6">
   <h2 className="text-xl font-bold text-gray-800 mb-2">Upload New Invoice</h2>
   <hr className="mb-4" />
-  <fieldset className="p-6 rounded-xl shadow-xl bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-700 border border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+  <fieldset className="p-6 rounded-xl shadow-xl bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-700 border border-gray-200 dark:border-gray-700 flex flex-col gap-4 space-y-4 relative">
     <legend className="text-xl font-bold px-2 flex items-center gap-1">
       <CloudArrowUpIcon className="w-5 h-5 text-indigo-600" />
       <span>Upload Invoice</span>
@@ -2301,7 +2301,7 @@ useEffect(() => {
     </ol>
     <motion.div
       id="uploadArea"
-      className={`transition-colors border-2 border-dashed rounded-lg p-6 text-center cursor-pointer shadow-inner ${dragActive ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-500' : 'bg-white/60 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600'}`}
+      className={`transition-colors duration-200 border-2 border-dashed rounded-xl p-6 text-center cursor-pointer shadow-md ${dragActive ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-500' : 'bg-white/60 dark:bg-gray-800/40 border-gray-300 dark:border-gray-600'}`}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => { e.preventDefault(); setDragActive(true); }}
       onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
@@ -2373,7 +2373,7 @@ useEffect(() => {
     <Button
       onClick={openUploadPreview}
       disabled={!token || !files.length}
-      className="w-full flex items-center justify-center space-x-2 mt-4"
+      className="w-full flex items-center justify-center space-x-2 mt-4 sticky bottom-4 transition-all duration-200"
     >
       {loading ? (
         <Spinner className="h-4 w-4" />
