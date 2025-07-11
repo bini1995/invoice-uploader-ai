@@ -2,8 +2,20 @@
 const express = require('express');
 const multer = require('multer');
 const settings = require('../config/settings');
+const path = require('path');
 const maxSize = Math.max(settings.csvSizeLimitMB, settings.pdfSizeLimitMB) * 1024 * 1024;
-const upload = multer({ dest: 'uploads/', limits: { fileSize: maxSize } });
+const allowedExt = ['.csv', '.xls', '.xlsx', '.pdf', '.png', '.jpg', '.jpeg'];
+const upload = multer({
+  dest: 'uploads/',
+  limits: { fileSize: maxSize },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (!allowedExt.includes(ext)) {
+      return cb(new Error('Invalid file type'));
+    }
+    cb(null, true);
+  }
+});
 const { exportFilteredInvoices, exportAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
 
 const { login, refreshToken, logout, authMiddleware, authorizeRoles } = require('../controllers/userController');
