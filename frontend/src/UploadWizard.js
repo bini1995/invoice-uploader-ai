@@ -13,6 +13,8 @@ import ProgressBar from './components/ProgressBar';
 import { CircularProgress, Tooltip } from '@mui/material';
 import { API_BASE } from './api';
 
+const SUGGEST_LIMIT = 20;
+
 export default function UploadWizard() {
   const token = localStorage.getItem('token') || '';
   const [step, setStep] = useState(1);
@@ -122,7 +124,14 @@ export default function UploadWizard() {
 
   useEffect(() => {
     if (step === 4) {
-      rows.forEach((_, idx) => handleSuggest(idx));
+      const limit = Math.min(rows.length, 20);
+      let cancelled = false;
+      (async () => {
+        for (let i = 0; i < limit && !cancelled; i++) {
+          await handleSuggest(i);
+        }
+      })();
+      return () => { cancelled = true; };
     }
   }, [step, rows, handleSuggest]);
 
@@ -248,8 +257,13 @@ export default function UploadWizard() {
               transition={{ duration: 0.3 }}
               className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
             >
-            <h2 className="text-lg font-semibold">4. Tag & Categorize</h2>
-            {rows.map((row, ri) => (
+          <h2 className="text-lg font-semibold">4. Tag & Categorize</h2>
+          {rows.length > SUGGEST_LIMIT && (
+            <Alert type="info">
+              Showing suggestions for first {SUGGEST_LIMIT} invoices to keep things fast.
+            </Alert>
+          )}
+          {rows.map((row, ri) => (
               <div key={ri} className="border p-2 rounded mb-2">
                 <div className="text-sm mb-1 font-medium">Row {ri + 1}</div>
                 <TagEditor
