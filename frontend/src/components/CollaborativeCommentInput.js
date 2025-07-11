@@ -15,7 +15,8 @@ export default function CollaborativeCommentInput({ invoiceId, onSubmit, onChang
 
   useEffect(() => {
     const ydoc = new Y.Doc();
-    const provider = new WebsocketProvider('ws://localhost:3000/yjs', `invoice-comment-${invoiceId}`, ydoc);
+    const origin = window.location.origin.replace(/^http/, 'ws');
+    const provider = new WebsocketProvider(`${origin}/yjs`, `invoice-comment-${invoiceId}`, ydoc);
     providerRef.current = provider;
     const ytext = ydoc.getText('text');
     ytextRef.current = ytext;

@@ -17,7 +17,6 @@ import {
   ArchiveBoxIcon,
   ArrowUpTrayIcon,
   UsersIcon,
-  UserCircleIcon,
   QuestionMarkCircleIcon,
   Squares2X2Icon,
   FlagIcon,
