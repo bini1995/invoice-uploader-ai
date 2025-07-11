@@ -608,7 +608,11 @@ exports.getAllInvoices = async (req, res) => {
       conditions.push(`tenant_id = $${params.length}`);
     }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const query = `SELECT * FROM invoices ${where} ORDER BY id DESC`;
+    const limit = parseInt(req.query.limit, 10) || 500;
+    const offset = parseInt(req.query.offset, 10) || 0;
+    params.push(limit, offset);
+    const query = `SELECT * FROM invoices ${where} ORDER BY id DESC LIMIT $${
+      params.length - 1} OFFSET $${params.length}`;
 
     const result = await client.query(query, params);
     res.json(result.rows);

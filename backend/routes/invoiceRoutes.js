@@ -1,7 +1,9 @@
 
 const express = require('express');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const settings = require('../config/settings');
+const maxSize = Math.max(settings.csvSizeLimitMB, settings.pdfSizeLimitMB) * 1024 * 1024;
+const upload = multer({ dest: 'uploads/', limits: { fileSize: maxSize } });
 const { exportFilteredInvoices, exportAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
 
 const { login, refreshToken, logout, authMiddleware, authorizeRoles } = require('../controllers/userController');
