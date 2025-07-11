@@ -229,17 +229,17 @@ exports.uploadInvoice = async (req, res) => {
 
       if (!invoice_number || !date || !amount || !vendor) {
         errors.push(`Row ${rowNum}: Missing required field`);
-        return;
+        continue;
       }
 
       if (isNaN(parseFloat(amount))) {
         errors.push(`Row ${rowNum}: Amount is not a valid number`);
-        return;
+        continue;
       }
 
       if (isNaN(Date.parse(date))) {
         errors.push(`Row ${rowNum}: Date is not valid`);
-        return;
+        continue;
       }
 
       const contentHash = crypto
@@ -787,10 +787,9 @@ exports.importInvoicesCSV = async (req, res) => {
     const totalRows = rows.length;
     for (const row of rows) {
       const { invoice_number, date, amount, vendor } = row;
-      if (!invoice_number || !vendor) continue;
       const result = await pool.query(
         'INSERT INTO invoices (invoice_number, date, amount, vendor, file_name, encrypted_payload) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id',
-        [invoice_number, row.date || date || new Date(), parseFloat(amount || 0), vendor,
+        [invoice_number || null, row.date || date || new Date(), parseFloat(amount || 0), vendor || null,
           req.file.originalname, encryptUploads ? encrypt(JSON.stringify(row), process.env.UPLOAD_ENCRYPTION_KEY) : null]
       );
       inserted.push(result.rows[0].id);
