@@ -906,8 +906,9 @@ useEffect(() => {
         const headers = lines[0].split(',');
         const previewLines = lines.slice(1, 6).map((l) => l.split(','));
         preview = [headers, ...previewLines];
+        const normalized = headers.map((h) => h.trim().toLowerCase());
         const required = ['invoice_number', 'date', 'amount', 'vendor'];
-        const missing = required.filter((h) => !headers.includes(h));
+        const missing = required.filter((h) => !normalized.includes(h));
         if (missing.length) {
           errors.push(`${f.name} missing: ${missing.join(', ')}`);
         }
@@ -968,6 +969,11 @@ useEffect(() => {
           addToast(`✅ Submitted ${data.inserted} invoice(s) from ${file.name}`);
         } else {
           hadError = true;
+          if (res.status === 401 || data.message === 'Invalid token') {
+            localStorage.removeItem('token');
+            addToast('Session expired. Please log in again.', 'error');
+            return navigate('/login');
+          }
           addToast(data.message || 'Upload failed', 'error');
           continue;
         }

@@ -1,21 +1,16 @@
 // src/Login.js
 import React, { useState } from 'react';
 import { Card } from './components/ui/Card';
-// import { API_BASE } from './api';
+import { API_BASE } from './api';
 import DarkModeToggle from './components/DarkModeToggle';
 import HighContrastToggle from './components/HighContrastToggle';
 
 export default function Login({ onLogin, addToast }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async () => {
-   
-    onLogin('demo-token', 'admin');
-    addToast('Logged in!');
-    return;
-    /*
     try {
       const res = await fetch(`${API_BASE}/api/invoices/login`, {
         method: 'POST',
@@ -37,7 +32,6 @@ export default function Login({ onLogin, addToast }) {
       setError('Something went wrong.');
       addToast('Something went wrong.', 'error');
     }
-  */
   };
 
   return (
