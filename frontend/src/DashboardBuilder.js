@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, ScatterChart, Scatter, XAxis, YAxis, ZAxis } from 'recharts';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import { API_BASE } from './api';
