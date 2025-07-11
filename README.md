@@ -345,6 +345,7 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `POST /api/vendors/import` – import vendors from CSV
 - `PATCH /api/invoices/:id/payment-status` – update payment status
 - `POST /api/invoices/import-csv` – upload a CSV of invoices
+- Header names are case and space insensitive (e.g. "Invoice Number" works).
 - `DELETE /api/invoices/bulk/delete` – delete multiple invoices
 - `PATCH /api/invoices/bulk/edit` – bulk update invoice fields
 - `POST /api/invoices/:id/auto-tag` – AI auto-tag from common categories

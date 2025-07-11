@@ -1,4 +1,5 @@
 const ExcelJS = require('exceljs');
+const { normalizeRow } = require('./rowNormalizer');
 
 exports.parseExcel = async (filePath) => {
   const workbook = new ExcelJS.Workbook();
@@ -13,7 +14,7 @@ exports.parseExcel = async (filePath) => {
     headers.forEach((h, idx) => {
       obj[h] = row.getCell(idx + 1).text;
     });
-    rows.push(obj);
+    rows.push(normalizeRow(obj));
   });
   return rows;
 };
