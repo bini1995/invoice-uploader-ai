@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
 // Mock graph component which uses ESM build incompatible with jest
@@ -8,13 +9,21 @@ jest.mock('y-websocket', () => ({ WebsocketProvider: function() {} }));
 jest.mock('textarea-caret', () => () => ({ top: 0, left: 0 }));
 
 test('renders login heading by default', () => {
-  render(<App />);
+  render(
+    <MemoryRouter>
+      <App />
+    </MemoryRouter>
+  );
   const heading = screen.getByRole('heading', { name: /login/i });
   expect(heading).toBeInTheDocument();
 });
 
 test('high contrast toggle is present', () => {
-  render(<App />);
+  render(
+    <MemoryRouter>
+      <App />
+    </MemoryRouter>
+  );
   const toggle = screen.getByLabelText(/high contrast/i);
   expect(toggle).toBeInTheDocument();
 });

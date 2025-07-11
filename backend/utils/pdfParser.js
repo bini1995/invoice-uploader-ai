@@ -3,6 +3,7 @@ const pdfParse = require('pdf-parse');
 const { fromPath } = require('pdf2pic');
 const { createWorker } = require('tesseract.js');
 const openai = require('../config/openrouter');
+const MAX_PAGES = 20;
 
 async function ocrImage(path) {
   const worker = await createWorker();
@@ -15,6 +16,9 @@ async function ocrImage(path) {
 
 async function extractText(filePath) {
   const data = await pdfParse(fs.readFileSync(filePath));
+  if (data.numpages > MAX_PAGES) {
+    throw new Error(`PDF exceeds ${MAX_PAGES} page limit`);
+  }
   let text = data.text.trim();
   if (text) return text;
 
@@ -34,7 +38,12 @@ async function extractText(filePath) {
 }
 
 exports.parsePDF = async (filePath) => {
-  const text = await extractText(filePath);
+  let text;
+  try {
+    text = await extractText(filePath);
+  } catch (err) {
+    throw err;
+  }
 
   const invoices = [];
   const regex = /Invoice\s*#?:?\s*(\S+)\s+Date:?\s*([\d\/-]+)\s+Amount:?\s*\$?([0-9,.]+)\s+Vendor:?\s*(\w+)/gi;

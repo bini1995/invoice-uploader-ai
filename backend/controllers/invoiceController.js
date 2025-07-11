@@ -95,7 +95,12 @@ exports.parseInvoiceSample = async (req, res) => {
     if (ext === '.csv') {
       invoices = await parseCSV(req.file.path);
     } else if (ext === '.pdf') {
-      invoices = await parsePDF(req.file.path);
+      try {
+        invoices = await parsePDF(req.file.path);
+      } catch (err) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ message: err.message });
+      }
     } else if (ext === '.xls' || ext === '.xlsx') {
       invoices = await parseExcel(req.file.path);
     } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
@@ -179,7 +184,12 @@ exports.uploadInvoice = async (req, res) => {
     if (ext === '.csv') {
       invoices = await parseCSV(req.file.path);
     } else if (ext === '.pdf') {
-      invoices = await parsePDF(req.file.path);
+      try {
+        invoices = await parsePDF(req.file.path);
+      } catch (err) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ message: err.message });
+      }
     } else if (ext === '.xls' || ext === '.xlsx') {
       invoices = await parseExcel(req.file.path);
     } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
