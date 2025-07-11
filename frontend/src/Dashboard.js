@@ -64,6 +64,7 @@ function Dashboard() {
   const [insights, setInsights] = useState([]);
   const [trends, setTrends] = useState([]);
   const [flaggedTrend, setFlaggedTrend] = useState([]);
+  const [scorecards, setScorecards] = useState([]);
   const [graphView, setGraphView] = useState('spend');
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -174,6 +175,9 @@ function Dashboard() {
             setFlaggedTrend(arr);
           }
         }),
+      fetch(`${API_BASE}/api/invoices/vendor-scorecards`, { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => { if (ok) setScorecards(d.scorecards || []); }),
     ]).finally(() => setLoading(false));
   }, [token, cashFlowInterval]);
 
@@ -631,7 +635,7 @@ function Dashboard() {
             )}
           </div>
           <div className="h-64">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Budget Forecast</h2>
+          <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Budget Forecast</h2>
             {loading ? (
               <Skeleton rows={1} className="h-full" height="h-full" />
             ) : budgetForecast.length ? (
@@ -653,8 +657,37 @@ function Dashboard() {
             ) : (
               <p className="text-center mt-24 text-sm text-gray-600">No forecast data</p>
             )}
-        </div>
-        <div className="grid md:grid-cols-3 gap-4">
+          </div>
+          {scorecards.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Vendor Scorecards</h2>
+              <div className="overflow-x-auto">
+                <table className="table-auto text-xs w-full table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th className="px-2 py-1 text-left">Vendor</th>
+                      <th className="px-2 py-1 text-left">Responsiveness</th>
+                      <th className="px-2 py-1 text-left">Payment Consistency</th>
+                      <th className="px-2 py-1 text-left">Volume Change %</th>
+                      <th className="px-2 py-1 text-left">Price Change %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {scorecards.map((s, i) => (
+                      <tr key={i}>
+                        <td className="border px-2 py-1">{s.vendor}</td>
+                        <td className="border px-2 py-1">{s.responsiveness}%</td>
+                        <td className="border px-2 py-1">{s.payment_consistency}%</td>
+                        <td className="border px-2 py-1">{s.volume_change_pct}%</td>
+                        <td className="border px-2 py-1">{s.price_change_pct}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          <div className="grid md:grid-cols-3 gap-4">
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">AI Assistant Feed</h2>
             <LiveFeed token={token} tenant={tenant} />

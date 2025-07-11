@@ -1,9 +1,14 @@
 const isoCurrencies = ['USD','EUR','GBP','JPY','CAD','AUD'];
 let customRules = [];
 
+function normalize(h){
+  return h.toLowerCase().replace(/\s+/g,'_');
+}
+
 function validateHeaders(headers){
   const required = ['invoice_number','date','amount','vendor','currency'];
-  return required.filter(h=>!headers.includes(h));
+  const normalized = headers.map(normalize);
+  return required.filter(h=>!normalized.includes(h));
 }
 
 function validateRow(row){

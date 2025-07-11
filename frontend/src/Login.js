@@ -54,6 +54,7 @@ export default function Login({ onLogin, addToast }) {
       </nav>
       <div className="flex-1 flex items-center justify-center pt-20">
         <Card className="w-80 space-y-4">
+          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
           <h1 className="text-xl font-bold text-center">Login</h1>
 
           {error && (
@@ -79,10 +80,10 @@ export default function Login({ onLogin, addToast }) {
             onChange={(e) => setPassword(e.target.value)}
             className="input w-full mb-4"
           />
-
-          <button onClick={handleLogin} className="btn btn-primary w-full" title="Log In">
+          <button type="submit" className="btn btn-primary w-full" title="Log In">
             Log In
           </button>
+          </form>
         </Card>
       </div>
     </div>

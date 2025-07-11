@@ -27,7 +27,7 @@ export default function TopNavbar({ title, helpTopic }) {
         <LanguageSelector />
         <HighContrastToggle />
         <DarkModeToggle />
-        <Link to="/invoices" className="underline">Back to App</Link>
+        <Link to={token ? '/dashboard' : '/'} className="underline">Back to App</Link>
       </div>
     </header>
   );
