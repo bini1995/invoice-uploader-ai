@@ -56,7 +56,14 @@ window.fetch = async (url, options) => {
       url = `${API_BASE}${url}`;
     }
   }
-  return originalFetch(url, options);
+  const res = await originalFetch(url, options);
+  if (res.status === 401) {
+    localStorage.removeItem('token');
+    if (!window.location.pathname.startsWith('/login')) {
+      window.location.href = '/login';
+    }
+  }
+  return res;
 };
 
 const currentTenant = localStorage.getItem('tenant') || 'default';

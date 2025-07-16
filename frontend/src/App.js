@@ -355,6 +355,9 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
         });
 
         const data = await res.json();
+        if (!res.ok || !Array.isArray(data)) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         setInvoices(data);
         data.forEach((inv) => socket.emit('joinInvoice', inv.id));
         localStorage.setItem('cachedInvoices', JSON.stringify(data));
@@ -374,9 +377,11 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
               },
               body: JSON.stringify({ tags: uniqueTags }),
             });
-            const colorData = await colorRes.json();
-            if (colorRes.ok && colorData.colors) {
-              setTagColors(colorData.colors);
+            if (colorRes.ok) {
+              const colorData = await colorRes.json();
+              if (colorData.colors) {
+                setTagColors(colorData.colors);
+              }
             }
           } catch (e) {
             console.error('Tag color fetch failed:', e);

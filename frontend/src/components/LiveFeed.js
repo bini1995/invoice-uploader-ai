@@ -14,8 +14,11 @@ export default function LiveFeed({ token, tenant }) {
         const res = await fetch('http://localhost:3000/api/invoices/logs', {
           headers: { Authorization: `Bearer ${token}`, 'X-Tenant-Id': tenant }
         });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
-        if (isMounted) setLogs(data.slice(0, 20));
+        if (isMounted) setLogs(Array.isArray(data) ? data.slice(0, 20) : []);
       } catch (err) {
         console.error('Feed fetch error:', err);
       }
