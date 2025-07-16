@@ -580,11 +580,13 @@ exports.suggestTagColors = async (req, res) => {
     const colors = {};
     const unknown = [];
     tags.forEach((t) => {
-      const key = t.toLowerCase();
+      if (t === undefined || t === null) return;
+      const tagStr = String(t);
+      const key = tagStr.toLowerCase();
       if (baseMap[key]) {
-        colors[t] = baseMap[key];
+        colors[tagStr] = baseMap[key];
       } else {
-        unknown.push(t);
+        unknown.push(tagStr);
       }
     });
 
