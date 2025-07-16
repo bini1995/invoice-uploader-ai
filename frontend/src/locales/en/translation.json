@@ -6,7 +6,7 @@
   "parsingInvoice": "Parsing invoice...",
   "invoiceParsed": "Invoice Parsed!",
   "close": "Close",
-  "seedDummyData": "Seed Dummy Data",
+  "seedDummyData": "Load Demo Data",
   "seeding": "Seeding...",
   "seeded": "Seeded!"
   ,"uploadSummary": "Upload Summary"

@@ -139,8 +139,8 @@ root.render(
   </BrowserRouter>
 );
 
-// register service worker for offline support
-serviceWorkerRegistration.register();
+// disable service worker to avoid registration errors
+serviceWorkerRegistration.unregister();
 
 
 // If you want to start measuring performance in your app, pass a function
