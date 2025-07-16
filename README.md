@@ -150,6 +150,8 @@ cp .env.example .env   # Add your DATABASE_URL and OpenRouter API key
 # Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields
 # Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts
 # Set GOOGLE_SERVICE_ACCOUNT_KEY and EMAIL_INBOX to enable email-to-upload support
+# GOOGLE_SERVICE_ACCOUNT_KEY should point to a service account JSON file and
+# EMAIL_INBOX should be the Gmail address to monitor for incoming invoices
 npm start
 ```
 

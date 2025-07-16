@@ -62,6 +62,10 @@ async function processMessage(gmail, message) {
 
 async function fetchEmailAttachments() {
   try {
+    if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY || !process.env.EMAIL_INBOX) {
+      console.log('Skipping email sync: missing GOOGLE_SERVICE_ACCOUNT_KEY or EMAIL_INBOX');
+      return;
+    }
     const auth = new google.auth.GoogleAuth({
       keyFile: process.env.GOOGLE_SERVICE_ACCOUNT_KEY,
       scopes: ['https://www.googleapis.com/auth/gmail.modify'],
