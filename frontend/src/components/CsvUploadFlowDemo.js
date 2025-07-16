@@ -13,8 +13,8 @@ export default function CsvUploadFlowDemo() {
       img: 'https://dummyimage.com/800x450/4f46e5/ffffff.png&text=Preview+Rows'
     },
     {
-      title: 'Dashboard Populated',
-      img: 'https://dummyimage.com/800x450/312e81/ffffff.png&text=Dashboard'
+      title: 'Dashboard Demo',
+      img: 'https://dummyimage.com/800x450/1e40af/ffffff.gif&text=Dashboard+Video'
     }
   ];
 

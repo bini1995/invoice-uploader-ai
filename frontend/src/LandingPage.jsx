@@ -224,11 +224,12 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="py-12">
-        <h2 className="text-3xl font-bold text-center mb-4">Progress Dashboard</h2>
+        <h2 className="text-3xl font-bold text-center mb-2">Try the Dashboard →</h2>
+        <p className="text-center mb-4 text-gray-600 dark:text-gray-300">No signup needed. Test it instantly.</p>
         <div className="container mx-auto px-6">
           <ProgressDashboard />
           <div className="text-center mt-4">
-            <DummyDataButton />
+            <DummyDataButton className="btn btn-primary text-lg" />
           </div>
         </div>
       </section>

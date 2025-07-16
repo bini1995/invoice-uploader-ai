@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 export default function TagEditor({ tags = [], onAddTag, onRemoveTag, colorMap = {} }) {
+  const safeTags = Array.isArray(tags) ? tags : [];
   const [input, setInput] = useState('');
 
   const handleKeyDown = (e) => {
@@ -12,7 +13,7 @@ export default function TagEditor({ tags = [], onAddTag, onRemoveTag, colorMap =
 
   return (
     <div className="flex flex-wrap gap-1 items-center">
-      {tags.map((tag, idx) => (
+      {safeTags.map((tag, idx) => (
         <span
           key={idx}
           className="flex items-center text-xs px-2 py-0.5 rounded text-white"

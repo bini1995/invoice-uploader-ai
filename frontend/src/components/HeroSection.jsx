@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import HeroAnimation from './HeroAnimation';
 import PartnerLogos from './PartnerLogos';
 import { Button } from './ui/Button';
 
@@ -8,7 +7,7 @@ export default function HeroSection({ onRequestDemo }) {
   return (
     <section
       id="product"
-      className="relative overflow-hidden min-h-[70vh] px-6 py-20 flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-black"
+      className="relative overflow-hidden min-h-[70vh] px-6 py-20 flex items-center justify-center bg-white dark:bg-gray-900"
     >
       <img
         src="/logo512.png"
@@ -23,14 +22,13 @@ export default function HeroSection({ onRequestDemo }) {
           className="space-y-6 text-center md:text-left"
         >
           <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
-            ClarifyOps – AI Invoice Automation
+            Automate Invoices. Save Hours. Focus on Growth.
           </h1>
           <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-            Reduce manual effort by 80% and integrate seamlessly into your workflow.
+            Reduce manual work by 80% with AI-powered invoice processing. Upload once—AI handles the rest.
           </p>
-          <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 justify-center md:justify-start">
-            <Button className="text-lg px-8 py-3" onClick={onRequestDemo}>Request Demo</Button>
-            <Button asChild variant="secondary" className="text-lg px-8 py-3">
+          <div className="flex justify-center md:justify-start">
+            <Button asChild className="text-lg px-8 py-3">
               <a href="/free-trial">Start Free Trial</a>
             </Button>
           </div>
@@ -42,7 +40,11 @@ export default function HeroSection({ onRequestDemo }) {
           transition={{ duration: 0.6 }}
           className="w-full"
         >
-          <HeroAnimation />
+          <img
+            src="https://dummyimage.com/800x450/f3f4f6/1e40af.png&text=Invoice+Dashboard"
+            alt="Product screenshot"
+            className="w-full rounded-lg shadow-lg"
+          />
         </motion.div>
       </div>
     </section>

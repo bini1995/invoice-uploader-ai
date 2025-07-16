@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { API_BASE } from '../api';
 import { useTranslation } from 'react-i18next';
 
-export default function DummyDataButton() {
+export default function DummyDataButton({ className = 'btn btn-secondary' }) {
   const token = localStorage.getItem('token') || '';
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -20,7 +20,7 @@ export default function DummyDataButton() {
   };
 
   return (
-    <button className="btn btn-secondary" onClick={handleSeed} disabled={loading}>
+    <button className={className} onClick={handleSeed} disabled={loading}>
       {loading ? t('seeding') : done ? t('seeded') : t('seedDummyData')}
     </button>
   );

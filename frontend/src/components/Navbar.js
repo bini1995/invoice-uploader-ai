@@ -225,7 +225,7 @@ export default function Navbar({
                   aria-label="Account"
                 >
                   <img
-                    src="https://source.boringavatars.com/beam/120/bini?colors=5B21B6,4338CA"
+                    src="https://avatars.dicebear.com/api/initials/bini.svg?background=%235B21B6&color=white"
                     alt="avatar"
                     className="h-6 w-6 rounded-full"
                   />
