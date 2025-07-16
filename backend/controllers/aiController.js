@@ -589,41 +589,50 @@ exports.suggestTagColors = async (req, res) => {
     });
 
     if (unknown.length) {
-      const prompt = `Assign an intuitive hex color code for each of these invoice tags: ${unknown.join(
-        ', '
-      )}. Respond with a JSON object where the keys are the tag names and the values are colors.`;
-      const aiRes = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          model: 'openai/gpt-3.5-turbo',
-          messages: [
-            {
-              role: 'system',
-              content: 'You select distinct and meaningful colors for invoice tags.',
+      if (process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY) {
+        const prompt = `Assign an intuitive hex color code for each of these invoice tags: ${unknown.join(
+          ', '
+        )}. Respond with a JSON object where the keys are the tag names and the values are colors.`;
+        const aiRes = await axios.post(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            model: 'openai/gpt-3.5-turbo',
+            messages: [
+              {
+                role: 'system',
+                content: 'You select distinct and meaningful colors for invoice tags.',
+              },
+              { role: 'user', content: prompt },
+            ],
+          },{
+            headers: {
+              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
+              'X-Title': 'invoice-uploader-ai',
             },
-            { role: 'user', content: prompt },
-          ],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
-            'X-Title': 'invoice-uploader-ai',
-          },
-        }
-      );
+          }
+        );
 
-      const raw = aiRes.data.choices?.[0]?.message?.content?.trim();
-      let data = {};
-      try {
-        data = JSON.parse(raw);
-      } catch (e) {
-        console.error('Color JSON parse error:', e.message);
-      }
+        const raw = aiRes.data.choices?.[0]?.message?.content?.trim();
+        let data = {};
+        try {
+          data = JSON.parse(raw);
+        } catch (e) {
+          console.error('Color JSON parse error:', e.message);
+        }
       Object.entries(data || {}).forEach(([tag, color]) => {
-        colors[tag] = color;
-      });
+          colors[tag] = color;
+        });
+      } else {
+        // Fallback: assign random colors when no API key is configured
+        unknown.forEach((tag) => {
+          const rand = Math.floor(Math.random() * 0xffffff)
+            .toString(16)
+            .padStart(6, '0');
+          colors[tag] = `#${rand}`;
+        });
+      }
     }
 
     res.json({ colors });

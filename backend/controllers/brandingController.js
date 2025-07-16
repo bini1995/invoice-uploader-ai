@@ -18,9 +18,14 @@ exports.uploadLogo = (req, res) => {
 
 exports.getLogo = (req, res) => {
   const tenantId = req.tenantId;
-  const file = path.join(__dirname, '../uploads/logos', `${tenantId}.png`);
+  const dir = path.join(__dirname, '../uploads/logos');
+  const file = path.join(dir, `${tenantId}.png`);
   if (fs.existsSync(file)) {
     return res.sendFile(file);
+  }
+  const def = path.join(dir, 'default.png');
+  if (fs.existsSync(def)) {
+    return res.sendFile(def);
   }
   res.status(404).end();
 };
