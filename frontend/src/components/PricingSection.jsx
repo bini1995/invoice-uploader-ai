@@ -40,16 +40,6 @@ const plans = [
     users: 10,
     cta: 'Schedule Demo',
   },
-  {
-    id: 'enterprise',
-    title: 'Enterprise',
-    subtitle: 'Built for complex orgs',
-    price: 'Custom',
-    invoices: 'Unlimited',
-    summaries: 'Unlimited',
-    users: 'Custom',
-    cta: 'Contact Sales →',
-  },
 ];
 
 export default function PricingSection() {
@@ -83,7 +73,7 @@ export default function PricingSection() {
           Annual <span className="text-indigo-600">(save 20%)</span>
         </span>
       </div>
-      <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
+      <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
         {plans.map(plan => (
           <Card
             key={plan.id}
@@ -106,22 +96,30 @@ export default function PricingSection() {
             <ul className="text-sm space-y-1 text-left">
               <li className="flex items-center space-x-1">
                 <CheckCircleIcon className="w-4 h-4" />
-                <span>{plan.invoices} invoices/mo</span>
-              </li>
-              <li className="flex items-center space-x-1">
-                <SparklesIcon className="w-4 h-4" />
-                <span>{plan.summaries} AI summary</span>
+                <span className="font-semibold">{plan.invoices}</span>{' '}invoices/mo
               </li>
               <li className="flex items-center space-x-1">
                 <UserGroupIcon className="w-4 h-4" />
-                <span>{plan.users} users</span>
+                <span className="font-semibold">{plan.users}</span> users
               </li>
               <li className="flex items-center space-x-1">
-                <ChartBarIcon className="w-4 h-4" />
-                <span>Analytics</span>
+                <SparklesIcon className="w-4 h-4" />
+                <span className="font-semibold">{plan.summaries}</span> AI summary
               </li>
             </ul>
             <Button>{plan.cta}</Button>
+            <div className="flex justify-center mt-2 gap-2 opacity-80">
+              <img
+                src="https://dummyimage.com/40x20/4b2ad3/ffffff.png&text=A"
+                alt="Logo A"
+                className="h-5 rounded"
+              />
+              <img
+                src="https://dummyimage.com/40x20/4b2ad3/ffffff.png&text=B"
+                alt="Logo B"
+                className="h-5 rounded"
+              />
+            </div>
           </Card>
         ))}
       </div>

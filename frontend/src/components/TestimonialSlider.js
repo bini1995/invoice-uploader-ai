@@ -18,7 +18,7 @@ export default function TestimonialSlider({ testimonials = [], interval = 5000 }
 
   if (testimonials.length === 0) return null;
 
-  const { quote, author } = testimonials[index];
+  const { quote, author, image, company, highlight } = testimonials[index];
 
   return (
     <div className="relative max-w-xl mx-auto">
@@ -29,10 +29,28 @@ export default function TestimonialSlider({ testimonials = [], interval = 5000 }
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.4 }}
-          className="text-center space-y-2"
+          className="text-center space-y-3"
         >
-          <p className="text-lg font-medium">"{quote}"</p>
-          {author && <p className="text-sm text-gray-500">- {author}</p>}
+          {image && (
+            <img
+              src={image}
+              alt={author}
+              className="mx-auto h-12 w-12 rounded-full object-cover"
+            />
+          )}
+          <p
+            className={
+              highlight ? 'text-2xl font-bold' : 'text-lg font-medium'
+            }
+          >
+            "{quote}"
+          </p>
+          {author && (
+            <p className="text-sm text-gray-500">
+              - {author}
+              {company ? `, ${company}` : ''}
+            </p>
+          )}
         </motion.div>
       </AnimatePresence>
       {testimonials.length > 1 && (

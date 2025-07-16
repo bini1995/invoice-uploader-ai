@@ -4,9 +4,24 @@ import TestimonialSlider from './TestimonialSlider';
 
 export default function SocialProofSection() {
   const testimonials = [
-    { quote: 'Saved our team 40+ hours weekly', author: 'Alex, Ops Lead' },
-    { quote: 'A must-have for finance automation', author: 'Jamie, CFO' },
-    { quote: 'Intuitive and incredibly fast', author: 'Taylor, Controller' },
+    {
+      quote: 'Saved our team 40+ hours weekly',
+      author: 'Alex',
+      company: 'Globex',
+      image: 'https://i.pravatar.cc/100?img=7',
+    },
+    {
+      quote: 'A must-have for finance automation',
+      author: 'Jamie',
+      company: 'Initech',
+      image: 'https://i.pravatar.cc/100?img=8',
+    },
+    {
+      quote: 'Intuitive and incredibly fast',
+      author: 'Taylor',
+      company: 'Contoso',
+      image: 'https://i.pravatar.cc/100?img=9',
+    },
   ];
   return (
     <section className="py-12">

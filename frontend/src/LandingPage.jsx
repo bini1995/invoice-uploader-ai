@@ -16,8 +16,8 @@ import {
   LockClosedIcon,
   ExclamationCircleIcon,
   ArrowDownTrayIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
-import Carousel from './components/Carousel';
 import { Card } from './components/ui/Card';
 import { Button } from './components/ui/Button';
 import ProgressDashboard from './components/ProgressDashboard';
@@ -38,6 +38,7 @@ import PricingSection from './components/PricingSection';
 import FeatureComparisonTable from './components/FeatureComparisonTable';
 import AddOnsTable from './components/AddOnsTable';
 import FaqAccordion from './components/FaqAccordion';
+import TestimonialSlider from './components/TestimonialSlider';
 
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false);
@@ -66,11 +67,11 @@ export default function LandingPage() {
       </nav>
       <HeroSection onRequestDemo={() => setDemoOpen(true)} />
       <ProblemSolutionSection />
-      <section className="py-12">
+      <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-6">Interactive Demo</h2>
         <CsvUploadFlowDemo />
       </section>
-      <section id="features" className="py-12 bg-gray-50 dark:bg-gray-800">
+      <section id="features" className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-6">
           <FeatureCard
             icon={DocumentArrowUpIcon}
@@ -100,91 +101,74 @@ export default function LandingPage() {
         </div>
       </section>
       <SocialProofSection />
-      <section id="customers" className="py-12 bg-gray-50 dark:bg-gray-800">
+      <PricingSection />
+      <section id="customers" className="py-16 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">Why Teams Choose Us Over Other Tools</h2>
         <div className="container mx-auto overflow-x-auto px-6">
-          <table className="min-w-full text-sm text-center">
-            <thead>
-              <tr>
-                <th className="border-b px-4 py-2 text-left">Feature</th>
-                <th className="border-b px-4 py-2">ClarifyOps</th>
-                <th className="border-b px-4 py-2">Competitor A</th>
-                <th className="border-b px-4 py-2">Competitor B</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              <tr>
-                <td className="px-4 py-2 text-left">Upload CSV/PDF/Image</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">✅</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">Natural Language Insights</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">AI-generated Emails</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">✅</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">Fraud Detection</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">Recurring Billing Automation</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">Audit Logs &amp; Scoring</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">Workflow Builder</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">Slack/Teams Integration</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">✅</td>
-              </tr>
-              <tr>
-                <td className="px-4 py-2 text-left">Whitelabel &amp; Multitenancy</td>
-                <td className="px-4 py-2">✅</td>
-                <td className="px-4 py-2">❌</td>
-                <td className="px-4 py-2">❌</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="flex space-x-4 w-max">
+            {[
+              {
+                label: 'AI Email Drafting',
+                ours: true,
+                a: false,
+                b: true,
+              },
+              {
+                label: 'Real-Time Anomaly Detection',
+                ours: true,
+                a: false,
+                b: false,
+              },
+              {
+                label: 'White-label + Multitenancy',
+                ours: true,
+                a: false,
+                b: false,
+              },
+              {
+                label: 'Upload CSV/PDF/Image',
+                ours: true,
+                a: true,
+                b: true,
+              },
+            ].map((f) => (
+              <Card key={f.label} className="min-w-[220px] p-4 space-y-3 text-center">
+                <h4 className="font-semibold mb-2">{f.label}</h4>
+                <div className="grid grid-cols-3 gap-2 text-sm items-center">
+                  <span className="font-medium text-left">ClarifyOps</span>
+                  <span className="font-medium">A</span>
+                  <span className="font-medium">B</span>
+                  {f.ours ? (
+                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <XMarkIcon className="w-5 h-5 text-red-500" />
+                  )}
+                  {f.a ? (
+                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <XMarkIcon className="w-5 h-5 text-red-500" />
+                  )}
+                  {f.b ? (
+                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <XMarkIcon className="w-5 h-5 text-red-500" />
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
-      <section id="resources" className="py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">
-          Deep-Dive on Your Differentiators
-        </h2>
+      <section id="resources" className="py-16">
+        <h2 className="text-3xl font-bold text-center mb-8">Deep-Dive on Your Differentiators</h2>
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
           <Card className="text-center space-y-4 p-6">
-            <LightBulbIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">AI That Understands and Acts</h3>
-            <p className="text-sm">
-              Smart categorization, natural language invoice summaries and scoring with clear explanations.
-            </p>
+            <LightBulbIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">Understand Invoices at a Glance</h3>
+            <p className="text-sm">Smart categorization and clear AI summaries make every invoice obvious.</p>
             <div className="flex justify-center space-x-2">
               <Button asChild className="text-sm px-4 py-2">
-                <Link to="/onboarding">Try it</Link>
+                <Link to="/onboarding">Start Now</Link>
               </Button>
               <Button asChild variant="secondary" className="text-sm px-4 py-2">
                 <Link to="/sandbox">Learn more</Link>
@@ -192,14 +176,12 @@ export default function LandingPage() {
             </div>
           </Card>
           <Card className="text-center space-y-4 p-6">
-            <BriefcaseIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">Built-In Finance Ops</h3>
-            <p className="text-sm">
-              Auto-send reminders, detect fraud signals and automate recurring invoices out of the box.
-            </p>
+            <BriefcaseIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">Automate Your Finance Stack</h3>
+            <p className="text-sm">Fraud signals, reminders and recurring invoices handled automatically.</p>
             <div className="flex justify-center space-x-2">
               <Button asChild className="text-sm px-4 py-2">
-                <Link to="/onboarding">Try it</Link>
+                <Link to="/onboarding">Start Now</Link>
               </Button>
               <Button asChild variant="secondary" className="text-sm px-4 py-2">
                 <Link to="/sandbox">Learn more</Link>
@@ -207,14 +189,12 @@ export default function LandingPage() {
             </div>
           </Card>
           <Card className="text-center space-y-4 p-6">
-            <GlobeAltIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">Customizable &amp; Enterprise Ready</h3>
-            <p className="text-sm">
-              Build workflows, support multiple tenants and integrate with Slack or Teams complete with an audit trail.
-            </p>
+            <GlobeAltIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto" />
+            <h3 className="font-semibold">Flexible, Enterprise-Ready Features</h3>
+            <p className="text-sm">Workflow builder, audit trail and multi-tenant support out of the box.</p>
             <div className="flex justify-center space-x-2">
               <Button asChild className="text-sm px-4 py-2">
-                <Link to="/onboarding">Try it</Link>
+                <Link to="/onboarding">Start Now</Link>
               </Button>
               <Button asChild variant="secondary" className="text-sm px-4 py-2">
                 <Link to="/sandbox">Learn more</Link>
@@ -223,7 +203,7 @@ export default function LandingPage() {
           </Card>
         </div>
       </section>
-      <section className="py-12">
+      <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-2">Try the Dashboard →</h2>
         <p className="text-center mb-4 text-gray-600 dark:text-gray-300">No signup needed. Test it instantly.</p>
         <div className="container mx-auto px-6">
@@ -235,14 +215,14 @@ export default function LandingPage() {
       </section>
       <SplitScreenStory />
       <HowItWorks />
-      <section id="pricing" className="py-12 bg-gray-50 dark:bg-gray-800">
+      <section id="search-demo" className="py-16 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-4">Split-Second AI Search</h2>
         <div className="container mx-auto px-6">
           <AiSearchDemo />
         </div>
       </section>
       <ScrollingUseCases />
-      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">AI Feature Walkthrough</h2>
         <div className="container mx-auto overflow-x-auto px-6">
           <div className="flex items-center space-x-4 w-max">
@@ -273,7 +253,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <section className="py-12">
+      <section className="py-16">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -283,30 +263,32 @@ export default function LandingPage() {
         >
           What People Are Saying
         </motion.h2>
-        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6 mb-8">
-          <Card className="space-y-2">
-            <p className="text-sm">"This app cut our invoice processing time in half."</p>
-            <span className="text-xs text-gray-500">- Sarah, Finance Lead</span>
-          </Card>
-          <Card className="space-y-2">
-            <p className="text-sm">"The AI insights are incredibly helpful for spotting issues."</p>
-            <span className="text-xs text-gray-500">- Mark, CFO</span>
-          </Card>
-          <Card className="space-y-2">
-            <p className="text-sm">"Simple, fast, and effective. Our team loves it."</p>
-            <span className="text-xs text-gray-500">- Priya, Operations Manager</span>
-          </Card>
-        </div>
-        <Carousel
-          images={[
-            'https://source.unsplash.com/collection/190727/800x401',
-            'https://source.unsplash.com/collection/190727/800x402',
-            'https://source.unsplash.com/collection/190727/800x403',
+        <TestimonialSlider
+          testimonials={[
+            {
+              quote: 'This app cut our invoice processing time in half.',
+              author: 'Sarah',
+              company: 'Acme Corp',
+              image: 'https://i.pravatar.cc/100?img=12',
+              highlight: true,
+            },
+            {
+              quote: 'Saved our team 40+ hours weekly.',
+              author: 'Alex',
+              company: 'Globex',
+              image: 'https://i.pravatar.cc/100?img=5',
+            },
+            {
+              quote: 'A must-have for finance automation.',
+              author: 'Jamie',
+              company: 'Initech',
+              image: 'https://i.pravatar.cc/100?img=6',
+            },
           ]}
         />
       </section>
       <BlogSection />
-      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-2">Security &amp; Compliance</h2>
         <p className="text-center mb-8 text-indigo-600 dark:text-indigo-400 font-medium">
           Security-first infrastructure for sensitive financial data
@@ -327,7 +309,7 @@ export default function LandingPage() {
         </div>
         <p className="text-center mt-6 font-semibold text-indigo-600 dark:text-indigo-400">Bank-grade encryption</p>
       </section>
-      <section className="py-12">
+      <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-8">Developers</h2>
         <p className="text-center mb-4">Explore our API and build custom integrations.</p>
         <div className="text-center">
@@ -336,7 +318,7 @@ export default function LandingPage() {
           </Button>
         </div>
       </section>
-      <section className="py-12 bg-gray-50 dark:bg-gray-800">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <h2 className="text-3xl font-bold text-center mb-8">Case Studies</h2>
         <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
           <Card className="space-y-2">
@@ -353,7 +335,6 @@ export default function LandingPage() {
           </Card>
         </div>
       </section>
-      <PricingSection />
       <FeatureComparisonTable />
       <AddOnsTable />
       <FaqAccordion />
@@ -378,6 +359,9 @@ export default function LandingPage() {
             <ul className="space-y-1">
               <li>
                 <a href="#about" className="hover:underline">About</a>
+              </li>
+              <li>
+                <Link to="/careers" className="hover:underline">Careers</Link>
               </li>
               <li>
                 <a href="mailto:contact@clarifyops.com" className="hover:underline">Contact</a>
