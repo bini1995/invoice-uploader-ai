@@ -44,10 +44,12 @@ export default function Inbox() {
     try {
       const res = await fetch(`${API_BASE}/api/${tenant}/invoices?status=Pending`, { headers });
       const data = await res.json();
-      if (res.ok) {
+      if (res.ok && Array.isArray(data)) {
         setInvoices(data);
         setVendorList([...new Set(data.map((i) => i.vendor).filter(Boolean))]);
         setAssigneeList([...new Set(data.map((i) => i.assignee).filter(Boolean))]);
+      } else {
+        throw new Error(`HTTP ${res.status}`);
       }
     } catch (err) {
       console.error('Inbox fetch error:', err);
