@@ -440,11 +440,13 @@ exports.uploadInvoice = async (req, res) => {
           'SELECT id FROM purchase_orders WHERE vendor = $1 AND amount = $2 AND matched_invoice_id IS NULL LIMIT 1',
           [inv.vendor, inv.amount]
         );
+        const totalPOsRes = await pool.query('SELECT COUNT(*) AS count FROM purchase_orders');
+        const hasPOs = parseInt(totalPOsRes.rows[0].count, 10) > 0;
         if (poRes.rows.length) {
           const poId = poRes.rows[0].id;
           await pool.query('UPDATE purchase_orders SET matched_invoice_id = $1, status = $2 WHERE id = $3', [newId, 'Matched', poId]);
           await pool.query('UPDATE invoices SET po_id = $1 WHERE id = $2', [poId, newId]);
-        } else {
+        } else if (hasPOs) {
           await pool.query('UPDATE invoices SET flagged = TRUE, flag_reason = $1 WHERE id = $2', ['No matching PO', newId]);
           await sendSlackNotification(`Invoice ${inv.invoice_number} missing matching PO`);
           await sendTeamsNotification(`Invoice ${inv.invoice_number} missing matching PO`);
