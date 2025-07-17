@@ -1,7 +1,11 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
+const redis = require('../config/redis');
 const { logActivity } = require('../utils/activityLogger');
+
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 async function userExists(username) {
   const { rows } = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
@@ -17,7 +21,6 @@ async function createUser(username, password, role) {
   return rows[0];
 }
 
-const REFRESH_TOKENS = [];
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
@@ -30,15 +33,15 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user.id, role: user.role, username: user.username },
-      'secretKey123',
+      JWT_SECRET,
       { expiresIn: '15m' }
     );
     const refreshToken = jwt.sign(
       { userId: user.id },
-      'refreshSecret123',
+      JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
-    REFRESH_TOKENS.push(refreshToken);
+    await redis.sadd('refresh_tokens', refreshToken);
     res.json({ token, refreshToken, role: user.role, username: user.username });
   } catch (err) {
     console.error('Login error:', err);
@@ -48,17 +51,17 @@ exports.login = async (req, res) => {
 
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
-  if (!refreshToken || !REFRESH_TOKENS.includes(refreshToken)) {
+  if (!refreshToken || !(await redis.sismember('refresh_tokens', refreshToken))) {
     return res.status(401).json({ message: 'Invalid refresh token' });
   }
   try {
-    const decoded = jwt.verify(refreshToken, 'refreshSecret123');
+    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.userId]);
     const user = rows[0];
     if (!user) return res.status(401).json({ message: 'Invalid user' });
     const token = jwt.sign(
       { userId: user.id, role: user.role, username: user.username },
-      'secretKey123',
+      JWT_SECRET,
       { expiresIn: '15m' }
     );
     res.json({ token, role: user.role, username: user.username });
@@ -67,10 +70,11 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
   const { refreshToken } = req.body;
-  const idx = REFRESH_TOKENS.indexOf(refreshToken);
-  if (idx !== -1) REFRESH_TOKENS.splice(idx, 1);
+  if (refreshToken) {
+    await redis.srem('refresh_tokens', refreshToken);
+  }
   res.json({ message: 'Logged out' });
 };
 
@@ -81,7 +85,7 @@ exports.authMiddleware = (req, res, next) => {
   }
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, 'secretKey123');
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {

@@ -183,7 +183,6 @@ router.get('/:id/flag-explanation', authMiddleware, explainFlaggedInvoice);
 router.get('/:id/explain', authMiddleware, explainInvoice);
 router.patch('/:id/archive', authMiddleware, authorizeRoles('approver'), archiveInvoice);
 router.post('/:id/unarchive', authMiddleware, authorizeRoles('approver'), unarchiveInvoice);
-router.post('/suggest-vendor', authMiddleware, handleSuggestion);
 router.patch('/:id/update', authMiddleware, updateInvoiceField);
 router.patch('/:id/assign', authMiddleware, assignInvoice);
 router.patch('/:id/approve', authMiddleware, authorizeRoles('accountant','admin'), approveInvoice);
