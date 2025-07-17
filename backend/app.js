@@ -4,6 +4,7 @@ const express = require('express');         // web server framework
 const cors = require('cors');
 const http = require('http');
 require('dotenv').config();                 // load environment variables
+const logger = require('./utils/logger');
 const Sentry = require('@sentry/node');
 const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
 const authRoutes = require('./routes/authRoutes');
@@ -54,7 +55,7 @@ const { parse } = require('url');
 const app = express();                      // create the app
 const server = http.createServer(app);
 
-console.log('🟡 Starting server...');
+logger.info('🟡 Starting server...');
 
 Sentry.init({ dsn: process.env.SENTRY_DSN || undefined });
 app.use(Sentry.Handlers.requestHandler());
@@ -120,7 +121,7 @@ app.use(Sentry.Handlers.errorHandler());
   sendPaymentReminders();
   setInterval(sendPaymentReminders, 24 * 60 * 60 * 1000);
 
-  console.log('🟢 Routes mounted');
+  logger.info('🟢 Routes mounted');
 
   initChat(server);
 
@@ -136,6 +137,6 @@ app.use(Sentry.Handlers.errorHandler());
 
   const port = process.env.PORT || 3000;
   server.listen(port, () => {
-    console.log(`🚀 Server running on http://localhost:${port}`);
+    logger.info(`🚀 Server running on http://localhost:${port}`);
   });
 })();

@@ -2,10 +2,12 @@ const fs = require('fs');
 const pool = require('../config/db');
 const path = require('path');
 const JSZip = require('jszip');
-const { parseCSV } = require('../utils/csvParser');
-const { parsePDF } = require('../utils/pdfParser');
-const { parseImage } = require('../utils/imageParser');
-const { parseExcel } = require('../utils/excelParser');
+const { parseFile } = require('../services/ocrService');
+const { aiDuplicateCheck, generateErrorSummary } = require('../services/aiService');
+const { validateInvoiceRow, checkSimilarity } = require('../services/validationService');
+const { autoAssignInvoice, insertInvoice } = require('../services/invoiceService');
+const logger = require('../utils/logger');
+const { checkTenantInvoiceLimit } = require('../utils/tenantContext');
 const openai = require("../config/openrouter"); // ✅ re-use the config
 const axios = require('axios');
 const { applyRules } = require('../utils/rulesEngine');
@@ -50,39 +52,6 @@ const vendorPaymentMap = {
 // Predefined categories for AI tagging
 const CATEGORY_LIST = ['Office', 'Travel', 'Consulting', 'Marketing', 'Supplies'];
 
-async function aiDuplicateCheck(filename, invoice_number, amount, vendor, flags) {
-  if (!process.env.OPENROUTER_API_KEY) return { flag: false };
-  try {
-    const prompt = `Filename similar: ${flags.similarFile}; Duplicate combo: ${flags.dupCombo}; Off-hours: ${flags.offHours}. Invoice #: ${invoice_number}, Amount: $${amount}, Vendor: ${vendor}. Should this be flagged? Respond with JSON {"flag":true|false,"reason":"reason"}`;
-    const resp = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        model: 'openai/gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: 'You detect duplicate or suspicious invoices.' },
-          { role: 'user', content: prompt }
-        ]
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    const txt = resp.data.choices?.[0]?.message?.content?.trim();
-    if (!txt) return { flag: false };
-    try {
-      return JSON.parse(txt);
-    } catch {
-      const flag = /yes|true|1/i.test(txt);
-      return { flag, reason: txt };
-    }
-  } catch (err) {
-    console.error('AI duplicate check error:', err.response?.data || err.message);
-    return { flag: false };
-  }
-}
 
 exports.parseInvoiceSample = async (req, res) => {
   try {
@@ -90,24 +59,18 @@ exports.parseInvoiceSample = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const ext = path.extname(req.file.originalname).toLowerCase();
-    let invoices;
-    if (ext === '.csv') {
-      invoices = await parseCSV(req.file.path);
-    } else if (ext === '.pdf') {
-      try {
-        invoices = await parsePDF(req.file.path);
-      } catch (err) {
-        fs.unlinkSync(req.file.path);
-        return res.status(400).json({ message: err.message });
-      }
-    } else if (ext === '.xls' || ext === '.xlsx') {
-      invoices = await parseExcel(req.file.path);
-    } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
-      invoices = await parseImage(req.file.path);
-    } else {
+    const allowed = await checkTenantInvoiceLimit(req.tenantId);
+    if (!allowed) {
       fs.unlinkSync(req.file.path);
-      return res.status(400).json({ message: 'Unsupported file type' });
+      return res.status(429).json({ message: 'Monthly invoice limit reached' });
+    }
+
+    let invoices;
+    try {
+      invoices = await parseFile(req.file.path);
+    } catch (err) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: err.message });
     }
 
     invoices = invoices.map(applyCorrections);
@@ -181,21 +144,11 @@ exports.uploadInvoice = async (req, res) => {
       return res.status(400).json({ message: `Image exceeds ${settings.pdfSizeLimitMB}MB limit` });
     }
     let invoices;
-    if (ext === '.csv') {
-      invoices = await parseCSV(req.file.path);
-    } else if (ext === '.pdf') {
-      try {
-        invoices = await parsePDF(req.file.path);
-      } catch (err) {
-        fs.unlinkSync(req.file.path);
-        return res.status(400).json({ message: err.message });
-      }
-    } else if (ext === '.xls' || ext === '.xlsx') {
-      invoices = await parseExcel(req.file.path);
-    } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
-      invoices = await parseImage(req.file.path);
-    } else {
-      return res.status(400).json({ message: 'Unsupported file type' });
+    try {
+      invoices = await parseFile(req.file.path);
+    } catch (err) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: err.message });
     }
     invoices = invoices.map(applyCorrections);
     const fileBuffer = fs.readFileSync(req.file.path);
@@ -237,18 +190,9 @@ exports.uploadInvoice = async (req, res) => {
       const vatPercent = parseFloat(inv.vat_percent || req.body.vat_percent || settings.defaultVatPercent || 0);
       const vendor = inv.vendor?.trim();
 
-      if (!invoice_number || !date || !amount || !vendor) {
-        errors.push(`Row ${rowNum}: Missing required field`);
-        continue;
-      }
-
-      if (isNaN(parseFloat(amount))) {
-        errors.push(`Row ${rowNum}: Amount is not a valid number`);
-        continue;
-      }
-
-      if (isNaN(Date.parse(date))) {
-        errors.push(`Row ${rowNum}: Date is not valid`);
+      const rowErrors = await validateInvoiceRow({ invoice_number, date, amount, vendor }, rowNum);
+      if (rowErrors.length) {
+        errors.push(...rowErrors);
         continue;
       }
 
@@ -256,38 +200,8 @@ exports.uploadInvoice = async (req, res) => {
         .createHash('sha256')
         .update(`${invoice_number}|${amount}|${vendor}`)
         .digest('hex');
-      try {
-        const dupRes = await pool.query(
-          'SELECT id FROM invoices WHERE content_hash = $1 OR (invoice_number = $2 AND vendor = $3 AND amount = $4) LIMIT 1',
-          [contentHash, invoice_number, vendor, amount]
-        );
-        if (dupRes.rows.length) {
-          warnings.push(`Row ${rowNum}: Possible duplicate of invoice ID ${dupRes.rows[0].id}`);
-          continue;
-        }
-      } catch (dupErr) {
-        console.error('Duplicate check failed:', dupErr.message);
-      }
-
-      // Similarity detection against recent invoices from the same vendor
-      try {
-        const { rows: recent } = await pool.query(
-          'SELECT id, invoice_number, amount, vendor FROM invoices WHERE vendor = $1 ORDER BY id DESC LIMIT 20',
-          [vendor]
-        );
-        const newStr = `${invoice_number}|${amount}|${vendor}`.toLowerCase();
-        for (const r of recent) {
-          const oldStr = `${r.invoice_number}|${r.amount}|${r.vendor}`.toLowerCase();
-          const distance = levenshtein.get(newStr, oldStr);
-          const similarity = 1 - distance / Math.max(newStr.length, oldStr.length);
-          if (similarity > 0.8) {
-            warnings.push(`Row ${rowNum}: ${invoice_number} is ${Math.round(similarity * 100)}% similar to invoice ID ${r.id}`);
-            break;
-          }
-        }
-      } catch (simErr) {
-        console.error('Similarity check failed:', simErr.message);
-      }
+      const simWarn = await checkSimilarity(vendor, invoice_number, amount);
+      if (simWarn) warnings.push(`Row ${rowNum}: ${simWarn}`);
 
       const department = inv.department?.trim() || req.body.department;
       const exchangeRate = await getExchangeRate(currency);
@@ -389,48 +303,15 @@ exports.uploadInvoice = async (req, res) => {
 
     const tenantId = req.tenantId;
     for (const inv of validRows) {
-      const approvalChain = inv.approval_chain || ['Manager','Finance','CFO'];
-      const approvalStatus = inv.autoApprove ? 'Approved' : 'Pending';
-      const currentStep = inv.autoApprove ? approvalChain.length : 0;
-      const insertRes = await pool.query(
-        `INSERT INTO invoices (invoice_number, date, amount, vendor, file_name, tags, category, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28) RETURNING id`,
-        [
-          inv.invoice_number,
-          inv.date,
-          inv.amount,
-          inv.vendor,
-          req.file.originalname,
-          inv.tags || [],
-          inv.category || null,
-          inv.assignee || null,
-          inv.flagged || false,
-          inv.flag_reason,
-          JSON.stringify(approvalChain),
-          currentStep,
-          integrityHash,
-          inv.content_hash,
-          blockchainTx,
-          retention,
-          deleteAt,
-          tenantId,
-          approvalStatus,
-          inv.department || null,
-          inv.original_amount,
-          inv.currency,
-          inv.exchange_rate,
-          inv.vat_percent,
-          inv.vat_amount,
-          inv.expires_at,
-          false,
-          encryptUploads ? encrypt(JSON.stringify(inv), process.env.UPLOAD_ENCRYPTION_KEY) : null,
-        ]
-      );
-      const newId = insertRes.rows[0].id;
-      const afterRes = await pool.query('SELECT * FROM invoices WHERE id = $1', [newId]);
-      if (afterRes.rows.length) {
-        await recordInvoiceVersion(newId, {}, afterRes.rows[0], req.user?.userId, req.user?.username);
-      }
+      const newId = await insertInvoice({
+        ...inv,
+        file_name: req.file.originalname,
+        integrity_hash: integrityHash,
+        retention_policy: retention,
+        delete_at: deleteAt,
+        editor_id: req.user?.userId,
+        editor_name: req.user?.username
+      }, tenantId);
       if (!inv.assignee) {
         await autoAssignInvoice(newId, inv.vendor, inv.tags || []);
       }
@@ -461,30 +342,7 @@ exports.uploadInvoice = async (req, res) => {
 
     let summary = null;
     if (errors.length && process.env.OPENROUTER_API_KEY) {
-      try {
-        const prompt = `You are a helpful assistant for a CSV invoice uploader tool. Given these validation errors, provide a short summary with possible fixes.\n\n${errors.join('\n')}`;
-        const aiRes = await axios.post(
-          'https://openrouter.ai/api/v1/chat/completions',
-          {
-            model: 'openai/gpt-3.5-turbo',
-            messages: [
-              { role: 'system', content: 'You explain CSV upload errors in plain English.' },
-              { role: 'user', content: prompt },
-            ],
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-              'Content-Type': 'application/json',
-              'HTTP-Referer': 'https://github.com/bini1995/invoice-uploader-ai',
-              'X-Title': 'invoice-uploader-ai',
-            },
-          }
-        );
-        summary = aiRes.data.choices?.[0]?.message?.content?.trim() || null;
-      } catch (e) {
-        console.error('AI summary error:', e.response?.data || e.message);
-      }
+      summary = await generateErrorSummary(errors);
     }
 
     res.json({
@@ -495,7 +353,8 @@ exports.uploadInvoice = async (req, res) => {
       summary,
     });
   } catch (err) {
-    console.error(err);
+    const logger = require('../utils/logger');
+    logger.error({ err }, 'uploadInvoice failed');
     await sendSlackNotification?.(`Invoice upload failed: ${err.message}`);
     res.status(500).json({ message: 'Server error' });
   }
@@ -1230,25 +1089,6 @@ exports.assignInvoice = async (req, res) => {
   }
 };
 
-async function autoAssignInvoice(invoiceId, vendor, tags = []) {
-  let assignee = await getAssigneeFromVendorHistory(vendor);
-  if (!assignee) {
-    assignee = getAssigneeFromTags(tags);
-  }
-  if (!assignee && vendor && vendor.toLowerCase().includes('figma')) {
-    assignee = 'Design Team';
-  }
-  if (!assignee && tags.map((t) => t.toLowerCase()).includes('marketing')) {
-    assignee = 'Alice';
-  }
-  if (assignee) {
-    try {
-      await pool.query('UPDATE invoices SET assignee = $1 WHERE id = $2', [assignee, invoiceId]);
-    } catch (err) {
-      console.error('Auto-assign error:', err);
-    }
-  }
-}
 
 exports.approveInvoice = async (req, res) => {
   const { id } = req.params;

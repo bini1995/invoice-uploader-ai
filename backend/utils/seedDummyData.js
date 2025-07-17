@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const logger = require('./logger');
 
 (async function seedDummy() {
   const client = await pool.connect();
@@ -17,7 +18,7 @@ const pool = require('../config/db');
       );
       inserted++;
     }
-    console.log(`Seeded ${inserted} dummy invoices`);
+    logger.info(`Seeded ${inserted} dummy invoices`);
   } catch (err) {
     console.error('Seed demo data error:', err);
     process.exitCode = 1;
