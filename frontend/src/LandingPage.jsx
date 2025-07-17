@@ -71,6 +71,11 @@ export default function LandingPage() {
               <Link to="/login">Log In</Link>
             </Button>
           </div>
+          <div className="sm:hidden flex items-center space-x-2">
+            <Button size="sm" asChild variant="secondary">
+              <Link to="/login">Log In</Link>
+            </Button>
+          </div>
         </div>
       </nav>
       <HeroSection onRequestDemo={() => setDemoOpen(true)} />
