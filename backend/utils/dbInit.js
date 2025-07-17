@@ -323,6 +323,17 @@ async function initDb() {
       label BOOLEAN,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query('CREATE EXTENSION IF NOT EXISTS vector');
+    await pool.query(`CREATE TABLE IF NOT EXISTS documents (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT,
+      file_name TEXT,
+      doc_type TEXT,
+      path TEXT,
+      embedding VECTOR(1536),
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }
