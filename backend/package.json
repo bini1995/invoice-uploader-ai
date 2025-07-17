@@ -8,7 +8,8 @@
   "scripts": {
     "start": "PORT=3000 node app.js",
     "lint": "echo \"No lint configured\"",
-    "seed-dummy": "node utils/seedDummyData.js"
+    "seed-dummy": "node utils/seedDummyData.js",
+    "test": "jest"
   },
   "dependencies": {
     "@sentry/node": "^7.103.0",
@@ -45,5 +46,9 @@
     "@y/websocket-server": "^0.1.1",
     "y-websocket": "^3.0.0",
     "yjs": "^13.6.27"
+  },
+  "devDependencies": {
+    "jest": "^29.6.0",
+    "supertest": "^6.3.3"
   }
 }
