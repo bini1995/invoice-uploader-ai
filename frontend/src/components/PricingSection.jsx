@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 import {
   CheckCircleIcon,
   UserGroupIcon,
   ChartBarIcon,
   SparklesIcon,
+  LightBulbIcon,
 } from '@heroicons/react/24/outline';
 
 const plans = [
@@ -17,6 +20,8 @@ const plans = [
     invoices: 500,
     summaries: 1,
     users: 1,
+    analytics: 'Basic',
+    scoring: false,
     cta: 'Start free — no credit card',
   },
   {
@@ -27,6 +32,8 @@ const plans = [
     invoices: 2500,
     summaries: 'Unlimited',
     users: 3,
+    analytics: 'Advanced',
+    scoring: true,
     cta: 'Start free for 14 days',
     popular: true,
   },
@@ -38,6 +45,8 @@ const plans = [
     invoices: 10000,
     summaries: 'Unlimited',
     users: 10,
+    analytics: 'Advanced',
+    scoring: true,
     cta: 'Schedule Demo',
   },
 ];
@@ -48,8 +57,10 @@ export default function PricingSection() {
   useEffect(() => {
     const handle = () => {
       const bar = document.getElementById('sticky-cta');
-      if (!bar) return;
-      bar.style.display = window.scrollY > 400 ? 'flex' : 'none';
+      const pricing = document.getElementById('pricing');
+      if (!bar || !pricing) return;
+      const threshold = pricing.offsetTop - window.innerHeight / 2;
+      bar.style.display = window.scrollY > threshold ? 'flex' : 'none';
     };
     window.addEventListener('scroll', handle);
     return () => window.removeEventListener('scroll', handle);
@@ -57,7 +68,7 @@ export default function PricingSection() {
   return (
     <section id="pricing" className="py-12 bg-gray-50 dark:bg-gray-800">
       <h2 className="text-3xl font-bold text-center mb-6">Pricing</h2>
-      <div className="flex justify-center mb-6 space-x-2 text-sm">
+      <div className="flex justify-center mb-6 space-x-3 text-sm items-center">
         <span className={annual ? 'opacity-50' : 'font-semibold'}>Monthly</span>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -67,11 +78,14 @@ export default function PricingSection() {
             checked={annual}
             onChange={() => setAnnual(v => !v)}
           />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600"></div>
+          <div className="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600"></div>
         </label>
-        <span className={annual ? 'font-semibold' : 'opacity-50'}>
-          Annual <span className="text-indigo-600">(save 20%)</span>
-        </span>
+        <span className={annual ? 'font-semibold' : 'opacity-50'}>Annual</span>
+        {annual && (
+          <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full ml-1">
+            Save 20%
+          </span>
+        )}
       </div>
       <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
         {plans.map(plan => (
@@ -83,7 +97,7 @@ export default function PricingSection() {
             }
           >
             {plan.popular && (
-              <span className="text-xs uppercase tracking-wide text-indigo-600">Most Popular</span>
+              <span className="inline-block bg-indigo-600 text-white text-xs px-2 py-1 rounded-full shadow">Most Popular</span>
             )}
             <h3 className="text-xl font-semibold">{plan.title}</h3>
             <p className="text-sm text-gray-500">{plan.subtitle}</p>
@@ -91,7 +105,9 @@ export default function PricingSection() {
               {typeof plan.price === 'number' ? `$${price(plan.price)}` : plan.price}
             </p>
             {typeof plan.price === 'number' && annual && (
-              <p className="text-xs text-gray-500">billed annually</p>
+              <p className="text-xs text-gray-500">
+                billed annually • save ${plan.price * 12 * 0.2}/year
+              </p>
             )}
             <ul className="text-sm space-y-1 text-left">
               <li className="flex items-center space-x-1">
@@ -106,6 +122,23 @@ export default function PricingSection() {
                 <SparklesIcon className="w-4 h-4" />
                 <span className="font-semibold">{plan.summaries}</span> AI summary
               </li>
+              <li className="flex items-center space-x-1">
+                <ChartBarIcon className="w-4 h-4" />
+                <span className="font-semibold">{plan.analytics}</span>
+                <span> analytics</span>
+                <Tippy content="Dashboards and spend charts">
+                  <span className="ml-1 cursor-help text-indigo-600">?</span>
+                </Tippy>
+              </li>
+              {plan.scoring && (
+                <li className="flex items-center space-x-1">
+                  <LightBulbIcon className="w-4 h-4" />
+                  <span>Smart Vendor Scoring</span>
+                  <Tippy content="Ranks vendors by risk and reliability">
+                    <span className="ml-1 cursor-help text-indigo-600">?</span>
+                  </Tippy>
+                </li>
+              )}
             </ul>
             <Button>{plan.cta}</Button>
             <div className="flex justify-center mt-2 gap-2 opacity-80">

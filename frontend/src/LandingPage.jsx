@@ -59,6 +59,12 @@ export default function LandingPage() {
           </div>
           <div className="hidden sm:flex items-center space-x-2">
             <Button onClick={() => setDemoOpen(true)}>Request Demo</Button>
+            <a
+              href="#pricing"
+              className="underline text-sm hover:text-indigo-600"
+            >
+              See all plans
+            </a>
             <Button asChild variant="secondary">
               <Link to="/login">Log In</Link>
             </Button>
