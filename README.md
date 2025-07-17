@@ -137,6 +137,10 @@ npm install --legacy-peer-deps
 - Low-code automation builder (`/api/automations`) for if‑then API workflows
 - Blockchain-backed invoice validation with PDF hashing for tamper-proof records
 
+## Dashboard Strategy
+See [docs/dashboard-goals.md](docs/dashboard-goals.md) for the strategic goals guiding the AI Dashboard.
+
+
 ## Setup Instructions
 
 ### Backend
