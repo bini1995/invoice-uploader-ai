@@ -39,6 +39,8 @@ import FeatureComparisonTable from './components/FeatureComparisonTable';
 import AddOnsTable from './components/AddOnsTable';
 import FaqAccordion from './components/FaqAccordion';
 import TestimonialSlider from './components/TestimonialSlider';
+import PriceCalculator from './components/PriceCalculator';
+import TrustSection from './components/TrustSection';
 
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false);
@@ -342,7 +344,9 @@ export default function LandingPage() {
         </div>
       </section>
       <FeatureComparisonTable />
+      <PriceCalculator />
       <AddOnsTable />
+      <TrustSection />
       <FaqAccordion />
       <footer className="bg-gray-100 dark:bg-gray-900 p-8 text-gray-600 dark:text-gray-400">
         <div className="container mx-auto grid md:grid-cols-4 gap-8 text-sm">

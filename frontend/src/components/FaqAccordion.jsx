@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from './ui/Card';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const faqs = [
   {
@@ -15,6 +16,14 @@ const faqs = [
     q: 'Do you offer annual billing discounts?',
     a: 'Absolutely—switch to annual to save 20%.',
   },
+  {
+    q: 'Can I switch plans later?',
+    a: 'Totally—upgrade or downgrade whenever you need from your account settings.',
+  },
+  {
+    q: 'What happens if I exceed my invoice limit?',
+    a: 'We keep processing and simply bill the overage at the add-on rate.',
+  },
 ];
 
 export default function FaqAccordion() {
@@ -24,12 +33,33 @@ export default function FaqAccordion() {
       <h2 className="text-3xl font-bold text-center mb-6">FAQ</h2>
       <div className="container mx-auto max-w-2xl px-6 space-y-2">
         {faqs.map((f, idx) => (
-          <Card key={idx} className="p-4 cursor-pointer" onClick={() => setOpen(open === idx ? null : idx)}>
+          <Card
+            key={idx}
+            className="p-4 cursor-pointer"
+            onClick={() => setOpen(open === idx ? null : idx)}
+          >
             <div className="flex justify-between items-center">
               <span className="font-medium">{f.q}</span>
-              <ChevronDownIcon className={`w-5 h-5 transform transition ${open === idx ? 'rotate-180' : ''}`} />
+              {open === idx ? (
+                <MinusIcon className="w-5 h-5" />
+              ) : (
+                <PlusIcon className="w-5 h-5" />
+              )}
             </div>
-            {open === idx && <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{f.a}</p>}
+            <AnimatePresence initial={false}>
+              {open === idx && (
+                <motion.p
+                  key="content"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-2 text-sm text-gray-600 dark:text-gray-300 overflow-hidden"
+                >
+                  {f.a}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </Card>
         ))}
       </div>
