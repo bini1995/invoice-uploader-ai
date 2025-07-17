@@ -38,7 +38,8 @@ async function processMessage(gmail, message) {
     try {
       await uploadInvoice(req, res);
     } catch (err) {
-      console.error('Email attachment processing failed:', err.message);
+      const logger = require('./logger');
+      logger.error({ err }, 'Email attachment processing failed');
     }
     fs.unlinkSync(tmp);
   }
@@ -55,7 +56,8 @@ async function processMessage(gmail, message) {
         text: 'Your forwarded invoice was processed successfully.',
       });
     } catch (err) {
-      console.error('Confirmation email error:', err.message);
+      const logger = require('./logger');
+      logger.error({ err }, 'Confirmation email error');
     }
   }
 }
@@ -63,7 +65,8 @@ async function processMessage(gmail, message) {
 async function fetchEmailAttachments() {
   try {
     if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY || !process.env.EMAIL_INBOX) {
-      console.log('Skipping email sync: missing GOOGLE_SERVICE_ACCOUNT_KEY or EMAIL_INBOX');
+      const logger = require('./logger');
+      logger.warn('Skipping email sync: missing GOOGLE_SERVICE_ACCOUNT_KEY or EMAIL_INBOX');
       return;
     }
     const auth = new google.auth.GoogleAuth({
@@ -76,17 +79,22 @@ async function fetchEmailAttachments() {
       q: `to:${inbox} has:attachment is:unread`,
     });
     const messages = res.data.messages || [];
-    if (messages.length) console.log(`📥 Found ${messages.length} invoice emails`);
+    if (messages.length) {
+      const logger = require('./logger');
+      logger.info(`📥 Found ${messages.length} invoice emails`);
+    }
     for (const m of messages) {
       await processMessage(gmail, m);
     }
   } catch (err) {
-    console.error('Email sync error:', err.message);
+    const logger = require('./logger');
+    logger.error({ err }, 'Email sync error');
   }
 }
 
 function startEmailSync() {
-  cron.schedule('*/5 * * * *', fetchEmailAttachments);
+  const { schedule } = require('./cronManager');
+  schedule('emailSync', '*/5 * * * *', fetchEmailAttachments);
 }
 
 module.exports = { startEmailSync };

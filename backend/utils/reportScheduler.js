@@ -1,9 +1,10 @@
-const cron = require('node-cron');
+const cronManager = require('./cronManager');
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const pool = require('../config/db');
 const { sendMail } = require('./email');
 const { sendSlackNotification } = require('./notify');
+const logger = require('./logger');
 const { buildFilterQuery } = require('../controllers/analyticsController');
 
 let jobs = [];
@@ -66,12 +67,12 @@ async function sendDailyReport() {
     });
     await sendSlackNotification?.(summary);
   } catch (err) {
-    console.error('Report email error:', err);
+    logger.error({ err }, 'Report email error');
   }
 }
 
 function scheduleReports() {
-  cron.schedule('0 8 * * *', sendDailyReport);
+  cronManager.schedule('dailyReport', '0 8 * * *', sendDailyReport);
   loadReportSchedules();
 }
 
@@ -94,7 +95,7 @@ async function sendScheduledReport(s) {
     });
     await pool.query('UPDATE report_schedules SET last_run = NOW() WHERE id = $1', [s.id]);
   } catch (err) {
-    console.error('Scheduled report error:', err);
+    logger.error({ err }, 'Scheduled report error');
   }
 }
 
@@ -105,14 +106,18 @@ async function loadReportSchedules() {
     jobs = [];
     for (const s of rows) {
       try {
-        const job = cron.schedule(s.cron || '0 8 * * *', () => sendScheduledReport(s).catch(() => {}));
+        const job = cronManager.schedule(
+          `schedule_${s.id}`,
+          s.cron || '0 8 * * *',
+          () => sendScheduledReport(s).catch(() => {})
+        );
         jobs.push(job);
       } catch (err) {
-        console.error('Report schedule cron error:', err.message);
+        logger.error({ err }, 'Report schedule cron error');
       }
     }
   } catch (err) {
-    console.error('Load report schedules error:', err);
+    logger.error({ err }, 'Load report schedules error');
   }
 }
 

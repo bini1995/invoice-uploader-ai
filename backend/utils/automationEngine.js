@@ -1,17 +1,18 @@
 const pool = require('../config/db');
 const axios = require('axios');
 const { exportToErpA, exportToErpB } = require('./erpExport');
+const logger = require('./logger');
 
 function evalCondition(condition, payload) {
   try {
     return Function('payload', `return (${condition})`)(payload);
   } catch (err) {
-    console.error('Automation condition eval error:', err.message);
+    logger.error({ err }, 'Automation condition eval error');
     return false;
   }
 }
 
-async function triggerAutomations(event, payload) {
+async function triggerAutomations(event, payload, attempt = 0) {
   try {
     const { rows } = await pool.query(
       'SELECT * FROM automations WHERE event = $1 AND active = TRUE',
@@ -32,11 +33,14 @@ async function triggerAutomations(event, payload) {
           }
           break;
         default:
-          console.log('Unknown automation action:', rule.action);
+          logger.warn({ action: rule.action }, 'Unknown automation action');
       }
     }
   } catch (err) {
-    console.error('Automation trigger error:', err.message);
+    logger.error({ err }, 'Automation trigger error');
+    if (attempt < 3) {
+      setTimeout(() => triggerAutomations(event, payload, attempt + 1), 5000);
+    }
   }
 }
 

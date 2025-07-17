@@ -3,8 +3,9 @@
 const { Pool } = require('pg');
 const { AsyncLocalStorage } = require('async_hooks');
 require('dotenv').config(); // so we can read from .env
+const logger = require('../utils/logger');
 
-console.log('🔎 Using DATABASE_URL:', process.env.DATABASE_URL);
+logger.info('🔎 Using DATABASE_URL:', process.env.DATABASE_URL);
 
 
 // Create a connection pool using info from your .env file
@@ -36,7 +37,7 @@ if (process.env.DATABASE_URL) {
   }
 }
 
-console.log('Postgres config:', dbConfig);
+logger.info('Postgres config:', dbConfig);
 
 const pool = new Pool(dbConfig);
 
@@ -74,7 +75,7 @@ pool.query = (text, params, callback) => {
 
 // Log when it connects
 pool.on('connect', () => {
-  console.log('🟢 Connected to PostgreSQL');
+  logger.info('🟢 Connected to PostgreSQL');
 });
 
 pool.als = als;

@@ -1,4 +1,5 @@
 const axios = require('axios');
+const logger = require('./logger');
 
 async function exportToErpA(invoice) {
   if (!process.env.ERP_A_URL || !process.env.ERP_A_TOKEN) return;
@@ -6,9 +7,9 @@ async function exportToErpA(invoice) {
     await axios.post(`${process.env.ERP_A_URL}/invoices`, invoice, {
       headers: { Authorization: `Bearer ${process.env.ERP_A_TOKEN}` },
     });
-    console.log('Exported invoice to ERP A');
+    logger.info('Exported invoice to ERP A');
   } catch (err) {
-    console.error('ERP A export error:', err.message);
+    logger.error({ err }, 'ERP A export error');
   }
 }
 
@@ -18,9 +19,9 @@ async function exportToErpB(invoice) {
     await axios.post(`${process.env.ERP_B_URL}/invoices`, invoice, {
       headers: { Authorization: `Bearer ${process.env.ERP_B_TOKEN}` },
     });
-    console.log('Exported invoice to ERP B');
+    logger.info('Exported invoice to ERP B');
   } catch (err) {
-    console.error('ERP B export error:', err.message);
+    logger.error({ err }, 'ERP B export error');
   }
 }
 
