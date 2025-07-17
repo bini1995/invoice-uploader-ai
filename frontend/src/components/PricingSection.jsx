@@ -77,6 +77,7 @@ export default function PricingSection() {
             className="sr-only peer"
             checked={annual}
             onChange={() => setAnnual(v => !v)}
+            aria-label="Toggle annual pricing"
           />
           <div className="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600"></div>
         </label>
@@ -91,6 +92,7 @@ export default function PricingSection() {
         {plans.map(plan => (
           <Card
             key={plan.id}
+            id={plan.id}
             className={
               'text-center space-y-4 p-6 transform transition hover:scale-105 hover:shadow-xl ' +
               (plan.popular ? 'ring-2 ring-indigo-600' : '')
@@ -100,12 +102,12 @@ export default function PricingSection() {
               <span className="inline-block bg-indigo-600 text-white text-xs px-2 py-1 rounded-full shadow">Most Popular</span>
             )}
             <h3 className="text-xl font-semibold">{plan.title}</h3>
-            <p className="text-sm text-gray-500">{plan.subtitle}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{plan.subtitle}</p>
             <p className="text-4xl font-bold">
               {typeof plan.price === 'number' ? `$${price(plan.price)}` : plan.price}
             </p>
             {typeof plan.price === 'number' && annual && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 billed annually • save ${plan.price * 12 * 0.2}/year
               </p>
             )}
