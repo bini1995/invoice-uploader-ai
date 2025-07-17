@@ -28,6 +28,13 @@ npm install --legacy-peer-deps
 
 ## Features
 
+- Smart document router for invoices, receipts and contracts
+- Schema-free data extractor with confidence scores
+- Real-time ops timeline via WebSocket
+- Conversational agent with pgvector embeddings
+- YAML-based plugin rules
+- Compliance report generator
+
 - Upload CSV, PDF and Excel invoice files
 - In-app guided tour for new users
 - CSV import/export for invoices and vendors
