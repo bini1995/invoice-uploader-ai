@@ -165,10 +165,16 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
-    await pool.query(`CREATE TABLE IF NOT EXISTS workflows (
-      department TEXT PRIMARY KEY,
-      approval_chain JSONB NOT NULL
+    await pool.query(`CREATE TABLE IF NOT EXISTS document_workflows (
+      id SERIAL PRIMARY KEY,
+      department TEXT,
+      doc_type TEXT,
+      conditions JSONB,
+      approval_chain JSONB NOT NULL,
+      UNIQUE(department, doc_type)
     )`);
+    await pool.query("ALTER TABLE document_workflows ADD COLUMN IF NOT EXISTS doc_type TEXT");
+    await pool.query("ALTER TABLE document_workflows ADD COLUMN IF NOT EXISTS conditions JSONB");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS shared_views (
       token TEXT PRIMARY KEY,

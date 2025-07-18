@@ -3,7 +3,7 @@ const { evaluateWorkflowRules } = require('../utils/workflowRulesEngine');
 
 exports.getWorkflows = async (req, res) => {
   try {
-    const result = await pool.query('SELECT department, approval_chain FROM workflows');
+    const result = await pool.query('SELECT id, department, doc_type, conditions, approval_chain FROM document_workflows');
     res.json({ workflows: result.rows });
   } catch (err) {
     console.error('Get workflows error:', err);
@@ -12,16 +12,16 @@ exports.getWorkflows = async (req, res) => {
 };
 
 exports.setWorkflow = async (req, res) => {
-  const { department, approval_chain } = req.body;
-  if (!department || !Array.isArray(approval_chain)) {
-    return res.status(400).json({ message: 'Missing department or approval_chain' });
+  const { department, doc_type, conditions, approval_chain } = req.body;
+  if (!department || !doc_type || !Array.isArray(approval_chain)) {
+    return res.status(400).json({ message: 'Missing department, doc_type or approval_chain' });
   }
   try {
     await pool.query(
-      `INSERT INTO workflows (department, approval_chain)
-       VALUES ($1, $2)
-       ON CONFLICT (department) DO UPDATE SET approval_chain = $2`,
-      [department.toLowerCase(), JSON.stringify(approval_chain)]
+      `INSERT INTO document_workflows (department, doc_type, conditions, approval_chain)
+       VALUES ($1,$2,$3,$4)
+       ON CONFLICT (department, doc_type) DO UPDATE SET conditions = $3, approval_chain = $4`,
+      [department.toLowerCase(), doc_type.toLowerCase(), conditions || null, JSON.stringify(approval_chain)]
     );
     res.json({ message: 'Workflow saved' });
   } catch (err) {
