@@ -19,3 +19,9 @@ This document outlines a high level path to move the existing invoice uploader t
 - Migrate front‑end components to prefer `party_name` when displaying records.
 - Replace remaining hard coded invoice checks with conditionals based on `doc_type`.
 - Expand validation and automation rules to reference `fields` for non‑invoice documents.
+
+## 4. New AI Ops features
+
+- **AI Entity Extraction** – Added `POST /api/documents/:id/extract` which uses OpenRouter to pull dates, terms, parties and clauses from any uploaded document.
+- **Document Comparison** – Every document edit now records a version in the new `document_versions` table. `GET /api/documents/:id/versions` returns diffs and `POST /api/documents/:id/versions/:versionId/restore` restores old snapshots.
+- **Document Summarization** – New `GET /api/documents/:id/summary` endpoint summarizes any document, generalizing the previous invoice-specific summary.

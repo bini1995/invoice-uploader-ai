@@ -83,6 +83,16 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS document_versions (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      editor_id INTEGER,
+      editor_name TEXT,
+      diff JSONB,
+      snapshot JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(`CREATE TABLE IF NOT EXISTS activity_logs (
       id SERIAL PRIMARY KEY,
       user_id INTEGER,

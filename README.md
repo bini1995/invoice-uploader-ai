@@ -357,6 +357,7 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - Header names are case and space insensitive (e.g. "Invoice Number" works).
 - `DELETE /api/documents/bulk/delete` – delete multiple invoices
 - `PATCH /api/documents/bulk/edit` – bulk update invoice fields
+- `POST /api/documents/:id/extract` – extract key entities from a document
 - `POST /api/documents/:id/auto-tag` – AI auto-tag from common categories
 - `POST /api/documents/suggest-voucher` – recommend a voucher description
 - `POST /api/documents/share` – generate a share link for selected invoices
@@ -365,6 +366,7 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `GET /api/documents/dashboard/shared/:token` – view a restricted dashboard
 - `GET /api/documents/:id/versions` – list prior versions of an invoice
 - `POST /api/documents/:id/versions/:versionId/restore` – restore a previous version
+- `GET /api/documents/:id/summary` – AI generated summary of any document
 - `POST /api/payments/:id/link` – generate a payment link for an invoice
 - `POST /api/payments/stripe/webhook` – Stripe webhook endpoint for status updates
 - `POST /api/pos/upload` – upload a CSV of purchase orders
