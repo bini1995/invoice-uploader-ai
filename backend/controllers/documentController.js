@@ -27,9 +27,11 @@ exports.uploadDocument = async (req, res) => {
     else if (retention === '6m') deleteAt = new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
     else if (retention === '2y') deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);
     const expiresAt = req.body.expires_at ? new Date(req.body.expires_at) : null;
+    const meta = req.body.metadata ? req.body.metadata : {};
+    const expiration = req.body.expiration ? new Date(req.body.expiration) : null;
     const { rows } = await pool.query(
-      'INSERT INTO documents (tenant_id, file_name, doc_type, path, retention_policy, delete_at, expires_at) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
-      [req.tenantId, req.file.originalname, docType, destPath, retention, deleteAt, expiresAt]
+      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id',
+      [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'new', 1, meta]
     );
 
     const embeddingRes = await openrouter.embeddings.create({
@@ -56,11 +58,24 @@ exports.extractDocument = async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
     const doc = rows[0];
-    const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
-    const data = await extractEntities(content);
-    await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [data, id]);
-    await recordDocumentVersion(id, doc, { ...doc, fields: data }, req.user?.userId, req.user?.username);
-    res.json({ data, confidence: 0.9 });
+    const pipelinePath = path.join(__dirname, '../pipelines', `${doc.doc_type}.js`);
+    let result = { fields: {} };
+    if (fs.existsSync(pipelinePath)) {
+      const pipeline = require(pipelinePath);
+      result = await pipeline(doc.path);
+    } else {
+      const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
+      result.fields = await extractEntities(content);
+    }
+    const norm = {
+      party_name: result.fields.vendor || result.fields.party_name,
+      total_amount: result.fields.amount || result.fields.total_amount,
+      doc_date: result.fields.date || result.fields.doc_date,
+      category: result.fields.category,
+    };
+    await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [norm, id]);
+    await recordDocumentVersion(id, doc, { ...doc, fields: norm }, req.user?.userId, req.user?.username);
+    res.json({ data: norm, confidence: 0.9 });
   } catch (err) {
     console.error('Extract error:', err.message);
     res.status(500).json({ message: 'Extraction failed' });
@@ -98,12 +113,7 @@ exports.summarizeDocument = async (req, res) => {
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
     const doc = rows[0];
     const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
-    const prompt = `Summarize this document and list the key points.\n\n${content}`;
-    const ai = await openrouter.chat.completions.create({
-      model: 'openai/gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }]
-    });
-    const summary = ai.choices?.[0]?.message?.content?.trim();
+    const summary = await require('./aiAgent').summarize(content);
     res.json({ summary });
   } catch (err) {
     console.error('Document summary error:', err.message);

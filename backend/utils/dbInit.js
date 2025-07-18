@@ -357,6 +357,12 @@ async function initDb() {
       expires_at TIMESTAMP,
       archived BOOLEAN DEFAULT FALSE,
       blockchain_tx TEXT,
+      document_type TEXT,
+      metadata JSONB DEFAULT '{}',
+      status TEXT DEFAULT 'new',
+      version INTEGER DEFAULT 1,
+      expiration TIMESTAMP,
+      flag_reason TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS fields JSONB DEFAULT '[]'");
@@ -364,6 +370,12 @@ async function initDb() {
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS retention_policy TEXT DEFAULT 'forever'");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS delete_at TIMESTAMP");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS document_type TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::JSONB");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'new'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS version INTEGER DEFAULT 1");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS expiration TIMESTAMP");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS flag_reason TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS blockchain_tx TEXT");
   } catch (err) {
