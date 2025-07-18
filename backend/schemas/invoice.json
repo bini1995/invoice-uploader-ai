@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["invoice_number", "party_name", "total_amount", "doc_date"],
+  "properties": {
+    "invoice_number": {"type": "string"},
+    "party_name": {"type": "string"},
+    "total_amount": {"type": "number"},
+    "doc_date": {"type": "string", "format": "date"},
+    "currency": {"type": "string"}
+  }
+}

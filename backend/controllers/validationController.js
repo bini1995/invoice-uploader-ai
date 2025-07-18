@@ -1,4 +1,5 @@
-const { validateHeaders, validateRow, getValidationRules, addValidationRule } = require('../utils/validationEngine');
+const { validateHeaders, getValidationRules, addValidationRule } = require('../utils/validationEngine');
+const { validate } = require('../utils/schemaValidator');
 
 exports.validateHeaders = (req, res) => {
   const { headers } = req.body;
@@ -14,7 +15,8 @@ exports.validateRow = (req, res) => {
   if (!row || typeof row !== 'object') {
     return res.status(400).json({ message: 'Invalid row data' });
   }
-  const errors = validateRow(row);
+  const docType = row.document_type || row.doc_type || 'invoice';
+  const errors = validate(docType, row);
   res.json({ errors });
 };
 
