@@ -20,9 +20,16 @@ exports.uploadDocument = async (req, res) => {
     fs.mkdirSync(destDir, { recursive: true });
     const destPath = path.join(destDir, req.file.filename);
     fs.renameSync(req.file.path, destPath);
+    const retention = req.body.retention || 'forever';
+    let deleteAt = null;
+    if (retention === '3mo') deleteAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+    else if (retention === '1yr') deleteAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+    else if (retention === '6m') deleteAt = new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
+    else if (retention === '2y') deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);
+    const expiresAt = req.body.expires_at ? new Date(req.body.expires_at) : null;
     const { rows } = await pool.query(
-      'INSERT INTO documents (tenant_id, file_name, doc_type, path) VALUES ($1,$2,$3,$4) RETURNING id',
-      [req.tenantId, req.file.originalname, docType, destPath]
+      'INSERT INTO documents (tenant_id, file_name, doc_type, path, retention_policy, delete_at, expires_at) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
+      [req.tenantId, req.file.originalname, docType, destPath, retention, deleteAt, expiresAt]
     );
 
     const embeddingRes = await openrouter.embeddings.create({
@@ -168,5 +175,65 @@ exports.uploadDocumentVersion = async (req, res) => {
   } catch (err) {
     console.error('Upload version error:', err);
     res.status(500).json({ message: 'Failed to upload version' });
+  }
+};
+
+exports.updateLifecycle = async (req, res) => {
+  const { id } = req.params;
+  const { retention, expires_at, archived } = req.body || {};
+  let deleteAt = null;
+  if (retention === '3mo') deleteAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+  else if (retention === '1yr') deleteAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+  else if (retention === '6m') deleteAt = new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000);
+  else if (retention === '2y') deleteAt = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000);
+  try {
+    const before = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
+    await pool.query(
+      `UPDATE documents SET retention_policy = COALESCE($1, retention_policy), delete_at = COALESCE($2, delete_at), expires_at = COALESCE($3, expires_at), archived = COALESCE($4, archived) WHERE id = $5`,
+      [retention, deleteAt, expires_at ? new Date(expires_at) : null, archived, id]
+    );
+    const after = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
+    if (before.rows.length && after.rows.length) {
+      await recordDocumentVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
+    }
+    res.json({ message: 'Lifecycle updated' });
+  } catch (err) {
+    console.error('Lifecycle update error:', err);
+    res.status(500).json({ message: 'Failed to update lifecycle' });
+  }
+};
+
+exports.checkCompliance = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
+    if (!rows.length) return res.status(404).json({ message: 'Document not found' });
+    const doc = rows[0];
+    const text = fs.readFileSync(doc.path, 'utf8').toLowerCase();
+    const clauses = ['governing law', 'termination', 'confidentiality'];
+    const issues = [];
+    if (doc.doc_type === 'contract') {
+      for (const c of clauses) {
+        if (!text.includes(c)) issues.push(`Missing clause: ${c}`);
+      }
+    }
+    await pool.query('UPDATE documents SET compliance_issues = $1 WHERE id = $2', [JSON.stringify(issues), id]);
+    res.json({ compliant: issues.length === 0, issues });
+  } catch (err) {
+    console.error('Compliance check error:', err);
+    res.status(500).json({ message: 'Failed to check compliance' });
+  }
+};
+
+exports.autoDeleteExpiredDocuments = async () => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM documents WHERE delete_at IS NOT NULL AND delete_at < NOW()`
+    );
+    if (result.rowCount > 0) {
+      console.log(`🗑️ Auto-deleted ${result.rowCount} documents`);
+    }
+  } catch (err) {
+    console.error('Auto-delete documents error:', err);
   }
 };

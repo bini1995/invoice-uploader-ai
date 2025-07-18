@@ -351,9 +351,21 @@ async function initDb() {
       path TEXT,
       embedding VECTOR(1536),
       fields JSONB DEFAULT '[]',
+      compliance_issues JSONB DEFAULT '[]',
+      retention_policy TEXT DEFAULT 'forever',
+      delete_at TIMESTAMP,
+      expires_at TIMESTAMP,
+      archived BOOLEAN DEFAULT FALSE,
+      blockchain_tx TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS fields JSONB DEFAULT '[]'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS compliance_issues JSONB DEFAULT '[]'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS retention_policy TEXT DEFAULT 'forever'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS delete_at TIMESTAMP");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS blockchain_tx TEXT");
   } catch (err) {
     console.error('Database init error:', err);
   }

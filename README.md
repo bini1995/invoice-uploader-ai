@@ -34,6 +34,9 @@ npm install --legacy-peer-deps
 - Conversational agent with pgvector embeddings
 - YAML-based plugin rules
 - Compliance report generator
+- Compliance checker flags missing contract clauses
+- Document lifecycle rules with flexible expiration and deletion
+- Secure document signing via DocuSign and blockchain hashing
 
  - Upload CSV, PDF and Excel document files
  - In-app guided tour for new users
