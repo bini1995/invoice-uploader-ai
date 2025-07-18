@@ -8,13 +8,13 @@ export default function FloatingActionPanel({ onUpload, onAsk, onVoice, onFeatur
       <button
         onClick={onUpload}
         className="p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white flex flex-col items-center"
-        title="Upload Invoice"
+        title="Upload Document"
         aria-label="Upload invoice"
       >
         <ArrowUpTrayIcon className="w-6 h-6" />
         <span className="text-xs mt-1">Upload</span>
       </button>
-      <Tippy content="Let AI summarize uploaded invoices" placement="left">
+      <Tippy content="Let AI summarize uploaded documents" placement="left">
         <button
           onClick={onAsk}
           className="p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white flex flex-col items-center"

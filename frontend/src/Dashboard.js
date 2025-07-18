@@ -398,8 +398,8 @@ function Dashboard() {
             <EmptyState
               icon={<DocumentArrowUpIcon className="w-16 h-16 text-gray-400" />}
               headline="Let's get started!"
-              description="Upload your first invoice to begin tracking spend, surfacing anomalies, and unlocking AI insights."
-              cta="Upload Invoice"
+              description="Upload your first document to begin tracking spend, surfacing anomalies, and unlocking AI insights."
+              cta="Upload Document"
               onCta={() => navigate('/upload')}
             />
           )}

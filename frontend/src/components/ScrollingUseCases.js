@@ -11,7 +11,7 @@ import { Card } from './ui/Card';
 export default function ScrollingUseCases() {
   const cases = [
     { icon: ShoppingCartIcon, title: 'Procurement', desc: 'Streamline purchase workflows.' },
-    { icon: UserGroupIcon, title: 'AP Teams', desc: 'Collaborate on invoices in real-time.' },
+    { icon: UserGroupIcon, title: 'AP Teams', desc: 'Collaborate on documents in real-time.' },
     { icon: ScaleIcon, title: 'Compliance', desc: 'Meet regulatory requirements with ease.' },
     { icon: BoltIcon, title: 'Automation', desc: 'Eliminate manual data entry.' },
   ];

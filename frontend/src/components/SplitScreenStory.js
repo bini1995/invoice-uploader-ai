@@ -24,7 +24,7 @@ export default function SplitScreenStory() {
         >
           <h2 className="text-3xl font-bold">CSV → AI Summary</h2>
           <p className="text-lg">
-            Upload your invoice CSV and instantly receive an AI-generated summary highlighting
+            Upload your document CSV and instantly receive an AI-generated summary highlighting
             key errors, trends and insights.
           </p>
           <Link to="/sandbox" className="btn btn-primary inline-block">
