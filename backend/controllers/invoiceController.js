@@ -194,8 +194,10 @@ exports.uploadInvoice = async (req, res) => {
       const currency = inv.currency?.trim() || req.body.currency || settings.defaultCurrency;
       const vatPercent = parseFloat(inv.vat_percent || req.body.vat_percent || settings.defaultVatPercent || 0);
       const vendor = inv.vendor?.trim();
+      const party_name = inv.party_name?.trim();
+      const finalParty = party_name || vendor;
 
-      const rowErrors = await validateInvoiceRow({ invoice_number, date, amount, vendor }, rowNum);
+      const rowErrors = await validateInvoiceRow({ invoice_number, date, amount, vendor: finalParty }, rowNum);
       if (rowErrors.length) {
         errors.push(...rowErrors);
         continue;
@@ -203,9 +205,9 @@ exports.uploadInvoice = async (req, res) => {
 
       const contentHash = crypto
         .createHash('sha256')
-        .update(`${invoice_number}|${amount}|${vendor}`)
+        .update(`${invoice_number}|${amount}|${finalParty}`)
         .digest('hex');
-      const simWarn = await checkSimilarity(vendor, invoice_number, amount);
+      const simWarn = await checkSimilarity(finalParty, invoice_number, amount);
       if (simWarn) warnings.push(`Row ${rowNum}: ${simWarn}`);
 
       const department = inv.department?.trim() || req.body.department;
@@ -219,13 +221,13 @@ exports.uploadInvoice = async (req, res) => {
         invoice_number,
         date: new Date(date),
         amount: convertedAmount,
-        vendor,
+        vendor: finalParty,
         due_date: inv.due_date || inv.dueDate || null,
       });
       const ruleUpdates = await evaluateWorkflowRules({
         invoice_number,
         amount: convertedAmount,
-        vendor,
+        vendor: finalParty,
         department,
       });
       const finalDept = ruleUpdates.department || department;
@@ -251,7 +253,7 @@ exports.uploadInvoice = async (req, res) => {
         }
       } catch (e) { console.error('Budget guardrail check failed:', e.message); }
 
-      const category = categorizeInvoice({ vendor, description: inv.description });
+      const category = categorizeInvoice({ vendor: finalParty, description: inv.description });
 
       const flags = { similarFile: false, dupCombo: false, offHours: false };
       try {
@@ -269,10 +271,12 @@ exports.uploadInvoice = async (req, res) => {
         if (dup.rows.length) flags.dupCombo = true;
       } catch (e) { console.error('Dup combo check failed:', e.message); }
       flags.offHours = new Date().getHours() < 7 || new Date().getHours() > 19;
-      const aiRes = await aiDuplicateCheck(req.file.originalname, invoice_number, amount, vendor, flags);
+      const aiRes = await aiDuplicateCheck(req.file.originalname, invoice_number, amount, finalParty, flags);
 
       validRows.push({
         ...withRules,
+        vendor: finalParty,
+        party_name: finalParty,
         category,
         department: finalDept,
         assignee: ruleUpdates.assignee || null,
@@ -294,12 +298,12 @@ exports.uploadInvoice = async (req, res) => {
         const end = new Date(new Date(date).getFullYear(), new Date(date).getMonth() + 1, 1);
         const spendRes = await pool.query(
           'SELECT SUM(amount) AS total FROM invoices WHERE vendor = $1 AND date >= $2 AND date < $3',
-          [vendor, start, end]
+          [finalParty, start, end]
         );
         const current = parseFloat(spendRes.rows[0].total || 0);
         const newTotal = current + parseFloat(amount);
         if (newTotal > 10000) {
-          warnings.push(`Vendor ${vendor} has charged $${newTotal.toFixed(2)} this month`);
+          warnings.push(`Vendor ${finalParty} has charged $${newTotal.toFixed(2)} this month`);
         }
       } catch (e) {
         console.error('Warning check failed:', e.message);
@@ -318,13 +322,13 @@ exports.uploadInvoice = async (req, res) => {
         editor_name: req.user?.username
       }, tenantId);
       if (!inv.assignee) {
-        await autoAssignInvoice(newId, inv.vendor, inv.tags || []);
+        await autoAssignInvoice(newId, inv.party_name, inv.tags || []);
       }
 
       try {
         const poRes = await pool.query(
           'SELECT id FROM purchase_orders WHERE vendor = $1 AND amount = $2 AND matched_invoice_id IS NULL LIMIT 1',
-          [inv.vendor, inv.amount]
+          [inv.party_name, inv.amount]
         );
         const totalPOsRes = await pool.query('SELECT COUNT(*) AS count FROM purchase_orders');
         const hasPOs = parseInt(totalPOsRes.rows[0].count, 10) > 0;

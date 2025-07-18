@@ -9,6 +9,7 @@ async function initDb() {
       date DATE,
       amount NUMERIC,
       vendor TEXT,
+      party_name TEXT,
       tags JSONB DEFAULT '[]',
       file_name TEXT,
       due_date DATE,
@@ -38,6 +39,7 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS comments JSONB DEFAULT '[]'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS priority BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS flagged BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS party_name TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS flag_reason TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS category TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS approval_chain JSONB DEFAULT '[\"Manager\",\"Finance\",\"CFO\"]'");
@@ -332,8 +334,10 @@ async function initDb() {
       doc_type TEXT,
       path TEXT,
       embedding VECTOR(1536),
+      fields JSONB DEFAULT '[]',
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS fields JSONB DEFAULT '[]'");
   } catch (err) {
     console.error('Database init error:', err);
   }
