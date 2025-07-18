@@ -1,30 +1,43 @@
 # ClarifyOps Transformation Plan
 
-This document outlines a high level path to evolve ClarifyOps from an invoice uploader into an **AI Document Ops Engine**. The brand now emphasizes **AI Document Intelligence + Automation** to deliver operational clarity for any document. Key steps include abstracting invoice-only logic and expanding the data model so other document types can be supported.
+This document outlines a high level path to evolve ClarifyOps into an **AI Document Ops Engine**. The brand now emphasizes **AI Document Intelligence + Automation** to deliver operational clarity for any document. Key steps include removing invoice-specific code and expanding the data model so other document types can be supported.
 
 ## 1. Generalize data model
 
-- Added a new `party_name` column to `invoices` allowing any entity name (vendor, client, etc.).
+- Added a new `party_name` column allowing any entity name (vendor, client, etc.).
 - Introduced a `fields` JSONB column on the `documents` table for flexible per document fields.
-- `invoice_number` remains but should be referenced only when `doc_type = 'invoice'`.
+- The legacy `invoice_number` column should only be referenced when `doc_type = 'invoice'`.
 
 ## 2. Update backend services
 
-- `insertInvoice` now accepts a `party_name` field and stores it alongside the existing vendor value.
+- `insertDocument` now accepts a `party_name` field and stores it alongside the existing vendor value.
 - `uploadDocument` and `extractDocument` persist extracted fields to the new table column.
-- Invoice upload logic now normalizes `party_name` so validation and automation use a generic field.
+- Upload logic now normalizes `party_name` so validation and automation use a generic field.
 
 ## 3. Future steps
 
 - Migrate front‑end components to prefer `party_name` when displaying records.
-- Replace remaining hard coded invoice checks with conditionals based on `doc_type`.
-- Expand validation and automation rules to reference `fields` for non‑invoice documents.
+- Replace remaining invoice-specific checks with conditionals based on `doc_type`.
+- Expand validation and automation rules to reference `fields` for all document types.
+
+## Feature Priorities
+
+| Feature                              | Priority | Effort | Notes                                   |
+|--------------------------------------|---------|-------|-----------------------------------------|
+| Unified Document Table               | High    | Medium | Backbone of the entire transition       |
+| Rename Routes + Frontend Labels      | High    | Low    | Immediate branding impact               |
+| Entity Extraction + Summarization    | High    | Medium | Easy with OpenRouter, high user value   |
+| Comparison View                      | Medium  | Medium | UX heavy but great differentiator       |
+| Workflow Builder Enhancements        | High    | Medium | Already exists, just generalize         |
+| Intelligent Routing (Doc-Type Aware) | High    | High   | Needs rule engine upgrade               |
+| Voice-to-Doc, Form-to-Doc            | Medium  | Medium | Add as next-gen interaction layer       |
+| Secure Signing + Hashing             | Medium  | Medium | Legal use-case booster                  |
 
 ## 4. New AI Ops features
 
 - **AI Entity Extraction** – Added `POST /api/documents/:id/extract` which uses OpenRouter to pull dates, terms, parties and clauses from any uploaded document.
 - **Document Comparison** – Every document edit now records a version in the new `document_versions` table. `GET /api/documents/:id/versions` returns diffs and `POST /api/documents/:id/versions/:versionId/restore` restores old snapshots.
-- **Document Summarization** – New `GET /api/documents/:id/summary` endpoint summarizes any document, generalizing the previous invoice-specific summary.
+- **Document Summarization** – New `GET /api/documents/:id/summary` endpoint summarizes any document.
 
 ## 5. Roadmap to Full AI Ops Platform
 

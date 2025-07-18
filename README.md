@@ -28,7 +28,7 @@ npm install --legacy-peer-deps
 
 ## Features
 
-- Smart document router for invoices, receipts and contracts
+- Smart document router for all document types
 - Schema-free data extractor with confidence scores
 - Real-time ops timeline via WebSocket
 - Conversational agent with pgvector embeddings
