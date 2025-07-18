@@ -148,7 +148,7 @@ export default function DashboardBuilder() {
                             {loadingVendors ? (
                               <Skeleton rows={1} className="h-40" />
                             ) : vendors.length === 0 ? (
-                              <p className="text-center text-sm text-gray-400 italic">No vendor data yet. Upload invoices to get started.</p>
+                              <p className="text-center text-sm text-gray-400 italic">No vendor data yet. Upload documents to get started.</p>
                             ) : (
                               <ResponsiveContainer width="100%" height={200}>
                                 <PieChart>

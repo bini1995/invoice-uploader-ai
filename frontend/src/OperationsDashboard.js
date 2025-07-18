@@ -42,13 +42,13 @@ import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 const METRIC_LABELS = {
-  total: '💵 Total Invoiced This Month',
-  pending: '🧾 Invoices Pending',
+  total: '💵 Total Document Spend This Month',
+  pending: '🧾 Documents Pending',
   anomalies: '⚠️ Anomalies Found',
   ai: '🤖 AI Suggestions Available',
 };
 
-function Dashboard() {
+function OperationsDashboard() {
   const token = localStorage.getItem('token') || '';
   const tenant = localStorage.getItem('tenant') || 'default';
   const [vendors, setVendors] = useState([]);
@@ -336,7 +336,7 @@ function Dashboard() {
                               {m === 'total' && (
                                 <StatCard
                                   icon={<ArrowTrendingUpIcon className="w-5 h-5" />}
-                                  title="Total Invoiced"
+                                  title="Total Document Spend"
                                   value={`$${stats?.totalInvoicedThisMonth?.toFixed(2) || 0}`}
                                   subtext={`${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(1)}% from last month`}
                                   trend={percentChange}
@@ -347,7 +347,7 @@ function Dashboard() {
                               {m === 'pending' && (
                                 <StatCard
                                   icon={<InboxIcon className="w-5 h-5" />}
-                                  title="Invoices Pending"
+                                  title="Documents Pending"
                                   value={stats?.invoicesPending || 0}
                                   cta="Go to Inbox"
                                   onCta={() => navigate('/inbox')}
@@ -570,7 +570,7 @@ function Dashboard() {
             )}
           </div>
           <div>
-            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Unusual Invoice Spikes</h2>
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Unusual Document Spikes</h2>
             {anomalies.length ? (
               <div className="overflow-x-auto">
                 <ResponsiveContainer width="100%" height={200}>
@@ -710,4 +710,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default OperationsDashboard;

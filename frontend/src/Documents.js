@@ -69,7 +69,7 @@ const teamMembers = ['Alice', 'Bob', 'Charlie'];
 
 
 
-function App() {
+function Documents() {
   const [visibleColumns, setVisibleColumns] = useState({
   id: true,
   invoice_number: true,
@@ -95,15 +95,15 @@ const [showTour, setShowTour] = useState(() => !localStorage.getItem('seenTour')
 const tourSteps = [
   {
     target: '#uploadArea',
-    content: 'Upload invoices here',
+    content: 'Upload documents here',
   },
   {
-    target: '#invoiceTable',
-    content: 'Review uploaded invoices',
+    target: '#documentTable',
+    content: 'Review uploaded documents',
   },
   {
     target: '#searchInput',
-    content: 'Search invoices',
+    content: 'Search documents',
   },
   {
     target: '#filterToggle',
@@ -2766,7 +2766,7 @@ useEffect(() => {
                 {viewMode !== 'graph' && (
                   viewMode === 'table' ? (
               <div className="overflow-x-auto mt-6 max-h-[500px] overflow-y-auto rounded-lg border">
-              <table id="invoiceTable" className="min-w-full bg-white border border-gray-300 text-sm rounded-lg overflow-hidden">
+              <table id="documentTable" className="min-w-full bg-white border border-gray-300 text-sm rounded-lg overflow-hidden">
               <thead className="bg-gray-200 text-gray-700 sticky top-8 z-10 shadow-md">
                   <tr>
                     <th className="border px-4 py-2">
@@ -3462,4 +3462,4 @@ useEffect(() => {
   );
 }
 
-export default App;
+export default Documents;

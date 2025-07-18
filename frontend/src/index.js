@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import Dashboard from './Dashboard';
+import Documents from './Documents';
+import OperationsDashboard from './OperationsDashboard';
 import AdaptiveDashboard from './AdaptiveDashboard';
 import SharedDashboard from './SharedDashboard';
 import DashboardBuilder from './DashboardBuilder';
@@ -105,10 +105,10 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
+        <Route path="/operations" element={<PageWrapper><OperationsDashboard /></PageWrapper>} />
         <Route path="/adaptive" element={<PageWrapper><AdaptiveDashboard /></PageWrapper>} />
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
-        <Route path="/invoices" element={<PageWrapper><App /></PageWrapper>} />
+        <Route path="/documents" element={<PageWrapper><Documents /></PageWrapper>} />
         <Route path="/inbox" element={<PageWrapper><Inbox /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><AISpendAnalyticsHub /></PageWrapper>} />
         <Route path="/audit" element={<PageWrapper><AuditDashboard /></PageWrapper>} />
