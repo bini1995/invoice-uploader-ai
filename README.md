@@ -1,6 +1,6 @@
-# ClarifyOps Document Uploader + AI Error Summarizer
+# ClarifyOps AI Document Ops Engine
 
-This is a full-stack document uploader tool with AI-powered CSV error summarization, built using:
+This is a full-stack **AI Document Ops Engine** delivering operational clarity for any document through automated intelligence workflows, built using:
 
 - **React + Tailwind CSS** (frontend)
 - **Express + PostgreSQL** (backend)
@@ -97,6 +97,10 @@ npm install --legacy-peer-deps
 - Drag-and-drop upload with real-time field mapping
 - AI explanations for why an invoice was flagged
 - Admin settings panel with auto-archive toggle, custom AI tone and upload limits
+- Org-wide settings per tenant with custom branding
+- SOC2-ready audit logs for every action
+- Usage analytics dashboard for document volume and workflow metrics
+- Role delegation so approvers can temporarily assign their duties
 - Invoice expiration auto-closes past-due invoices or flags them for review
 - "Why did AI say this?" links show confidence and reasoning
 - AI-powered bulk categorization of uploaded invoices
