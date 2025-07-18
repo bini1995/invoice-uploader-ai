@@ -43,14 +43,14 @@ window.fetch = async (url, options) => {
     if (url.startsWith(API_BASE)) {
       let path = url.slice(API_BASE.length);
       if (path.startsWith('/api/invoices')) {
-        path = path.replace('/api/invoices', `/api/${tenant}/invoices`);
+        path = path.replace('/api/invoices', `/api/${tenant}/documents`);
       } else if (path.startsWith('/api/export-templates')) {
         path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }
       url = API_BASE + path;
     } else if (url.startsWith('/')) {
       if (url.startsWith('/api/invoices')) {
-        url = url.replace('/api/invoices', `/api/${tenant}/invoices`);
+        url = url.replace('/api/invoices', `/api/${tenant}/documents`);
       } else if (url.startsWith('/api/export-templates')) {
         url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }
@@ -82,7 +82,7 @@ const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
 if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
 
 if (API_BASE) {
-  fetch(`${API_BASE}/api/invoices`).catch((err) => {
+  fetch(`${API_BASE}/api/documents`).catch((err) => {
     console.error('API connection failed', err);
   });
 }
