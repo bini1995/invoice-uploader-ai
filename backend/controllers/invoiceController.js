@@ -870,7 +870,7 @@ exports.shareInvoices = async (req, res) => {
       'INSERT INTO shared_views (token, invoice_ids, role) VALUES ($1,$2,$3)',
       [token, invoiceIds, mode]
     );
-    res.json({ url: `/api/invoices/shared/${token}` });
+    res.json({ url: `/api/documents/shared/${token}` });
   } catch (err) {
     console.error('Share error:', err);
     res.status(500).json({ message: 'Failed to create share' });
@@ -885,7 +885,7 @@ exports.shareDashboard = async (req, res) => {
       'INSERT INTO shared_dashboards (token, filters) VALUES ($1,$2)',
       [token, filters || {}]
     );
-    res.json({ url: `/api/invoices/dashboard/shared/${token}` });
+    res.json({ url: `/api/documents/dashboard/shared/${token}` });
   } catch (err) {
     console.error('Share dashboard error:', err);
     res.status(500).json({ message: 'Failed to create dashboard share' });

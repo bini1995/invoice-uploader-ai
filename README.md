@@ -1,6 +1,6 @@
-# ClarifyOps Invoice Uploader + AI Error Summarizer
+# ClarifyOps Document Uploader + AI Error Summarizer
 
-This is a full-stack invoice uploader tool with AI-powered CSV error summarization, built using:
+This is a full-stack document uploader tool with AI-powered CSV error summarization, built using:
 
 - **React + Tailwind CSS** (frontend)
 - **Express + PostgreSQL** (backend)
@@ -35,28 +35,28 @@ npm install --legacy-peer-deps
 - YAML-based plugin rules
 - Compliance report generator
 
-- Upload CSV, PDF and Excel invoice files
-- In-app guided tour for new users
-- CSV import/export for invoices and vendors
-- See a clean display of parsed invoices
+ - Upload CSV, PDF and Excel document files
+ - In-app guided tour for new users
+ - CSV import/export for documents and vendors
+ - See a clean display of parsed documents
 - Get validation feedback for bad rows
 - Real-time field validation highlights column errors as you type
 - AI-generated summaries of common CSV issues (via OpenRouter)
 - AI-generated summaries of common CSV issues with "Possible Fixes" and "Warnings"
-- Query invoices using natural language (via OpenRouter)
-- Natural language chart queries show spending trends instantly
-- AI-powered invoice quality scores with tips
-- AI-driven invoice explanations and anomaly spotting for any invoice
-- Auto-generated payment request PDFs and vendor follow-up drafts
+ - Query documents using natural language (via OpenRouter)
+ - Natural language chart queries show spending trends instantly
+ - AI-powered document quality scores with tips
+ - AI-driven document explanations and anomaly spotting for any document
+ - Auto-generated payment request PDFs and vendor follow-up drafts
 - User ratings on AI responses continuously improve future accuracy
 - Ask Me Anything assistant for financial questions
 - AI assistant can answer billing support queries
-- Context-aware Inbox Copilot chat for each invoice
+ - Context-aware Inbox Copilot chat for each document
 - (e.g. "Which vendors had the most inconsistencies last month?")
 - Role-based access control (Admins, Approvers, Viewers)
 - Admins can generate expiring invitation links for Viewer or Editor accounts
-- Activity log of invoice actions
-- Downloadable audit history per vendor or invoice
+ - Activity log of document actions
+ - Downloadable audit history per vendor or document
 - Detailed logs show who made each change
 - Invoice version history with one-click restore
 - Auto-routing invoices by vendor or tag
@@ -300,15 +300,15 @@ workflow based on the `approval_chain`.
 Define your own invoice categorization logic. Add rules via `POST /api/analytics/rules` with fields like `vendor`, `descriptionContains`, `amountGreaterThan`, and a resulting `category` or `flagReason`. All rules are returned from `GET /api/analytics/rules`.
 
 Once rules are created you can automatically tag an invoice with
-`POST /api/invoices/:id/auto-categorize`. The AI model suggests categories such
+`POST /api/documents/:id/auto-categorize`. The AI model suggests categories such
 as "Marketing", "Legal", or "Recurring" when no rule matches.
 
 ### New Endpoints
 
-- `POST /api/invoices/budgets` – create/update a monthly or quarterly budget by vendor or tag
-- `GET /api/invoices/budgets/warnings` – check if spending has exceeded 90% of a budget
-- `GET /api/invoices/budgets/forecast` – predict next month's spend by department
-- `GET /api/invoices/anomalies` – list vendors with unusual spending spikes
+- `POST /api/documents/budgets` – create/update a monthly or quarterly budget by vendor or tag
+- `GET /api/documents/budgets/warnings` – check if spending has exceeded 90% of a budget
+- `GET /api/documents/budgets/forecast` – predict next month's spend by department
+- `GET /api/documents/anomalies` – list vendors with unusual spending spikes
 - `GET /api/workflows` – list saved workflows
 - `POST /api/workflows` – create or update a workflow
 - `POST /api/workflows/evaluate` – test workflow rules against a payload
@@ -322,49 +322,49 @@ The `/workflow-builder` page lets admins design approval chains and rules with a
 interactive expression builder. Test expressions are sent to `POST /api/workflows/evaluate`
 to see how rules would route a sample invoice.
 The `/inbox` page shows newly uploaded invoices waiting for approval.
-- `GET /api/invoices/fraud/flagged` – list flagged invoices with reasons
-- `GET /api/invoices/fraud/ml-detect` – list invoices with high anomaly scores
-- `POST /api/invoices/fraud/:id/label` – mark invoice as confirmed fraud or not
-- `GET /api/invoices/:id/timeline` – view a timeline of state changes for an invoice
+- `GET /api/documents/fraud/flagged` – list flagged invoices with reasons
+- `GET /api/documents/fraud/ml-detect` – list invoices with high anomaly scores
+- `POST /api/documents/fraud/:id/label` – mark invoice as confirmed fraud or not
+- `GET /api/documents/:id/timeline` – view a timeline of state changes for an invoice
 - `GET /api/:tenantId/export-templates` – list saved CSV templates
 - `POST /api/:tenantId/export-templates` – create a new export template
 - `GET /api/:tenantId/export-templates/:id/export` – export invoices using a template
-- `PATCH /api/invoices/:id/retention` – update an invoice retention policy (6m, 2y, forever)
-- `POST /api/invoices/payment-risk` – predict payment delay risk for a vendor
-- `POST /api/invoices/payment-behavior` – predict expected payment date and confidence
-- `POST /api/invoices/nl-chart` – run a natural language query and return data for charts
-- `POST /api/invoices/cash-flow/scenario` – recalculate cash flow under payment delay scenarios
+- `PATCH /api/documents/:id/retention` – update an invoice retention policy (6m, 2y, forever)
+- `POST /api/documents/payment-risk` – predict payment delay risk for a vendor
+- `POST /api/documents/payment-behavior` – predict expected payment date and confidence
+- `POST /api/documents/nl-chart` – run a natural language query and return data for charts
+- `POST /api/documents/cash-flow/scenario` – recalculate cash flow under payment delay scenarios
 - `GET /api/scenarios` – list saved cash flow scenarios
 - `POST /api/scenarios` – save a cash flow scenario
 - `GET /api/scenarios/:id` – run a saved scenario
-- `POST /api/invoices/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
-- `GET /api/invoices/:id/payment-request` – download a JSON payload for a payment request form
-- `GET /api/invoices/:id/payment-request/pdf` – download a PDF payment request
-- `GET /api/invoices/:id/explain` – AI summary of an invoice with anomaly score
+- `POST /api/documents/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
+- `GET /api/documents/:id/payment-request` – download a JSON payload for a payment request form
+- `GET /api/documents/:id/payment-request/pdf` – download a PDF payment request
+- `GET /api/documents/:id/explain` – AI summary of an invoice with anomaly score
 - `POST /api/feedback` – submit a rating for an AI-generated result
 - `GET /api/feedback` – view average ratings by endpoint
-- `GET /api/invoices/vendor-scorecards` – view vendor responsiveness and payment metrics
-- `GET /api/invoices/graph` – network graph data linking vendors and duplicate invoices
+- `GET /api/documents/vendor-scorecards` – view vendor responsiveness and payment metrics
+- `GET /api/documents/graph` – network graph data linking vendors and duplicate invoices
 - `GET /api/vendors` – list vendors with last invoice date and total spend
 - `PATCH /api/vendors/:vendor/notes` – update notes for a vendor
 - `GET /api/vendors/match?q=name` – fuzzy match vendor names
-- `GET /api/invoices/amount-suggestions?q=100` – suggest close historical amounts
-- `POST /api/invoices/:id/copilot` – context-aware chat about an invoice
+- `GET /api/documents/amount-suggestions?q=100` – suggest close historical amounts
+- `POST /api/documents/:id/copilot` – context-aware chat about an invoice
 - `GET /api/vendors/export` – download vendors as CSV
 - `POST /api/vendors/import` – import vendors from CSV
-- `PATCH /api/invoices/:id/payment-status` – update payment status
-- `POST /api/invoices/import-csv` – upload a CSV of invoices
+- `PATCH /api/documents/:id/payment-status` – update payment status
+- `POST /api/documents/import-csv` – upload a CSV of invoices
 - Header names are case and space insensitive (e.g. "Invoice Number" works).
-- `DELETE /api/invoices/bulk/delete` – delete multiple invoices
-- `PATCH /api/invoices/bulk/edit` – bulk update invoice fields
-- `POST /api/invoices/:id/auto-tag` – AI auto-tag from common categories
-- `POST /api/invoices/suggest-voucher` – recommend a voucher description
-- `POST /api/invoices/share` – generate a share link for selected invoices
-- `GET /api/invoices/shared/:token` – access a shared invoice view
-- `POST /api/invoices/dashboard/share` – generate a public dashboard link
-- `GET /api/invoices/dashboard/shared/:token` – view a restricted dashboard
-- `GET /api/invoices/:id/versions` – list prior versions of an invoice
-- `POST /api/invoices/:id/versions/:versionId/restore` – restore a previous version
+- `DELETE /api/documents/bulk/delete` – delete multiple invoices
+- `PATCH /api/documents/bulk/edit` – bulk update invoice fields
+- `POST /api/documents/:id/auto-tag` – AI auto-tag from common categories
+- `POST /api/documents/suggest-voucher` – recommend a voucher description
+- `POST /api/documents/share` – generate a share link for selected invoices
+- `GET /api/documents/shared/:token` – access a shared invoice view
+- `POST /api/documents/dashboard/share` – generate a public dashboard link
+- `GET /api/documents/dashboard/shared/:token` – view a restricted dashboard
+- `GET /api/documents/:id/versions` – list prior versions of an invoice
+- `POST /api/documents/:id/versions/:versionId/restore` – restore a previous version
 - `POST /api/payments/:id/link` – generate a payment link for an invoice
 - `POST /api/payments/stripe/webhook` – Stripe webhook endpoint for status updates
 - `POST /api/pos/upload` – upload a CSV of purchase orders
@@ -381,7 +381,7 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 Request a draft:
 
 ```bash
-POST /api/invoices/42/vendor-reply
+POST /api/documents/42/vendor-reply
 {
   "status": "flagged",
   "reason": "Incorrect PO number"
@@ -403,7 +403,7 @@ Example response:
 Send after manual edits:
 
 ```bash
-POST /api/invoices/42/vendor-reply
+POST /api/documents/42/vendor-reply
 {
   "status": "flagged",
   "manualEdit": "Hi team, please resend with the right PO",
@@ -422,7 +422,7 @@ Response:
 Have the AI translate CSV upload errors into plain English:
 
 ```bash
-POST /api/invoices/summarize-errors
+POST /api/documents/summarize-errors
 {
   "errors": ["Row 1: Missing vendor", "Row 2: Amount invalid"]
 }
@@ -458,7 +458,7 @@ Example response:
 Request payment data:
 
 ```bash
-GET /api/invoices/42/payment-request
+GET /api/documents/42/payment-request
 ```
 
 Example response:
@@ -511,7 +511,7 @@ The app registers a service worker so you can view and stage invoices even witho
 If your database is empty, the dashboard charts now display sample data automatically. To generate more realistic demo data in the backend, log in as an admin and click **Seed Dummy Data** on the Vendors page or call:
 
 ```bash
-POST /api/invoices/seed-dummy
+POST /api/documents/seed-dummy
 ```
 
 This inserts a few demo invoices so charts like *Top Vendors* and *Approval Timeline* look populated during testing. If you prefer to seed from the command line instead of hitting the API, run:

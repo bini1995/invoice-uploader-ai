@@ -71,8 +71,10 @@ app.use(express.json());                    // allow reading JSON data
 app.use(tenantContext);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(auditLog);
-app.use('/api/invoices', authRoutes);
-app.use('/api/:tenantId/invoices', piiMask, invoiceRoutes);
+// Allow auth endpoints under the new documents scope
+app.use('/api/documents', authRoutes);
+// Main document routes (formerly invoices)
+app.use('/api/:tenantId/documents', piiMask, invoiceRoutes);
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
 app.use('/api/feedback', feedbackRoutes);

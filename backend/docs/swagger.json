@@ -5,9 +5,9 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/{tenantId}/invoices": {
+    "/api/{tenantId}/documents": {
       "get": {
-        "summary": "List invoices",
+        "summary": "List documents",
         "parameters": [
           {
             "name": "tenantId",
@@ -17,13 +17,13 @@
           }
         ],
         "responses": {
-          "200": { "description": "Array of invoices" }
-        }
+          "200": { "description": "Array of documents" }
       }
-    },
-    "/api/{tenantId}/invoices/upload": {
+    }
+  },
+    "/api/{tenantId}/documents/upload": {
       "post": {
-        "summary": "Upload invoice",
+        "summary": "Upload document",
         "parameters": [
           {
             "name": "tenantId",
@@ -49,7 +49,7 @@
         }
       }
     },
-    "/api/invoices/summarize-errors": {
+    "/api/documents/summarize-errors": {
       "post": {
         "summary": "AI summarize CSV errors",
         "requestBody": {
