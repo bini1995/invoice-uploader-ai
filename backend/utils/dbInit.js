@@ -83,6 +83,44 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    // Create documents table before referencing it
+    await pool.query('CREATE EXTENSION IF NOT EXISTS vector');
+    await pool.query(`CREATE TABLE IF NOT EXISTS documents (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT,
+      file_name TEXT,
+      doc_type TEXT,
+      path TEXT,
+      embedding VECTOR(1536),
+      fields JSONB DEFAULT '[]',
+      compliance_issues JSONB DEFAULT '[]',
+      retention_policy TEXT DEFAULT 'forever',
+      delete_at TIMESTAMP,
+      expires_at TIMESTAMP,
+      archived BOOLEAN DEFAULT FALSE,
+      blockchain_tx TEXT,
+      document_type TEXT,
+      metadata JSONB DEFAULT '{}',
+      status TEXT DEFAULT 'new',
+      version INTEGER DEFAULT 1,
+      expiration TIMESTAMP,
+      flag_reason TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS fields JSONB DEFAULT '[]'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS compliance_issues JSONB DEFAULT '[]'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS retention_policy TEXT DEFAULT 'forever'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS delete_at TIMESTAMP");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS document_type TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::JSONB");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'new'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS version INTEGER DEFAULT 1");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS expiration TIMESTAMP");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS flag_reason TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS blockchain_tx TEXT");
+
     await pool.query(`CREATE TABLE IF NOT EXISTS document_versions (
       id SERIAL PRIMARY KEY,
       document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
@@ -341,43 +379,6 @@ async function initDb() {
       label BOOLEAN,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
-
-    await pool.query('CREATE EXTENSION IF NOT EXISTS vector');
-    await pool.query(`CREATE TABLE IF NOT EXISTS documents (
-      id SERIAL PRIMARY KEY,
-      tenant_id TEXT,
-      file_name TEXT,
-      doc_type TEXT,
-      path TEXT,
-      embedding VECTOR(1536),
-      fields JSONB DEFAULT '[]',
-      compliance_issues JSONB DEFAULT '[]',
-      retention_policy TEXT DEFAULT 'forever',
-      delete_at TIMESTAMP,
-      expires_at TIMESTAMP,
-      archived BOOLEAN DEFAULT FALSE,
-      blockchain_tx TEXT,
-      document_type TEXT,
-      metadata JSONB DEFAULT '{}',
-      status TEXT DEFAULT 'new',
-      version INTEGER DEFAULT 1,
-      expiration TIMESTAMP,
-      flag_reason TEXT,
-      created_at TIMESTAMP DEFAULT NOW()
-    )`);
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS fields JSONB DEFAULT '[]'");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS compliance_issues JSONB DEFAULT '[]'");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS retention_policy TEXT DEFAULT 'forever'");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS delete_at TIMESTAMP");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS document_type TEXT");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::JSONB");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'new'");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS version INTEGER DEFAULT 1");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS expiration TIMESTAMP");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS flag_reason TEXT");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE");
-    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS blockchain_tx TEXT");
   } catch (err) {
     console.error('Database init error:', err);
   }
