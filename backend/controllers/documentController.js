@@ -51,6 +51,7 @@ exports.extractDocument = async (req, res) => {
     });
     let data;
     try { data = JSON.parse(ai.choices[0].message.content); } catch { data = { raw: ai.choices[0].message.content }; }
+    await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [data, id]);
     res.json({ data, confidence: 0.9 });
   } catch (err) {
     console.error('Extract error:', err.message);

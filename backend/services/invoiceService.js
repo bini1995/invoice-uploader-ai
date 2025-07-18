@@ -21,16 +21,17 @@ async function autoAssignInvoice(invoiceId, vendor, tags = []) {
 
 async function insertInvoice(inv, tenantId) {
   const {
-    invoice_number, date, amount, vendor, tags = [], category = null,
+    invoice_number, date, amount, vendor, party_name, tags = [], category = null,
     assignee = null, flagged = false, flag_reason, approval_chain = ['Manager','Finance','CFO'], current_step = 0,
     integrity_hash, content_hash, blockchain_tx = null, retention_policy, delete_at = null,
     approval_status = 'Pending', department = null, original_amount, currency,
     exchange_rate, vat_percent, vat_amount, expires_at = null, encrypted_payload = null
   } = inv;
+  const finalParty = party_name || vendor;
   const res = await pool.query(
-    `INSERT INTO invoices (invoice_number, date, amount, vendor, tags, category, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
+    `INSERT INTO invoices (invoice_number, date, amount, vendor, party_name, tags, category, assignee, flagged, flag_reason, approval_chain, current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenant_id, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, expired, encrypted_payload)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28) RETURNING id`,
-    [invoice_number, date, amount, vendor, tags, category, assignee, flagged, flag_reason, JSON.stringify(approval_chain), current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenantId, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, false, encrypted_payload]
+    [invoice_number, date, amount, vendor, finalParty, tags, category, assignee, flagged, flag_reason, JSON.stringify(approval_chain), current_step, integrity_hash, content_hash, blockchain_tx, retention_policy, delete_at, tenantId, approval_status, department, original_amount, currency, exchange_rate, vat_percent, vat_amount, expires_at, false, encrypted_payload]
   );
   const newId = res.rows[0].id;
   const afterRes = await pool.query('SELECT * FROM invoices WHERE id = $1', [newId]);
