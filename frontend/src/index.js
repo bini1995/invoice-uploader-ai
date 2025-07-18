@@ -18,6 +18,7 @@ import Board from './Board';
 import KanbanDashboard from './KanbanDashboard';
 import Inbox from './Inbox';
 import NotFound from './NotFound';
+import ErrorBoundary from './ErrorBoundary';
 import LandingPage from './LandingPage.jsx';
 import OnboardingWizard from './OnboardingWizard';
 import MultiUploadWizard from './MultiUploadWizard';
@@ -135,7 +136,9 @@ function AnimatedRoutes() {
 
 root.render(
   <BrowserRouter>
-    <AnimatedRoutes />
+    <ErrorBoundary>
+      <AnimatedRoutes />
+    </ErrorBoundary>
   </BrowserRouter>
 );
 

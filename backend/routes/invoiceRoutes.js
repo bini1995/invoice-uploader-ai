@@ -1,5 +1,6 @@
 
 const express = require('express');
+const Busboy = require('busboy');
 const multer = require('multer');
 const settings = require('../config/settings');
 const path = require('path');
@@ -129,7 +130,28 @@ router.post('/suggest-vendor', suggestVendor);
 router.post('/suggest-voucher', suggestVoucher);
 router.post('/send-email', sendSummaryEmail);
 router.post('/draft-smart-email', authMiddleware, smartDraftEmail);
-router.post('/upload', authMiddleware, authorizeRoles('admin'), upload.single('invoiceFile'), uploadInvoice);
+router.post('/upload', authMiddleware, authorizeRoles('admin'), (req, res) => {
+  const busboy = new Busboy({ headers: req.headers });
+  const fileData = [];
+
+  busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+    file.on('data', (data) => {
+      fileData.push(data);
+    });
+
+    file.on('end', () => {
+      console.log(`Uploaded file: ${filename}`);
+    });
+  });
+
+  busboy.on('finish', () => {
+    const finalBuffer = Buffer.concat(fileData);
+    // Now save finalBuffer to disk or DB
+    res.status(200).json({ message: 'Upload complete!' });
+  });
+
+  req.pipe(busboy);
+});
 // allow unauthenticated access for free trial sample parsing
 router.post('/parse-sample', upload.single('invoiceFile'), parseInvoiceSample);
 router.post('/import-csv', authMiddleware, authorizeRoles('admin'), upload.single('file'), importInvoicesCSV);

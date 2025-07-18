@@ -28,6 +28,7 @@ const { encrypt } = require('../utils/encryption');
 const redis = require('../config/redis');
 const levenshtein = require('fast-levenshtein');
 const { categorizeInvoice } = require('../utils/categorize');
+const invoiceQueue = require('../queues/invoiceQueue');
 const { applyCorrections, loadCorrections } = require('../utils/parserTrainer');
 const { selfHealInvoices } = require('../utils/selfHeal');
 const { updateWeights } = require('../utils/parserTrainer');
@@ -150,6 +151,10 @@ exports.uploadInvoice = async (req, res) => {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: err.message });
     }
+    invoiceQueue.add({
+      invoicePath: req.file.path,
+      tenantId: req.tenantId,
+    });
     invoices = invoices.map(applyCorrections);
     const fileBuffer = fs.readFileSync(req.file.path);
     const integrityHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
@@ -479,8 +484,9 @@ exports.getAllInvoices = async (req, res) => {
       conditions.push(`tenant_id = $${params.length}`);
     }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const limit = parseInt(req.query.limit, 10) || 500;
-    const offset = parseInt(req.query.offset, 10) || 0;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+    const offset = (page - 1) * limit;
     params.push(limit, offset);
     const query = `SELECT * FROM invoices ${where} ORDER BY id DESC LIMIT $${
       params.length - 1} OFFSET $${params.length}`;
