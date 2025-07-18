@@ -11,8 +11,8 @@ import {
 export default function BottomNav() {
   const location = useLocation();
   const items = [
-    { to: '/dashboard', icon: HomeIcon, label: 'Home' },
-    { to: '/invoices', icon: DocumentIcon, label: 'Documents' },
+    { to: '/operations', icon: HomeIcon, label: 'Home' },
+    { to: '/documents', icon: DocumentIcon, label: 'Documents' },
     { to: '/inbox', icon: InboxIcon, label: 'Inbox' },
     { to: '/archive', icon: ArchiveBoxIcon, label: 'Archive' },
   ];

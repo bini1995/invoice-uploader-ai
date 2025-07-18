@@ -40,11 +40,11 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
         {open && (
           <nav className="space-y-1 text-sm">
             <Link
-              to="/dashboard"
-              className={`nav-link border-l-4 ${location.pathname === '/dashboard' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
+              to="/operations"
+              className={`nav-link border-l-4 ${location.pathname === '/operations' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <Home className="w-5 h-5" />
-              <span>Dashboard</span>
+              <span>Operations</span>
             </Link>
             <Link
               to="/adaptive"

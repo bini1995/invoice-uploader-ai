@@ -72,7 +72,7 @@ export default function Navbar({
     <nav className="sticky top-0 z-30 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow">
       <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
-          <Link to="/invoices" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
+          <Link to="/documents" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img
               src={`/api/${tenant}/logo`}
               alt="logo"
@@ -104,7 +104,7 @@ export default function Navbar({
           value={smartQuery}
           onChange={(e) => onSmartQueryChange?.(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onSmartSearch?.()}
-          placeholder="Invoices from Amazon last quarter > $1,000"
+          placeholder="Documents from Amazon last quarter > $1,000"
           aria-label="Smart search"
           className="input text-gray-800 dark:text-gray-100 h-7 text-sm w-52"
         />
@@ -153,11 +153,11 @@ export default function Navbar({
                 {menuOpen && (
                   <div className="absolute right-12 top-8 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded shadow-lg w-40">
                     <Link
-                      to="/dashboard"
+                      to="/operations"
                       className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setMenuOpen(false)}
                     >
-                      <HomeIcon className="h-5 w-5 mr-2" /> Dashboard
+                      <HomeIcon className="h-5 w-5 mr-2" /> Operations Dashboard
                     </Link>
                     <Link
                       to="/analytics"

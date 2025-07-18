@@ -23,10 +23,10 @@ function SharedDashboard() {
   return (
     <MainLayout title="Shared Dashboard">
       <div className="space-y-4">
-        <div>Total Invoices: {data.totalInvoices}</div>
+        <div>Total Documents: {data.totalInvoices}</div>
         <div>Total Amount: {data.totalAmount}</div>
-        <div>Total Invoiced This Month: {data.totalInvoicedThisMonth}</div>
-        <div>Invoices Pending: {data.invoicesPending}</div>
+        <div>Total Document Spend This Month: {data.totalInvoicedThisMonth}</div>
+        <div>Documents Pending: {data.invoicesPending}</div>
         <div>Anomalies Found: {data.anomaliesFound}</div>
         <div>AI Suggestions: {data.aiSuggestions}</div>
       </div>
