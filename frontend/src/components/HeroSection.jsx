@@ -23,10 +23,10 @@ export default function HeroSection({ onRequestDemo }) {
         >
           <>
             <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
-              ClarifyOps – AI-Powered Document Intelligence for Modern Teams
+              ClarifyOps – AI Document Intelligence + Automation
             </h1>
             <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-              Extract, validate, and automate any business document — not just invoices.
+              Operational clarity for any document with automated intelligence and workflows.
             </p>
           </>
           <div className="flex justify-center md:justify-start">

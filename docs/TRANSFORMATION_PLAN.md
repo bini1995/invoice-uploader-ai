@@ -1,6 +1,6 @@
 # ClarifyOps Transformation Plan
 
-This document outlines a high level path to move the existing invoice uploader toward a more general AI Ops platform. Key steps include abstracting invoice-only logic and expanding the data model so other document types can be supported.
+This document outlines a high level path to evolve ClarifyOps from an invoice uploader into an **AI Document Ops Engine**. The brand now emphasizes **AI Document Intelligence + Automation** to deliver operational clarity for any document. Key steps include abstracting invoice-only logic and expanding the data model so other document types can be supported.
 
 ## 1. Generalize data model
 
@@ -37,3 +37,10 @@ This document outlines a high level path to move the existing invoice uploader t
 - **Compliance Checker** – `/api/documents/:id/compliance` flags missing clauses for contracts.
 - **Document Lifecycle Rules** – `retention_policy`, `expires_at` and `archived` now apply to all documents.
 - **Secure Signing** – New `/api/signing/:id/start` endpoint stores a blockchain hash and redirects to DocuSign.
+
+## 7. Enterprise Readiness
+
+- **Org-wide Settings** – Centralized configuration scoped to each organization with support for custom branding and tenant preferences.
+- **SOC2-ready Audit Logs** – Immutable `audit_logs` table capturing every user action with timestamp, IP and metadata.
+- **Usage Analytics** – `/api/analytics/usage` aggregates document volumes and workflow stats per tenant for admins.
+- **Role Delegation** – Administrators can delegate temporary roles and approval authority via `/api/roles/delegate`.

@@ -32,7 +32,7 @@ async function generateErrorSummary(errors) {
   if (!process.env.OPENROUTER_API_KEY) return null;
   const start = Date.now();
   try {
-    const prompt = `You are a helpful assistant for a CSV invoice uploader tool. Given these validation errors, provide a short summary with possible fixes.\n\n${errors.join('\n')}`;
+    const prompt = `You are a helpful assistant for the ClarifyOps AI Document Ops Engine. Given these validation errors, provide a short summary with possible fixes.\n\n${errors.join('\n')}`;
     const aiRes = await openai.chat.completions.create({
       model: 'openai/gpt-3.5-turbo',
       messages: [

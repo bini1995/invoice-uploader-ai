@@ -18,7 +18,7 @@ exports.summarizeUploadErrors = async (req, res) => {
     // ✅ Define errorText from the errors array
     const errorText = errors.join('\n');
 
-    const prompt = `You are a helpful assistant for a CSV invoice uploader tool.
+    const prompt = `You are a helpful assistant for the ClarifyOps AI Document Ops Engine.
 Given the following upload validation errors, provide a concise summary. Then list bullet points under "Possible Fixes" and, if relevant, a "Warnings" section.
 \n\n${errorText}`;
 
