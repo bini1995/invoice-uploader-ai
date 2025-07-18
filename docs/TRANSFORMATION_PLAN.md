@@ -31,3 +31,9 @@ This document outlines a high level path to move the existing invoice uploader t
 - **Auto-categorization** – `/api/ai/categorize` suggests top categories like HR, Legal or Expense for uploaded text.
 - **Document Workflows** – `/api/document-workflows` replaces the old workflows route and stores `doc_type` and optional `conditions` for each department.
 - **Versioned Uploads** – `POST /api/documents/:id/version` lets users upload new versions while `/api/documents/:id/versions` provides a timeline of edits.
+
+## 6. Compliance & Lifecycle Enhancements
+
+- **Compliance Checker** – `/api/documents/:id/compliance` flags missing clauses for contracts.
+- **Document Lifecycle Rules** – `retention_policy`, `expires_at` and `archived` now apply to all documents.
+- **Secure Signing** – New `/api/signing/:id/start` endpoint stores a blockchain hash and redirects to DocuSign.

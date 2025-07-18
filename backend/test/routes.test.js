@@ -19,12 +19,15 @@ const uploadRouter = express.Router();
 uploadRouter.post('/api/documents/upload', authMiddleware, (req, res) => res.json({ ok: true }));
 const anomalyRouter = express.Router();
 anomalyRouter.get('/api/:tenantId/documents/anomalies', authMiddleware, (req, res) => res.json({ anomalies: [] }));
+const signingRouter = express.Router();
+signingRouter.post('/api/signing/1/start', authMiddleware, (req, res) => res.json({ url: 'ok' }));
 
 const app = express();
 app.use(express.json());
 app.use('/api/documents', authRoutes);
 app.use(uploadRouter);
 app.use(anomalyRouter);
+app.use(signingRouter);
 
 const db = require('../config/db');
 
@@ -44,6 +47,11 @@ describe('Auth and documents', () => {
 
   test('anomaly route requires auth', async () => {
     const res = await request(app).get('/api/1/documents/anomalies');
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('signing route requires auth', async () => {
+    const res = await request(app).post('/api/signing/1/start');
     expect(res.statusCode).toBe(401);
   });
 });
