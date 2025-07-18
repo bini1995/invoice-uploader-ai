@@ -16,26 +16,34 @@ const authRoutes = require('../routes/authRoutes');
 const { authMiddleware } = require('../controllers/userController');
 
 const uploadRouter = express.Router();
-uploadRouter.post('/api/invoices/upload', authMiddleware, (req, res) => res.json({ ok: true }));
+uploadRouter.post('/api/documents/upload', authMiddleware, (req, res) => res.json({ ok: true }));
+const anomalyRouter = express.Router();
+anomalyRouter.get('/api/:tenantId/documents/anomalies', authMiddleware, (req, res) => res.json({ anomalies: [] }));
 
 const app = express();
 app.use(express.json());
-app.use('/api/invoices', authRoutes);
+app.use('/api/documents', authRoutes);
 app.use(uploadRouter);
+app.use(anomalyRouter);
 
 const db = require('../config/db');
 
-describe('Auth and invoices', () => {
+describe('Auth and documents', () => {
   test('login returns token', async () => {
     const hash = await bcrypt.hash('pass', 10);
     db.query.mockResolvedValueOnce({ rows: [{ id: 1, username: 'user', password_hash: hash, role: 'admin' }] });
-    const res = await request(app).post('/api/invoices/login').send({ username: 'user', password: 'pass' });
+    const res = await request(app).post('/api/documents/login').send({ username: 'user', password: 'pass' });
     expect(res.statusCode).toBe(200);
     expect(res.body.token).toBeDefined();
   });
 
   test('upload requires auth', async () => {
-    const res = await request(app).post('/api/invoices/upload');
+    const res = await request(app).post('/api/documents/upload');
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('anomaly route requires auth', async () => {
+    const res = await request(app).get('/api/1/documents/anomalies');
     expect(res.statusCode).toBe(401);
   });
 });

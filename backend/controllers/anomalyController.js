@@ -6,7 +6,7 @@ exports.getAnomalies = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT vendor, DATE_TRUNC('month', date) AS m, SUM(amount) AS total
-       FROM invoices
+       FROM documents
        WHERE date >= $1
        GROUP BY vendor, m
        ORDER BY vendor, m`,
