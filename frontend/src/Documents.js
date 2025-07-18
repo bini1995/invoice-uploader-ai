@@ -1492,7 +1492,7 @@ useEffect(() => {
       return;
     }
     try {
-      const res = await fetch('/api/invoices/login', {
+      const res = await fetch('/documents/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
