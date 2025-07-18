@@ -4,7 +4,6 @@ import PartnerLogos from './PartnerLogos';
 import { Button } from './ui/Button';
 
 export default function HeroSection({ onRequestDemo }) {
-  const variant = React.useMemo(() => (Math.random() < 0.5 ? 'A' : 'B'), []);
   return (
     <section
       id="product"
@@ -22,25 +21,14 @@ export default function HeroSection({ onRequestDemo }) {
           transition={{ duration: 0.6 }}
           className="space-y-6 text-center md:text-left"
         >
-          {variant === 'A' ? (
-            <>
-              <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
-                Automate Invoices. Save Hours. Focus on Growth.
-              </h1>
-              <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-                Reduce manual work by 80% with AI-powered invoice processing. Upload once—AI handles the rest.
-              </p>
-            </>
-          ) : (
-            <>
-              <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
-                AI Invoice Workflows in Seconds
-              </h1>
-              <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-                Drag-and-drop invoices and let our AI categorize, summarize and notify your team automatically.
-              </p>
-            </>
-          )}
+          <>
+            <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
+              ClarifyOps – AI-Powered Document Intelligence for Modern Teams
+            </h1>
+            <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
+              Extract, validate, and automate any business document — not just invoices.
+            </p>
+          </>
           <div className="flex justify-center md:justify-start">
             <Button asChild className="text-lg px-8 py-3">
               <a href="/free-trial">Start Free Trial</a>
@@ -55,7 +43,7 @@ export default function HeroSection({ onRequestDemo }) {
           className="w-full"
         >
           <img
-            src="https://dummyimage.com/800x450/f3f4f6/1e40af.png&text=Invoice+Dashboard"
+            src="https://dummyimage.com/800x450/f3f4f6/1e40af.png&text=Document+Dashboard"
             alt="Product screenshot"
             className="w-full rounded-lg shadow-lg"
           />

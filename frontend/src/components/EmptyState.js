@@ -5,8 +5,8 @@ import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 export default function EmptyState({
   icon = <DocumentArrowUpIcon className="w-16 h-16 text-gray-400" />,
   headline = 'Let\u2019s get started!',
-  description = 'Upload your first invoice to begin tracking spend, surfacing anomalies, and unlocking AI insights.',
-  cta = 'Upload Invoice',
+  description = 'Upload your first document to begin tracking spend, surfacing anomalies, and unlocking AI insights.',
+  cta = 'Upload Document',
   onCta,
   children,
 }) {

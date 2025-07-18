@@ -21,7 +21,7 @@ const faqs = [
     a: 'Totally—upgrade or downgrade whenever you need from your account settings.',
   },
   {
-    q: 'What happens if I exceed my invoice limit?',
+    q: 'What happens if I exceed my document limit?',
     a: 'We keep processing and simply bill the overage at the add-on rate.',
   },
 ];

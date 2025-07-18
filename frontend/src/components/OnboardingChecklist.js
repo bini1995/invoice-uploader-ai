@@ -7,7 +7,7 @@ export default function OnboardingChecklist() {
     const stored = localStorage.getItem('onboardingChecklist');
     return (
       JSON.parse(stored) || [
-        { id: 'upload', label: 'Upload your first invoice', done: false },
+        { id: 'upload', label: 'Upload your first document', done: false },
         { id: 'invite', label: 'Invite a teammate', done: false },
         { id: 'budget', label: 'Set up a budget', done: false },
       ]

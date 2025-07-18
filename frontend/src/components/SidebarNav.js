@@ -58,7 +58,7 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
               className={`nav-link border-l-4 ${location.pathname === '/invoices' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <FileText className="w-5 h-5" />
-              <span>Invoices</span>
+              <span>Documents</span>
             </Link>
             <Link
               to="/inbox"

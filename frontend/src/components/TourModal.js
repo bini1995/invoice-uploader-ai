@@ -7,7 +7,7 @@ export default function TourModal({ open, onClose }) {
       <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg max-w-sm w-full transition-all duration-300 ease-in-out">
         <h2 className="text-lg font-semibold mb-2">Welcome to ClarifyOps</h2>
         <p className="text-sm mb-4">
-          Use the Upload button to add invoices, search to filter them and tap an invoice number for full details.
+          Use the Upload button to add documents, search to filter them and tap a document number for full details.
         </p>
         <button
           onClick={onClose}
