@@ -150,3 +150,23 @@ exports.restoreDocumentVersion = async (req, res) => {
     res.status(500).json({ message: 'Failed to restore version' });
   }
 };
+
+exports.uploadDocumentVersion = async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
+    if (!rows.length) return res.status(404).json({ message: 'Document not found' });
+    const before = rows[0];
+    const destDir = path.dirname(before.path);
+    const destPath = path.join(destDir, req.file.filename);
+    fs.renameSync(req.file.path, destPath);
+    await pool.query('UPDATE documents SET path = $1, file_name = $2 WHERE id = $3', [destPath, req.file.originalname, id]);
+    const afterRes = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
+    await recordDocumentVersion(id, before, afterRes.rows[0], req.user?.userId, req.user?.username);
+    res.json({ message: 'Version uploaded', document: afterRes.rows[0] });
+  } catch (err) {
+    console.error('Upload version error:', err);
+    res.status(500).json({ message: 'Failed to upload version' });
+  }
+};

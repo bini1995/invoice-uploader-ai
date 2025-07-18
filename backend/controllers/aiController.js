@@ -937,3 +937,34 @@ exports.smartSearchParse = (req, res) => {
     res.status(500).json({ message: 'Failed to parse query' });
   }
 };
+
+// Suggest high level categories for any document content
+exports.categorizeDocument = async (req, res) => {
+  try {
+    const { content } = req.body || {};
+    if (!content) {
+      return res.status(400).json({ message: 'Missing document content' });
+    }
+    const prompt =
+      `Suggest up to 3 broad business categories like HR, Legal or Expense for this document:\n\n${content.slice(0, 2000)}`;
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt }]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    const raw = response.data.choices?.[0]?.message?.content?.trim() || '';
+    const categories = raw.split(/[\n,]/).map((c) => c.trim()).filter(Boolean);
+    res.json({ categories });
+  } catch (err) {
+    console.error('Categorize document error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Failed to categorize document' });
+  }
+};

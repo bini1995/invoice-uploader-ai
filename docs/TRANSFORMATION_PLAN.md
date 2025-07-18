@@ -25,3 +25,9 @@ This document outlines a high level path to move the existing invoice uploader t
 - **AI Entity Extraction** – Added `POST /api/documents/:id/extract` which uses OpenRouter to pull dates, terms, parties and clauses from any uploaded document.
 - **Document Comparison** – Every document edit now records a version in the new `document_versions` table. `GET /api/documents/:id/versions` returns diffs and `POST /api/documents/:id/versions/:versionId/restore` restores old snapshots.
 - **Document Summarization** – New `GET /api/documents/:id/summary` endpoint summarizes any document, generalizing the previous invoice-specific summary.
+
+## 5. Roadmap to Full AI Ops Platform
+
+- **Auto-categorization** – `/api/ai/categorize` suggests top categories like HR, Legal or Expense for uploaded text.
+- **Document Workflows** – `/api/document-workflows` replaces the old workflows route and stores `doc_type` and optional `conditions` for each department.
+- **Versioned Uploads** – `POST /api/documents/:id/version` lets users upload new versions while `/api/documents/:id/versions` provides a timeline of edits.

@@ -1,11 +1,19 @@
 const pool = require('../config/db');
 
-async function getWorkflowForDepartment(department, amount) {
+async function getWorkflowForDocument(department, docType, amount) {
   const dept = (department || '').toLowerCase();
+  const type = (docType || '').toLowerCase();
   try {
-    const result = await pool.query('SELECT approval_chain FROM workflows WHERE department = $1', [dept]);
+    const result = await pool.query(
+      'SELECT approval_chain, conditions FROM document_workflows WHERE department = $1 AND doc_type = $2',
+      [dept, type]
+    );
     if (result.rows.length) {
-      return { approvalChain: result.rows[0].approval_chain, autoApprove: false };
+      return {
+        approvalChain: result.rows[0].approval_chain,
+        conditions: result.rows[0].conditions || null,
+        autoApprove: false
+      };
     }
   } catch (err) {
     console.error('Workflow lookup error:', err);
@@ -25,4 +33,4 @@ async function getWorkflowForDepartment(department, amount) {
   return { approvalChain: ['Manager', 'Finance', 'CFO'], autoApprove: false };
 }
 
-module.exports = { getWorkflowForDepartment };
+module.exports = { getWorkflowForDocument };

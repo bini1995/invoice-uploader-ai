@@ -16,7 +16,7 @@ const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
 const settings = require('../config/settings');
 const { submitHashToBlockchain } = require('../utils/blockchain');
-const { getWorkflowForDepartment } = require('../utils/workflows');
+const { getWorkflowForDocument } = require('../utils/workflows');
 const { evaluateWorkflowRules } = require('../utils/workflowRulesEngine');
 const { getExchangeRate } = require('../utils/exchangeRates');
 const { sendSlackNotification, sendTeamsNotification, sendEmailNotification } = require('../utils/notify');
@@ -231,7 +231,7 @@ exports.uploadInvoice = async (req, res) => {
         department,
       });
       const finalDept = ruleUpdates.department || department;
-      const workflow = await getWorkflowForDepartment(finalDept, parseFloat(amount));
+      const workflow = await getWorkflowForDocument(finalDept, 'invoice', parseFloat(amount));
 
       try {
         if (deptBudgets[finalDept]) {

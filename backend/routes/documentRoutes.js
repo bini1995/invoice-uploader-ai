@@ -7,6 +7,7 @@ const {
   summarizeDocument,
   getDocumentVersions,
   restoreDocumentVersion,
+  uploadDocumentVersion,
 } = require('../controllers/documentController');
 const { authMiddleware } = require('../controllers/userController');
 
@@ -19,5 +20,6 @@ router.post('/:id/corrections', authMiddleware, saveCorrections);
 router.get('/:id/summary', authMiddleware, summarizeDocument);
 router.get('/:id/versions', authMiddleware, getDocumentVersions);
 router.post('/:id/versions/:versionId/restore', authMiddleware, restoreDocumentVersion);
+router.post('/:id/version', authMiddleware, upload.single('file'), uploadDocumentVersion);
 
 module.exports = router;
