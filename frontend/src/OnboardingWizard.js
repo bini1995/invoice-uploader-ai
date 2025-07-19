@@ -108,7 +108,7 @@ export default function OnboardingWizard() {
           <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow text-center">
             <h2 className="text-lg font-semibold">All set!</h2>
             <p className="text-sm">Your template has been saved. You're ready to start uploading invoices.</p>
-            <Button onClick={() => (window.location.href = '/invoices')}>Go to App</Button>
+            <Button onClick={() => (window.location.href = '/documents')}>Go to App</Button>
           </div>
         )}
       </div>
