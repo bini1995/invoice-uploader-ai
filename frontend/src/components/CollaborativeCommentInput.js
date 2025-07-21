@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import getCaretCoordinates from 'textarea-caret';
+import { API_BASE } from '../api';
 
 const COLORS = ['#e53935', '#8e24aa', '#3949ab', '#00897b', '#f4511e'];
 
@@ -15,7 +16,7 @@ export default function CollaborativeCommentInput({ invoiceId, onSubmit, onChang
 
   useEffect(() => {
     const ydoc = new Y.Doc();
-    const origin = window.location.origin.replace(/^http/, 'ws');
+    const origin = API_BASE.replace(/^http/, 'ws');
     const provider = new WebsocketProvider(`${origin}/yjs`, `invoice-comment-${invoiceId}`, ydoc);
     providerRef.current = provider;
     const ytext = ydoc.getText('text');

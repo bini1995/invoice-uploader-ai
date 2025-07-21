@@ -147,8 +147,9 @@ app.use(Sentry.Handlers.errorHandler());
 
   const wss = new WebSocketServer({ noServer: true });
   server.on('upgrade', (request, socket, head) => {
-    const { pathname } = parse(request.url);
-    if (pathname === '/yjs') {
+    const { pathname, search } = parse(request.url);
+    if (pathname === '/yjs' || pathname.startsWith('/yjs/')) {
+      request.url = pathname.slice(4) + (search || '');
       wss.handleUpgrade(request, socket, head, (ws) => {
         setupWSConnection(ws, request);
       });
