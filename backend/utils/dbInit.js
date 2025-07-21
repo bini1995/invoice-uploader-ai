@@ -120,6 +120,9 @@ async function initDb() {
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS flag_reason TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT FALSE");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS blockchain_tx TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS type TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS content_hash TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS doc_title TEXT");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS document_versions (
       id SERIAL PRIMARY KEY,

@@ -5,6 +5,8 @@ const openrouter = require('../config/openrouter');
 const { trainFromCorrections } = require('../utils/ocrAgent');
 const { extractEntities } = require('../ai/entityExtractor');
 const { recordDocumentVersion } = require('../utils/documentVersionLogger');
+const crypto = require('crypto');
+const { DocumentType } = require('../enums/documentType');
 
 exports.uploadDocument = async (req, res) => {
   try {
@@ -16,6 +18,9 @@ exports.uploadDocument = async (req, res) => {
     });
     let docType = ai.choices?.[0]?.message?.content?.trim().split(/\s/)[0] || 'other';
     docType = docType.toLowerCase();
+    if (!Object.values(DocumentType).includes(docType)) docType = DocumentType.OTHER;
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const contentHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
     const destDir = path.join('uploads', 'documents', docType);
     fs.mkdirSync(destDir, { recursive: true });
     const destPath = path.join(destDir, req.file.filename);
@@ -29,9 +34,10 @@ exports.uploadDocument = async (req, res) => {
     const expiresAt = req.body.expires_at ? new Date(req.body.expires_at) : null;
     const meta = req.body.metadata ? req.body.metadata : {};
     const expiration = req.body.expiration ? new Date(req.body.expiration) : null;
+    const docTitle = req.body.title || req.file.originalname;
     const { rows } = await pool.query(
-      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id',
-      [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'new', 1, meta]
+      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata, type, content_hash, doc_title) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id',
+      [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'new', 1, meta, docType, contentHash, docTitle]
     );
 
     const embeddingRes = await openrouter.embeddings.create({
@@ -113,7 +119,7 @@ exports.summarizeDocument = async (req, res) => {
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
     const doc = rows[0];
     const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
-    const summary = await require('./aiAgent').summarize(content);
+    const summary = await require('./aiAgent').summarize(content, doc.doc_type);
     res.json({ summary });
   } catch (err) {
     console.error('Document summary error:', err.message);
