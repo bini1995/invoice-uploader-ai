@@ -241,6 +241,26 @@ exports.checkCompliance = async (req, res) => {
   }
 };
 
+exports.getEntityTotals = async (_req, res) => {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT fields->>'party_name' AS entity, SUM((fields->>'total_amount')::numeric) AS total
+       FROM documents
+       WHERE fields ? 'party_name' AND fields ? 'total_amount'
+       GROUP BY entity
+       ORDER BY total DESC`
+    );
+    const rows = result.rows.map(r => ({ entity: r.entity, total: parseFloat(r.total) }));
+    res.json({ entityTotals: rows });
+  } catch (err) {
+    console.error('Entity totals error:', err);
+    res.status(500).json({ message: 'Failed to fetch entity totals' });
+  } finally {
+    client.release();
+  }
+};
+
 exports.autoDeleteExpiredDocuments = async () => {
   try {
     const result = await pool.query(

@@ -841,6 +841,7 @@ const handleBulkDelete = () => {
   
   
 
+  const [entityTotals, setEntityTotals] = useState([]);
   const vendorTotals = invoices.reduce((acc, inv) => {
     if (!inv.vendor || !inv.amount) return acc;
     const vendor = inv.vendor;
@@ -848,11 +849,11 @@ const handleBulkDelete = () => {
     acc[vendor] = (acc[vendor] || 0) + amount;
     return acc;
   }, {});
-  
-  const chartData = Object.entries(vendorTotals).map(([vendor, total]) => ({
-    vendor,
-    total,
-  }));
+
+  const chartData =
+    entityTotals.length > 0
+      ? entityTotals
+      : Object.entries(vendorTotals).map(([entity, total]) => ({ entity, total }));
   
 
   const itemsPerPage = 10;
@@ -1249,20 +1250,36 @@ useEffect(() => {
         if (filterMinAmount) params.append('minAmount', filterMinAmount);
         if (filterMaxAmount) params.append('maxAmount', filterMaxAmount);
       }
-      const res = await fetch(`http://localhost:3000/api/invoices/top-vendors?${params.toString()}`, {
+      const res = await fetch(`http://localhost:3000/api/invoices/totals-by-entity?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
-        setTopVendors(data.topVendors || []);
+        setTopVendors(
+          (data.entityTotals || []).map((e) => ({ entity: e.entity, total: e.total }))
+        );
       } else {
-        addToast('Failed to fetch top vendors', 'error');
+        addToast('Failed to fetch entity totals', 'error');
       }
     } catch (err) {
       console.error('Top vendors fetch error:', err);
       addToast('Failed to fetch top vendors', 'error');
     }
   }, [token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, addToast]);
+
+  const fetchEntityTotals = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/invoices/totals-by-entity`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data.entityTotals)) {
+        setEntityTotals(data.entityTotals);
+      }
+    } catch (err) {
+      console.error('Entity totals fetch error:', err);
+    }
+  }, [token]);
 
   const fetchTagReport = useCallback(async () => {
     try {
@@ -1297,9 +1314,10 @@ useEffect(() => {
         fetchCashFlowData(cashFlowInterval),
         fetchTopVendors(),
         fetchTagReport(),
+        fetchEntityTotals(),
       ]).finally(() => setLoadingCharts(false));
     }
-  }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, fetchCashFlowData, fetchTopVendors, fetchTagReport]);
+  }, [showChart, cashFlowInterval, token, filterType, filterTag, filterStartDate, filterEndDate, filterMinAmount, filterMaxAmount, fetchCashFlowData, fetchTopVendors, fetchTagReport, fetchEntityTotals]);
 
 
   const handleExportAll = async () => {
@@ -2138,14 +2156,14 @@ useEffect(() => {
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col">
-                  <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Vendor</label>
+                  <label htmlFor="vendorSelect" className="text-xs font-medium mb-1">Entity / Company</label>
                   <select
                     id="vendorSelect"
                     value={selectedVendor}
                     onChange={(e) => setSelectedVendor(e.target.value)}
                     className="input"
                   >
-                    <option value="">All Vendors</option>
+                    <option value="">All Entities</option>
                     {vendorList.map((vendor, idx) => (
                       <option key={idx} value={vendor}>
                         {vendor}
@@ -2291,12 +2309,12 @@ useEffect(() => {
           <>
 
 <div className="mt-6 mb-6">
-  <h2 className="text-xl font-bold text-gray-800 mb-2">Upload New Invoice</h2>
+  <h2 className="text-xl font-bold text-gray-800 mb-2">Upload New Document</h2>
   <hr className="mb-4" />
   <fieldset className="p-6 rounded-xl shadow-xl bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-700 border border-gray-200 dark:border-gray-700 flex flex-col gap-4 space-y-4 relative">
     <legend className="text-xl font-bold px-2 flex items-center gap-1">
       <CloudArrowUpIcon className="w-5 h-5 text-indigo-600" />
-      <span>Upload Invoice</span>
+      <span>Upload Document</span>
     </legend>
     <ol className="flex space-x-4 text-sm text-gray-600 mb-2">
       <li className="flex items-center space-x-1">
@@ -2393,7 +2411,7 @@ useEffect(() => {
       ) : (
         <ArrowUpTrayIcon className="h-5 w-5" />
       )}
-      <span>{loading ? 'Uploading...' : 'Upload Invoice'}</span>
+      <span>{loading ? 'Uploading...' : 'Upload Document'}</span>
       {uploadSuccess && !loading && (
         <SuccessAnimation className="h-6 w-6" />
       )}
@@ -2449,7 +2467,7 @@ useEffect(() => {
 
           {vendorSummary && (
             <div className="p-4 bg-indigo-100 border border-indigo-400 text-indigo-800 rounded relative">
-              <strong>Vendor Insights:</strong>
+              <strong>Entity Insights:</strong>
               <button
                 onClick={() => handleCopy(vendorSummary)}
                 className="absolute top-2 right-2 text-xs text-indigo-700 hover:underline"
@@ -2472,7 +2490,7 @@ useEffect(() => {
               <table className="text-xs mb-2">
                 <thead>
                   <tr>
-                    <th className="pr-4 text-left">Vendor</th>
+                    <th className="pr-4 text-left">Entity</th>
                     <th className="pr-4 text-right">Total</th>
                     <th className="text-right">% Change</th>
                   </tr>
@@ -2575,7 +2593,7 @@ useEffect(() => {
 
 
                 <h2 className="text-lg font-semibold mt-8 mb-2 text-gray-800">
-                  Invoice Totals by Vendor
+                  Document Totals by Entity
                 </h2>
                 <div className="mb-4 flex flex-wrap gap-4">
                   {Object.keys(visibleColumns).map((col) => (
@@ -2605,7 +2623,7 @@ useEffect(() => {
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
                               <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="vendor" />
+                              <XAxis dataKey="entity" />
                               <YAxis />
                               <Tooltip />
                               <Bar dataKey="total" fill="#3B82F6" />
@@ -2643,7 +2661,7 @@ useEffect(() => {
                         )}
                       </div>
 
-                      <h3 className="text-lg font-semibold mt-8 mb-2 text-gray-800">Top 5 Vendors This Quarter</h3>
+                      <h3 className="text-lg font-semibold mt-8 mb-2 text-gray-800">Top 5 Entities This Quarter</h3>
                       <div className="flex items-center my-2 space-x-2 text-sm">
                         <label>Filter:</label>
                         <select
@@ -2707,7 +2725,7 @@ useEffect(() => {
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={topVendors}>
                               <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="vendor" />
+                              <XAxis dataKey="entity" />
                               <YAxis />
                               <Tooltip />
                               <Bar dataKey="total" fill="#6366F1" />
@@ -2798,12 +2816,12 @@ useEffect(() => {
                       )}
                     </th>
                     <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort('vendor')}>
-                      Vendor
+                      Entity
                       {sortConfig.key === 'vendor' && (
                         <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
                       )}
                     </th>
-                    <th className="border px-4 py-2">Tags</th>
+                    <th className="border px-4 py-2">Smart Tags</th>
                     <th className="border px-4 py-2">Created At</th>
                     <th className="border px-4 py-2">Assignee</th>
                     <th className="border px-4 py-2">Status</th>
@@ -2828,8 +2846,8 @@ useEffect(() => {
                     <EmptyState
                       onCta={() => fileInputRef.current?.click()}
                       headline="Let's get started!"
-                      description="Upload your first invoice to begin tracking spend, surfacing anomalies, and unlocking AI insights."
-                      cta="Upload Invoice"
+                      description="Upload your first document to begin tracking spend, surfacing anomalies, and unlocking AI insights."
+                      cta="Upload Document"
                     />
                   </td>
                 </tr>
@@ -3395,8 +3413,8 @@ useEffect(() => {
           <button
             onClick={openUploadPreview}
             className="fixed bottom-4 right-20 p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white z-30"
-            title="Upload Invoice"
-            aria-label="Upload invoice"
+            title="Upload Document"
+            aria-label="Upload document"
           >
             <ArrowUpTrayIcon className="w-6 h-6" />
           </button>

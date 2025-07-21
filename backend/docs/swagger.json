@@ -94,6 +94,12 @@
         "responses": { "200": { "description": "Vendor suggestion" } }
       }
     },
+    "/api/documents/totals-by-entity": {
+      "get": {
+        "summary": "Totals by entity",
+        "responses": { "200": { "description": "Entity totals" } }
+      }
+    },
     "/api/validation/validate-row": {
       "post": {
         "summary": "Validate an invoice row",
