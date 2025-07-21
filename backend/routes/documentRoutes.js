@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const path = require('path');
 const {
   uploadDocument,
   extractDocument,
@@ -14,7 +15,17 @@ const {
 const { authMiddleware } = require('../controllers/userController');
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/docs/' });
+const allowed = ['.pdf', '.docx', '.png', '.jpg', '.jpeg', '.txt', '.eml'];
+const upload = multer({
+  dest: 'uploads/docs/',
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (!allowed.includes(ext)) {
+      return cb(new Error('Invalid file type'));
+    }
+    cb(null, true);
+  }
+});
 
 router.post('/upload', authMiddleware, upload.single('file'), uploadDocument);
 router.post('/:id/extract', authMiddleware, extractDocument);

@@ -1,9 +1,13 @@
 const openrouter = require('../config/openrouter');
 
-async function summarize(text) {
+async function summarize(text, type = 'document') {
+  let prefix = 'Summarize';
+  if (type === 'invoice') prefix = 'Summarize this invoice';
+  else if (type === 'contract') prefix = 'Summarize key terms of this contract';
+  else if (type === 'receipt') prefix = 'Summarize this receipt';
   const resp = await openrouter.chat.completions.create({
     model: 'openai/gpt-3.5-turbo',
-    messages: [{ role: 'user', content: `Summarize:\n\n${text}` }],
+    messages: [{ role: 'user', content: `${prefix}:\n\n${text}` }],
   });
   return resp.choices?.[0]?.message?.content?.trim();
 }

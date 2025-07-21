@@ -51,4 +51,17 @@ async function checkSimilarity(vendor, invoice_number, amount) {
   return null;
 }
 
-module.exports = { validateInvoiceRow, checkSimilarity };
+async function validateDocumentRow(doc, rowNum, type = 'document') {
+  if (type === 'invoice') {
+    return validateInvoiceRow(doc, rowNum);
+  }
+  const errors = [];
+  if (type === 'contract') {
+    if (!doc.party_name || !doc.doc_date) {
+      errors.push(`Row ${rowNum}: Missing required field`);
+    }
+  }
+  return errors;
+}
+
+module.exports = { validateInvoiceRow, checkSimilarity, validateDocumentRow };

@@ -4,7 +4,7 @@ const path = require('path');
 const JSZip = require('jszip');
 const { parseFile } = require('../services/ocrService');
 const { aiDuplicateCheck, generateErrorSummary } = require('../services/aiService');
-const { validateInvoiceRow, checkSimilarity } = require('../services/validationService');
+const { validateDocumentRow, validateInvoiceRow, checkSimilarity } = require('../services/validationService');
 const { autoAssignInvoice, insertInvoice } = require('../services/invoiceService');
 const logger = require('../utils/logger');
 const { checkTenantInvoiceLimit } = require('../utils/tenantContext');
@@ -197,7 +197,7 @@ exports.uploadInvoice = async (req, res) => {
       const party_name = inv.party_name?.trim();
       const finalParty = party_name || vendor;
 
-      const rowErrors = await validateInvoiceRow({ invoice_number, date, amount, vendor: finalParty }, rowNum);
+      const rowErrors = await validateDocumentRow({ invoice_number, date, amount, vendor: finalParty }, rowNum, 'invoice');
       if (rowErrors.length) {
         errors.push(...rowErrors);
         continue;
@@ -1638,7 +1638,7 @@ function exportArchivedInvoicesCSV(req, res) {
 module.exports.exportArchivedInvoicesCSV = exportArchivedInvoicesCSV;
 
 // ✅ Update invoice tags in DB
-exports.updateInvoiceTags = async (req, res) => {
+exports.updateDocumentTags = async (req, res) => {
   const id = parseInt(req.params.id);
   const { tags } = req.body;
 
@@ -2723,7 +2723,8 @@ exports.amountSuggestions = async (req, res) => {
 
 
 module.exports = {
-  updateInvoiceTags: exports.updateInvoiceTags,
+  updateDocumentTags: exports.updateDocumentTags,
+  updateInvoiceTags: exports.updateDocumentTags,
   generateInvoicePDF: exports.generateInvoicePDF,
   suggestTags: exports.suggestTags,
   flagSuspiciousInvoice: exports.flagSuspiciousInvoice,

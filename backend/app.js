@@ -76,8 +76,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(auditLog);
 // Allow auth endpoints under the new documents scope
 app.use('/api/documents', authRoutes);
+app.use('/api/invoices', authRoutes); // backwards compat
 // Main document routes (formerly invoices)
 app.use('/api/:tenantId/documents', piiMask, invoiceRoutes);
+app.use('/api/:tenantId/invoices', piiMask, invoiceRoutes); // backwards compat
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
 app.use('/api/feedback', feedbackRoutes);
@@ -102,6 +104,7 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/invoices', documentRoutes); // backwards compat
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);
 app.use('/api/compliance', complianceRoutes);

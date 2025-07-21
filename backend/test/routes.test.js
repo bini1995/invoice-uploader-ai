@@ -25,6 +25,7 @@ signingRouter.post('/api/signing/1/start', authMiddleware, (req, res) => res.jso
 const app = express();
 app.use(express.json());
 app.use('/api/documents', authRoutes);
+app.use('/api/invoices', authRoutes);
 app.use(uploadRouter);
 app.use(anomalyRouter);
 app.use(signingRouter);
@@ -36,6 +37,14 @@ describe('Auth and documents', () => {
     const hash = await bcrypt.hash('pass', 10);
     db.query.mockResolvedValueOnce({ rows: [{ id: 1, username: 'user', password_hash: hash, role: 'admin' }] });
     const res = await request(app).post('/api/documents/login').send({ username: 'user', password: 'pass' });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.token).toBeDefined();
+  });
+
+  test('invoice alias login returns token', async () => {
+    const hash = await bcrypt.hash('pass', 10);
+    db.query.mockResolvedValueOnce({ rows: [{ id: 1, username: 'user', password_hash: hash, role: 'admin' }] });
+    const res = await request(app).post('/api/invoices/login').send({ username: 'user', password: 'pass' });
     expect(res.statusCode).toBe(200);
     expect(res.body.token).toBeDefined();
   });

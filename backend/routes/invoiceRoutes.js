@@ -54,7 +54,7 @@ const {
   addComment,
   handleSuggestion,
   suggestTags,
-  updateInvoiceTags,
+  updateDocumentTags,
   generateInvoicePDF,
   markInvoicePaid,
   bulkArchiveInvoices,
@@ -227,7 +227,7 @@ router.patch('/:id/retention', authMiddleware, authorizeRoles('admin'), updateRe
 router.post('/suggest-tags', authMiddleware, suggestTags);
 router.post('/suggest-mappings', authMiddleware, suggestMappings);
 router.post('/suggest-tag-colors', authMiddleware, suggestTagColors);
-router.post('/:id/update-tags', authMiddleware, updateInvoiceTags);
+router.post('/:id/update-tags', authMiddleware, updateDocumentTags);
 router.patch('/:id/review-flag', authMiddleware, authorizeRoles('admin','approver'), setReviewFlag);
 router.patch('/:id/flag', authMiddleware, authorizeRoles('approver'), setFlaggedStatus);
 router.get('/logs', authMiddleware, authorizeRoles('admin'), getActivityLogs);
