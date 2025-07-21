@@ -530,6 +530,20 @@ cd backend
 npm run seed-dummy
 ```
 
+### Database Migration
+
+If you're upgrading from an earlier version that only had an `invoices` table,
+run the migration script to rename it and add the new document fields:
+
+```bash
+cd backend
+node migrations/migrateInvoicesToDocuments.js
+```
+
+This backs up the old table, renames it to `documents` and adds `type`, `title`,
+`entity`, `fileType` and `contentHash` columns. Existing API calls under
+`/api/invoices` continue to work via the `/api/documents` routes.
+
 Make sure you log in again to obtain a fresh token if you see a `401` response when calling the endpoint.
 
 ### Docker Deployment

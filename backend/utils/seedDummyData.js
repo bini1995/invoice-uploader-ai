@@ -13,8 +13,20 @@ const logger = require('./logger');
       const date = new Date(Date.now() - Math.random() * 60 * 86400000);
       const category = categories[Math.floor(Math.random() * categories.length)];
       await client.query(
-        'INSERT INTO invoices (invoice_number, date, amount, vendor, category) VALUES ($1,$2,$3,$4,$5)',
-        [`DEMO-${Date.now()}-${i}`, date, amount, vendor, category]
+        `INSERT INTO documents (invoice_number, date, amount, vendor, category, type, title, entity, fileType, contentHash)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        [
+          `DEMO-${Date.now()}-${i}`,
+          date,
+          amount,
+          vendor,
+          category,
+          'invoice',
+          `DEMO-${i}`,
+          vendor,
+          'pdf',
+          null
+        ]
       );
       inserted++;
     }
