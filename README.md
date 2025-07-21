@@ -608,3 +608,12 @@ This happens when the backend tries to reach PostgreSQL on the IPv6 loopback add
    If `DATABASE_URL` still points to `localhost:5433`, override it in your `.env`
    or remove the variable so the `DB_HOST` and `DB_PORT` values are used.
 
+**`Database init error: extension "vector" is not available`**
+
+The Postgres container must include the pgvector extension. Use the `pgvector/pgvector:pg15` image in `docker-compose.yml` and rebuild:
+
+```bash
+docker-compose down
+docker-compose up --build
+```
+
