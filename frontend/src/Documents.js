@@ -208,7 +208,9 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
     return saved ? JSON.parse(saved).length : 0;
   });
   const [confirmData, setConfirmData] = useState(null);
-  const [filterSidebarOpen, setFilterSidebarOpen] = useState(false);
+  const [filterSidebarOpen, setFilterSidebarOpen] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : false
+  );
   const [filterPresets, setFilterPresets] = useState(() => {
     const saved = localStorage.getItem('filterPresets');
     if (saved) return JSON.parse(saved);
@@ -2110,7 +2112,7 @@ useEffect(() => {
         {token && (
           <aside
           className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
-            filterSidebarOpen ? '' : 'hidden md:block'
+            filterSidebarOpen ? '' : 'hidden'
           } border-r border-gray-200 dark:border-gray-700 max-h-screen overflow-y-auto sticky top-16 z-20`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
