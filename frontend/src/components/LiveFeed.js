@@ -11,7 +11,7 @@ export default function LiveFeed({ token, tenant }) {
 
     const fetchLogs = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/invoices/logs', {
+        const res = await fetch(`${API_BASE}/api/invoices/logs`, {
           headers: { Authorization: `Bearer ${token}`, 'X-Tenant-Id': tenant }
         });
         if (!res.ok) {
