@@ -15,10 +15,13 @@ exports.submitFeedback = async (req, res) => {
   }
 };
 
-exports.getFeedback = async (_req, res) => {
+exports.getFeedback = async (req, res) => {
   try {
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const offset = parseInt(req.query.offset, 10) || 0;
     const result = await pool.query(
-      'SELECT endpoint, AVG(rating) AS avg_rating, COUNT(*) AS count FROM feedback GROUP BY endpoint ORDER BY endpoint'
+      'SELECT endpoint, AVG(rating) AS avg_rating, COUNT(*) AS count FROM feedback GROUP BY endpoint ORDER BY endpoint LIMIT $1 OFFSET $2',
+      [limit, offset]
     );
     res.json(result.rows);
   } catch (err) {
