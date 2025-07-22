@@ -6,7 +6,6 @@ const http = require('http');
 require('dotenv').config();                 // load environment variables
 const logger = require('./utils/logger');
 const Sentry = require('@sentry/node');
-const documentsRoutes = require('./routes/documents');
 const authRoutes = require('./routes/authRoutes');
 const exportTemplateRoutes = require('./routes/exportTemplateRoutes');
 const brandingRoutes = require('./routes/brandingRoutes');
@@ -45,7 +44,6 @@ const piiMask = require('./middleware/piiMask');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { sendApprovalReminders } = require('./controllers/reminderController'); // used for optional manual trigger
-const { autoArchiveOldInvoices, autoDeleteExpiredInvoices, autoCloseExpiredInvoices } = require('./controllers/invoiceController');
 const { autoDeleteExpiredDocuments } = require('./controllers/documentController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
@@ -77,12 +75,10 @@ app.use(auditLog);
 // Allow auth endpoints under the new documents scope
 app.use('/api/documents', authRoutes);
 app.use('/api/invoices', authRoutes); // backwards compat
-// Main document routes (formerly invoices)
-app.use('/api/:tenantId/documents', piiMask, documentsRoutes);
-app.use('/api/:tenantId/invoices', piiMask, documentsRoutes); // backwards compat
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
-app.use('/api/feedback', feedbackRoutes);
+// Experimental routes
+app.use('/api/labs/feedback', feedbackRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/vendors', vendorRoutes);
@@ -99,7 +95,7 @@ app.use('/api/features', featureRoutes);
 app.use('/api/scenarios', scenarioRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reminders', reminderRoutes);
-app.use('/api/automations', automationRoutes);
+app.use('/api/labs/automations', automationRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
@@ -129,15 +125,9 @@ app.use(Sentry.Handlers.errorHandler());
   scheduleReports();
   scheduleAnomalyScan();
 
-  // Run auto-archive daily
-  autoArchiveOldInvoices();
-  setInterval(autoArchiveOldInvoices, 24 * 60 * 60 * 1000); // every 24h
-  autoDeleteExpiredInvoices();
-  setInterval(autoDeleteExpiredInvoices, 24 * 60 * 60 * 1000);
+  // Daily cleanup tasks
   autoDeleteExpiredDocuments();
   setInterval(autoDeleteExpiredDocuments, 24 * 60 * 60 * 1000);
-  autoCloseExpiredInvoices();
-  setInterval(autoCloseExpiredInvoices, 24 * 60 * 60 * 1000);
   runRecurringInvoices();
   setInterval(runRecurringInvoices, 24 * 60 * 60 * 1000);
   processFailedPayments();
