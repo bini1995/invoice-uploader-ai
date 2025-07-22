@@ -25,10 +25,8 @@ const { broadcastMessage } = require('../utils/chatServer');
 const { recordInvoiceVersion } = require('../utils/versionLogger');
 const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/assignment');
 const { encrypt } = require('../utils/encryption');
-const redis = require('../config/redis');
 const levenshtein = require('fast-levenshtein');
 const { categorizeInvoice } = require('../utils/categorize');
-const invoiceQueue = require('../queues/invoiceQueue');
 const { applyCorrections, loadCorrections } = require('../utils/parserTrainer');
 const { selfHealInvoices } = require('../utils/selfHeal');
 const { updateWeights } = require('../utils/parserTrainer');
@@ -151,10 +149,6 @@ exports.uploadInvoice = async (req, res) => {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: err.message });
     }
-    invoiceQueue.add({
-      invoicePath: req.file.path,
-      tenantId: req.tenantId,
-    });
     invoices = invoices.map(applyCorrections);
     const fileBuffer = fs.readFileSync(req.file.path);
     const integrityHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
@@ -1015,16 +1009,10 @@ exports.getSharedDashboard = async (req, res) => {
 exports.getInvoiceVersions = async (req, res) => {
   const { id } = req.params;
   try {
-    const cacheKey = `invoiceVer:${id}`;
-    const cached = await redis.get(cacheKey);
-    if (cached) {
-      return res.json(JSON.parse(cached));
-    }
     const result = await pool.query(
       'SELECT id, editor_name, diff, created_at FROM invoice_versions WHERE invoice_id = $1 ORDER BY created_at DESC',
       [id]
     );
-    await redis.setex(cacheKey, 60, JSON.stringify(result.rows));
     res.json(result.rows);
   } catch (err) {
     console.error('Fetch versions error:', err);

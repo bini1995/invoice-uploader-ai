@@ -1,16 +1,10 @@
 const pool = require('../config/db');
 const { Parser } = require('json2csv');
 const archiver = require('archiver');
-const redis = require('../config/redis');
 
 exports.getActivityLogs = async (req, res) => {
   try {
     const { start, end, vendor, action, limit } = req.query;
-    const cacheKey = `activity:${JSON.stringify(req.query)}`;
-    const cached = await redis.get(cacheKey);
-    if (cached) {
-      return res.json(JSON.parse(cached));
-    }
 
     let query = 'SELECT a.* FROM activity_logs a';
     const params = [];
@@ -41,7 +35,6 @@ exports.getActivityLogs = async (req, res) => {
     const lim = parseInt(limit, 10);
     const limitClause = lim ? ` LIMIT ${lim}` : '';
     const result = await pool.query(`${query}${where} ORDER BY a.created_at DESC${limitClause}`, params);
-    await redis.setex(cacheKey, 60, JSON.stringify(result.rows));
     res.json(result.rows);
   } catch (err) {
     console.error('Log fetch error:', err);
