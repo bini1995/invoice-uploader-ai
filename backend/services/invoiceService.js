@@ -6,16 +6,72 @@ const logger = require('../utils/logger');
 async function autoAssignInvoice(invoiceId, vendor, tags = []) {
   let assignee;
   try {
-    const { getAssigneeFromVendorHistory, getAssigneeFromTags } = require('../utils/assignment');
-    assignee = await getAssigneeFromVendorHistory(vendor);
-    if (!assignee) assignee = getAssigneeFromTags(tags);
-    if (!assignee && vendor && vendor.toLowerCase().includes('figma')) assignee = 'Design Team';
-    if (!assignee && tags.map(t => t.toLowerCase()).includes('marketing')) assignee = 'Alice';
+    const { getAssigneeFromVendorHistory, getAssigneeFromTags, getAssigneeFromVendorProfile } = require('../utils/assignment');
+    let reason = null;
+    const hist = await pool.query(
+      `SELECT assignee, COUNT(*) AS cnt FROM invoices WHERE LOWER(vendor)=LOWER($1) AND assignee IS NOT NULL GROUP BY assignee ORDER BY cnt DESC LIMIT 1`,
+      [vendor]
+    );
+    if (hist.rows[0]) {
+      assignee = hist.rows[0].assignee;
+      const cnt = parseInt(hist.rows[0].cnt, 10);
+      reason = `Based on prior ${cnt} uploads from vendor ${vendor}`;
+    }
+    if (!assignee) {
+      assignee = getAssigneeFromTags(tags);
+      if (assignee) reason = 'Matched tags';
+    }
+    if (!assignee) {
+      assignee = await getAssigneeFromVendorProfile(vendor);
+      if (assignee) reason = 'Matched vendor profile';
+    }
+    if (!assignee && vendor && vendor.toLowerCase().includes('figma')) {
+      assignee = 'Design Team';
+      reason = 'Default Figma rule';
+    }
+    if (!assignee && tags.map(t => t.toLowerCase()).includes('marketing')) {
+      assignee = 'Alice';
+      reason = 'Default marketing rule';
+    }
     if (assignee) {
       await pool.query('UPDATE invoices SET assignee = $1 WHERE id = $2', [assignee, invoiceId]);
     }
+    return { assignee, reason };
   } catch (err) {
     logger.error({ err }, 'Auto-assign error');
+    return { assignee: null, reason: null };
+  }
+}
+
+async function autoAssignDocument(docId, vendor, tags = []) {
+  let assignee;
+  let reason = null;
+  try {
+    const { getAssigneeFromVendorHistory, getAssigneeFromTags, getAssigneeFromVendorProfile } = require('../utils/assignment');
+    const res = await pool.query(
+      `SELECT assignee, COUNT(*) AS cnt FROM documents WHERE LOWER(party_name)=LOWER($1) AND assignee IS NOT NULL GROUP BY assignee ORDER BY cnt DESC LIMIT 1`,
+      [vendor]
+    );
+    if (res.rows[0]) {
+      assignee = res.rows[0].assignee;
+      const cnt = parseInt(res.rows[0].cnt, 10);
+      reason = `Based on prior ${cnt} uploads from vendor ${vendor}`;
+    }
+    if (!assignee) {
+      assignee = getAssigneeFromTags(tags);
+      if (assignee) reason = 'Matched tags';
+    }
+    if (!assignee) {
+      assignee = await getAssigneeFromVendorProfile(vendor);
+      if (assignee) reason = 'Matched vendor profile';
+    }
+    if (assignee) {
+      await pool.query('UPDATE documents SET assignee = $1, assignment_reason = $2 WHERE id = $3', [assignee, reason, docId]);
+    }
+    return { assignee, reason };
+  } catch (err) {
+    logger.error({ err }, 'Auto-assign document error');
+    return { assignee: null, reason: null };
   }
 }
 
@@ -42,4 +98,4 @@ async function insertInvoice(inv, tenantId) {
   return newId;
 }
 
-module.exports = { autoAssignInvoice, insertInvoice };
+module.exports = { autoAssignInvoice, insertInvoice, autoAssignDocument };
