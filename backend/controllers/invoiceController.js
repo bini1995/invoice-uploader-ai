@@ -487,13 +487,24 @@ exports.getAllInvoices = async (req, res) => {
       params.push(tenantId);
       conditions.push(`tenant_id = $${params.length}`);
     }
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 20;
-    const offset = (page - 1) * limit;
-    params.push(limit, offset);
-    const query = `SELECT * FROM invoices ${where} ORDER BY id DESC LIMIT $${
-      params.length - 1} OFFSET $${params.length}`;
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const offset = parseInt(req.query.offset, 10) || 0;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor, 10) : null;
+
+    if (cursor) {
+      params.push(cursor);
+      conditions.push(`id < $${params.length}`);
+    }
+
+    const whereFinal = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    params.push(limit);
+    let query = `SELECT * FROM invoices ${whereFinal} ORDER BY id DESC LIMIT $${params.length}`;
+
+    if (!cursor) {
+      params.push(offset);
+      query += ` OFFSET $${params.length}`;
+    }
 
     const result = await client.query(query, params);
     res.json(result.rows);

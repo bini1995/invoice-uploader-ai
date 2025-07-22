@@ -58,7 +58,10 @@ exports.listVendors = async (_req, res) => {
       if (!v.last_invoice || (Date.now() - new Date(v.last_invoice)) / 86400000 > 90)
         v.tags.push('Inactive 90+ Days');
     });
-    res.json({ vendors });
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const offset = parseInt(req.query.offset, 10) || 0;
+    const paginated = vendors.slice(offset, offset + limit);
+    res.json({ vendors: paginated, total: vendors.length });
   } catch (err) {
     console.error('List vendors error:', err);
     res.status(500).json({ message: 'Failed to fetch vendors' });
