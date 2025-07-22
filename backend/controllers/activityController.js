@@ -1,6 +1,7 @@
 const pool = require('../config/db');
 const { Parser } = require('json2csv');
 const archiver = require('archiver');
+const { maskSensitive } = require('../utils/sanitize');
 
 exports.getActivityLogs = async (req, res) => {
   try {
@@ -35,7 +36,11 @@ exports.getActivityLogs = async (req, res) => {
     const lim = parseInt(limit, 10);
     const limitClause = lim ? ` LIMIT ${lim}` : '';
     const result = await pool.query(`${query}${where} ORDER BY a.created_at DESC${limitClause}`, params);
-    res.json(result.rows);
+    const sanitized = result.rows.map((row) => ({
+      ...row,
+      action: maskSensitive(row.action)
+    }));
+    res.json(sanitized);
   } catch (err) {
     console.error('Log fetch error:', err);
     res.status(500).json({ message: 'Failed to fetch logs' });
@@ -49,7 +54,11 @@ exports.getInvoiceTimeline = async (req, res) => {
       'SELECT * FROM activity_logs WHERE invoice_id = $1 ORDER BY created_at',
       [id]
     );
-    res.json(result.rows);
+    const sanitized = result.rows.map((row) => ({
+      ...row,
+      action: maskSensitive(row.action)
+    }));
+    res.json(sanitized);
   } catch (err) {
     console.error('Timeline fetch error:', err);
     res.status(500).json({ message: 'Failed to fetch timeline' });
