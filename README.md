@@ -6,6 +6,7 @@ This is a full-stack **AI Document Ops Engine** delivering operational clarity f
 - **Express + PostgreSQL** (backend)
 - **OpenRouter API** for natural language error feedback
 
+Originally this project focused solely on invoice processing. It is now evolving into a general **Document AI Platform** that handles invoices, contracts and more. See [docs/TRANSFORMATION_PLAN.md](docs/TRANSFORMATION_PLAN.md) for the roadmap.
 
 ## Requirements
 - Node.js 18.x LTS
@@ -61,76 +62,76 @@ npm install --legacy-peer-deps
  - Activity log of document actions
  - Downloadable audit history per vendor or document
 - Detailed logs show who made each change
-- Invoice version history with one-click restore
-- Auto-routing invoices by vendor or tag
-- Smart auto-assignment routes invoices to the usual owner using vendor history
+- Document version history with one-click restore
+- Auto-routing documents by vendor or tag
+- Smart auto-assignment routes documents to the usual owner using vendor history
 - Budget threshold warnings
 - Budget guardrails with live upload warnings and budget forecasts
 - Anomaly detection dashboard
 - Automatic anomaly alerts with severity tiers
 - Fraud pattern detection for suspicious vendor activity
 - ML-based anomaly scoring using Isolation Forest with admin feedback loop
-- Timeline view of invoice changes
-- Recurring invoice detection with notifications
-- Invoice duplication prevention using content hashes
-- Invoice similarity detection to flag lookalike invoices
+- Timeline view of document changes
+- Recurring document detection with notifications
+- Document duplication prevention using content hashes
+- Document similarity detection to flag lookalike documents
 - Recurring billing templates with automated sending and payment retries
-- Linked invoice relationship graph to spot duplicates and vendor patterns
+- Linked document relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
 - AI-powered autocomplete and cleanup for vendor and total fields
 - Analytics and reports page with filtering and PDF export
-- Trend reports for monthly spend and aging invoices
+- Trend reports for monthly spend and aging documents
 - Customizable dashboards with date filters and export options
 - Adaptive dashboard with context-aware alerts, AI suggestions and draggable KPI cards
-- Custom KPI dashboards per department or vendor with charts like approval time by vendor, late payments trend and invoices over budget
+- Custom KPI dashboards per department or vendor with charts like approval time by vendor, late payments trend and documents over budget
 - Public shareable dashboards accessible via secure link
 - ML predictions highlight cash-flow problem areas
-- Private notes on invoices
+- Private notes on documents
 - Shared comment threads for team discussion
 - Approver reminders with escalation
-- Approval workflows track invoices needing review and record status (Pending, Flagged, Approved)
-- Smart reminders for overdue invoices and pending approvals (email, Slack/Teams & in-app)
+- Approval workflows track documents needing review and record status (Pending, Flagged, Approved)
+- Smart reminders for overdue documents and pending approvals (email, Slack/Teams & in-app)
 - Manual approval reminder emails can be triggered via `POST /api/reminders/approval`
 - Batch actions with bulk approval and PDF export
 - Bulk edit/delete/archive options for faster table management
 - Multi-step upload wizard guides file selection, review, tagging and final confirmation
 - Drag-and-drop upload with real-time field mapping
-- AI explanations for why an invoice was flagged
+- AI explanations for why a document was flagged
 - Admin settings panel with auto-archive toggle, custom AI tone and upload limits
 - Org-wide settings per tenant with custom branding
 - SOC2-ready audit logs for every action
 - Usage analytics dashboard for document volume and workflow metrics
 - Role delegation so approvers can temporarily assign their duties
-- Invoice expiration auto-closes past-due invoices or flags them for review
+- Document expiration auto-closes past-due documents or flags them for review
 - "Why did AI say this?" links show confidence and reasoning
-- AI-powered bulk categorization of uploaded invoices
+- AI-powered bulk categorization of uploaded documents
 - AI-powered auto tagging with vendor/voucher recommendations
 - Predictive vendor behavior suggestions
 - Anomaly warnings before upload
-- Voice-to-upload for quick invoice creation
+- Voice-to-upload for quick document creation
 - Conversational uploading via natural language commands
-- Natural language invoice search
+- Natural language document search
 - Hoverable vendor bios with website and industry info
 - AI fraud detection heatmaps (color-coded anomaly maps)
-- Risk heatmap with clustering graphs highlighting similar invoices or vendors
-- Fraud detection reports listing flagged invoices with reasons
+- Risk heatmap with clustering graphs highlighting similar documents or vendors
+- Fraud detection reports listing flagged documents with reasons
 - Automatic vendor bios + risk scores from public data
-- Real-time invoice chat thread with collaborators
+- Real-time document chat thread with collaborators
 - Multi-language support (Spanish and French)
-- Browser extension for uploading invoices directly from Gmail
+- Browser extension for uploading documents directly from Gmail
 - Fully responsive mobile layout and installable PWA
 - Capture invoice photos on mobile with built-in OCR
 - PDF Invoice OCR with AI formatting correction
 - Self-learning OCR corrections that retrain parsing from user edits
 - Autonomous agents continuously retrain OCR models from field corrections and provide smart suggestions
 - Intelligent column mapping suggestions (line items, totals, tax)
-- Supplier portal for vendors to upload invoices, update banking info and check payments
+- Supplier portal for vendors to upload documents, update banking info and check payments
 - Slack/Teams notifications for approvals or flags
 - Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
 - Real-time "Ops Mode" dashboard with a live feed of invoice activity
 - Live Invoice Feed shows uploads, flags and approvals in real time
 - Multi-tenant support so agencies can switch between different client accounts
-- Polite vendor notification emails for flagged or rejected invoices
+- Polite vendor notification emails for flagged or rejected documents
 - Smart Email Drafting Engine 2.0 learns from past messages
 - Scenario planning to test payment delays
 - Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
@@ -146,10 +147,21 @@ npm install --legacy-peer-deps
 - Multi-currency support with automatic VAT/GST calculations
 - Automation marketplace integrations (Zapier/Make) for Slack and Google Sheets, plus connectors for your accounting platform, via `/api/integrations`
 - RPA automation engine triggers post-approval exports to your ERP system
-- Scheduled email fetch imports PDF invoices automatically
-- Forward invoices to `upload@yourdomain.com` and attachments are parsed via Gmail API
+- Scheduled email fetch imports PDF documents automatically
+- Forward documents to `upload@yourdomain.com` and attachments are parsed via Gmail API
 - Low-code automation builder (`/api/automations`) for if‑then API workflows
 - Blockchain-backed invoice validation with PDF hashing for tamper-proof records
+### Recent Backend Updates
+- Unified `documents` table with flexible JSON fields (`party_name` and `fields`).
+- `/api/documents/:id/extract` for AI entity extraction.
+- `/api/documents/:id/versions` and `/api/documents/:id/versions/:versionId/restore` for document comparison.
+- `/api/documents/:id/summary` for AI summarization.
+- `/api/document-workflows` for doc-type specific workflows.
+- `/api/ai/categorize` suggests document categories.
+- `/api/documents/:id/compliance` checks contracts for missing clauses.
+- Lifecycle rules support `retention_policy`, `expires_at` and `archived`.
+- `/api/signing/:id/start` enables blockchain-backed DocuSign signing.
+- Enterprise features include org-wide settings, SOC2 audit logs, usage analytics and role delegation.
 
 ## Setup Instructions
 
@@ -165,7 +177,7 @@ cp .env.example .env   # Add your DATABASE_URL and OpenRouter API key
 # Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts
 # Set GOOGLE_SERVICE_ACCOUNT_KEY and EMAIL_INBOX to enable email-to-upload support
 # GOOGLE_SERVICE_ACCOUNT_KEY should point to a service account JSON file and
-# EMAIL_INBOX should be the Gmail address to monitor for incoming invoices
+# EMAIL_INBOX should be the Gmail address to monitor for incoming documents
 npm start
 ```
 
@@ -181,27 +193,27 @@ Admin users can aggregate data across all tenants by sending `X-Tenant-Id: all`.
 Add an `assignee` column for storing invoice assignments:
 
 ```sql
-ALTER TABLE invoices ADD COLUMN assignee TEXT;
-ALTER TABLE invoices ADD COLUMN approval_status TEXT DEFAULT 'Pending';
-ALTER TABLE invoices ADD COLUMN approval_history JSONB DEFAULT '[]';
-ALTER TABLE invoices ADD COLUMN comments JSONB DEFAULT '[]';
-ALTER TABLE invoices ADD COLUMN priority BOOLEAN DEFAULT FALSE;
-ALTER TABLE invoices ADD COLUMN flagged BOOLEAN DEFAULT FALSE;
-ALTER TABLE invoices ADD COLUMN flag_reason TEXT;
-ALTER TABLE invoices ADD COLUMN approval_chain JSONB DEFAULT '["Manager","Finance","CFO"]';
-ALTER TABLE invoices ADD COLUMN current_step INTEGER DEFAULT 0;
-ALTER TABLE invoices ADD COLUMN payment_terms TEXT;
-ALTER TABLE invoices ADD COLUMN private_notes TEXT;
-ALTER TABLE invoices ADD COLUMN due_date DATE;
-ALTER TABLE invoices ADD COLUMN po_id INTEGER;
-ALTER TABLE invoices ADD COLUMN integrity_hash TEXT;
-ALTER TABLE invoices ADD COLUMN content_hash TEXT;
-ALTER TABLE invoices ADD COLUMN retention_policy TEXT DEFAULT 'forever';
-ALTER TABLE invoices ADD COLUMN delete_at TIMESTAMP;
-ALTER TABLE invoices ADD COLUMN tenant_id TEXT DEFAULT 'default';
-ALTER TABLE invoices ADD COLUMN department TEXT;
-ALTER TABLE invoices ADD COLUMN expires_at TIMESTAMP;
-ALTER TABLE invoices ADD COLUMN expired BOOLEAN DEFAULT FALSE;
+ALTER TABLE documents ADD COLUMN assignee TEXT;
+ALTER TABLE documents ADD COLUMN approval_status TEXT DEFAULT 'Pending';
+ALTER TABLE documents ADD COLUMN approval_history JSONB DEFAULT '[]';
+ALTER TABLE documents ADD COLUMN comments JSONB DEFAULT '[]';
+ALTER TABLE documents ADD COLUMN priority BOOLEAN DEFAULT FALSE;
+ALTER TABLE documents ADD COLUMN flagged BOOLEAN DEFAULT FALSE;
+ALTER TABLE documents ADD COLUMN flag_reason TEXT;
+ALTER TABLE documents ADD COLUMN approval_chain JSONB DEFAULT '["Manager","Finance","CFO"]';
+ALTER TABLE documents ADD COLUMN current_step INTEGER DEFAULT 0;
+ALTER TABLE documents ADD COLUMN payment_terms TEXT;
+ALTER TABLE documents ADD COLUMN private_notes TEXT;
+ALTER TABLE documents ADD COLUMN due_date DATE;
+ALTER TABLE documents ADD COLUMN po_id INTEGER;
+ALTER TABLE documents ADD COLUMN integrity_hash TEXT;
+ALTER TABLE documents ADD COLUMN content_hash TEXT;
+ALTER TABLE documents ADD COLUMN retention_policy TEXT DEFAULT 'forever';
+ALTER TABLE documents ADD COLUMN delete_at TIMESTAMP;
+ALTER TABLE documents ADD COLUMN tenant_id TEXT DEFAULT 'default';
+ALTER TABLE documents ADD COLUMN department TEXT;
+ALTER TABLE documents ADD COLUMN expires_at TIMESTAMP;
+ALTER TABLE documents ADD COLUMN expired BOOLEAN DEFAULT FALSE;
 ```
 
 Create an `activity_logs` table for the audit trail:
@@ -277,29 +289,29 @@ CREATE TABLE cashflow_scenarios (
 
 ### Auto-Archive Rule
 
-The backend automatically archives invoices older than 90 days
+The backend automatically archives documents older than 90 days
 unless they are marked as `priority`.
 
 Invoices also store a SHA256 `integrity_hash` generated at upload time. You can
 set a retention policy (`6m`, `2y`, or `forever`) on upload or later. A daily
-job deletes invoices once their `delete_at` date passes.
+job deletes documents once their `delete_at` date passes.
 Invoices can also include an `expires_at` date. Any invoice past this
 deadline is automatically marked `expired` and flagged for admin review.
 
 ### Department Workflows
 
-Specify a `department` when uploading invoices and the backend will
+Specify a `department` when uploading documents and the backend will
 apply custom approval rules:
 
 - **Finance** – requires two separate approvals.
 - **Legal** – auto-approves and is meant for comments only.
-- **Ops** – invoices under $100 auto-approve, others need one manager step.
+- **Ops** – documents under $100 auto-approve, others need one manager step.
 
 ### Purchase Order Matching
 
-Upload purchase orders separately and the backend will automatically match new invoices
+Upload purchase orders separately and the backend will automatically match new documents
 by vendor and amount. Invoices without a matching PO are flagged for manual review
-and trigger Slack/Teams alerts. Approved invoices must follow the defined multi-level
+and trigger Slack/Teams alerts. Approved documents must follow the defined multi-level
 workflow based on the `approval_chain`.
 
 ### Categorization Rules
@@ -320,7 +332,7 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 - `POST /api/workflows` – create or update a workflow
 - `POST /api/workflows/evaluate` – test workflow rules against a payload
 - `GET /api/analytics/report/excel` – download invoice reports in Excel format
-- `GET /api/analytics/outliers` – list invoices with unusual amounts
+- `GET /api/analytics/outliers` – list documents with unusual amounts
 - `GET /api/analytics/dashboard/realtime` – real-time processing metrics
 
 ### Workflow Builder
@@ -328,14 +340,14 @@ as "Marketing", "Legal", or "Recurring" when no rule matches.
 The `/workflow-builder` page lets admins design approval chains and rules with an
 interactive expression builder. Test expressions are sent to `POST /api/workflows/evaluate`
 to see how rules would route a sample invoice.
-The `/inbox` page shows newly uploaded invoices waiting for approval.
-- `GET /api/documents/fraud/flagged` – list flagged invoices with reasons
-- `GET /api/documents/fraud/ml-detect` – list invoices with high anomaly scores
+The `/inbox` page shows newly uploaded documents waiting for approval.
+- `GET /api/documents/fraud/flagged` – list flagged documents with reasons
+- `GET /api/documents/fraud/ml-detect` – list documents with high anomaly scores
 - `POST /api/documents/fraud/:id/label` – mark invoice as confirmed fraud or not
 - `GET /api/documents/:id/timeline` – view a timeline of state changes for an invoice
 - `GET /api/:tenantId/export-templates` – list saved CSV templates
 - `POST /api/:tenantId/export-templates` – create a new export template
-- `GET /api/:tenantId/export-templates/:id/export` – export invoices using a template
+- `GET /api/:tenantId/export-templates/:id/export` – export documents using a template
 - `PATCH /api/documents/:id/retention` – update an invoice retention policy (6m, 2y, forever)
 - `POST /api/documents/payment-risk` – predict payment delay risk for a vendor
 - `POST /api/documents/payment-behavior` – predict expected payment date and confidence
@@ -351,7 +363,7 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `POST /api/feedback` – submit a rating for an AI-generated result
 - `GET /api/feedback` – view average ratings by endpoint
 - `GET /api/documents/vendor-scorecards` – view vendor responsiveness and payment metrics
-- `GET /api/documents/graph` – network graph data linking vendors and duplicate invoices
+- `GET /api/documents/graph` – network graph data linking vendors and duplicate documents
 - `GET /api/vendors` – list vendors with last invoice date and total spend
 - `PATCH /api/vendors/:vendor/notes` – update notes for a vendor
 - `GET /api/vendors/match?q=name` – fuzzy match vendor names
@@ -360,14 +372,14 @@ The `/inbox` page shows newly uploaded invoices waiting for approval.
 - `GET /api/vendors/export` – download vendors as CSV
 - `POST /api/vendors/import` – import vendors from CSV
 - `PATCH /api/documents/:id/payment-status` – update payment status
-- `POST /api/documents/import-csv` – upload a CSV of invoices
+- `POST /api/documents/import-csv` – upload a CSV of documents
 - Header names are case and space insensitive (e.g. "Invoice Number" works).
-- `DELETE /api/documents/bulk/delete` – delete multiple invoices
+- `DELETE /api/documents/bulk/delete` – delete multiple documents
 - `PATCH /api/documents/bulk/edit` – bulk update invoice fields
 - `POST /api/documents/:id/extract` – extract key entities from a document
 - `POST /api/documents/:id/auto-tag` – AI auto-tag from common categories
 - `POST /api/documents/suggest-voucher` – recommend a voucher description
-- `POST /api/documents/share` – generate a share link for selected invoices
+- `POST /api/documents/share` – generate a share link for selected documents
 - `GET /api/documents/shared/:token` – access a shared invoice view
 - `POST /api/documents/dashboard/share` – generate a public dashboard link
 - `GET /api/documents/dashboard/shared/:token` – view a restricted dashboard
@@ -478,7 +490,7 @@ Example response:
 
 ### Recurring & Automated Billing
 
-Create recurring templates that automatically generate new invoices on a schedule. Failed payments are retried up to three times and a 2% late fee is applied after the final attempt. The AI layer predicts payment likelihood and sends Slack/Teams alerts for invoices with a low chance of payment.
+Create recurring templates that automatically generate new documents on a schedule. Failed payments are retried up to three times and a 2% late fee is applied after the final attempt. The AI layer predicts payment likelihood and sends Slack/Teams alerts for invoices with a low chance of payment.
 
 ### Feedback Loop
 
@@ -513,7 +525,7 @@ Invites expire automatically and grant the specified role (viewer or editor).
 
 ### Offline Mode (PWA)
 
-The app registers a service worker so you can view and stage invoices even without a network connection. Any actions you take while offline are queued in local storage and automatically synced when the browser comes back online. Install the PWA from your browser's "Add to home screen" option for the best experience.
+The app registers a service worker so you can view and stage documents even without a network connection. Any actions you take while offline are queued in local storage and automatically synced when the browser comes back online. Install the PWA from your browser's "Add to home screen" option for the best experience.
 
 ### Demo Chart Data
 
@@ -523,7 +535,7 @@ If your database is empty, the dashboard charts now display sample data automati
 POST /api/documents/seed-dummy
 ```
 
-This inserts a few demo invoices so charts like *Top Vendors* and *Approval Timeline* look populated during testing. If you prefer to seed from the command line instead of hitting the API, run:
+This inserts a few demo documents so charts like *Top Vendors* and *Approval Timeline* look populated during testing. If you prefer to seed from the command line instead of hitting the API, run:
 
 ```bash
 cd backend
@@ -532,7 +544,7 @@ npm run seed-dummy
 
 ### Database Migration
 
-If you're upgrading from an earlier version that only had an `invoices` table,
+If you're upgrading from an earlier version that only had an `documents` table,
 run the migration script to rename it and add the new document fields:
 
 ```bash
@@ -542,7 +554,7 @@ node migrations/migrateInvoicesToDocuments.js
 
 This backs up the old table, renames it to `documents` and adds `type`, `title`,
 `entity`, `fileType` and `contentHash` columns. Existing API calls under
-`/api/invoices` continue to work via the `/api/documents` routes.
+`/api/documents` continue to work via the `/api/documents` routes.
 
 Make sure you log in again to obtain a fresh token if you see a `401` response when calling the endpoint.
 
@@ -603,7 +615,7 @@ npm install --legacy-peer-deps
 
 **`Database init error: connect ECONNREFUSED ::1:5433`**
 
-This happens when the backend tries to reach PostgreSQL on the IPv6 loopback address. Ensure your `.env` or deployment settings point to the `db` service by setting `DB_HOST=db` and `DB_PORT=5432` (or set `DATABASE_URL=postgres://postgres:postgres@db:5432/invoices_db`).
+This happens when the backend tries to reach PostgreSQL on the IPv6 loopback address. Ensure your `.env` or deployment settings point to the `db` service by setting `DB_HOST=db` and `DB_PORT=5432` (or set `DATABASE_URL=postgres://postgres:postgres@db:5432/documents_db`).
 
 1. Check that `backend/app.js` begins with `require('dotenv').config();` so environment variables are loaded.
 2. In `backend/config/db.js` the `Pool` should read connection info from `process.env` (`DB_HOST`, `DB_PORT`, etc. or `DATABASE_URL`).
