@@ -39,7 +39,6 @@ import SuccessAnimation from './components/SuccessAnimation';
 import Joyride from 'react-joyride';
 import ProgressBar from './components/ProgressBar';
 import FeatureWidget from './components/FeatureWidget';
-import VoiceResultModal from './components/VoiceResultModal';
 import ExplanationModal from './components/ExplanationModal';
 import FlaggedBadge from './components/FlaggedBadge';
 import CollaborativeCommentInput from './components/CollaborativeCommentInput';
@@ -177,7 +176,6 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
   const [riskScores, setRiskScores] = useState({});
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [featureOpen, setFeatureOpen] = useState(false);
-  const [voiceModal, setVoiceModal] = useState(null); // { command, result }
   const [explainModal, setExplainModal] = useState(null); // { invoice, explanation, score }
   const [chatHistory, setChatHistory] = useState(() => {
     const saved = localStorage.getItem('chatHistory');
@@ -1122,38 +1120,6 @@ useEffect(() => {
   };
 
 
-  const startVoiceCommand = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      addToast('Voice recognition not supported', 'error');
-      return;
-    }
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.onresult = async (event) => {
-      const command = Array.from(event.results).map((r) => r[0].transcript).join('');
-      setVoiceModal({ command, result: 'Thinking...' });
-      try {
-        const res = await fetch('http://localhost:3000/api/invoices/assistant', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ question: command }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setVoiceModal({ command, result: data.answer });
-        } else {
-          setVoiceModal({ command, result: data.message || 'Error' });
-        }
-      } catch (err) {
-        console.error('Voice command error:', err);
-        setVoiceModal({ command, result: 'Failed to process command' });
-      }
-    };
-    recognition.onerror = () => addToast('Voice recognition error', 'error');
-    recognition.start();
-  };
 
   const handleConversationalUpload = async (text) => {
     if (!text.trim()) return;
@@ -3420,7 +3386,6 @@ useEffect(() => {
           </button>
           <AIAssistantPanel
             onAsk={() => setAssistantOpen(true)}
-            onVoice={startVoiceCommand}
             onFeature={() => setFeatureOpen(true)}
             onSummary={handleSummary}
             onPattern={handlePattern}
@@ -3447,12 +3412,6 @@ useEffect(() => {
             open={!!bulkSummary}
             summary={bulkSummary}
             onClose={() => setBulkSummary(null)}
-          />
-          <VoiceResultModal
-            open={!!voiceModal}
-            command={voiceModal?.command}
-            result={voiceModal?.result}
-            onClose={() => setVoiceModal(null)}
           />
           <ExplanationModal
             open={!!explainModal}
