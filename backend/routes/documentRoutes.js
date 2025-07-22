@@ -16,9 +16,10 @@ const {
 const { authMiddleware } = require('../controllers/userController');
 
 const router = express.Router();
-const allowed = ['.pdf', '.docx', '.png', '.jpg', '.jpeg', '.txt', '.eml'];
+const allowed = ['.pdf', '.docx', '.png', '.jpg', '.jpeg', '.txt', '.eml', '.csv'];
 const upload = multer({
   dest: 'uploads/docs/',
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max, csv checked separately
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     if (!allowed.includes(ext)) {
@@ -27,8 +28,9 @@ const upload = multer({
     cb(null, true);
   }
 });
+const fileSizeLimit = require('../middleware/fileSizeLimit');
 
-router.post('/upload', authMiddleware, upload.single('file'), uploadDocument);
+router.post('/upload', authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
 router.post('/:id/extract', authMiddleware, extractDocument);
 router.post('/:id/corrections', authMiddleware, saveCorrections);
 router.get('/:id/summary', authMiddleware, summarizeDocument);
