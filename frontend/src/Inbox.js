@@ -334,7 +334,7 @@ export default function Inbox() {
                         <span className="text-xs text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="px-3 py-4 text-xs">{inv.tags?.join(', ') || '-'}</td>
+                    <td className="px-3 py-4 text-xs">{Array.isArray(inv.tags) ? inv.tags.join(', ') : inv.tags || '-'}</td>
                     <td className="px-3 py-4 text-center">
                       {inv.flag_reason && (
                         <Tippy content={`AI flag: ${inv.flag_reason}`}>
@@ -375,7 +375,7 @@ export default function Inbox() {
                     <tr className="bg-gray-100">
                       <td></td>
                       <td colSpan="10" className="px-4 py-2 text-xs text-left">
-                        PO#: {inv.po_number || inv.po_id || 'N/A'} | Tags: {inv.tags?.join(', ') || 'None'} | Uploaded:{' '}
+                        PO#: {inv.po_number || inv.po_id || 'N/A'} | Tags: {Array.isArray(inv.tags) ? inv.tags.join(', ') : inv.tags || 'None'} | Uploaded:{' '}
                         {inv.created_at ? new Date(inv.created_at).toLocaleString() : 'Unknown'}
                       </td>
                     </tr>
