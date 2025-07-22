@@ -197,6 +197,7 @@ Add an `assignee` column for storing invoice assignments:
 
 ```sql
 ALTER TABLE documents ADD COLUMN assignee TEXT;
+ALTER TABLE documents ADD COLUMN assignment_reason TEXT;
 ALTER TABLE documents ADD COLUMN approval_status TEXT DEFAULT 'Pending';
 ALTER TABLE documents ADD COLUMN approval_history JSONB DEFAULT '[]';
 ALTER TABLE documents ADD COLUMN comments JSONB DEFAULT '[]';
@@ -260,6 +261,15 @@ CREATE TABLE feedback (
   id SERIAL PRIMARY KEY,
   endpoint TEXT,
   rating INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE category_feedback (
+  id SERIAL PRIMARY KEY,
+  document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+  suggested_category TEXT,
+  confidence NUMERIC,
+  accepted BOOLEAN,
   created_at TIMESTAMP DEFAULT NOW()
 );
 ```

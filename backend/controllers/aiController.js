@@ -962,9 +962,36 @@ exports.categorizeDocument = async (req, res) => {
     );
     const raw = response.data.choices?.[0]?.message?.content?.trim() || '';
     const categories = raw.split(/[\n,]/).map((c) => c.trim()).filter(Boolean);
-    res.json({ categories });
+    const confidences = [0.9, 0.6, 0.3];
+    const inserted = [];
+    for (let i = 0; i < categories.length; i++) {
+      const cat = categories[i];
+      const conf = confidences[i] || 0.1;
+      const r = await pool.query(
+        `INSERT INTO category_feedback (document_id, suggested_category, confidence)
+         VALUES ($1,$2,$3) RETURNING id`,
+        [req.body.document_id || null, cat, conf]
+      );
+      inserted.push({ id: r.rows[0].id, category: cat, confidence: conf });
+    }
+    res.json({ categories: inserted });
   } catch (err) {
     console.error('Categorize document error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to categorize document' });
+  }
+};
+
+exports.categoryFeedback = async (req, res) => {
+  const { id } = req.params;
+  const { accepted } = req.body || {};
+  if (typeof accepted === 'undefined') {
+    return res.status(400).json({ message: 'accepted required' });
+  }
+  try {
+    await pool.query('UPDATE category_feedback SET accepted = $1 WHERE id = $2', [accepted, id]);
+    res.json({ message: 'Feedback recorded' });
+  } catch (err) {
+    console.error('Category feedback error:', err);
+    res.status(500).json({ message: 'Failed to record feedback' });
   }
 };

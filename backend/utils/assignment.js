@@ -8,6 +8,13 @@ const tagAssigneeMap = {
   cloud: 'Charlie',
 };
 
+const categoryAssigneeMap = {
+  marketing: 'Alice',
+  design: 'Design Team',
+  it: 'Charlie',
+  finance: 'Finance Lead',
+};
+
 async function getAssigneeFromVendorHistory(vendor) {
   if (!vendor) return null;
   try {
@@ -37,4 +44,26 @@ function getAssigneeFromTags(tags = []) {
   return null;
 }
 
-module.exports = { getAssigneeFromVendorHistory, getAssigneeFromTags };
+async function getAssigneeFromVendorProfile(vendor) {
+  if (!vendor) return null;
+  try {
+    const res = await pool.query(
+      'SELECT category FROM vendor_profiles WHERE vendor = $1',
+      [vendor]
+    );
+    const cat = res.rows[0]?.category?.toLowerCase();
+    if (cat && categoryAssigneeMap[cat]) {
+      return categoryAssigneeMap[cat];
+    }
+    return null;
+  } catch (err) {
+    console.error('Vendor profile lookup error:', err);
+    return null;
+  }
+}
+
+module.exports = {
+  getAssigneeFromVendorHistory,
+  getAssigneeFromTags,
+  getAssigneeFromVendorProfile,
+};

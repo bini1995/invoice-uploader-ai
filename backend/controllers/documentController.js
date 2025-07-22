@@ -47,7 +47,10 @@ exports.uploadDocument = async (req, res) => {
       [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'pending', 1, meta, docType, contentHash, docTitle]
     );
     await refreshSearchable(rows[0].id);
-    res.json({ id: rows[0].id, status: 'pending', doc_type: docType });
+    const { autoAssignDocument } = require('../services/invoiceService');
+    const vendorName = meta.vendor || '';
+    const { assignee, reason } = await autoAssignDocument(rows[0].id, vendorName, meta.tags || []);
+    res.json({ id: rows[0].id, status: 'pending', doc_type: docType, assignee, assignment_reason: reason });
   } catch (err) {
     console.error('Document upload error:', err.message);
     res.status(500).json({ message: 'Upload failed' });

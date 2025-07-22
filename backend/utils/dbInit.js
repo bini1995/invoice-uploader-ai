@@ -105,6 +105,8 @@ async function initDb() {
       version INTEGER DEFAULT 1,
       expiration TIMESTAMP,
       flag_reason TEXT,
+      assignee TEXT,
+      assignment_reason TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS fields JSONB DEFAULT '[]'");
@@ -123,6 +125,8 @@ async function initDb() {
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS type TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS content_hash TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS doc_title TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS assignee TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS assignment_reason TEXT");
 
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS searchable tsvector");
     await pool.query("CREATE INDEX IF NOT EXISTS idx_searchable ON documents USING GIN(searchable)");
@@ -205,6 +209,15 @@ async function initDb() {
       invoice_id INTEGER REFERENCES invoices(id) ON DELETE SET NULL,
       input_vendor TEXT NOT NULL,
       suggested_vendor TEXT NOT NULL,
+      confidence NUMERIC,
+      accepted BOOLEAN,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS category_feedback (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      suggested_category TEXT NOT NULL,
       confidence NUMERIC,
       accepted BOOLEAN,
       created_at TIMESTAMP DEFAULT NOW()

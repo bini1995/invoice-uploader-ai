@@ -45,6 +45,16 @@ async function trainFromCorrections() {
       }
     }
 
+    const { rows: fbRows } = await pool.query(
+      `SELECT d.vendor, f.suggested_category FROM category_feedback f JOIN documents d ON f.document_id = d.id WHERE f.accepted = TRUE`
+    );
+    for (const r of fbRows) {
+      const vendor = r.vendor?.toLowerCase();
+      if (!vendor || !r.suggested_category) continue;
+      model.categoryMap[vendor] = model.categoryMap[vendor] || {};
+      model.categoryMap[vendor][r.suggested_category] = (model.categoryMap[vendor][r.suggested_category] || 0) + 1;
+    }
+
     const file = path.join(__dirname, '..', 'data', 'ocr_model.json');
     fs.writeFileSync(file, JSON.stringify(model, null, 2));
   } catch (err) {
