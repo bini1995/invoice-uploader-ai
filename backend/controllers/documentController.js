@@ -40,8 +40,6 @@ exports.uploadDocument = async (req, res) => {
       [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'pending', 1, meta, docType, contentHash, docTitle]
     );
 
-    const parseDocumentQueue = require('../queues/parseDocumentQueue');
-    parseDocumentQueue.add({ docId: rows[0].id }, { attempts: 3, backoff: { type: 'exponential', delay: 5000 } });
 
     res.json({ id: rows[0].id, status: 'pending', doc_type: docType });
   } catch (err) {

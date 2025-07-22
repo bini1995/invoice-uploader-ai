@@ -14,10 +14,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: TATA1tata1
       DB_NAME: invoices_db
-      REDIS_URL: redis://redis:6379
     depends_on:
       - db
-      - redis
     restart: always
 
   frontend:
@@ -42,11 +40,6 @@ services:
       - db-data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  redis:
-    image: redis:alpine
-    container_name: clarifyops-redis
-    ports:
-      - "6379:6379"
 
   nginx:
     image: nginx:1.28

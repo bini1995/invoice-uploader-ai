@@ -6,11 +6,6 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 
 jest.mock('../config/db', () => ({ query: jest.fn() }));
-jest.mock('../config/redis', () => ({
-  sadd: jest.fn(),
-  sismember: jest.fn().mockResolvedValue(1),
-  srem: jest.fn()
-}));
 
 const authRoutes = require('../routes/authRoutes');
 const { authMiddleware } = require('../controllers/userController');

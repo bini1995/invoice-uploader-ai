@@ -6,6 +6,9 @@ This is a full-stack **AI Document Ops Engine** delivering operational clarity f
 - **Express + PostgreSQL** (backend)
 - **OpenRouter API** for natural language error feedback
 
+The backend no longer relies on Redis queues or background workers. All document
+processing happens directly through the Express API for a simpler deployment.
+
 Originally this project focused solely on invoice processing. It is now evolving into a general **Document AI Platform** that handles invoices, contracts and more. See [docs/TRANSFORMATION_PLAN.md](docs/TRANSFORMATION_PLAN.md) for the roadmap.
 
 ## Requirements
