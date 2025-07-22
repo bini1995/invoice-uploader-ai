@@ -124,6 +124,10 @@ async function initDb() {
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS content_hash TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS doc_title TEXT");
 
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS searchable tsvector");
+    await pool.query("CREATE INDEX IF NOT EXISTS idx_searchable ON documents USING GIN(searchable)");
+    await pool.query("UPDATE documents SET searchable = to_tsvector('english', fields::text) WHERE searchable IS NULL");
+
     await pool.query(`CREATE TABLE IF NOT EXISTS document_versions (
       id SERIAL PRIMARY KEY,
       document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,

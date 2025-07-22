@@ -8,6 +8,13 @@ const { recordDocumentVersion } = require('../utils/documentVersionLogger');
 const crypto = require('crypto');
 const { DocumentType } = require('../enums/documentType');
 
+async function refreshSearchable(id) {
+  await pool.query(
+    "UPDATE documents SET searchable = to_tsvector('english', fields::text) WHERE id = $1",
+    [id]
+  );
+}
+
 exports.uploadDocument = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
@@ -39,8 +46,7 @@ exports.uploadDocument = async (req, res) => {
       'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata, type, content_hash, doc_title) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id',
       [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'pending', 1, meta, docType, contentHash, docTitle]
     );
-
-
+    await refreshSearchable(rows[0].id);
     res.json({ id: rows[0].id, status: 'pending', doc_type: docType });
   } catch (err) {
     console.error('Document upload error:', err.message);
@@ -70,6 +76,7 @@ exports.extractDocument = async (req, res) => {
       category: result.fields.category,
     };
     await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [norm, id]);
+    await refreshSearchable(id);
     await recordDocumentVersion(id, doc, { ...doc, fields: norm }, req.user?.userId, req.user?.username);
     res.json({ data: norm, confidence: 0.9 });
   } catch (err) {
@@ -94,6 +101,7 @@ exports.saveCorrections = async (req, res) => {
     const before = beforeRes.rows[0];
     const updatedFields = { ...(before.fields || {}), ...corrections };
     await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [updatedFields, id]);
+    await refreshSearchable(id);
     await recordDocumentVersion(id, before, { ...before, fields: updatedFields }, req.user?.userId, req.user?.username);
     res.json({ message: 'Corrections saved' });
   } catch (err) {
@@ -153,6 +161,7 @@ exports.restoreDocumentVersion = async (req, res) => {
     values.push(id);
     const before = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     await pool.query(`UPDATE documents SET ${sets.join(', ')} WHERE id = $${idx}`, values);
+    await refreshSearchable(id);
     const after = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (before.rows.length && after.rows.length) {
       await recordDocumentVersion(id, before.rows[0], after.rows[0], req.user?.userId, req.user?.username);
@@ -248,6 +257,25 @@ exports.getEntityTotals = async (_req, res) => {
     res.status(500).json({ message: 'Failed to fetch entity totals' });
   } finally {
     client.release();
+  }
+};
+
+exports.searchDocuments = async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.status(400).json({ message: 'Missing query' });
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, doc_title, file_name, doc_type, fields
+       FROM documents
+       WHERE searchable @@ plainto_tsquery('english', $1)
+       ORDER BY ts_rank(searchable, plainto_tsquery('english', $1)) DESC
+       LIMIT 50`,
+      [q]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Search documents error:', err);
+    res.status(500).json({ message: 'Failed to search documents' });
   }
 };
 

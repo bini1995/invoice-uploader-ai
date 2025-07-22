@@ -100,6 +100,20 @@
         "responses": { "200": { "description": "Entity totals" } }
       }
     },
+    "/api/documents/search": {
+      "get": {
+        "summary": "Search documents",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Search results" } }
+      }
+    },
     "/api/validation/validate-row": {
       "post": {
         "summary": "Validate an invoice row",

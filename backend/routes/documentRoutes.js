@@ -12,6 +12,7 @@ const {
   updateLifecycle,
   checkCompliance,
   getEntityTotals,
+  searchDocuments,
 } = require('../controllers/documentController');
 const { authMiddleware } = require('../controllers/userController');
 
@@ -41,5 +42,6 @@ router.post('/:id/version', uploadLimiter, authMiddleware, upload.single('file')
 router.put('/:id/lifecycle', authMiddleware, updateLifecycle);
 router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
+router.get('/search', authMiddleware, searchDocuments);
 
 module.exports = router;
