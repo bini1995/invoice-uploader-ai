@@ -6,7 +6,7 @@ const http = require('http');
 require('dotenv').config();                 // load environment variables
 const logger = require('./utils/logger');
 const Sentry = require('@sentry/node');
-const invoiceRoutes = require('./routes/invoiceRoutes'); // we'll make this next
+const documentsRoutes = require('./routes/documents');
 const authRoutes = require('./routes/authRoutes');
 const exportTemplateRoutes = require('./routes/exportTemplateRoutes');
 const brandingRoutes = require('./routes/brandingRoutes');
@@ -79,8 +79,8 @@ app.use(auditLog);
 app.use('/api/documents', authRoutes);
 app.use('/api/invoices', authRoutes); // backwards compat
 // Main document routes (formerly invoices)
-app.use('/api/:tenantId/documents', piiMask, invoiceRoutes);
-app.use('/api/:tenantId/invoices', piiMask, invoiceRoutes); // backwards compat
+app.use('/api/:tenantId/documents', piiMask, documentsRoutes);
+app.use('/api/:tenantId/invoices', piiMask, documentsRoutes); // backwards compat
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
 app.use('/api/feedback', feedbackRoutes);
