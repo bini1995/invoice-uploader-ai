@@ -30,13 +30,5 @@ exports.sendEmailNotification = async (to, subject, message) => {
 };
 
 exports.sendSmsNotification = async (to, message) => {
-  const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER } = process.env;
-  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_FROM_NUMBER || !to) return;
-  const url = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
-  const payload = new URLSearchParams({ From: TWILIO_FROM_NUMBER, To: to, Body: message });
-  try {
-    await axios.post(url, payload, { auth: { username: TWILIO_ACCOUNT_SID, password: TWILIO_AUTH_TOKEN } });
-  } catch (err) {
-    console.error('SMS notification error:', err.message);
-  }
+  console.log('SMS alert stub:', { to, message });
 };

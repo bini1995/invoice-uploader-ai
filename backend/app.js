@@ -51,7 +51,6 @@ const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
 const { loadCorrections } = require('./utils/parserTrainer');
 const { loadModel, trainFromCorrections } = require('./utils/ocrAgent');
-const { startEmailSync } = require('./utils/emailSync');
 const { loadSchedules } = require('./utils/automationScheduler');
 const { scheduleReports } = require('./utils/reportScheduler');
 const { scheduleAnomalyScan } = require('./utils/anomalyScanner');
@@ -126,7 +125,7 @@ app.use(Sentry.Handlers.errorHandler());
   setInterval(trainFromCorrections, 6 * 60 * 60 * 1000); // retrain regularly
 
   await loadSchedules();
-  startEmailSync();
+  // startEmailSync();
   scheduleReports();
   scheduleAnomalyScan();
 
