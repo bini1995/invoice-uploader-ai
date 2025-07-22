@@ -149,8 +149,6 @@ npm install --legacy-peer-deps
 - Multi-currency support with automatic VAT/GST calculations
 - Automation marketplace integrations (Zapier/Make) for Slack and Google Sheets, plus connectors for your accounting platform, via `/api/integrations`
 - RPA automation engine triggers post-approval exports to your ERP system
-- Scheduled email fetch imports PDF documents automatically
-- Forward documents to `upload@yourdomain.com` and attachments are parsed via Gmail API
 - Low-code automation builder (`/api/automations`) for if‑then API workflows
 - Blockchain-backed invoice validation with PDF hashing for tamper-proof records
 ### Recent Backend Updates
@@ -176,10 +174,6 @@ cp .env.example .env   # Add your DATABASE_URL and OpenRouter API key
 # Set either OPENROUTER_API_KEY or OPENAI_API_KEY in .env
 # Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
 # Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields
-# Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_FROM_NUMBER if you want SMS alerts
-# Set GOOGLE_SERVICE_ACCOUNT_KEY and EMAIL_INBOX to enable email-to-upload support
-# GOOGLE_SERVICE_ACCOUNT_KEY should point to a service account JSON file and
-# EMAIL_INBOX should be the Gmail address to monitor for incoming documents
 npm start
 ```
 
@@ -189,6 +183,11 @@ Set an `X-Tenant-Id` header on every API request. Invoices are filtered by this
 tenant ID and new uploads will be associated with it. The default tenant is
 `"default"` if no header is provided.
 Admin users can aggregate data across all tenants by sending `X-Tenant-Id: all`.
+
+### Future Roadmap
+
+- Email-to-upload via Gmail API (requires OAuth and service accounts)
+- SMS alerts powered by Twilio
 
 ### Database Update
 

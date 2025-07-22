@@ -5,6 +5,8 @@ const { google } = require('googleapis');
 const { sendMail } = require('./email');
 const { uploadInvoice } = require('../controllers/invoiceController');
 
+// Gmail ingestion temporarily disabled
+
 const inbox = process.env.EMAIL_INBOX || 'invoices@company.com';
 
 async function processMessage(gmail, message) {
@@ -94,7 +96,7 @@ async function fetchEmailAttachments() {
 
 function startEmailSync() {
   const { schedule } = require('./cronManager');
-  schedule('emailSync', '*/5 * * * *', fetchEmailAttachments);
+  // schedule('emailSync', '*/5 * * * *', fetchEmailAttachments);
 }
 
 module.exports = { startEmailSync };
