@@ -37,21 +37,13 @@ exports.uploadDocument = async (req, res) => {
     const docTitle = req.body.title || req.file.originalname;
     const { rows } = await pool.query(
       'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata, type, content_hash, doc_title) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id',
-      [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'new', 1, meta, docType, contentHash, docTitle]
+      [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'pending', 1, meta, docType, contentHash, docTitle]
     );
 
-    const embeddingRes = await openrouter.embeddings.create({
-      model: 'openai/text-embedding-ada-002',
-      input: fs.readFileSync(destPath, 'utf8').slice(0, 2000)
-    });
-    const embedding = embeddingRes.data[0].embedding;
-    await pool.query('UPDATE documents SET embedding = $1 WHERE id = $2', [embedding, rows[0].id]);
-    const docRes = await pool.query('SELECT * FROM documents WHERE id = $1', [rows[0].id]);
-    if (docRes.rows.length) {
-      await recordDocumentVersion(docRes.rows[0].id, {}, docRes.rows[0], req.user?.userId, req.user?.username);
-    }
+    const parseDocumentQueue = require('../queues/parseDocumentQueue');
+    parseDocumentQueue.add({ docId: rows[0].id }, { attempts: 3, backoff: { type: 'exponential', delay: 5000 } });
 
-    res.json({ id: rows[0].id, doc_type: docType });
+    res.json({ id: rows[0].id, status: 'pending', doc_type: docType });
   } catch (err) {
     console.error('Document upload error:', err.message);
     res.status(500).json({ message: 'Upload failed' });
