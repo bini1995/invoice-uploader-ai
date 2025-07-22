@@ -40,7 +40,7 @@ npm install --legacy-peer-deps
 - Compliance report generator
 - Compliance checker flags missing contract clauses
 - Document lifecycle rules with flexible expiration and deletion
-- Secure document signing via DocuSign and blockchain hashing
+- **Enterprise Add-On**: Secure DocuSign signing (stubbed) with optional blockchain hash
 
  - Upload CSV, PDF and Excel document files
  - In-app guided tour for new users
@@ -111,7 +111,6 @@ npm install --legacy-peer-deps
 - AI-powered auto tagging with vendor/voucher recommendations
 - Predictive vendor behavior suggestions
 - Anomaly warnings before upload
-- Voice-to-upload for quick document creation
 - Conversational uploading via natural language commands
 - Natural language document search
 - Hoverable vendor bios with website and industry info
@@ -163,7 +162,7 @@ npm install --legacy-peer-deps
 - `/api/ai/categorize` suggests document categories.
 - `/api/documents/:id/compliance` checks contracts for missing clauses.
 - Lifecycle rules support `retention_policy`, `expires_at` and `archived`.
-- `/api/signing/:id/start` enables blockchain-backed DocuSign signing.
+- **Enterprise Add-On**: `/api/signing/:id/start` returns a placeholder link for e-signing.
 - Enterprise features include org-wide settings, SOC2 audit logs, usage analytics and role delegation.
 
 ## Setup Instructions
@@ -528,7 +527,7 @@ Invites expire automatically and grant the specified role (viewer or editor).
 
 ### Offline Mode (PWA)
 
-The app registers a service worker so you can view and stage documents even without a network connection. Any actions you take while offline are queued in local storage and automatically synced when the browser comes back online. Install the PWA from your browser's "Add to home screen" option for the best experience.
+Offline sync is currently disabled in the MVP. The service worker is unregistered by default. If you want to experiment with offline capabilities, re-enable the service worker in `frontend/src/index.js` and rebuild the frontend.
 
 ### Demo Chart Data
 

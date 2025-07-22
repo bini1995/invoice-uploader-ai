@@ -49,7 +49,7 @@ This document outlines a high level path to evolve ClarifyOps into an **AI Docum
 
 - **Compliance Checker** – `/api/documents/:id/compliance` flags missing clauses for contracts.
 - **Document Lifecycle Rules** – `retention_policy`, `expires_at` and `archived` now apply to all documents.
-- **Secure Signing** – New `/api/signing/:id/start` endpoint stores a blockchain hash and redirects to DocuSign.
+- **Enterprise Add-On: Secure Signing** – `/api/signing/:id/start` now returns a placeholder link; blockchain hashing removed from the MVP.
 
 ## 7. Enterprise Readiness
 
