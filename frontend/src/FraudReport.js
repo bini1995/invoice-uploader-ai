@@ -9,6 +9,26 @@ function FraudReport() {
   const [loading, setLoading] = useState(true);
   const [explanations, setExplanations] = useState({});
 
+  const unflagInvoice = async (id) => {
+    await fetch(`${API_BASE}/api/invoices/${id}/flag`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ flagged: false }),
+    });
+    fetchFlagged();
+  };
+
+  const approveInvoice = async (id) => {
+    await fetch(`${API_BASE}/api/invoices/${id}/approve`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchFlagged();
+  };
+
   const fetchFlagged = useCallback(async () => {
     if (!token) return;
     setLoading(true);
@@ -45,12 +65,13 @@ function FraudReport() {
                 <th className="px-2 py-1">Amount</th>
                 <th className="px-2 py-1">Reason</th>
                 <th className="px-2 py-1">Explain</th>
+                <th className="px-2 py-1">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="p-4"><Skeleton rows={5} height="h-4" /></td>
+                  <td colSpan="7" className="p-4"><Skeleton rows={5} height="h-4" /></td>
                 </tr>
               ) : (
                 invoices.map(inv => (
@@ -61,7 +82,11 @@ function FraudReport() {
                     <td className="px-2 py-1">${inv.amount}</td>
                     <td className="px-2 py-1">{explanations[inv.id] || inv.flag_reason || '-'}</td>
                     <td className="px-2 py-1">
-                      <button onClick={() => loadExplanation(inv.id)} className="btn btn-primary text-xs px-2 py-1" title="Explain">AI</button>
+                      <button onClick={() => loadExplanation(inv.id)} className="btn btn-primary text-xs px-2 py-1 mr-1" title="Explain">AI</button>
+                    </td>
+                    <td className="px-2 py-1 space-x-1">
+                      <button onClick={() => unflagInvoice(inv.id)} className="btn btn-ghost text-xs" title="Unflag">Unflag</button>
+                      <button onClick={() => approveInvoice(inv.id)} className="btn btn-ghost text-xs" title="Approve">Approve</button>
                     </td>
                   </tr>
                 ))
