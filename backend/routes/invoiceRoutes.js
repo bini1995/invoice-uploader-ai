@@ -17,6 +17,7 @@ const upload = multer({
     cb(null, true);
   }
 });
+const { uploadLimiter, aiLimiter } = require('../middleware/rateLimit');
 const { exportFilteredInvoices, exportAllInvoices, importInvoicesCSV } = require('../controllers/invoiceController');
 
 const { login, refreshToken, logout, authMiddleware, authorizeRoles } = require('../controllers/userController');
@@ -126,11 +127,11 @@ const { scenarioCashFlow } = require('../controllers/scenarioController');
 router.get('/export-archived', authMiddleware, exportArchivedInvoicesCSV);
 router.patch('/:id/payment-status', authMiddleware, authorizeRoles('accountant','admin'), setPaymentStatus);
 router.post('/:id/mark-paid', authMiddleware, authorizeRoles('accountant','admin'), markInvoicePaid);
-router.post('/suggest-vendor', suggestVendor);
-router.post('/suggest-voucher', suggestVoucher);
+router.post('/suggest-vendor', aiLimiter, suggestVendor);
+router.post('/suggest-voucher', aiLimiter, suggestVoucher);
 router.post('/send-email', sendSummaryEmail);
 router.post('/draft-smart-email', authMiddleware, smartDraftEmail);
-router.post('/upload', authMiddleware, authorizeRoles('admin'), (req, res) => {
+router.post('/upload', uploadLimiter, authMiddleware, authorizeRoles('admin'), (req, res) => {
   const busboy = new Busboy({ headers: req.headers });
   const fileData = [];
 
@@ -153,36 +154,36 @@ router.post('/upload', authMiddleware, authorizeRoles('admin'), (req, res) => {
   req.pipe(busboy);
 });
 // allow unauthenticated access for free trial sample parsing
-router.post('/parse-sample', upload.single('invoiceFile'), parseInvoiceSample);
-router.post('/import-csv', authMiddleware, authorizeRoles('admin'), upload.single('file'), importInvoicesCSV);
-router.post('/voice-upload', authMiddleware, authorizeRoles('admin'), voiceUpload);
-router.post('/nl-upload', authMiddleware, authorizeRoles('admin'), conversationalUpload);
+router.post('/parse-sample', uploadLimiter, upload.single('invoiceFile'), parseInvoiceSample);
+router.post('/import-csv', uploadLimiter, authMiddleware, authorizeRoles('admin'), upload.single('file'), importInvoicesCSV);
+router.post('/voice-upload', uploadLimiter, authMiddleware, authorizeRoles('admin'), voiceUpload);
+router.post('/nl-upload', uploadLimiter, authMiddleware, authorizeRoles('admin'), conversationalUpload);
 router.get('/', getAllInvoices);
 router.delete('/clear', authMiddleware, authorizeRoles('admin'), clearAllInvoices);
 router.delete('/:id', authMiddleware, authorizeRoles('admin'), deleteInvoiceById);
 router.get('/search', searchInvoicesByVendor);
-router.post('/nl-query', authMiddleware, naturalLanguageQuery);
-router.post('/nl-search', authMiddleware, naturalLanguageSearch);
-router.post('/smart-search', authMiddleware, smartSearchParse);
-router.post('/nl-chart', authMiddleware, nlChartQuery);
-router.post('/quality-score', authMiddleware, invoiceQualityScore);
-router.post('/payment-risk', authMiddleware, paymentRiskScore);
-router.post('/payment-likelihood', authMiddleware, paymentLikelihood);
-router.post('/payment-behavior', authMiddleware, paymentBehaviorByVendor);
-router.post('/assistant', authMiddleware, assistantQuery);
-router.post('/billing-query', authMiddleware, billingQuery);
-router.post('/:id/think-suggestion', authMiddleware, thinkSuggestion);
-router.post('/:id/overdue-email', authMiddleware, overdueEmailTemplate);
-router.post('/:id/copilot', authMiddleware, invoiceCopilot);
-router.get('/help/onboarding', authMiddleware, onboardingHelp);
-router.post('/summarize-errors', summarizeUploadErrors);
-router.post('/suggest-fixes', authMiddleware, suggestFixes);
+router.post('/nl-query', aiLimiter, authMiddleware, naturalLanguageQuery);
+router.post('/nl-search', aiLimiter, authMiddleware, naturalLanguageSearch);
+router.post('/smart-search', aiLimiter, authMiddleware, smartSearchParse);
+router.post('/nl-chart', aiLimiter, authMiddleware, nlChartQuery);
+router.post('/quality-score', aiLimiter, authMiddleware, invoiceQualityScore);
+router.post('/payment-risk', aiLimiter, authMiddleware, paymentRiskScore);
+router.post('/payment-likelihood', aiLimiter, authMiddleware, paymentLikelihood);
+router.post('/payment-behavior', aiLimiter, authMiddleware, paymentBehaviorByVendor);
+router.post('/assistant', aiLimiter, authMiddleware, assistantQuery);
+router.post('/billing-query', aiLimiter, authMiddleware, billingQuery);
+router.post('/:id/think-suggestion', aiLimiter, authMiddleware, thinkSuggestion);
+router.post('/:id/overdue-email', aiLimiter, authMiddleware, overdueEmailTemplate);
+router.post('/:id/copilot', aiLimiter, authMiddleware, invoiceCopilot);
+router.get('/help/onboarding', aiLimiter, authMiddleware, onboardingHelp);
+router.post('/summarize-errors', aiLimiter, summarizeUploadErrors);
+router.post('/suggest-fixes', aiLimiter, authMiddleware, suggestFixes);
 router.post('/login', login);
 router.post('/refresh', refreshToken);
 router.post('/logout', logout);
 router.post('/export-filtered', authMiddleware, exportFilteredInvoicesCSV);
 router.get('/export-all', authMiddleware, exportAllInvoices);
-router.post('/summarize-vendor-data', summarizeVendorData);
+router.post('/summarize-vendor-data', aiLimiter, summarizeVendorData);
 router.get('/monthly-insights', authMiddleware, getMonthlyInsights);
 router.get('/cash-flow', authMiddleware, getCashFlow);
 router.post('/cash-flow/scenario', authMiddleware, scenarioCashFlow);

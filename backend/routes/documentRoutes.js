@@ -29,14 +29,15 @@ const upload = multer({
   }
 });
 const fileSizeLimit = require('../middleware/fileSizeLimit');
+const { uploadLimiter } = require('../middleware/rateLimit');
 
-router.post('/upload', authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
+router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
 router.post('/:id/extract', authMiddleware, extractDocument);
 router.post('/:id/corrections', authMiddleware, saveCorrections);
 router.get('/:id/summary', authMiddleware, summarizeDocument);
 router.get('/:id/versions', authMiddleware, getDocumentVersions);
 router.post('/:id/versions/:versionId/restore', authMiddleware, restoreDocumentVersion);
-router.post('/:id/version', authMiddleware, upload.single('file'), uploadDocumentVersion);
+router.post('/:id/version', uploadLimiter, authMiddleware, upload.single('file'), uploadDocumentVersion);
 router.put('/:id/lifecycle', authMiddleware, updateLifecycle);
 router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
