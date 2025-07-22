@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { google } = require('googleapis');
 const { sendMail } = require('./email');
-const { uploadInvoice } = require('../controllers/invoiceController');
+// Use the generic document upload since invoice controller was removed
+const { uploadDocument } = require('../controllers/documentController');
 
 // Gmail ingestion temporarily disabled
 
@@ -38,7 +39,7 @@ async function processMessage(gmail, message) {
     };
     const res = { status: () => ({ json: () => {} }), json: () => {} };
     try {
-      await uploadInvoice(req, res);
+      await uploadDocument(req, res);
     } catch (err) {
       const logger = require('./logger');
       logger.error({ err }, 'Email attachment processing failed');

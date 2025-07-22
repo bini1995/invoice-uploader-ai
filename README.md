@@ -9,6 +9,8 @@ This is a full-stack **AI Document Ops Engine** delivering operational clarity f
 The backend no longer relies on Redis queues or background workers. All document
 processing happens directly through the Express API for a simpler deployment.
 
+The API has been consolidated to a single `/api/documents` namespace (with `/api/invoices` kept as an alias) and the old invoice controller has been removed. Experimental features like feedback collection and the automation builder now live under `/api/labs/*`.
+
 Originally this project focused solely on invoice processing. It is now evolving into a general **Document AI Platform** that handles invoices, contracts and more. See [docs/TRANSFORMATION_PLAN.md](docs/TRANSFORMATION_PLAN.md) for the roadmap.
 
 ## Requirements
@@ -73,7 +75,7 @@ npm install --legacy-peer-deps
 - Anomaly detection dashboard
 - Automatic anomaly alerts with severity tiers
 - Fraud pattern detection for suspicious vendor activity
-- ML-based anomaly scoring using Isolation Forest with admin feedback loop
+- Anomaly scoring currently returns a fixed risk value (Isolation Forest disabled)
 - Timeline view of document changes
 - Recurring document detection with notifications
 - Document duplication prevention using content hashes
@@ -290,8 +292,7 @@ CREATE TABLE cashflow_scenarios (
 
 ### Auto-Archive Rule
 
-The backend automatically archives documents older than 90 days
-unless they are marked as `priority`.
+The previous auto-archive job for invoices has been disabled. Documents may still specify an `expires_at` or `delete_at` timestamp for manual lifecycle cleanup.
 
 Invoices also store a SHA256 `integrity_hash` generated at upload time. You can
 set a retention policy (`6m`, `2y`, or `forever`) on upload or later. A daily
