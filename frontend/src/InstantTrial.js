@@ -72,7 +72,7 @@ export default function InstantTrial() {
         )}
         {step === 2 && (
           <div className="space-y-4 text-center">
-            <p className="text-sm">Processing CSV...</p>
+            <p className="text-sm">{loading ? 'Generating summary...' : 'Processing CSV...'}</p>
             <ProgressBar value={loading ? 60 : 100} />
           </div>
         )}

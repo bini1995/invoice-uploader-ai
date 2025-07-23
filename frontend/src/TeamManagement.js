@@ -110,7 +110,6 @@ function TeamManagement() {
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" className="input w-full" />
           <select value={newRole} onChange={e => setNewRole(e.target.value)} className="input w-full">
             <option value="viewer">viewer</option>
-            <option value="approver">approver</option>
             <option value="admin">admin</option>
           </select>
           <button onClick={addUser} className="bg-indigo-600 text-white px-3 py-1 rounded" title="Add User">Add User</button>
@@ -144,7 +143,6 @@ function TeamManagement() {
                   <td className="p-2">
                     <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="input p-1">
                       <option value="viewer">viewer</option>
-                      <option value="approver">approver</option>
                       <option value="admin">admin</option>
                     </select>
                   </td>
