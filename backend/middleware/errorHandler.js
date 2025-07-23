@@ -7,11 +7,11 @@ function errorHandler(err, req, res, next) {
 }
 
 process.on('unhandledRejection', (reason) => {
-  logger.error({ reason }, 'Unhandled Rejection');
+  logger.error('Unhandled Rejection', reason);
 });
 
 process.on('uncaughtException', (err) => {
-  logger.fatal(err, 'Uncaught Exception');
+  logger.error('Uncaught Exception', err);
 });
 
 module.exports = errorHandler;

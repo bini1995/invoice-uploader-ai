@@ -165,6 +165,10 @@ npm install --legacy-peer-deps
 - **Enterprise Add-On**: `/api/signing/:id/start` returns a placeholder link for e-signing.
 - Enterprise features include org-wide settings, SOC2 audit logs, usage analytics and role delegation.
 
+### API Docs & Health
+
+Swagger documentation is available at [`/api/docs`](http://localhost:3000/api/docs) when the backend is running. A lightweight `/health` endpoint returns a simple `{ "status": "ok" }` payload for uptime monitoring tools.
+
 ## Setup Instructions
 
 ### Backend
