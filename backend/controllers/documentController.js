@@ -16,6 +16,34 @@ async function refreshSearchable(id) {
   );
 }
 
+exports.listDocuments = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, doc_title, doc_type, file_name, fields, status
+       FROM documents WHERE tenant_id = $1 ORDER BY id DESC LIMIT 100`,
+      [req.tenantId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('List documents error:', err);
+    res.status(500).json({ message: 'Failed to fetch documents' });
+  }
+};
+
+exports.getDocument = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM documents WHERE id = $1 AND tenant_id = $2',
+      [id, req.tenantId]
+    );
+    if (!rows.length) return res.status(404).json({ message: 'Not found' });
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('Get document error:', err);
+    res.status(500).json({ message: 'Failed to fetch document' });
+  }
+};
 exports.uploadDocument = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });

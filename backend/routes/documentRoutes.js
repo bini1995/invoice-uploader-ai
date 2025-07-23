@@ -6,6 +6,8 @@ const {
   extractDocument,
   saveCorrections,
   summarizeDocument,
+  listDocuments,
+  getDocument,
   getDocumentVersions,
   restoreDocumentVersion,
   uploadDocumentVersion,
@@ -34,6 +36,7 @@ const fileSizeLimit = require('../middleware/fileSizeLimit');
 const { uploadLimiter } = require('../middleware/rateLimit');
 
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
+router.get('/', authMiddleware, listDocuments);
 router.post('/:id/extract', authMiddleware, extractDocument);
 router.post('/:id/corrections', authMiddleware, saveCorrections);
 router.get('/:id/summary', authMiddleware, summarizeDocument);
@@ -45,5 +48,6 @@ router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
 router.get('/report/pdf', authMiddleware, exportSummaryPDF);
+router.get('/:id', authMiddleware, getDocument);
 
 module.exports = router;
