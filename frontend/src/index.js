@@ -82,7 +82,9 @@ const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
 if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
 
 if (API_BASE) {
-  fetch(`${API_BASE}/api/documents`).catch((err) => {
+  // Hit the health endpoint instead of /api/documents since the
+  // documents listing route may not exist in some deployments.
+  fetch(`${API_BASE}/health`).catch((err) => {
     console.error('API connection failed', err);
   });
 }
