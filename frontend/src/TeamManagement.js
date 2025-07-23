@@ -30,7 +30,7 @@ function TeamManagement() {
   }, [headers]);
 
   const fetchLogs = useCallback(async () => {
-    const res = await fetch(`${API_BASE}/api/invoices/logs`, { headers });
+    const res = await fetch(`${API_BASE}/api/logs`, { headers });
     const data = await res.json();
     if (res.ok) setLogs(data);
   }, [headers]);

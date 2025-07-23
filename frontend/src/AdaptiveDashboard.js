@@ -65,7 +65,7 @@ export default function AdaptiveDashboard() {
       fetch(`${API_BASE}/api/analytics/metadata?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/invoices/top-vendors`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/invoices/cash-flow?interval=monthly`, { headers }).then(r => r.json()),
-      fetch(`${API_BASE}/api/invoices/logs?limit=20`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/logs?limit=20`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/invoices/fraud/flagged`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/vendors`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
