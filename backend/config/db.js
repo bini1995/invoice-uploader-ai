@@ -37,6 +37,10 @@ if (process.env.DATABASE_URL) {
   }
 }
 
+if (!process.env.DATABASE_URL) {
+  logger.info('DATABASE_URL not set, using individual DB_* env vars');
+}
+
 logger.info('Postgres config:', dbConfig);
 
 const pool = new Pool(dbConfig);

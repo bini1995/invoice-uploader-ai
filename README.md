@@ -62,8 +62,8 @@ npm install --legacy-peer-deps
 - AI assistant can answer billing support queries
  - Context-aware Inbox Copilot chat for each document
 - (e.g. "Which vendors had the most inconsistencies last month?")
-- Role-based access control (Admins, Approvers, Viewers)
-- Admins can generate expiring invitation links for Viewer or Editor accounts
+ - Role-based access control (Admins and Viewers for the demo)
+ - Admins can generate expiring invitation links for Viewer accounts
  - Activity log of document actions
  - Downloadable audit history per vendor or document
 - Detailed logs show who made each change
@@ -189,6 +189,8 @@ Set an `X-Tenant-Id` header on every API request. Invoices are filtered by this
 tenant ID and new uploads will be associated with it. The default tenant is
 `"default"` if no header is provided.
 Admin users can aggregate data across all tenants by sending `X-Tenant-Id: all`.
+
+When `REACT_APP_DEMO_MODE=true` is set for the frontend build, a small dropdown allows switching between sample tenants without manually editing headers.
 
 ### Future Roadmap
 
@@ -658,4 +660,6 @@ The Postgres container must include the pgvector extension. Use the `pgvector/pg
 docker-compose down
 docker-compose up --build
 ```
+
+The initialization script also creates an `ivfflat` index on the `embedding` column of the `documents` table so vector similarity queries run quickly.
 

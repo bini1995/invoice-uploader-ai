@@ -115,6 +115,7 @@ const searchInputRef = useRef();
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState([]);
   const [aiSummary, setAiSummary] = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [smartQuery, setSmartQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -1147,6 +1148,7 @@ useEffect(() => {
 
   const handleSummarizeErrors = async () => {
     if (!errors.length) return;
+    setSummaryLoading(true);
     try {
       const res = await fetch('http://localhost:3000/api/invoices/summarize-errors', {
         method: 'POST',
@@ -1164,6 +1166,9 @@ useEffect(() => {
     } catch (err) {
       console.error('Summarize errors failed:', err);
       addToast('⚠️ Failed to summarize errors', 'error');
+    }
+    finally {
+      setSummaryLoading(false);
     }
   };
 
@@ -2415,6 +2420,9 @@ useEffect(() => {
             >
               Summarize Errors
             </button>
+            {summaryLoading && (
+              <p className="text-sm text-gray-600 mt-2">Generating summary...</p>
+            )}
           </div>
         )}
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

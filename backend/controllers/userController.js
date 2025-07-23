@@ -5,6 +5,7 @@ const { logActivity } = require('../utils/activityLogger');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+const ALLOWED_ROLES = ['admin', 'viewer'];
 
 async function userExists(username) {
   const { rows } = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
@@ -110,6 +111,9 @@ exports.addUser = async (req, res) => {
   if (!username || !password || !role) {
     return res.status(400).json({ message: 'Missing fields' });
   }
+  if (!ALLOWED_ROLES.includes(role)) {
+    return res.status(400).json({ message: 'Invalid role' });
+  }
   try {
     if (await userExists(username)) {
       return res.status(400).json({ message: 'User exists' });
@@ -141,6 +145,9 @@ exports.deleteUser = async (req, res) => {
 exports.updateUserRole = async (req, res) => {
   const { id } = req.params;
   const { role } = req.body;
+  if (!ALLOWED_ROLES.includes(role)) {
+    return res.status(400).json({ message: 'Invalid role' });
+  }
   try {
     const { rows } = await pool.query(
       'UPDATE users SET role = $1 WHERE id = $2 RETURNING id, username, role',

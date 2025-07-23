@@ -1,4 +1,7 @@
 export default function TenantSwitcher({ tenant, onChange }) {
+  const demoMode = process.env.REACT_APP_DEMO_MODE === 'true';
+  if (!demoMode) return null;
+
   const tenants = ['default', 'acme', 'globex'];
   return (
     <select
