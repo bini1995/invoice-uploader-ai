@@ -43,14 +43,14 @@ window.fetch = async (url, options) => {
     if (url.startsWith(API_BASE)) {
       let path = url.slice(API_BASE.length);
       if (path.startsWith('/api/invoices')) {
-        path = path.replace('/api/invoices', `/api/${tenant}/documents`);
+        path = path.replace('/api/invoices', '/api/documents');
       } else if (path.startsWith('/api/export-templates')) {
         path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }
       url = API_BASE + path;
     } else if (url.startsWith('/')) {
       if (url.startsWith('/api/invoices')) {
-        url = url.replace('/api/invoices', `/api/${tenant}/documents`);
+        url = url.replace('/api/invoices', '/api/documents');
       } else if (url.startsWith('/api/export-templates')) {
         url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }

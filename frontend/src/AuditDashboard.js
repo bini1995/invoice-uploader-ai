@@ -46,7 +46,7 @@ export default function AuditDashboard() {
     if (action) params.append('action', action);
     if (start) params.append('start', start);
     if (end) params.append('end', end);
-    const res = await fetch(`${API_BASE}/api/invoices/logs/export-csv?${params.toString()}`, {
+    const res = await fetch(`${API_BASE}/api/logs/export-csv?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) return;
@@ -67,7 +67,7 @@ export default function AuditDashboard() {
     if (action) params.append('action', action);
     if (start) params.append('start', start);
     if (end) params.append('end', end);
-    const res = await fetch(`${API_BASE}/api/invoices/logs?${params.toString()}`, {
+    const res = await fetch(`${API_BASE}/api/logs?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
