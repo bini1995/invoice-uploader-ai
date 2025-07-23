@@ -7,6 +7,7 @@ const { extractEntities } = require('../ai/entityExtractor');
 const { recordDocumentVersion } = require('../utils/documentVersionLogger');
 const crypto = require('crypto');
 const { DocumentType } = require('../enums/documentType');
+const PDFDocument = require('pdfkit');
 
 async function refreshSearchable(id) {
   await pool.query(
@@ -260,6 +261,62 @@ exports.getEntityTotals = async (_req, res) => {
     res.status(500).json({ message: 'Failed to fetch entity totals' });
   } finally {
     client.release();
+  }
+};
+
+exports.exportSummaryPDF = async (_req, res) => {
+  try {
+    const topRes = await pool.query(
+      `SELECT vendor, SUM(amount) AS total FROM invoices GROUP BY vendor ORDER BY total DESC LIMIT 5`
+    );
+    const flaggedRes = await pool.query(
+      `SELECT invoice_number, vendor, flag_reason FROM invoices WHERE flagged = TRUE ORDER BY updated_at DESC LIMIT 5`
+    );
+    const heatRes = await pool.query(
+      `SELECT vendor, COUNT(*) FILTER (WHERE flagged OR (due_date < NOW() AND payment_status != 'Paid')) AS risk, COUNT(*) AS total FROM invoices GROUP BY vendor`
+    );
+    const heatmap = heatRes.rows.map(r => ({
+      vendor: r.vendor,
+      riskScore: r.total ? parseFloat(r.risk) / parseFloat(r.total) : 0
+    }));
+    const monthRes = await pool.query(
+      `SELECT DATE_TRUNC('month', date) AS month, SUM(amount) AS total FROM invoices GROUP BY month ORDER BY month`
+    );
+    const doc = new PDFDocument();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="summary.pdf"');
+    doc.pipe(res);
+    doc.fontSize(18).text('Document Ops Summary', { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(16).text('Top Vendors');
+    topRes.rows.forEach(r => {
+      doc.fontSize(12).text(`${r.vendor}: $${parseFloat(r.total).toFixed(2)}`);
+    });
+
+    doc.addPage();
+    doc.fontSize(16).text('Anomaly Heatmap');
+    heatmap.forEach(h => {
+      doc.fontSize(12).text(`${h.vendor}: ${(h.riskScore * 100).toFixed(0)}% risk`);
+    });
+
+    doc.addPage();
+    doc.fontSize(16).text('Flagged Documents');
+    flaggedRes.rows.forEach(f => {
+      const reason = f.flag_reason || 'Flagged';
+      doc.fontSize(12).text(`#${f.invoice_number} ${f.vendor} - ${reason}`);
+    });
+
+    doc.addPage();
+    doc.fontSize(16).text('Monthly Totals');
+    monthRes.rows.forEach(m => {
+      doc.fontSize(12).text(`${m.month.toISOString().slice(0,7)}: $${parseFloat(m.total).toFixed(2)}`);
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error('Summary PDF error:', err);
+    res.status(500).json({ message: 'Failed to build report' });
   }
 };
 

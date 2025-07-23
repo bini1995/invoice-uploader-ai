@@ -58,6 +58,7 @@ const { WebSocketServer } = require('ws');
 const { setupWSConnection } = require('@y/websocket-server/utils');
 const tenantContext = require('./middleware/tenantMiddleware');
 const { parse } = require('url');
+const { initDocActivity } = require('./utils/docActivityServer');
 
 const app = express();                      // create the app
 const server = http.createServer(app);
@@ -138,6 +139,7 @@ app.use(Sentry.Handlers.errorHandler());
   logger.info('🟢 Routes mounted');
 
   initChat(server);
+  initDocActivity(server);
 
   const wss = new WebSocketServer({ noServer: true });
   server.on('upgrade', (request, socket, head) => {
