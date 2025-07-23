@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const { broadcastActivity } = require('./chatServer');
+const { broadcastDocActivity } = require('./docActivityServer');
 const { logAudit } = require('./auditLogger');
 
 async function logActivity(userId, action, invoiceId = null, username = null) {
@@ -9,6 +10,9 @@ async function logActivity(userId, action, invoiceId = null, username = null) {
       [userId, username, action, invoiceId]
     );
     broadcastActivity?.(rows[0]);
+    if (['upload_invoice', 'approve_invoice', 'flag_invoice'].includes(action)) {
+      broadcastDocActivity?.({ action, invoiceId });
+    }
     await logActivityDetailed('default', userId, username, action, { invoiceId });
     if (['upload_invoice', 'approve_invoice', 'flag_invoice', 'unflag_invoice'].includes(action)) {
       await logAudit(action, invoiceId, userId, username);

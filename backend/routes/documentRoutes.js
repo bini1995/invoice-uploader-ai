@@ -13,6 +13,7 @@ const {
   checkCompliance,
   getEntityTotals,
   searchDocuments,
+  exportSummaryPDF,
 } = require('../controllers/documentController');
 const { authMiddleware } = require('../controllers/userController');
 
@@ -43,5 +44,6 @@ router.put('/:id/lifecycle', authMiddleware, updateLifecycle);
 router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
+router.get('/report/pdf', authMiddleware, exportSummaryPDF);
 
 module.exports = router;
