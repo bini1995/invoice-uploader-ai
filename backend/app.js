@@ -38,6 +38,7 @@ const workspaceRoutes = require('./routes/workspaceRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
 const validationRoutes = require('./routes/validationRoutes');
 const scenarioRoutes = require('./routes/scenarioRoutes');
+const healthRoutes = require('./routes/healthRoutes');
 const logRoutes = require('./routes/logRoutes');
 const { auditLog } = require('./middleware/auditMiddleware');
 const piiMask = require('./middleware/piiMask');
@@ -53,7 +54,7 @@ const { loadSchedules } = require('./utils/automationScheduler');
 const { scheduleReports } = require('./utils/reportScheduler');
 const { scheduleAnomalyScan } = require('./utils/anomalyScanner');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./docs/swagger.json');
+const swaggerSpec = require('./swagger');
 const { WebSocketServer } = require('ws');
 const { setupWSConnection } = require('@y/websocket-server/utils');
 const tenantContext = require('./middleware/tenantMiddleware');
@@ -71,7 +72,8 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(cors());
 app.use(express.json());                    // allow reading JSON data
 app.use(tenantContext);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/health', healthRoutes);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(auditLog);
 // Allow auth endpoints under the new documents scope
 app.use('/api/documents', authRoutes);
