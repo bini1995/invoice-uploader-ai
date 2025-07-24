@@ -4,6 +4,7 @@ import { Card } from './components/ui/Card';
 import { API_BASE } from './api';
 import DarkModeToggle from './components/DarkModeToggle';
 import HighContrastToggle from './components/HighContrastToggle';
+import PageHeader from './components/PageHeader';
 
 export default function Login({ onLogin, addToast }) {
   const [username, setUsername] = useState('');
@@ -49,7 +50,7 @@ export default function Login({ onLogin, addToast }) {
       <div className="flex-1 flex items-center justify-center pt-20">
         <Card className="w-80 space-y-4">
           <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
-          <h1 className="text-xl font-bold text-center">Login</h1>
+          <PageHeader title="ClarifyOps / AI Dashboard" subtitle="Login" />
 
           {error && (
             <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded" role="alert">{error}</div>

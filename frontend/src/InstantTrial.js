@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ProgressBar from './components/ProgressBar';
 import { API_BASE } from './api';
 import { Link } from 'react-router-dom';
+import PageHeader from './components/PageHeader';
 
 export default function InstantTrial() {
   const [csvText, setCsvText] = useState('');
@@ -61,7 +62,9 @@ export default function InstantTrial() {
   return (
     <div className="min-h-screen p-6 flex flex-col items-center bg-gradient-to-br from-purple-50 via-indigo-100 to-indigo-200 dark:from-purple-900 dark:via-indigo-900 dark:to-gray-900 text-gray-900 dark:text-gray-100">
       <div className="max-w-2xl w-full space-y-6">
-        <h1 className="text-3xl font-bold text-center">Instant Free Trial</h1>
+        <div className="text-center">
+          <PageHeader title="ClarifyOps / AI Dashboard" subtitle="Instant Free Trial" />
+        </div>
         {step === 1 && (
           <div className="space-y-4">
             <input type="file" accept=".csv" onChange={handleFile} />

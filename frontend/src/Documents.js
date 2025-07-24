@@ -6,6 +6,7 @@ import { API_BASE } from './api';
 import LiveFeed from './components/LiveFeed';
 import Navbar from './components/Navbar';
 import SidebarNav from './components/SidebarNav';
+import PageHeader from './components/PageHeader';
 import {
   BarChart,
   Bar,
@@ -55,7 +56,6 @@ import {
   ClockIcon,
   CurrencyDollarIcon,
   FlagIcon,
-  DocumentArrowDownIcon,
   LightBulbIcon,
   TagIcon,
   EyeIcon,
@@ -2206,10 +2206,7 @@ useEffect(() => {
 
       <main className="flex-1 w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-1">
-            <DocumentArrowDownIcon className="w-6 h-6" />
-            <span>ClarifyOps</span>
-          </h1>
+          <PageHeader title="ClarifyOps / AI Dashboard" />
           <LiveFeed token={token} tenant={tenant} />
         </div>
   

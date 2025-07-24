@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import MainLayout from './components/MainLayout';
+import PageHeader from './components/PageHeader';
 import { API_BASE } from './api';
 
 export default function Board() {
@@ -71,7 +72,7 @@ export default function Board() {
 
   return (
     <MainLayout title="Approval Board">
-      <h1 className="text-xl font-semibold mb-4">Approval Board</h1>
+      <PageHeader title="ClarifyOps / AI Dashboard" subtitle="Approval Board" />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex space-x-4 overflow-x-auto">
             {renderColumn('pending', 'Pending', columns.pending)}
