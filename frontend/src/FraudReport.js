@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
+import FraudHeader from './components/FraudHeader';
 import { API_BASE } from './api';
 
 function FraudReport() {
@@ -55,6 +56,10 @@ function FraudReport() {
   return (
     <MainLayout title="Fraud Reports" helpTopic="fraud">
       <div className="space-y-4">
+        <FraudHeader
+          title="Fraud Reports"
+          tooltip="Flagged suspicious documents will appear here."
+        />
         <div className="overflow-x-auto rounded-lg">
           <table className="min-w-full border text-sm rounded-lg overflow-hidden">
             <thead>
@@ -94,6 +99,11 @@ function FraudReport() {
             </tbody>
           </table>
         </div>
+        {!loading && invoices.length === 0 && (
+          <p className="text-center text-gray-500 mt-8">
+            No fraud reports found. Great job staying secure!
+          </p>
+        )}
       </div>
     </MainLayout>
   );
