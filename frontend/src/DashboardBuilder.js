@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
+import PageHeader from './components/PageHeader';
 import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
@@ -128,7 +129,7 @@ export default function DashboardBuilder() {
 
   return (
     <MainLayout title="Dashboard Builder">
-      <h1 className="text-xl font-semibold mb-4">Create Your Dashboard</h1>
+      <PageHeader title="ClarifyOps / AI Dashboard" subtitle="Create Your Dashboard" />
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="widgets">
             {(provided) => (
