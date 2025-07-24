@@ -201,11 +201,8 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
     const saved = localStorage.getItem('notifications');
     return saved ? JSON.parse(saved) : [];
   });
-  const [isOffline, setIsOffline] = useState(!navigator.onLine);
-  const [pendingCount, setPendingCount] = useState(() => {
-    const saved = localStorage.getItem('pendingActions');
-    return saved ? JSON.parse(saved).length : 0;
-  });
+  // Offline mode disabled - always consider the app online
+  const [isOffline] = useState(false);
   const [confirmData, setConfirmData] = useState(null);
   const [filterSidebarOpen, setFilterSidebarOpen] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth >= 768 : false
@@ -404,20 +401,19 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
         setDuplicateFlags(dupMap);
 
         if (Object.keys(dupMap).length > 0) {
-          addToast('⚠️ Duplicate invoices detected', 'error');
+          addToast('⚠️ Duplicate documents detected', 'error');
         }
 
         return data;
       } catch (err) {
         console.error('Fetch error:', err);
-        addToast('Failed to fetch invoices', 'error');
+        addToast('Failed to fetch documents', 'error');
         const cached = localStorage.getItem('cachedInvoices');
         if (cached) {
           setInvoices(JSON.parse(cached));
-          setIsOffline(true);
-          setMessage('Offline mode: showing cached invoices');
+          setMessage('Showing cached documents');
         } else {
-          setMessage('❌ Could not load invoices');
+          setMessage('❌ Could not load documents');
         }
       } finally {
         setLoadingInvoices(false);
@@ -427,7 +423,7 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
   const handleArchive = useCallback(
     (id) => {
       setConfirmData({
-        message: `Are you sure you want to archive invoice #${id}?`,
+        message: `Are you sure you want to archive document #${id}?`,
         onConfirm: async () => {
           try {
             const res = await fetch(`http://localhost:3000/api/invoices/${id}/archive`, {
@@ -445,7 +441,7 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
             setInvoices(updatedData);
           } catch (err) {
             console.error('Archive error:', err);
-            addToast('⚠️ Failed to archive invoice.', 'error');
+            addToast('⚠️ Failed to archive document.', 'error');
           }
         },
       });
@@ -468,7 +464,7 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
       }
     } catch (err) {
       console.error('Unarchive error:', err);
-      addToast('❌ Failed to unarchive invoice', 'error');
+      addToast('❌ Failed to unarchive document', 'error');
     }
   };
 
@@ -492,43 +488,17 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
       }
     } catch (err) {
       console.error('🚩 Flagging failed:', err);
-      addToast('🚩 ⚠️ Failed to flag invoice.', 'error');
+      addToast('🚩 ⚠️ Failed to flag document.', 'error');
     }
   }, [token, addToast]);
 
-  const syncPendingActions = useCallback(async () => {
-    const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
-    if (!pending.length) return;
-    let failed = false;
-    const remaining = [];
-    for (const action of pending) {
-      try {
-        await fetch(action.url, action.options);
-      } catch (err) {
-        console.error('Failed to sync action', action, err);
-        failed = true;
-        remaining.push(action);
-      }
-    }
-    if (remaining.length) {
-      localStorage.setItem('pendingActions', JSON.stringify(remaining));
-      setPendingCount(remaining.length);
-    } else {
-      localStorage.removeItem('pendingActions');
-      setPendingCount(0);
-    }
-    fetchInvoices(showArchived, selectedAssignee);
-    if (failed) {
-      addToast('❌ Some offline actions failed to sync', 'error');
-    } else {
-      addToast(`✅ Synced ${pending.length} offline action(s)`);
-    }
-  }, [fetchInvoices, showArchived, selectedAssignee, addToast]);
+  // Offline sync disabled
+  const syncPendingActions = useCallback(async () => {}, []);
 
   const handleBulkArchive = useCallback(() => {
     if (!selectedInvoices.length) return;
     setConfirmData({
-      message: `Archive ${selectedInvoices.length} selected invoices?`,
+      message: `Archive ${selectedInvoices.length} selected documents?`,
       onConfirm: () => {
         selectedInvoices.forEach((id) => handleArchive(id));
         setSelectedInvoices([]);
@@ -592,14 +562,6 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
       try {
         return await orig(url, { ...options, headers });
       } catch (err) {
-        if (!navigator.onLine && options.method && options.method !== 'GET') {
-          const pending = JSON.parse(localStorage.getItem('pendingActions') || '[]');
-          pending.push({ url, options: { ...options, headers } });
-          localStorage.setItem('pendingActions', JSON.stringify(pending));
-          setPendingCount(pending.length);
-          addToast('⏸️ Action queued offline', 'error');
-          throw err;
-        }
         throw err;
       }
     };
@@ -608,26 +570,7 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
     };
   }, [tenant, token, syncPendingActions, addToast]);
 
-  useEffect(() => {
-    const goOnline = () => {
-      setIsOffline(false);
-      syncPendingActions();
-    };
-    const goOffline = () => {
-      setIsOffline(true);
-      const saved = localStorage.getItem('pendingActions');
-      setPendingCount(saved ? JSON.parse(saved).length : 0);
-    };
-    window.addEventListener('online', goOnline);
-    window.addEventListener('offline', goOffline);
-    if (navigator.onLine) {
-      syncPendingActions();
-    }
-    return () => {
-      window.removeEventListener('online', goOnline);
-      window.removeEventListener('offline', goOffline);
-    };
-  }, [tenant, token, syncPendingActions]);
+  // Offline sync disabled
 
 
   
@@ -746,7 +689,7 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
 const handleBulkDelete = () => {
     if (!selectedInvoices.length) return;
     setConfirmData({
-      message: `Delete ${selectedInvoices.length} selected invoices?`,
+      message: `Delete ${selectedInvoices.length} selected documents?`,
       onConfirm: () => {
         selectedInvoices.forEach((id) => handleDelete(id));
         setSelectedInvoices([]);
@@ -803,7 +746,7 @@ const handleBulkDelete = () => {
           });
         }, 3000); // ✅ Hide checkmark after 3 seconds
       } else {
-        addToast('❌ Failed to update invoice', 'error');
+        addToast('❌ Failed to update document', 'error');
       }
     } catch (err) {
       console.error('Inline update error:', err);
@@ -827,14 +770,14 @@ const handleBulkDelete = () => {
       const data = await res.json();
       if (res.ok) {
         addToast(data.message);
-        addNotification(`New invoice assigned to ${assignee}`);
+        addNotification(`New document assigned to ${assignee}`);
         setInvoices((prev) => prev.map((inv) => (inv.id === id ? { ...inv, assignee } : inv)));
       } else {
-        addToast('❌ Failed to assign invoice', 'error');
+        addToast('❌ Failed to assign document', 'error');
       }
     } catch (err) {
       console.error('Assign error:', err);
-      addToast('⚠️ Failed to assign invoice', 'error');
+      addToast('⚠️ Failed to assign document', 'error');
     }
   };
   
@@ -1451,11 +1394,11 @@ useEffect(() => {
           setInvoices(updatedData);
         } catch (err) {
           console.error('Delete error:', err);
-          addToast('Failed to delete invoice.', 'error');
+          addToast('Failed to delete document.', 'error');
         }
       }, 5000);
 
-      addToast(`Invoice #${id} deleted`, 'success', {
+      addToast(`Document #${id} deleted`, 'success', {
         duration: 5000,
         actionText: 'Undo',
         onAction: undo,
@@ -1463,7 +1406,7 @@ useEffect(() => {
     };
 
     setConfirmData({
-      message: `Are you sure you want to delete invoice #${id}?`,
+      message: `Are you sure you want to delete document #${id}?`,
       onConfirm: proceed,
     });
   };
@@ -1508,7 +1451,7 @@ useEffect(() => {
   
   const handleClearAll = () => {
     setConfirmData({
-      message: '⚠️ Are you sure you want to delete all invoices?',
+      message: '⚠️ Are you sure you want to delete all documents?',
       onConfirm: async () => {
         try {
           const res = await fetch('http://localhost:3000/api/invoices/clear', {
@@ -1527,7 +1470,7 @@ useEffect(() => {
           setInvoices(updatedData);
         } catch (err) {
           console.error('Clear all failed:', err);
-          addToast('❌ Failed to clear invoices.', 'error');
+          addToast('❌ Failed to clear documents.', 'error');
         }
       },
     });
@@ -1720,11 +1663,11 @@ useEffect(() => {
       if (res.ok) {
         setExplainModal({ invoice, explanation: data.explanation, score: data.anomaly_score });
       } else {
-        addToast(data.message || 'Failed to explain invoice', 'error');
+        addToast(data.message || 'Failed to explain document', 'error');
       }
     } catch (err) {
       console.error('Explain invoice error:', err);
-      addToast('Failed to explain invoice', 'error');
+      addToast('Failed to explain document', 'error');
     }
   };
   
@@ -1774,7 +1717,7 @@ useEffect(() => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('PDF download failed:', err);
-      addToast('⚠️ Failed to download invoice PDF', 'error');
+      addToast('⚠️ Failed to download document PDF', 'error');
     } finally {
       setDownloadingId(null);
     }
@@ -1857,11 +1800,11 @@ useEffect(() => {
         fetchInvoices(showArchived, selectedAssignee);
         setCommentInputs((p) => ({ ...p, [id]: '' }));
       } else {
-        addToast('Failed to approve invoice', 'error');
+        addToast('Failed to approve document', 'error');
       }
     } catch (err) {
       console.error('Approve error:', err);
-      addToast('Failed to approve invoice', 'error');
+      addToast('Failed to approve document', 'error');
     }
   };
 
@@ -1878,11 +1821,11 @@ useEffect(() => {
         fetchInvoices(showArchived, selectedAssignee);
         setCommentInputs((p) => ({ ...p, [id]: '' }));
       } else {
-        addToast('Failed to reject invoice', 'error');
+        addToast('Failed to reject document', 'error');
       }
     } catch (err) {
       console.error('Reject error:', err);
-      addToast('Failed to reject invoice', 'error');
+      addToast('Failed to reject document', 'error');
     }
   };
 
@@ -1944,12 +1887,12 @@ useEffect(() => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'archived_invoices.csv';
+      a.download = 'archived_documents.csv';
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Export archived failed:', err);
-      addToast('❌ Failed to export archived invoices', 'error');
+      addToast('❌ Failed to export archived documents', 'error');
     }
   };
   
@@ -2085,8 +2028,6 @@ useEffect(() => {
         onSmartQueryChange={setSmartQuery}
         onSmartSearch={handleSmartSearch}
         onStartTour={() => setShowTour(true)}
-        isOffline={isOffline}
-        pendingCount={pendingCount}
         activeFilterCount={activeFilters.length}
       />
 
@@ -2261,11 +2202,7 @@ useEffect(() => {
         </aside>
       )}
 
-      {isOffline && (
-        <div className="bg-yellow-100 text-yellow-800 p-2 text-center mt-4">
-          Offline mode - {pendingCount} action{pendingCount === 1 ? '' : 's'} queued
-        </div>
-      )}
+      {/* Offline banner removed */}
 
       <main className="flex-1 w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
         <div className="flex justify-between items-center mb-4">
@@ -2772,7 +2709,7 @@ useEffect(() => {
                     </th>
                     <th className="border px-4 py-2">ID</th>
                     <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort('invoice_number')}>
-                      Invoice #
+                      Document #
                       {sortConfig.key === 'invoice_number' && (
                         <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
                       )}
@@ -3378,7 +3315,7 @@ useEffect(() => {
           </>
         ) : (
           <div className="text-center text-gray-600 dark:text-gray-300 mt-8">
-            🔒 Please log in to access invoice management tools.
+            🔒 Please log in to access document management tools.
           </div>
         )}
       </main>
