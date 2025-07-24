@@ -6,6 +6,14 @@ export default function LiveFeed({ token, tenant }) {
   const [logs, setLogs] = useState([]);
   const socket = useMemo(() => io(API_BASE), []);
 
+  const formatEvent = (action) => {
+    if (!action) return 'Unknown activity';
+    const lower = action.toLowerCase();
+    if (lower.includes('/login')) return 'User logged in';
+    if (lower.includes('/documents')) return 'Document uploaded';
+    return 'Unknown activity';
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -45,7 +53,7 @@ export default function LiveFeed({ token, tenant }) {
       <ul className="space-y-1 text-sm max-h-60 overflow-auto">
         {logs.map((log) => (
           <li key={log.id} className="border-b border-gray-200 dark:border-gray-700 pb-1">
-            {log.created_at}: {log.action} {log.invoice_id ? `#${log.invoice_id}` : ''}
+            {log.created_at}: {formatEvent(log.action)} {log.invoice_id ? `#${log.invoice_id}` : ''}
           </li>
         ))}
       </ul>
