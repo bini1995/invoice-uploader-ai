@@ -39,8 +39,6 @@ export default function Navbar({
   onSmartQueryChange,
   onSmartSearch,
   onStartTour,
-  isOffline = false,
-  pendingCount = 0,
   activeFilterCount = 0,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -109,11 +107,6 @@ export default function Navbar({
           className="input text-gray-800 dark:text-gray-100 h-7 text-sm w-52"
         />
         <div className="flex items-center space-x-3 relative">
-          {isOffline && (
-            <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded" title="Offline mode">
-              Offline{pendingCount ? ` (${pendingCount})` : ''}
-            </span>
-          )}
           <TenantSwitcher tenant={tenant} onChange={onTenantChange} />
           <LanguageSelector />
           <NotificationBell notifications={notifications} onOpen={onNotificationsOpen} />
