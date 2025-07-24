@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from './components/MainLayout';
+import PageHeader from './components/PageHeader';
 
 const FIELDS = ['id','invoice_number','date','amount','vendor','created_at','assignee','tags'];
 
@@ -36,23 +37,51 @@ export default function ExportTemplateBuilder() {
 
   return (
     <MainLayout title="Export Templates">
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <input value={name} onChange={e=>setName(e.target.value)} placeholder="Template Name" className="input" />
+      <div className="space-y-4 max-w-xl">
+        <PageHeader
+          title="Export Templates"
+          subtitle="Select which fields to include in your export template."
+        />
+        <div className="bg-white p-6 rounded-xl shadow-sm space-y-4">
+          <h2 className="text-lg font-semibold mb-2">Export Template Fields</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Select which fields to include.
+          </p>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Template Name"
+            className="input w-full"
+          />
           <div className="flex flex-wrap gap-2">
-            {FIELDS.map(f => (
+            {FIELDS.map((f) => (
               <label key={f} className="flex items-center gap-1 text-sm">
-                <input type="checkbox" checked={fields[f]} onChange={()=>toggle(f)} /> {f}
+                <input
+                  type="checkbox"
+                  checked={fields[f]}
+                  onChange={() => toggle(f)}
+                />{' '}
+                {f}
               </label>
             ))}
           </div>
-          <button onClick={save} className="btn btn-primary mt-2 px-3 py-1">Save</button>
+          <button
+            onClick={save}
+            className="btn btn-primary mt-2 px-3 py-1"
+          >
+            Save
+          </button>
         </div>
         <ul className="list-disc pl-5">
-          {templates.map(t => (
+          {templates.map((t) => (
             <li key={t.id} className="flex items-center gap-2">
               <span>{t.name}</span>
-              <button onClick={()=>download(t.id)} className="underline text-sm">Export</button>
+              <button
+                onClick={() => download(t.id)}
+                className="underline text-sm"
+              >
+                Export
+              </button>
             </li>
           ))}
         </ul>

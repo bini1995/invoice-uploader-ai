@@ -14,7 +14,7 @@ test('renders login heading by default', () => {
       <LoginPage />
     </MemoryRouter>
   );
-  const heading = screen.getByRole('heading', { name: /login/i });
+  const heading = screen.getByRole('heading', { name: 'ClarifyOps / AI Dashboard' });
   expect(heading).toBeInTheDocument();
 });
 
