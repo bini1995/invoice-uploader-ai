@@ -17,6 +17,11 @@ const {
   getEntityTotals,
   searchDocuments,
   exportSummaryPDF,
+  submitExtractionFeedback,
+  getExtractionFeedback,
+  addReviewNote,
+  getReviewNotes,
+  getReviewQueue,
 } = require('../controllers/claimController');
 const { authMiddleware } = require('../controllers/userController');
 
@@ -49,7 +54,12 @@ router.put('/:id/lifecycle', authMiddleware, updateLifecycle);
 router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
+router.get('/review-queue', authMiddleware, getReviewQueue);
 router.get('/report/pdf', authMiddleware, exportSummaryPDF);
 router.get('/:id', authMiddleware, getDocument);
+router.get('/:id/feedback', authMiddleware, getExtractionFeedback);
+router.post('/:id/feedback', authMiddleware, submitExtractionFeedback);
+router.get('/:id/review-notes', authMiddleware, getReviewNotes);
+router.post('/:id/review-notes', authMiddleware, addReviewNote);
 
 module.exports = router;

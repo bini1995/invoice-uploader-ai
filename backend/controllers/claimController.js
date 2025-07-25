@@ -434,3 +434,104 @@ exports.autoDeleteExpiredDocuments = async () => {
     console.error('Auto-delete documents error:', err);
   }
 };
+
+exports.submitExtractionFeedback = async (req, res) => {
+  const { id } = req.params;
+  const { status, reason, note, assigned_to } = req.body || {};
+  const allowed = ['correct', 'incorrect', 'needs_review'];
+  if (!allowed.includes((status || '').toLowerCase())) {
+    return res.status(400).json({ message: 'Invalid status' });
+  }
+  try {
+    await pool.query(
+      `INSERT INTO extraction_feedback (document_id, status, reason, note, assigned_to)
+       VALUES ($1,$2,$3,$4,$5)
+       ON CONFLICT (document_id) DO UPDATE SET
+         status = EXCLUDED.status,
+         reason = EXCLUDED.reason,
+         note = EXCLUDED.note,
+         assigned_to = COALESCE(EXCLUDED.assigned_to, extraction_feedback.assigned_to),
+         created_at = NOW()`,
+      [id, status.toLowerCase(), reason || null, note || null, assigned_to || null]
+    );
+
+    if (note) {
+      const userId = req.user?.id || null;
+      await pool.query(
+        `INSERT INTO review_notes (document_id, user_id, note)
+         VALUES ($1,$2,$3)`,
+        [id, userId, note]
+      );
+    }
+
+    res.json({ message: 'Feedback saved' });
+  } catch (err) {
+    console.error('Save feedback error:', err);
+    res.status(500).json({ message: 'Failed to save feedback' });
+  }
+};
+
+exports.getExtractionFeedback = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query(
+      'SELECT status, reason, note, assigned_to FROM extraction_feedback WHERE document_id = $1',
+      [id]
+    );
+    res.json(rows[0] || {});
+  } catch (err) {
+    console.error('Fetch feedback error:', err);
+    res.status(500).json({ message: 'Failed to fetch feedback' });
+  }
+};
+
+exports.addReviewNote = async (req, res) => {
+  const { id } = req.params;
+  const { note } = req.body || {};
+  if (!note) return res.status(400).json({ message: 'Note required' });
+  try {
+    const userId = req.user?.id || null;
+    await pool.query(
+      'INSERT INTO review_notes (document_id, user_id, note) VALUES ($1,$2,$3)',
+      [id, userId, note]
+    );
+    res.json({ message: 'Note saved' });
+  } catch (err) {
+    console.error('Add note error:', err);
+    res.status(500).json({ message: 'Failed to save note' });
+  }
+};
+
+exports.getReviewNotes = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query(
+      `SELECT n.id, n.note, n.created_at, u.username
+       FROM review_notes n
+       LEFT JOIN users u ON n.user_id = u.id
+       WHERE n.document_id = $1
+       ORDER BY n.created_at ASC`,
+      [id]
+    );
+    res.json({ notes: rows });
+  } catch (err) {
+    console.error('Get notes error:', err);
+    res.status(500).json({ message: 'Failed to fetch notes' });
+  }
+};
+
+exports.getReviewQueue = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT d.id, d.doc_title, d.doc_type, f.status, f.reason, f.assigned_to
+       FROM extraction_feedback f
+       JOIN documents d ON f.document_id = d.id
+       WHERE f.status IN ('incorrect','needs_review')
+       ORDER BY f.created_at DESC`
+    );
+    res.json({ documents: rows });
+  } catch (err) {
+    console.error('Review queue error:', err);
+    res.status(500).json({ message: 'Failed to fetch queue' });
+  }
+};

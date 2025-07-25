@@ -117,6 +117,13 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
               <span>Fraud</span>
             </Link>
             <Link
+              to="/review"
+              className={`nav-link border-l-4 ${location.pathname === '/review' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
+            >
+              <FileSearch className="w-5 h-5" />
+              <span>Human Review</span>
+            </Link>
+            <Link
               to="/archive"
               className={`nav-link border-l-4 ${location.pathname === '/archive' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >

@@ -20,6 +20,10 @@ const entityRouter = express.Router();
 entityRouter.get('/api/claims/totals-by-entity', authMiddleware, (req, res) => res.json({ totals: [] }));
 const fieldRouter = express.Router();
 fieldRouter.post('/api/claims/1/extract-fields', authMiddleware, (req, res) => res.json({ ok: true }));
+const feedbackRouter = express.Router();
+feedbackRouter.post('/api/claims/1/feedback', authMiddleware, (req, res) => res.json({ ok: true }));
+feedbackRouter.get('/api/claims/1/feedback', authMiddleware, (req, res) => res.json({}));
+feedbackRouter.get('/api/claims/1/review-notes', authMiddleware, (req, res) => res.json({ notes: [] }));
 
 const app = express();
 app.use(express.json());
@@ -30,6 +34,7 @@ app.use(anomalyRouter);
 app.use(signingRouter);
 app.use(entityRouter);
 app.use(fieldRouter);
+app.use(feedbackRouter);
 
 const db = require('../config/db');
 
@@ -73,5 +78,14 @@ describe('Auth and documents', () => {
   test('claim field extraction requires auth', async () => {
     const res = await request(app).post('/api/claims/1/extract-fields');
     expect(res.statusCode).toBe(401);
+  });
+
+  test('feedback routes require auth', async () => {
+    const res1 = await request(app).post('/api/claims/1/feedback');
+    expect(res1.statusCode).toBe(401);
+    const res2 = await request(app).get('/api/claims/1/feedback');
+    expect(res2.statusCode).toBe(401);
+    const res3 = await request(app).get('/api/claims/1/review-notes');
+    expect(res3.statusCode).toBe(401);
   });
 });
