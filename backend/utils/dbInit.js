@@ -417,6 +417,19 @@ async function initDb() {
       label BOOLEAN,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS claim_fields (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER UNIQUE REFERENCES documents(id) ON DELETE CASCADE,
+      fields JSONB,
+      version TEXT,
+      extracted_at TIMESTAMP DEFAULT NOW(),
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+    await pool.query("ALTER TABLE claim_fields ADD COLUMN IF NOT EXISTS version TEXT");
+    await pool.query(
+      "ALTER TABLE claim_fields ADD COLUMN IF NOT EXISTS extracted_at TIMESTAMP DEFAULT NOW()"
+    );
   } catch (err) {
     console.error('Database init error:', err);
   }
