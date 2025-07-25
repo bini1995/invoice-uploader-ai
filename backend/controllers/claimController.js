@@ -4,6 +4,7 @@ const pool = require('../config/db');
 const openrouter = require('../config/openrouter');
 const { trainFromCorrections } = require('../utils/ocrAgent');
 const { extractEntities } = require('../ai/entityExtractor');
+const { extractClaimFields } = require('../ai/claimFieldExtractor');
 const { recordDocumentVersion } = require('../utils/documentVersionLogger');
 const crypto = require('crypto');
 const { DocumentType } = require('../enums/documentType');
@@ -143,6 +144,30 @@ exports.extractDocument = async (req, res) => {
     res.json({ data: norm, confidence: 0.9 });
   } catch (err) {
     console.error('Extract error:', err.message);
+    res.status(500).json({ message: 'Extraction failed' });
+  }
+};
+
+exports.extractClaimFields = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
+    if (!rows.length) return res.status(404).json({ message: 'Not found' });
+    const doc = rows[0];
+    const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
+    const { fields, version } = await extractClaimFields(text);
+    await pool.query(
+      `INSERT INTO claim_fields (document_id, fields, version, extracted_at)
+       VALUES ($1, $2, $3, now())
+       ON CONFLICT (document_id) DO UPDATE SET
+         fields = EXCLUDED.fields,
+         version = EXCLUDED.version,
+         extracted_at = EXCLUDED.extracted_at`,
+      [id, fields, version]
+    );
+    res.json({ fields, version });
+  } catch (err) {
+    console.error('Claim field extract error:', err.message);
     res.status(500).json({ message: 'Extraction failed' });
   }
 };

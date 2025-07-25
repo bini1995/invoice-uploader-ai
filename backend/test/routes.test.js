@@ -18,6 +18,8 @@ const signingRouter = express.Router();
 signingRouter.post('/api/signing/1/start', authMiddleware, (req, res) => res.json({ url: 'ok' }));
 const entityRouter = express.Router();
 entityRouter.get('/api/claims/totals-by-entity', authMiddleware, (req, res) => res.json({ totals: [] }));
+const fieldRouter = express.Router();
+fieldRouter.post('/api/claims/1/extract-fields', authMiddleware, (req, res) => res.json({ ok: true }));
 
 const app = express();
 app.use(express.json());
@@ -27,6 +29,7 @@ app.use(uploadRouter);
 app.use(anomalyRouter);
 app.use(signingRouter);
 app.use(entityRouter);
+app.use(fieldRouter);
 
 const db = require('../config/db');
 
@@ -64,6 +67,11 @@ describe('Auth and documents', () => {
 
   test('signing route requires auth', async () => {
     const res = await request(app).post('/api/signing/1/start');
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('claim field extraction requires auth', async () => {
+    const res = await request(app).post('/api/claims/1/extract-fields');
     expect(res.statusCode).toBe(401);
   });
 });

@@ -4,6 +4,7 @@ const path = require('path');
 const {
   uploadDocument,
   extractDocument,
+  extractClaimFields,
   saveCorrections,
   summarizeDocument,
   listDocuments,
@@ -38,6 +39,7 @@ const { uploadLimiter } = require('../middleware/rateLimit');
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
 router.get('/', authMiddleware, listDocuments);
 router.post('/:id/extract', authMiddleware, extractDocument);
+router.post('/:id/extract-fields', authMiddleware, extractClaimFields);
 router.post('/:id/corrections', authMiddleware, saveCorrections);
 router.get('/:id/summary', authMiddleware, summarizeDocument);
 router.get('/:id/versions', authMiddleware, getDocumentVersions);

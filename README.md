@@ -395,6 +395,7 @@ The `/inbox` page shows newly uploaded documents waiting for approval.
 - `DELETE /api/claims/bulk/delete` – delete multiple documents
 - `PATCH /api/claims/bulk/edit` – bulk update invoice fields
 - `POST /api/claims/:id/extract` – extract key entities from a document
+- `POST /api/claims/:id/extract-fields` – AI claim field extraction (stores version and timestamp)
 - `POST /api/claims/:id/auto-tag` – AI auto-tag from common categories
 - `POST /api/claims/suggest-voucher` – recommend a voucher description
 - `POST /api/claims/share` – generate a share link for selected documents
