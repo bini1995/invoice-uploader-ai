@@ -430,6 +430,31 @@ async function initDb() {
     await pool.query(
       "ALTER TABLE claim_fields ADD COLUMN IF NOT EXISTS extracted_at TIMESTAMP DEFAULT NOW()"
     );
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS extraction_feedback (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER UNIQUE REFERENCES documents(id) ON DELETE CASCADE,
+      status TEXT,
+      reason TEXT,
+      note TEXT,
+      assigned_to INTEGER REFERENCES users(id),
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+    await pool.query("ALTER TABLE extraction_feedback ADD COLUMN IF NOT EXISTS status TEXT");
+    await pool.query("ALTER TABLE extraction_feedback ADD COLUMN IF NOT EXISTS reason TEXT");
+    await pool.query("ALTER TABLE extraction_feedback ADD COLUMN IF NOT EXISTS note TEXT");
+    await pool.query("ALTER TABLE extraction_feedback ADD COLUMN IF NOT EXISTS assigned_to INTEGER REFERENCES users(id)");
+    await pool.query(
+      "ALTER TABLE extraction_feedback ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW()"
+    );
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS review_notes (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      user_id INTEGER REFERENCES users(id),
+      note TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

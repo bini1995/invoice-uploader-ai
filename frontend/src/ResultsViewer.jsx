@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import { API_BASE } from './api';
 import { Button } from './components/ui/Button';
 import ButtonDropdown, { MenuItem } from './components/ButtonDropdown';
+import ExtractionFeedback from './components/ExtractionFeedback';
 
 export default function ResultsViewer() {
   const { id } = useParams();
@@ -231,6 +232,7 @@ export default function ResultsViewer() {
             </tbody>
           </table>
         </div>
+        <ExtractionFeedback documentId={id} initialStatus={status} />
       </div>
     </div>
   );

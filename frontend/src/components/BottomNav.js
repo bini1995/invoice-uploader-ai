@@ -14,6 +14,7 @@ export default function BottomNav() {
     { to: '/operations', icon: HomeIcon, label: 'Home' },
     { to: '/claims', icon: DocumentIcon, label: 'Claim Documents' },
     { to: '/inbox', icon: InboxIcon, label: 'Inbox' },
+    { to: '/review', icon: DocumentIcon, label: 'Review' },
     { to: '/archive', icon: ArchiveBoxIcon, label: 'Archive' },
   ];
   return (

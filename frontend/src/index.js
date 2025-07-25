@@ -9,6 +9,7 @@ import ExportTemplateBuilder from './ExportTemplateBuilder';
 import AISpendAnalyticsHub from './AISpendAnalyticsHub';
 import AuditDashboard from './AuditDashboard';
 import FraudReport from './FraudReport';
+import HumanReview from './HumanReview';
 import Archive from './Archive';
 import TeamManagement from './TeamManagement';
 import VendorManagement from './VendorManagement';
@@ -116,6 +117,7 @@ function AnimatedRoutes() {
         <Route path="/analytics" element={<PageWrapper><AISpendAnalyticsHub /></PageWrapper>} />
         <Route path="/audit" element={<PageWrapper><AuditDashboard /></PageWrapper>} />
         <Route path="/fraud" element={<PageWrapper><FraudReport /></PageWrapper>} />
+        <Route path="/review" element={<PageWrapper><HumanReview /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />
