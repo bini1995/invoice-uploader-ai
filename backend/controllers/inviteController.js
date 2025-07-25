@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const pool = require('../config/db');
 const { logActivity } = require('../utils/activityLogger');
 const { createUser, userExists } = require('./userController');
+const { trackEvent } = require('../utils/eventTracker');
 
 exports.createInvite = async (req, res) => {
   const { role = 'viewer', expiresInHours = 24 } = req.body || {};
@@ -43,6 +44,20 @@ exports.acceptInvite = async (req, res) => {
     }
     const user = await createUser(username, password, rows[0].role);
     await pool.query('UPDATE invites SET used = TRUE WHERE token = $1', [token]);
+    // Seed a demo claim so new users can immediately explore the product
+    // without needing to upload their own files first.
+    await pool.query(
+      `INSERT INTO documents (tenant_id, doc_title, doc_type, fields, status)
+       VALUES ($1,$2,$3,$4::jsonb,$5)`,
+      [
+        'default',
+        'Sample Claim',
+        'claim',
+        JSON.stringify({ claim_number: 'DEMO-001', amount: 1000, claimant: 'Demo User' }),
+        'sample'
+      ]
+    );
+    await trackEvent('default', user.id, 'sample_claim_created');
     res.json({ id: user.id, username: user.username, role: user.role });
   } catch (err) {
     console.error('Accept invite error:', err);

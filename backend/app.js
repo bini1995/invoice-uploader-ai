@@ -39,6 +39,7 @@ const workspaceRoutes = require('./routes/workspaceRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
 const validationRoutes = require('./routes/validationRoutes');
 const scenarioRoutes = require('./routes/scenarioRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const logRoutes = require('./routes/logRoutes');
 const { auditLog } = require('./middleware/auditMiddleware');
@@ -114,6 +115,7 @@ app.use('/api/signing', signingRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use('/api/validation', validationRoutes);
 app.use('/api/workspaces', workspaceRoutes);
+app.use('/api/events', eventRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 
