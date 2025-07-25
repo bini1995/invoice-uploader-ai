@@ -2,6 +2,8 @@ const pool = require('../config/db');
 const { Parser } = require('json2csv');
 const archiver = require('archiver');
 const { maskSensitive } = require('../utils/sanitize');
+const logger = require('../utils/logger');
+const { exportAttemptCounter } = require('../metrics');
 
 exports.getActivityLogs = async (req, res) => {
   try {
@@ -103,8 +105,10 @@ exports.exportComplianceReport = async (_req, res) => {
     archive.append(invoicesCsv, { name: 'invoice_history.csv' });
     archive.append(approvalCsv, { name: 'approval_trails.csv' });
     archive.finalize();
+    logger.info('Compliance report exported');
+    exportAttemptCounter.inc();
   } catch (err) {
-    console.error('Compliance export error:', err);
+    logger.error('Compliance export error:', err);
     res.status(500).json({ message: 'Failed to export compliance report' });
   }
 };
@@ -121,8 +125,10 @@ exports.exportInvoiceHistory = async (req, res) => {
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="invoice_${id}_history.csv"`);
     res.send(csv);
+    logger.info('Invoice history exported', { id });
+    exportAttemptCounter.inc();
   } catch (err) {
-    console.error('Invoice history export error:', err);
+    logger.error('Invoice history export error:', err);
     res.status(500).json({ message: 'Failed to export invoice history' });
   }
 };
@@ -140,8 +146,10 @@ exports.exportVendorHistory = async (req, res) => {
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="vendor_${vendor}_history.csv"`);
     res.send(csv);
+    logger.info('Vendor history exported', { vendor });
+    exportAttemptCounter.inc();
   } catch (err) {
-    console.error('Vendor history export error:', err);
+    logger.error('Vendor history export error:', err);
     res.status(500).json({ message: 'Failed to export vendor history' });
   }
 };
@@ -180,8 +188,10 @@ exports.exportActivityLogsCSV = async (req, res) => {
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="activity_logs.csv"');
     res.send(csv);
+    logger.info('Activity logs exported');
+    exportAttemptCounter.inc();
   } catch (err) {
-    console.error('Activity logs export error:', err);
+    logger.error('Activity logs export error:', err);
     res.status(500).json({ message: 'Failed to export logs' });
   }
 };

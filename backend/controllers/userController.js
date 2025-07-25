@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const { logActivity } = require('../utils/activityLogger');
+const logger = require('../utils/logger');
+const { activeUsersGauge } = require('../metrics');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
@@ -41,9 +43,11 @@ exports.login = async (req, res) => {
       JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
+    activeUsersGauge.inc();
+    logger.info('User logged in', { userId: user.id });
     res.json({ token, refreshToken, role: user.role, username: user.username });
   } catch (err) {
-    console.error('Login error:', err);
+    logger.error('Login error:', err);
     res.status(500).json({ message: 'Failed to login' });
   }
 };
@@ -71,6 +75,8 @@ exports.refreshToken = async (req, res) => {
 
 exports.logout = async (req, res) => {
   const { refreshToken } = req.body;
+  activeUsersGauge.dec();
+  logger.info('User logged out');
   res.json({ message: 'Logged out' });
 };
 

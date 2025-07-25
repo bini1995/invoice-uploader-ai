@@ -11,6 +11,13 @@ const { DocumentType } = require('../enums/documentType');
 const PDFDocument = require('pdfkit');
 const fileToText = require('../utils/fileToText');
 const { triggerClaimWebhook } = require('../utils/claimWebhook');
+const logger = require('../utils/logger');
+const {
+  claimUploadCounter,
+  fieldExtractCounter,
+  exportAttemptCounter,
+  feedbackFlaggedCounter
+} = require('../metrics');
 
 async function refreshSearchable(id) {
   await pool.query(
@@ -108,12 +115,14 @@ exports.uploadDocument = async (req, res) => {
       ]
     );
     await refreshSearchable(rows[0].id);
+    logger.info('Claim uploaded', { id: rows[0].id, docType });
+    claimUploadCounter.labels(docType).inc();
     const { autoAssignDocument } = require('../services/invoiceService');
     const vendorName = meta.vendor || '';
     const { assignee, reason } = await autoAssignDocument(rows[0].id, vendorName, meta.tags || []);
     res.json({ id: rows[0].id, status: 'pending', doc_type: docType, assignee, assignment_reason: reason });
   } catch (err) {
-    console.error('Document upload error:', err.message);
+    logger.error('Document upload error:', err);
     res.status(500).json({ message: 'Upload failed' });
   }
 };
@@ -123,7 +132,9 @@ exports.extractDocument = async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
+    
     const doc = rows[0];
+    const endTimer = extractDuration.startTimer({ doc_type: doc.doc_type });
     const pipelinePath = path.join(__dirname, '../pipelines', `${doc.doc_type}.js`);
     let result = { fields: {} };
     if (fs.existsSync(pipelinePath)) {
@@ -142,9 +153,13 @@ exports.extractDocument = async (req, res) => {
     await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [norm, id]);
     await refreshSearchable(id);
     await recordDocumentVersion(id, doc, { ...doc, fields: norm }, req.user?.userId, req.user?.username);
+    logger.info('Fields extracted', { id });
+    
+    endTimer();
     res.json({ data: norm, confidence: 0.9 });
   } catch (err) {
-    console.error('Extract error:', err.message);
+    logger.error('Extract error:', err);
+    if (typeof endTimer === 'function') endTimer();
     res.status(500).json({ message: 'Extraction failed' });
   }
 };
@@ -154,7 +169,8 @@ exports.extractClaimFields = async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
-    const doc = rows[0];
+    
+    const timer = extractDuration.startTimer({ doc_type: doc.doc_type });
     const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
     const { fields, version } = await extractClaimFields(text);
     await pool.query(
@@ -166,9 +182,13 @@ exports.extractClaimFields = async (req, res) => {
          extracted_at = EXCLUDED.extracted_at`,
       [id, fields, version]
     );
+    logger.info('Claim fields extracted', { id });
+    
+    timer();
     res.json({ fields, version });
   } catch (err) {
-    console.error('Claim field extract error:', err.message);
+    logger.error('Claim field extract error:', err);
+    if (typeof timer === "function") timer();
     res.status(500).json({ message: 'Extraction failed' });
   }
 };
@@ -456,6 +476,12 @@ exports.submitExtractionFeedback = async (req, res) => {
       [id, status.toLowerCase(), reason || null, note || null, assigned_to || null]
     );
 
+    if (status.toLowerCase() !== 'correct') {
+      feedbackFlaggedCounter.inc();
+    }
+
+    logger.info('Feedback saved', { id, status });
+
     if (note) {
       const userId = req.user?.id || null;
       await pool.query(
@@ -467,7 +493,7 @@ exports.submitExtractionFeedback = async (req, res) => {
 
     res.json({ message: 'Feedback saved' });
   } catch (err) {
-    console.error('Save feedback error:', err);
+    logger.error('Save feedback error:', err);
     res.status(500).json({ message: 'Failed to save feedback' });
   }
 };
