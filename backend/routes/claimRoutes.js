@@ -16,7 +16,7 @@ const {
   getEntityTotals,
   searchDocuments,
   exportSummaryPDF,
-} = require('../controllers/documentController');
+} = require('../controllers/claimController');
 const { authMiddleware } = require('../controllers/userController');
 
 const router = express.Router();

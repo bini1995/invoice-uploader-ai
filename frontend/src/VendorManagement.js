@@ -337,7 +337,7 @@ function VendorManagement() {
                 <td className="p-2 flex space-x-2">
                   <button onClick={() => setEditingVendor(v.vendor)} title="Edit"><PencilSquareIcon className="w-4 h-4" /></button>
                   <button onClick={() => setDetailVendor(v.vendor)} title="Details"><DocumentChartBarIcon className="w-4 h-4" /></button>
-                  <button onClick={() => navigate(`/documents?vendor=${encodeURIComponent(v.vendor)}`)} title="View Documents"><EyeIcon className="w-4 h-4" /></button>
+                  <button onClick={() => navigate(`/claims?vendor=${encodeURIComponent(v.vendor)}`)} title="View Documents"><EyeIcon className="w-4 h-4" /></button>
                   <button onClick={async () => { if (window.confirm('Delete vendor?')) { await fetch(`${API_BASE}/api/vendors/${encodeURIComponent(v.vendor)}`, { method: 'DELETE', headers }); fetchVendors(); } }} title="Delete"><TrashIcon className="w-4 h-4 text-red-600" /></button>
                 </td>
               </tr>

@@ -29,7 +29,7 @@ const reminderRoutes = require('./routes/reminderRoutes');
 const automationRoutes = require('./routes/automationRoutes');
 const tenantRoutes = require('./routes/tenantRoutes');
 const agentRoutes = require('./routes/agentRoutes');
-const documentRoutes = require('./routes/documentRoutes');
+const claimRoutes = require('./routes/claimRoutes');
 const timelineRoutes = require('./routes/timelineRoutes');
 const pluginRoutes = require('./routes/pluginRoutes');
 const complianceRoutes = require('./routes/complianceRoutes');
@@ -45,7 +45,7 @@ const piiMask = require('./middleware/piiMask');
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { sendApprovalReminders } = require('./controllers/reminderController'); // used for optional manual trigger
-const { autoDeleteExpiredDocuments } = require('./controllers/documentController');
+const { autoDeleteExpiredDocuments } = require('./controllers/claimController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
 const { loadCorrections } = require('./utils/parserTrainer');
@@ -75,8 +75,8 @@ app.use(tenantContext);
 app.use('/health', healthRoutes);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(auditLog);
-// Allow auth endpoints under the new documents scope
-app.use('/api/documents', authRoutes);
+// Allow auth endpoints under the new claims scope
+app.use('/api/claims', authRoutes);
 app.use('/api/invoices', authRoutes); // backwards compat
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
@@ -103,8 +103,8 @@ app.use('/api/logs', logRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/ai', aiRoutes);
-app.use('/api/documents', documentRoutes);
-app.use('/api/invoices', documentRoutes); // backwards compat
+app.use('/api/claims', claimRoutes);
+app.use('/api/invoices', claimRoutes); // backwards compat
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);
 app.use('/api/compliance', complianceRoutes);

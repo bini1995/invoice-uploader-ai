@@ -69,7 +69,7 @@ const teamMembers = ['Alice', 'Bob', 'Charlie'];
 
 
 
-function Documents() {
+function ClaimsPage() {
   const [visibleColumns, setVisibleColumns] = useState({
   id: true,
   invoice_number: true,
@@ -542,14 +542,14 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
         if (url.startsWith(API_BASE)) {
           let path = url.slice(API_BASE.length);
           if (path.startsWith('/api/invoices')) {
-            path = path.replace('/api/invoices', '/api/documents');
+            path = path.replace('/api/invoices', '/api/claims');
           } else if (path.startsWith('/api/export-templates')) {
             path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
           }
           url = API_BASE + path;
         } else if (url.startsWith('/')) {
           if (url.startsWith('/api/invoices')) {
-            url = url.replace('/api/invoices', '/api/documents');
+            url = url.replace('/api/invoices', '/api/claims');
           } else if (url.startsWith('/api/export-templates')) {
             url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
           }
@@ -1399,7 +1399,7 @@ useEffect(() => {
         }
       }, 5000);
 
-      addToast(`Document #${id} deleted`, 'success', {
+      addToast(`Claim Document #${id} deleted`, 'success', {
         duration: 5000,
         actionText: 'Undo',
         onAction: undo,
@@ -1427,7 +1427,7 @@ useEffect(() => {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/documents/login`, {
+      const res = await fetch(`${API_BASE}/api/claims/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -2215,12 +2215,12 @@ useEffect(() => {
           <>
 
 <div className="mt-6 mb-6">
-  <h2 className="text-xl font-bold text-gray-800 mb-2">Upload New Document</h2>
+  <h2 className="text-xl font-bold text-gray-800 mb-2">Upload New Claim File</h2>
   <hr className="mb-4" />
   <fieldset className="p-6 rounded-xl shadow-xl bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-700 border border-gray-200 dark:border-gray-700 flex flex-col gap-4 space-y-4 relative">
     <legend className="text-xl font-bold px-2 flex items-center gap-1">
       <CloudArrowUpIcon className="w-5 h-5 text-indigo-600" />
-      <span>Upload Document</span>
+      <span>Upload Claim File</span>
     </legend>
     <ol className="flex space-x-4 text-sm text-gray-600 mb-2">
       <li className="flex items-center space-x-1">
@@ -2317,7 +2317,7 @@ useEffect(() => {
       ) : (
         <ArrowUpTrayIcon className="h-5 w-5" />
       )}
-      <span>{loading ? 'Uploading...' : 'Upload Document'}</span>
+      <span>{loading ? 'Uploading...' : 'Upload Claim File'}</span>
       {uploadSuccess && !loading && (
         <SuccessAnimation className="h-6 w-6" />
       )}
@@ -2502,7 +2502,7 @@ useEffect(() => {
 
 
                 <h2 className="text-lg font-semibold mt-8 mb-2 text-gray-800">
-                  Document Totals by Entity
+                  Claim Totals by Entity
                 </h2>
                 <div className="mb-4 flex flex-wrap gap-4">
                   {Object.keys(visibleColumns).map((col) => (
@@ -2707,7 +2707,7 @@ useEffect(() => {
                     </th>
                     <th className="border px-4 py-2">ID</th>
                     <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort('invoice_number')}>
-                      Document #
+                      Claim Document #
                       {sortConfig.key === 'invoice_number' && (
                         <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
                       )}
@@ -2755,8 +2755,8 @@ useEffect(() => {
                     <EmptyState
                       onCta={() => fileInputRef.current?.click()}
                       headline="Let's get started!"
-                      description="Upload your first document to begin tracking spend, surfacing anomalies, and unlocking AI insights."
-                      cta="Upload Document"
+                      description="Upload your first claim file to begin tracking spend, surfacing anomalies, and unlocking AI insights."
+                      cta="Upload Claim File"
                     />
                   </td>
                 </tr>
@@ -3322,8 +3322,8 @@ useEffect(() => {
           <button
             onClick={openUploadPreview}
             className="fixed bottom-4 right-20 p-3 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white z-30"
-            title="Upload Document"
-            aria-label="Upload document"
+            title="Upload Claim File"
+            aria-label="Upload claim file"
           >
             <ArrowUpTrayIcon className="w-6 h-6" />
           </button>
@@ -3384,4 +3384,4 @@ useEffect(() => {
   );
 }
 
-export default Documents;
+export default ClaimsPage;

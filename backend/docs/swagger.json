@@ -5,9 +5,9 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/{tenantId}/documents": {
+    "/api/{tenantId}/claims": {
       "get": {
-        "summary": "List documents",
+        "summary": "List claim documents",
         "parameters": [
           {
             "name": "tenantId",
@@ -21,9 +21,9 @@
       }
     }
   },
-    "/api/{tenantId}/documents/upload": {
+    "/api/{tenantId}/claims/upload": {
       "post": {
-        "summary": "Upload document",
+        "summary": "Upload claim file",
         "parameters": [
           {
             "name": "tenantId",
@@ -49,7 +49,7 @@
         }
       }
     },
-    "/api/documents/summarize-errors": {
+    "/api/claims/summarize-errors": {
       "post": {
         "summary": "AI summarize CSV errors",
         "requestBody": {
@@ -94,13 +94,13 @@
         "responses": { "200": { "description": "Vendor suggestion" } }
       }
     },
-    "/api/documents/totals-by-entity": {
+    "/api/claims/totals-by-entity": {
       "get": {
         "summary": "Totals by entity",
         "responses": { "200": { "description": "Entity totals" } }
       }
     },
-    "/api/documents/search": {
+    "/api/claims/search": {
       "get": {
         "summary": "Search documents",
         "parameters": [

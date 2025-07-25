@@ -35,19 +35,19 @@ This document outlines a high level path to evolve ClarifyOps into an **AI Docum
 
 ## 4. New AI Ops features
 
-- **AI Entity Extraction** – Added `POST /api/documents/:id/extract` which uses OpenRouter to pull dates, terms, parties and clauses from any uploaded document.
-- **Document Comparison** – Every document edit now records a version in the new `document_versions` table. `GET /api/documents/:id/versions` returns diffs and `POST /api/documents/:id/versions/:versionId/restore` restores old snapshots.
-- **Document Summarization** – New `GET /api/documents/:id/summary` endpoint summarizes any document.
+- **AI Entity Extraction** – Added `POST /api/claims/:id/extract` which uses OpenRouter to pull dates, terms, parties and clauses from any uploaded document.
+- **Document Comparison** – Every document edit now records a version in the new `document_versions` table. `GET /api/claims/:id/versions` returns diffs and `POST /api/claims/:id/versions/:versionId/restore` restores old snapshots.
+- **Document Summarization** – New `GET /api/claims/:id/summary` endpoint summarizes any document.
 
 ## 5. Roadmap to Full AI Ops Platform
 
 - **Auto-categorization** – `/api/ai/categorize` suggests top categories like HR, Legal or Expense for uploaded text.
 - **Document Workflows** – `/api/document-workflows` replaces the old workflows route and stores `doc_type` and optional `conditions` for each department.
-- **Versioned Uploads** – `POST /api/documents/:id/version` lets users upload new versions while `/api/documents/:id/versions` provides a timeline of edits.
+- **Versioned Uploads** – `POST /api/claims/:id/version` lets users upload new versions while `/api/claims/:id/versions` provides a timeline of edits.
 
 ## 6. Compliance & Lifecycle Enhancements
 
-- **Compliance Checker** – `/api/documents/:id/compliance` flags missing clauses for contracts.
+- **Compliance Checker** – `/api/claims/:id/compliance` flags missing clauses for contracts.
 - **Document Lifecycle Rules** – `retention_policy`, `expires_at` and `archived` now apply to all documents.
 - **Enterprise Add-On: Secure Signing** – `/api/signing/:id/start` now returns a placeholder link; blockchain hashing removed from the MVP.
 

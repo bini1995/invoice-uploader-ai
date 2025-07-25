@@ -25,8 +25,8 @@ exports.listDocuments = async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error('List documents error:', err);
-    res.status(500).json({ message: 'Failed to fetch documents' });
+    console.error('List claim documents error:', err);
+    res.status(500).json({ message: 'Failed to fetch claim documents' });
   }
 };
 

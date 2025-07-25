@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { google } = require('googleapis');
 const { sendMail } = require('./email');
-// Use the generic document upload since invoice controller was removed
-const { uploadDocument } = require('../controllers/documentController');
+// Use the generic claim upload
+const { uploadDocument } = require('../controllers/claimController');
 
 // Gmail ingestion temporarily disabled
 

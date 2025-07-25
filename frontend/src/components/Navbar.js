@@ -70,7 +70,7 @@ export default function Navbar({
     <nav className="sticky top-0 z-30 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow">
       <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
-          <Link to="/documents" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
+          <Link to="/claims" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img
               src={`/api/${tenant}/logo`}
               alt="logo"
@@ -102,7 +102,7 @@ export default function Navbar({
           value={smartQuery}
           onChange={(e) => onSmartQueryChange?.(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onSmartSearch?.()}
-          placeholder="Documents from Amazon last quarter > $1,000"
+          placeholder="Claim Documents from Amazon last quarter > $1,000"
           aria-label="Smart search"
           className="input text-gray-800 dark:text-gray-100 h-7 text-sm w-52"
         />
