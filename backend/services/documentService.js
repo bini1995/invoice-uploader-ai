@@ -22,7 +22,10 @@ async function parseAndExtract(doc) {
     category: result.fields.category,
   };
   await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [norm, doc.id]);
-  await pool.query("UPDATE documents SET searchable = to_tsvector('english', fields::text) WHERE id = $1", [doc.id]);
+  await pool.query(
+    "UPDATE documents SET searchable = to_tsvector('english', coalesce(fields::text,'') || ' ' || coalesce(raw_text,'')) WHERE id = $1",
+    [doc.id]
+  );
 
   const embeddingRes = await openrouter.embeddings.create({
     model: 'openai/text-embedding-ada-002',
