@@ -90,7 +90,7 @@ export default function CashflowSimulation({ token }) {
     const url = URL.createObjectURL(blob);
     const win = window.open('', '', 'width=800,height=600');
     if (win) {
-      win.document.write(`<img src="${url}" onload="window.print();window.close();" />`);
+      win.document.write(`<img src="${url}" alt="Chart" onload="window.print();window.close();" />`);
       win.document.close();
     }
   };
