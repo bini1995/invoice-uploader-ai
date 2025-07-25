@@ -78,7 +78,8 @@ export default function LandingPage() {
           </div>
         </div>
       </nav>
-      <HeroSection onRequestDemo={() => setDemoOpen(true)} />
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <HeroSection onRequestDemo={() => setDemoOpen(true)} />
       <ProblemSolutionSection />
       <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-6">Interactive Demo</h2>
@@ -424,6 +425,7 @@ export default function LandingPage() {
           © {new Date().getFullYear()} ClarifyOps
         </p>
       </footer>
+      </div>
       <ChatWidget />
       <ScheduleDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
