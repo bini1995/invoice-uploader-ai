@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Documents from './Documents';
+import ClaimsPage from './Claims';
 import OperationsDashboard from './OperationsDashboard';
 import AdaptiveDashboard from './AdaptiveDashboard';
 import SharedDashboard from './SharedDashboard';
@@ -43,14 +43,14 @@ window.fetch = async (url, options) => {
     if (url.startsWith(API_BASE)) {
       let path = url.slice(API_BASE.length);
       if (path.startsWith('/api/invoices')) {
-        path = path.replace('/api/invoices', '/api/documents');
+        path = path.replace('/api/invoices', '/api/claims');
       } else if (path.startsWith('/api/export-templates')) {
         path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }
       url = API_BASE + path;
     } else if (url.startsWith('/')) {
       if (url.startsWith('/api/invoices')) {
-        url = url.replace('/api/invoices', '/api/documents');
+        url = url.replace('/api/invoices', '/api/claims');
       } else if (url.startsWith('/api/export-templates')) {
         url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }
@@ -82,8 +82,8 @@ const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
 if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
 
 if (API_BASE) {
-  // Hit the health endpoint instead of /api/documents since the
-  // documents listing route may not exist in some deployments.
+  // Hit the health endpoint instead of /api/claims since the
+  // claims listing route may not exist in some deployments.
   fetch(`${API_BASE}/health`).catch((err) => {
     console.error('API connection failed', err);
   });
@@ -110,7 +110,7 @@ function AnimatedRoutes() {
         <Route path="/operations" element={<PageWrapper><OperationsDashboard /></PageWrapper>} />
         <Route path="/adaptive" element={<PageWrapper><AdaptiveDashboard /></PageWrapper>} />
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
-        <Route path="/documents" element={<PageWrapper><Documents /></PageWrapper>} />
+        <Route path="/claims" element={<PageWrapper><ClaimsPage /></PageWrapper>} />
         <Route path="/inbox" element={<PageWrapper><Inbox /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><AISpendAnalyticsHub /></PageWrapper>} />
         <Route path="/audit" element={<PageWrapper><AuditDashboard /></PageWrapper>} />

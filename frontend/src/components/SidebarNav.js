@@ -54,11 +54,11 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
               <span>Adaptive</span>
             </Link>
             <Link
-              to="/documents"
-              className={`nav-link border-l-4 ${location.pathname === '/documents' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
+              to="/claims"
+              className={`nav-link border-l-4 ${location.pathname === '/claims' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <FileText className="w-5 h-5" />
-              <span>Documents</span>
+              <span>Claim Documents</span>
             </Link>
             <Link
               to="/inbox"

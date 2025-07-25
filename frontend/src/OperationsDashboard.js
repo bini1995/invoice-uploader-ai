@@ -42,8 +42,8 @@ import { API_BASE } from './api';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 const METRIC_LABELS = {
-  total: '💵 Total Document Spend This Month',
-  pending: '🧾 Documents Pending',
+  total: '💵 Total Claim Document Spend This Month',
+  pending: '🧾 Claim Documents Pending',
   anomalies: '⚠️ Anomalies Found',
   ai: '🤖 AI Suggestions Available',
 };
@@ -347,7 +347,7 @@ function OperationsDashboard() {
                               {m === 'pending' && (
                                 <StatCard
                                   icon={<InboxIcon className="w-5 h-5" />}
-                                  title="Documents Pending"
+                                  title="Claim Documents Pending"
                                   value={stats?.invoicesPending || 0}
                                   cta="Go to Inbox"
                                   onCta={() => navigate('/inbox')}

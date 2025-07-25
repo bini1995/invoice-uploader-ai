@@ -27,7 +27,7 @@ export default function LoginPage() {
         onLogin={(tok, role) => {
           localStorage.setItem('token', tok);
           localStorage.setItem('role', role);
-          navigate('/documents');
+          navigate('/claims');
         }}
         addToast={addToast}
       />

@@ -10,7 +10,7 @@ export default function LiveFeed({ token, tenant }) {
     if (!action) return 'Unknown activity';
     const lower = action.toLowerCase();
     if (lower.includes('/login')) return 'User logged in';
-    if (lower.includes('/documents')) return 'Document uploaded';
+    if (lower.includes('/claims')) return 'Claim document uploaded';
     return 'Unknown activity';
   };
 

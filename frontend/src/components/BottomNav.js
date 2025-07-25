@@ -12,7 +12,7 @@ export default function BottomNav() {
   const location = useLocation();
   const items = [
     { to: '/operations', icon: HomeIcon, label: 'Home' },
-    { to: '/documents', icon: DocumentIcon, label: 'Documents' },
+    { to: '/claims', icon: DocumentIcon, label: 'Claim Documents' },
     { to: '/inbox', icon: InboxIcon, label: 'Inbox' },
     { to: '/archive', icon: ArchiveBoxIcon, label: 'Archive' },
   ];
