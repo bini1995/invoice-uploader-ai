@@ -27,6 +27,7 @@ import MultiUploadWizard from './MultiUploadWizard';
 import DemoSandbox from './DemoSandbox';
 import InstantTrial from './InstantTrial';
 import LoginPage from './LoginPage';
+import DocsPage from './DocsPage';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -131,6 +132,7 @@ function AnimatedRoutes() {
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/sandbox" element={<PageWrapper><DemoSandbox /></PageWrapper>} />
         <Route path="/free-trial" element={<PageWrapper><InstantTrial /></PageWrapper>} />
+        <Route path="/docs" element={<PageWrapper><DocsPage /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />

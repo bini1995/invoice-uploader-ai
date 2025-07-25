@@ -5,16 +5,16 @@ import SuccessAnimation from './SuccessAnimation';
 export default function CsvUploadFlowDemo() {
   const steps = [
     {
-      title: 'Drag & Drop CSV',
-      img: 'https://dummyimage.com/800x450/6366f1/ffffff.png&text=Drag+%26+Drop+CSV'
+      title: 'Upload Claim Files',
+      img: 'https://dummyimage.com/800x450/6366f1/ffffff.png&text=Upload+Claims'
     },
     {
-      title: 'Preview & Fix Issues',
-      img: 'https://dummyimage.com/800x450/4f46e5/ffffff.png&text=Preview+Rows'
+      title: 'AI Extraction',
+      img: 'https://dummyimage.com/800x450/4f46e5/ffffff.png&text=AI+Extraction'
     },
     {
-      title: 'Dashboard Demo',
-      img: 'https://dummyimage.com/800x450/1e40af/ffffff.gif&text=Dashboard+Video'
+      title: 'Export to CSV',
+      img: 'https://dummyimage.com/800x450/1e40af/ffffff.gif&text=Export+Data'
     }
   ];
 

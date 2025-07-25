@@ -1,4 +1,4 @@
-# ClarifyOps AI Claims Data Extractor
+# AI Claims Data Extractor
 
 This is a full-stack **AI Claims Data Extractor** delivering operational clarity for insurance claim files through automated intelligence workflows, built using:
 

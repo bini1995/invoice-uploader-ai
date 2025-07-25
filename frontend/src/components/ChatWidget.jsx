@@ -6,7 +6,7 @@ export default function ChatWidget() {
   const [voice, setVoice] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Hi! Ask me anything about ClarifyOps.' }
+    { sender: 'bot', text: 'Hi! Ask me anything about the AI Claims Data Extractor.' }
   ]);
 
   const send = () => {
