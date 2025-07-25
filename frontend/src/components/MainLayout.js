@@ -23,7 +23,7 @@ export default function MainLayout({ title, helpTopic, children, collapseSidebar
           role={role}
           token={token}
         />
-        <div className="container mx-auto px-6 py-8 flex-grow">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex-grow">
           {children}
         </div>
       </div>
