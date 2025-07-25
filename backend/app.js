@@ -38,6 +38,7 @@ const signingRoutes = require('./routes/signingRoutes');
 const workspaceRoutes = require('./routes/workspaceRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
 const validationRoutes = require('./routes/validationRoutes');
+const metricsRoutes = require('./routes/metricsRoutes');
 const scenarioRoutes = require('./routes/scenarioRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const healthRoutes = require('./routes/healthRoutes');
@@ -75,6 +76,7 @@ app.use(cors());
 app.use(express.json());                    // allow reading JSON data
 app.use(tenantContext);
 app.use('/health', healthRoutes);
+app.use('/metrics', metricsRoutes);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(auditLog);
 // Allow auth endpoints under the new claims scope

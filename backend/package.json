@@ -44,6 +44,7 @@
     "pdfkit": "^0.17.1",
     "pg": "^8.11.1",
     "pgvector": "^0.1.1",
+    "prom-client": "^14.1.1",
     "socket.io": "^4.8.1",
     "stripe": "^12.18.0",
     "swagger-jsdoc": "^6.2.8",

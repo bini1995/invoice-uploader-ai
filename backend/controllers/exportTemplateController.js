@@ -1,5 +1,7 @@
 const { Parser } = require('json2csv');
 const pool = require('../config/db');
+const logger = require('../utils/logger');
+const { exportAttemptCounter } = require('../metrics');
 
 exports.getTemplates = async (req, res) => {
   const userId = req.user?.userId;
@@ -64,13 +66,18 @@ exports.exportWithTemplate = async (req, res) => {
       `SELECT ${columns.map((c) => '"' + c + '"').join(', ')} FROM invoices WHERE tenant_id = $1 ORDER BY id DESC`,
       [tenantId]
     );
-    const parser = new Parser({ fields: columns });
+    
+    const expTimer = exportDuration.startTimer({ export_type: 'template' });
     const csv = parser.parse(invRes.rows);
     res.header('Content-Type', 'text/csv');
     res.attachment(`${tpl.rows[0].name || 'export'}.csv`);
     res.send(csv);
+    logger.info('Exported with template', { templateId: id });
+    expTimer();
+    exportAttemptCounter.labels("template").inc();
   } catch (err) {
-    console.error('Export template error:', err);
+    if (typeof expTimer === "function") expTimer();
+    logger.error('Export template error:', err);
     res.status(500).json({ message: 'Failed to export invoices' });
   }
 };
