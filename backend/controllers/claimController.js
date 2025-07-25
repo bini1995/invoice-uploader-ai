@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const { DocumentType } = require('../enums/documentType');
 const PDFDocument = require('pdfkit');
 const fileToText = require('../utils/fileToText');
+const { triggerClaimWebhook } = require('../utils/claimWebhook');
 
 async function refreshSearchable(id) {
   await pool.query(
@@ -533,5 +534,59 @@ exports.getReviewQueue = async (_req, res) => {
   } catch (err) {
     console.error('Review queue error:', err);
     res.status(500).json({ message: 'Failed to fetch queue' });
+  }
+};
+
+exports.updateStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body || {};
+  if (!status) return res.status(400).json({ message: 'Status required' });
+  try {
+    const before = await pool.query('SELECT status FROM documents WHERE id = $1', [id]);
+    const { rows } = await pool.query(
+      'UPDATE documents SET status = $1 WHERE id = $2 RETURNING id, status',
+      [status, id]
+    );
+    if (!rows.length) return res.status(404).json({ message: 'Document not found' });
+    const previous = before.rows[0]?.status || null;
+    triggerClaimWebhook('status_changed', {
+      claim_id: id,
+      previous_status: previous,
+      new_status: status
+    });
+    res.json({ message: 'Status updated', document: rows[0] });
+  } catch (err) {
+    console.error('Status update error:', err);
+    res.status(500).json({ message: 'Failed to update status' });
+  }
+};
+
+exports.exportClaims = async (req, res) => {
+  const format = (req.body && req.body.format) || 'csv';
+  try {
+    const result = await pool.query(
+      'SELECT id, doc_title, doc_type, status, fields FROM documents WHERE tenant_id = $1',
+      [req.tenantId]
+    );
+    const claims = result.rows.map((r) => ({
+      id: r.id,
+      title: r.doc_title,
+      type: r.doc_type,
+      status: r.status,
+      fields: r.fields
+    }));
+    if (format === 'json') {
+      res.setHeader('Content-Type', 'application/json');
+      return res.send(JSON.stringify({ claims }));
+    }
+    const { Parser } = require('json2csv');
+    const parser = new Parser({ fields: ['id', 'title', 'type', 'status', 'fields'] });
+    const csv = parser.parse(claims.map(c => ({ ...c, fields: JSON.stringify(c.fields || {}) })));
+    res.header('Content-Type', 'text/csv');
+    res.attachment('claims.csv');
+    return res.send(csv);
+  } catch (err) {
+    console.error('Claims export error:', err);
+    res.status(500).json({ message: 'Failed to export claims' });
   }
 };

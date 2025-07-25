@@ -27,6 +27,7 @@ export default function ActionToolbar({
   onMonthlyInsights,
   onExportFiltered,
   onExportAll,
+  onExportJson,
   onExportDashboard,
   onExportArchived,
   onReset,
@@ -93,6 +94,9 @@ export default function ActionToolbar({
             </button>
             <button onClick={onExportAll} className="px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 text-left flex items-center gap-1">
               All CSV
+            </button>
+            <button onClick={onExportJson} className="px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 text-left flex items-center gap-1">
+              All JSON
             </button>
             <button onClick={onExportDashboard} className="px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 text-left flex items-center gap-1">
               <DocumentArrowDownIcon className="w-4 h-4" /> Dashboard

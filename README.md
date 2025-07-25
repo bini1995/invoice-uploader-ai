@@ -169,6 +169,21 @@ npm install --legacy-peer-deps
 
 Swagger documentation is available at [`/api/docs`](http://localhost:3000/api/docs) when the backend is running. A lightweight `/health` endpoint returns a simple `{ "status": "ok" }` payload for uptime monitoring tools.
 
+### Webhook Integration
+
+Set `CLAIM_STATUS_WEBHOOK_URL` in `.env` to receive a POST request whenever a claim's status is updated. Optional JSON strings `CLAIM_WEBHOOK_HEADERS` and `CLAIM_WEBHOOK_TEMPLATE` allow custom headers and extra payload fields.
+
+Sample webhook payload:
+
+```json
+{
+  "claim_id": "12345",
+  "previous_status": "pending",
+  "new_status": "reviewed",
+  "updated_at": "2025-07-25T14:20:00Z"
+}
+```
+
 ## Setup Instructions
 
 ### Backend

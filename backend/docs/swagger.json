@@ -127,6 +127,34 @@
         "responses": { "200": { "description": "Validation result" } }
       }
     },
+    "/api/claims/export": {
+      "post": {
+        "summary": "Export all claims",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "format": { "type": "string", "enum": ["csv", "json"], "default": "csv" } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Export file" } }
+      }
+    },
+    "/api/claims/{id}/status": {
+      "patch": {
+        "summary": "Update claim status",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string" } } } } }
+        },
+        "responses": { "200": { "description": "Updated document" } }
+      }
+    },
     "/api/validation/rules": {
       "get": { "summary": "List validation rules", "responses": { "200": { "description": "Rules" } } },
       "post": { "summary": "Add validation rule", "responses": { "200": { "description": "Rule added" } } }
