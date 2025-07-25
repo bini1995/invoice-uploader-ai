@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
+import CTAButton from './components/ui/CTAButton';
 
 function TeamManagement() {
   const token = localStorage.getItem('token') || '';
@@ -193,7 +194,7 @@ function TeamManagement() {
               <option value="forever">Forever</option>
             </select>
           </label>
-          <button onClick={saveSettings} className="bg-indigo-600 text-white px-3 py-1 rounded">Save Settings</button>
+          <CTAButton onClick={saveSettings} className="px-3 py-1">Save Settings</CTAButton>
         </div>
       </div>
     </MainLayout>

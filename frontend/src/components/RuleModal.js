@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CTAButton from './ui/CTAButton';
 
 export default function RuleModal({ open, onClose, onSave, initial }) {
   const [type, setType] = useState('spend');
@@ -32,7 +33,7 @@ export default function RuleModal({ open, onClose, onSave, initial }) {
         )}
         <div className="flex justify-end space-x-2">
           <button className="btn" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleSave}>Save</button>
+          <CTAButton onClick={handleSave}>Save</CTAButton>
         </div>
       </div>
     </div>

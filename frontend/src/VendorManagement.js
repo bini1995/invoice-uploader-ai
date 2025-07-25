@@ -7,6 +7,7 @@ import DummyDataButton from './components/DummyDataButton';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import InvoiceDetailModal from './components/InvoiceDetailModal';
 import VendorDetailModal from './components/VendorDetailModal';
+import CTAButton from './components/ui/CTAButton';
 import {
   PencilSquareIcon,
   DocumentChartBarIcon,
@@ -324,7 +325,7 @@ function VendorManagement() {
                         value={notesInput[v.vendor] ?? v.notes}
                         onChange={e => setNotesInput({ ...notesInput, [v.vendor]: e.target.value })}
                       />
-                      <button className="bg-indigo-600 text-white px-2 py-0.5 rounded text-sm" onClick={() => { saveNotes(v.vendor); setEditingVendor(null); }}>Save</button>
+                      <CTAButton className="text-sm px-2 py-0.5" onClick={() => { saveNotes(v.vendor); setEditingVendor(null); }}>Save</CTAButton>
                     </div>
                   ) : (
                     <div className="flex items-center justify-between">
