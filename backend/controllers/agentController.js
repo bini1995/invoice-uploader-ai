@@ -37,7 +37,10 @@ exports.askDocument = async (req, res) => {
     });
     const qVec = embedRes.data[0].embedding;
     const { rows } = await pool.query(
-      'SELECT id, file_name, path, embedding FROM documents WHERE tenant_id = $1 AND embedding IS NOT NULL',
+      `SELECT dc.document_id, d.file_name, dc.content, dc.embedding
+       FROM document_chunks dc
+       JOIN documents d ON d.id = dc.document_id
+       WHERE d.tenant_id = $1 AND dc.embedding IS NOT NULL`,
       [req.tenantId]
     );
     let best = null;
@@ -47,10 +50,7 @@ exports.askDocument = async (req, res) => {
       const score = r.embedding.reduce((s, v, i) => s + v * qVec[i], 0);
       if (score > bestScore) { best = r; bestScore = score; }
     }
-    let context = '';
-    if (best) {
-      context = fs.readFileSync(best.path, 'utf8').slice(0, 2000);
-    }
+    let context = best ? best.content.slice(0, 2000) : '';
     const ans = await openrouter.chat.completions.create({
       model: 'openai/gpt-3.5-turbo',
       messages: [
@@ -58,7 +58,7 @@ exports.askDocument = async (req, res) => {
         { role: 'user', content: `${context}\n\nQuestion: ${question}` }
       ]
     });
-    res.json({ answer: ans.choices[0].message.content, document_id: best?.id });
+    res.json({ answer: ans.choices[0].message.content, document_id: best?.document_id });
   } catch (err) {
     console.error('Ask document error:', err.message);
     res.status(500).json({ message: 'Failed to answer question' });
