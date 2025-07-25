@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { DocumentArrowUpIcon } from '@heroicons/react/24/outline';
+import CTAButton from './ui/CTAButton';
 
 export default function EmptyState({
   icon = <DocumentArrowUpIcon className="w-16 h-16 text-gray-400" />,
@@ -30,12 +31,9 @@ export default function EmptyState({
           {description}
         </p>
         {onCta && (
-          <button
-            onClick={onCta}
-            className="mt-2 px-3 py-1 rounded bg-indigo-600 text-white text-sm transition-all duration-300 ease-in-out hover:bg-indigo-700"
-          >
+          <CTAButton onClick={onCta} className="mt-2 text-sm px-3 py-1">
             {cta}
-          </button>
+          </CTAButton>
         )}
         {children}
       </motion.div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TagEditor from './TagEditor';
+import CTAButton from './ui/CTAButton';
 import { API_BASE } from '../api';
 
 export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, token }) {
@@ -237,7 +238,7 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
         <div className="mt-4 flex justify-end space-x-2">
           {editMode ? (
             <>
-              <button onClick={handleSave} className="bg-indigo-600 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out" title="Save">Save</button>
+              <CTAButton onClick={handleSave} title="Save">Save</CTAButton>
               <button onClick={() => setEditMode(false)} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out" title="Cancel">Cancel</button>
             </>
           ) : (

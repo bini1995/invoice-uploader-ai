@@ -37,6 +37,7 @@ import ActionToolbar from './components/ActionToolbar';
 import AIAssistantPanel from './components/AIAssistantPanel';
 import InvoiceSnapshotView from './components/InvoiceSnapshotView';
 import SuccessAnimation from './components/SuccessAnimation';
+import CTAButton from './components/ui/CTAButton';
 import Joyride from 'react-joyride';
 import ProgressBar from './components/ProgressBar';
 import FeatureWidget from './components/FeatureWidget';
@@ -2306,10 +2307,10 @@ useEffect(() => {
       <ProgressBar value={uploadProgress} />
     )}
 
-    <Button
+    <CTAButton
       onClick={openUploadPreview}
       disabled={!token || !files.length}
-      className="w-full flex items-center justify-center space-x-2 mt-4 sticky bottom-4 transition-all duration-200"
+      className="w-full flex items-center justify-center space-x-2 mt-4 sticky bottom-4"
     >
       {loading ? (
         <Spinner className="h-4 w-4" />
@@ -2320,7 +2321,7 @@ useEffect(() => {
       {uploadSuccess && !loading && (
         <SuccessAnimation className="h-6 w-6" />
       )}
-    </Button>
+    </CTAButton>
 
     {recentUploads.length > 0 && (
       <div className="mt-2 text-xs">
