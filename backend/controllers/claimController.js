@@ -8,10 +8,11 @@ const { recordDocumentVersion } = require('../utils/documentVersionLogger');
 const crypto = require('crypto');
 const { DocumentType } = require('../enums/documentType');
 const PDFDocument = require('pdfkit');
+const fileToText = require('../utils/fileToText');
 
 async function refreshSearchable(id) {
   await pool.query(
-    "UPDATE documents SET searchable = to_tsvector('english', fields::text) WHERE id = $1",
+    "UPDATE documents SET searchable = to_tsvector('english', coalesce(fields::text,'') || ' ' || coalesce(raw_text,'')) WHERE id = $1",
     [id]
   );
 }
@@ -47,6 +48,16 @@ exports.getDocument = async (req, res) => {
 exports.uploadDocument = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/jpeg',
+      'image/png'
+    ];
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ error: 'Unsupported file type' });
+    }
     const prompt = `Classify this document into types like Invoice, Receipt, Bank Statement, W-9 or Contract. File name: ${req.file.originalname}`;
     const ai = await openrouter.chat.completions.create({
       model: 'openai/gpt-3.5-turbo',
@@ -71,9 +82,28 @@ exports.uploadDocument = async (req, res) => {
     const meta = req.body.metadata ? req.body.metadata : {};
     const expiration = req.body.expiration ? new Date(req.body.expiration) : null;
     const docTitle = req.body.title || req.file.originalname;
+    const rawText = await fileToText(destPath);
     const { rows } = await pool.query(
-      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata, type, content_hash, doc_title) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id',
-      [req.tenantId, req.file.originalname, docType, docType, destPath, retention, deleteAt, expiresAt, expiration, 'pending', 1, meta, docType, contentHash, docTitle]
+      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata, type, content_hash, doc_title, file_type, raw_text) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING id',
+      [
+        req.tenantId,
+        req.file.originalname,
+        docType,
+        docType,
+        destPath,
+        retention,
+        deleteAt,
+        expiresAt,
+        expiration,
+        'pending',
+        1,
+        meta,
+        docType,
+        contentHash,
+        docTitle,
+        req.file.mimetype,
+        rawText,
+      ]
     );
     await refreshSearchable(rows[0].id);
     const { autoAssignDocument } = require('../services/invoiceService');

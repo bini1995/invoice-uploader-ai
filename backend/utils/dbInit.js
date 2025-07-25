@@ -107,6 +107,7 @@ async function initDb() {
       flag_reason TEXT,
       assignee TEXT,
       assignment_reason TEXT,
+      file_type TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS fields JSONB DEFAULT '[]'");
@@ -125,6 +126,8 @@ async function initDb() {
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS type TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS content_hash TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS doc_title TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS file_type TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS raw_text TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS assignee TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS assignment_reason TEXT");
 
@@ -133,7 +136,8 @@ async function initDb() {
     await pool.query(
       "CREATE INDEX IF NOT EXISTS idx_documents_embedding ON documents USING ivfflat (embedding vector_cosine_ops)"
     );
-    await pool.query("UPDATE documents SET searchable = to_tsvector('english', fields::text) WHERE searchable IS NULL");
+    await pool.query("UPDATE documents SET searchable = to_tsvector('english', coalesce(fields::text,'') || ' ' || coalesce(raw_text,'')) WHERE searchable IS NULL");
+    await pool.query("CREATE INDEX IF NOT EXISTS idx_raw_text ON documents USING GIN(to_tsvector('english', raw_text))");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS document_chunks (
       id SERIAL PRIMARY KEY,
