@@ -18,6 +18,7 @@ import Board from './Board';
 import KanbanDashboard from './KanbanDashboard';
 import Inbox from './Inbox';
 import NotFound from './NotFound';
+import ResultsViewer from './ResultsViewer';
 import ErrorBoundary from './ErrorBoundary';
 import LandingPage from './LandingPage.jsx';
 import OnboardingWizard from './OnboardingWizard';
@@ -128,6 +129,7 @@ function AnimatedRoutes() {
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/sandbox" element={<PageWrapper><DemoSandbox /></PageWrapper>} />
         <Route path="/free-trial" element={<PageWrapper><InstantTrial /></PageWrapper>} />
+        <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
