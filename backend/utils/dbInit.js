@@ -448,6 +448,17 @@ async function initDb() {
       "ALTER TABLE extraction_feedback ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW()"
     );
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS api_keys (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      api_key TEXT UNIQUE NOT NULL,
+      label TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+    await pool.query(
+      'ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS label TEXT'
+    );
+
     await pool.query(`CREATE TABLE IF NOT EXISTS review_notes (
       id SERIAL PRIMARY KEY,
       document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,

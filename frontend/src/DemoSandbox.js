@@ -58,7 +58,7 @@ export default function DemoSandbox() {
     <div className="min-h-screen p-6 flex flex-col items-center bg-gradient-to-br from-purple-50 via-indigo-100 to-indigo-200 dark:from-purple-900 dark:via-indigo-900 dark:to-gray-900 text-gray-900 dark:text-gray-100">
       <div className="max-w-2xl w-full space-y-6">
         <div className="text-center">
-          <PageHeader title="ClarifyOps / AI Dashboard" subtitle="Interactive Demo Sandbox" />
+          <PageHeader title="AI Claims Data Extractor / Dashboard" subtitle="Interactive Demo Sandbox" />
         </div>
         {step === 1 && (
           <>

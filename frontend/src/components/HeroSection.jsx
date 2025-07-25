@@ -23,10 +23,10 @@ export default function HeroSection({ onRequestDemo }) {
         >
           <>
             <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
-              ClarifyOps – AI Document Intelligence + Automation
+              AI Claims Data Extractor
             </h1>
             <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-              Operational clarity for any document with automated intelligence and workflows.
+              Upload insurance claims and instantly extract structured data for export.
             </p>
           </>
           <div className="flex justify-center md:justify-start">

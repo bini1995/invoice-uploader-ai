@@ -18,6 +18,8 @@ function TeamManagement() {
   const [csvLimit, setCsvLimit] = useState(5);
   const [pdfLimit, setPdfLimit] = useState(10);
   const [defaultRetention, setDefaultRetention] = useState('forever');
+  const [keys, setKeys] = useState([]);
+  const [newLabel, setNewLabel] = useState('');
 
   const headers = useMemo(
     () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }),
@@ -48,12 +50,23 @@ function TeamManagement() {
     }
   }, [headers]);
 
+  const fetchKeys = useCallback(async () => {
+    const res = await fetch(`${API_BASE}/api/api-keys`, { headers });
+    const data = await res.json();
+    if (res.ok) setKeys(data);
+  }, [headers]);
+
   useEffect(() => {
     if (token) {
       setLoading(true);
-      Promise.all([fetchUsers(), fetchLogs(), fetchSettings()]).finally(() => setLoading(false));
+      Promise.all([
+        fetchUsers(),
+        fetchLogs(),
+        fetchSettings(),
+        fetchKeys()
+      ]).finally(() => setLoading(false));
     }
-  }, [fetchUsers, fetchLogs, fetchSettings, token]);
+  }, [fetchUsers, fetchLogs, fetchSettings, fetchKeys, token]);
 
   const addUser = async () => {
     await fetch(`${API_BASE}/api/users`, {
@@ -79,6 +92,33 @@ function TeamManagement() {
       body: JSON.stringify({ role })
     });
     fetchUsers();
+  };
+
+  const createKey = async () => {
+    const res = await fetch(`${API_BASE}/api/api-keys`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ label: newLabel })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setKeys([...keys, data]);
+      setNewLabel('');
+      alert(`New key: ${data.api_key}`);
+    }
+  };
+
+  const updateLabel = async (id, label) => {
+    await fetch(`${API_BASE}/api/api-keys/${id}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ label })
+    });
+  };
+
+  const deleteKey = async (id) => {
+    await fetch(`${API_BASE}/api/api-keys/${id}`, { method: 'DELETE', headers });
+    setKeys(keys.filter(k => k.id !== id));
   };
 
   const saveSettings = async () => {
@@ -167,6 +207,40 @@ function TeamManagement() {
               ))
             )}
           </ul>
+        </div>
+        <div className="border rounded p-4 space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">API Keys</h2>
+          <div className="space-y-2">
+            {keys.map(k => (
+              <div key={k.id} className="flex items-center space-x-2">
+                <input
+                  className="input flex-1"
+                  value={k.label || ''}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setKeys(keys.map(x => (x.id === k.id ? { ...x, label: val } : x)));
+                    updateLabel(k.id, val);
+                  }}
+                  placeholder="Label"
+                />
+                <span className="font-mono text-xs break-all">{k.api_key}</span>
+                <button onClick={() => deleteKey(k.id)} className="text-red-600" title="Delete">
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="flex space-x-2 pt-2">
+            <input
+              className="input flex-1"
+              placeholder="New key label"
+              value={newLabel}
+              onChange={e => setNewLabel(e.target.value)}
+            />
+            <button onClick={createKey} className="bg-indigo-600 text-white px-3 py-1 rounded">
+              Generate
+            </button>
+          </div>
         </div>
         <div className="border rounded p-4 space-y-2">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Settings</h2>

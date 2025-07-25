@@ -5,7 +5,7 @@ const { logActivity } = require('../utils/activityLogger');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const ALLOWED_ROLES = ['admin', 'viewer'];
+const ALLOWED_ROLES = ['admin', 'viewer', 'broker', 'adjuster', 'internal_ops'];
 
 async function userExists(username) {
   const { rows } = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);

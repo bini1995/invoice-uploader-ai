@@ -2232,7 +2232,7 @@ useEffect(() => {
 
       <main className="flex-1 w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
         <div className="flex justify-between items-center mb-4">
-          <PageHeader title="ClarifyOps / AI Dashboard" />
+          <PageHeader title="AI Claims Data Extractor / Dashboard" />
           <LiveFeed token={token} tenant={tenant} />
         </div>
   

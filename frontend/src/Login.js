@@ -40,7 +40,7 @@ export default function Login({ onLogin, addToast }) {
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-2 z-20 flex justify-between items-center">
         <h1 className="text-xl font-bold flex items-center space-x-1">
           <img src={`/api/${localStorage.getItem('tenant') || 'default'}/logo`} alt="logo" className="h-5 w-5" />
-          <span>ClarifyOps</span>
+          <span>AI Claims Data Extractor</span>
         </h1>
         <div className="flex items-center gap-2">
           <HighContrastToggle />
@@ -50,7 +50,7 @@ export default function Login({ onLogin, addToast }) {
       <div className="flex-1 flex items-center justify-center pt-20">
         <Card className="w-80 space-y-4">
           <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
-          <PageHeader title="ClarifyOps / AI Dashboard" subtitle="Login" />
+          <PageHeader title="AI Claims Data Extractor / Dashboard" subtitle="Login" />
 
           {error && (
             <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded" role="alert">{error}</div>

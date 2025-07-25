@@ -5,7 +5,7 @@ const { createUser, userExists } = require('./userController');
 
 exports.createInvite = async (req, res) => {
   const { role = 'viewer', expiresInHours = 24 } = req.body || {};
-  if (!['viewer', 'editor'].includes(role)) {
+  if (!['viewer', 'editor', 'broker', 'adjuster', 'internal_ops'].includes(role)) {
     return res.status(400).json({ message: 'Invalid role' });
   }
   const token = crypto.randomBytes(16).toString('hex');

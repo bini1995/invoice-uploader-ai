@@ -50,7 +50,7 @@ export default function LandingPage() {
         <div className="container mx-auto flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
             <DocumentArrowUpIcon className="w-6 h-6 text-indigo-600" />
-            <span className="font-bold text-lg">ClarifyOps</span>
+            <span className="font-bold text-lg">AI Claims Data Extractor</span>
           </div>
           <div className="hidden md:flex items-center space-x-6 text-sm">
             <a href="#product" className="hover:text-indigo-600">Product</a>
@@ -149,7 +149,7 @@ export default function LandingPage() {
               <Card key={f.label} className="min-w-[220px] p-4 space-y-3 text-center">
                 <h4 className="font-semibold mb-2">{f.label}</h4>
                 <div className="grid grid-cols-3 gap-2 text-sm items-center">
-                  <span className="font-medium text-left">ClarifyOps</span>
+                  <span className="font-medium text-left">AI Claims Data Extractor</span>
                   <span className="font-medium">A</span>
                   <span className="font-medium">B</span>
                   {f.ours ? (
@@ -328,7 +328,7 @@ export default function LandingPage() {
         <p className="text-center mb-4">Explore our API and build custom integrations.</p>
         <div className="text-center">
           <Button asChild className="text-lg px-8 py-3">
-            <Link to="/api-docs">View API Docs</Link>
+            <Link to="/docs">View API Docs</Link>
           </Button>
         </div>
       </section>
@@ -413,7 +413,7 @@ export default function LandingPage() {
             </form>
             <ul className="space-y-1">
               <li>
-                <a href="/api-docs" className="hover:underline">API Docs</a>
+                <a href="/docs" className="hover:underline">API Docs</a>
               </li>
               <li>
                 <a href="#resources" className="hover:underline">Help Center</a>
@@ -422,7 +422,7 @@ export default function LandingPage() {
           </div>
         </div>
         <p className="text-center mt-8 text-xs">
-          © {new Date().getFullYear()} ClarifyOps
+          © {new Date().getFullYear()} AI Claims Data Extractor
         </p>
       </footer>
       </div>

@@ -72,7 +72,7 @@ export default function Board() {
 
   return (
     <MainLayout title="Approval Board">
-      <PageHeader title="ClarifyOps / AI Dashboard" subtitle="Approval Board" />
+      <PageHeader title="AI Claims Data Extractor / Dashboard" subtitle="Approval Board" />
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex space-x-4 overflow-x-auto">
             {renderColumn('pending', 'Pending', columns.pending)}
