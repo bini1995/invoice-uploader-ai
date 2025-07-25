@@ -135,6 +135,17 @@ async function initDb() {
     );
     await pool.query("UPDATE documents SET searchable = to_tsvector('english', fields::text) WHERE searchable IS NULL");
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS document_chunks (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      chunk_index INTEGER,
+      content TEXT,
+      embedding VECTOR(1536)
+    )`);
+    await pool.query(
+      "CREATE INDEX IF NOT EXISTS idx_doc_chunks_embedding ON document_chunks USING ivfflat (embedding vector_cosine_ops)"
+    );
+
     await pool.query(`CREATE TABLE IF NOT EXISTS document_versions (
       id SERIAL PRIMARY KEY,
       document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
