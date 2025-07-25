@@ -459,6 +459,15 @@ async function initDb() {
       'ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS label TEXT'
     );
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS event_logs (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT,
+      user_id INTEGER,
+      event_name TEXT NOT NULL,
+      details JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(`CREATE TABLE IF NOT EXISTS review_notes (
       id SERIAL PRIMARY KEY,
       document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,

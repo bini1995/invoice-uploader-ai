@@ -46,6 +46,8 @@ import FlaggedBadge from './components/FlaggedBadge';
 import CollaborativeCommentInput from './components/CollaborativeCommentInput';
 import { Button } from './components/ui/Button';
 import { Card } from './components/ui/Card';
+import WelcomeModal from './components/WelcomeModal';
+import UpgradePrompt from './components/UpgradePrompt';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
 import {
@@ -92,6 +94,9 @@ const [uploadSuccess, setUploadSuccess] = useState(false);
 const [previewModalData, setPreviewModalData] = useState(null);
 const [bulkSummary, setBulkSummary] = useState(null);
 const [showTour, setShowTour] = useState(() => !localStorage.getItem('seenTour'));
+const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem('seenWelcome'));
+const [showUpgrade, setShowUpgrade] = useState(false);
+const USAGE_LIMIT = 500;
 const tourSteps = [
   {
     target: '#uploadArea',
@@ -358,6 +363,11 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
           throw new Error(`HTTP ${res.status}`);
         }
         setInvoices(data);
+        if (data.length >= USAGE_LIMIT * 0.8) {
+          setShowUpgrade(true);
+        } else {
+          setShowUpgrade(false);
+        }
         data.forEach((inv) => socket.emit('joinInvoice', inv.id));
         localStorage.setItem('cachedInvoices', JSON.stringify(data));
         const vendors = Array.from(new Set(data.map((inv) => inv.vendor).filter(Boolean)));
@@ -3401,6 +3411,19 @@ useEffect(() => {
                 localStorage.setItem('seenTour', '1');
               }
             }}
+          />
+          <WelcomeModal
+            open={showWelcome}
+            onClose={() => {
+              setShowWelcome(false);
+              localStorage.setItem('seenWelcome', '1');
+            }}
+          />
+          <UpgradePrompt
+            open={showUpgrade}
+            used={invoices.length}
+            limit={USAGE_LIMIT}
+            onClose={() => setShowUpgrade(false)}
           />
           <FeatureWidget open={featureOpen} onClose={() => setFeatureOpen(false)} />
         </>

@@ -3,6 +3,7 @@ const DocumentType = Object.freeze({
   RECEIPT: 'receipt',
   CONTRACT: 'contract',
   FORM: 'form',
+  CLAIM: 'claim',
   OTHER: 'other'
 });
 
