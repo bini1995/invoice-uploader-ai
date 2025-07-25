@@ -22,6 +22,8 @@ const {
   addReviewNote,
   getReviewNotes,
   getReviewQueue,
+  updateStatus,
+  exportClaims,
 } = require('../controllers/claimController');
 const { authMiddleware } = require('../controllers/userController');
 
@@ -56,6 +58,8 @@ router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
 router.get('/review-queue', authMiddleware, getReviewQueue);
 router.get('/report/pdf', authMiddleware, exportSummaryPDF);
+router.post('/export', authMiddleware, exportClaims);
+router.patch('/:id/status', authMiddleware, updateStatus);
 router.get('/:id', authMiddleware, getDocument);
 router.get('/:id/feedback', authMiddleware, getExtractionFeedback);
 router.post('/:id/feedback', authMiddleware, submitExtractionFeedback);

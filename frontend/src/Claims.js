@@ -1237,22 +1237,47 @@ useEffect(() => {
 
   const handleExportAll = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/invoices/export-all', {
-        method: 'GET',
+      const res = await fetch('http://localhost:3000/api/claims/export', {
+        method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ format: 'csv' }),
       });
   
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'all_invoices.csv';
+      a.download = 'claims.csv';
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Export all failed:', err);
+    }
+  };
+
+  const handleExportAllJson = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/api/claims/export', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ format: 'json' }),
+      });
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'claims.json';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export JSON failed:', err);
     }
   };
 
@@ -2468,6 +2493,7 @@ useEffect(() => {
                         onMonthlyInsights={handleMonthlyInsights}
                         onExportFiltered={handleExport}
                         onExportAll={handleExportAll}
+                        onExportJson={handleExportAllJson}
                         onExportDashboard={handleExportDashboardPDF}
                         onExportArchived={handleExportArchived}
                         onReset={handleResetFilters}
