@@ -39,7 +39,7 @@ export default function Login({ onLogin, addToast }) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-2 z-20 flex justify-between items-center">
         <h1 className="text-xl font-bold flex items-center space-x-1">
-          <img src={`/api/${localStorage.getItem('tenant') || 'default'}/logo`} alt="logo" className="h-5 w-5" />
+          <img src="/logo.png" alt="logo" className="h-5 w-5" />
           <span>AI Claims Data Extractor</span>
         </h1>
         <div className="flex items-center gap-2">

@@ -1,11 +1,11 @@
 import React from 'react';
 
 export default function PartnerLogos() {
-  const companies = ['Contoso', 'NuBank', 'Globex', 'Initech'];
+  const companies = ['State Farm', 'Allstate', 'Progressive', 'Liberty Mutual'];
   return (
     <div className="pt-4 text-center md:text-left">
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 font-medium">
-        Used by FinOps teams at
+        Trusted by insurance teams at
       </p>
       <div className="flex justify-center md:justify-start items-center gap-4 opacity-80">
         {companies.map((name, idx) => (

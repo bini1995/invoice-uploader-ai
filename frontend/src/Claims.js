@@ -3177,7 +3177,7 @@ useEffect(() => {
                         }`}
                       >
                         <div className="flex items-center space-x-2">
-                          <img src="/logo192.png" alt="logo" className="w-8 h-8 object-contain rounded" />
+                          <img src="/logo.png" alt="logo" className="w-8 h-8 object-contain rounded" />
                           <span className="text-sm font-semibold">{inv.vendor}</span>
                         </div>
                         <div className="flex-1 text-sm space-y-1">

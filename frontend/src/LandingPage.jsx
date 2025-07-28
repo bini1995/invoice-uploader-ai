@@ -49,7 +49,7 @@ export default function LandingPage() {
       <nav className="sticky top-0 bg-white/80 backdrop-blur dark:bg-gray-900/80 shadow z-30">
         <div className="container mx-auto flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
-            <DocumentArrowUpIcon className="w-6 h-6 text-indigo-600" />
+            <img src="/logo.png" alt="AI Claims Data Extractor" className="w-6 h-6" />
             <span className="font-bold text-lg">AI Claims Data Extractor</span>
           </div>
           <div className="hidden md:flex items-center space-x-6 text-sm">

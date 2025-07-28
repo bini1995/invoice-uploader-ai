@@ -10,7 +10,7 @@ export default function HeroSection({ onRequestDemo }) {
       className="relative overflow-hidden min-h-[70vh] px-6 py-20 flex items-center justify-center bg-white dark:bg-gray-900"
     >
       <img
-        src="/logo512.png"
+        src="/logo.png"
         alt="logo watermark"
         className="hidden md:block absolute right-10 bottom-0 w-1/2 max-w-md opacity-10 pointer-events-none select-none"
       />

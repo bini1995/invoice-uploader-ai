@@ -72,13 +72,9 @@ export default function Navbar({
         <div className="flex items-center space-x-2">
           <Link to="/claims" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img
-              src={`/api/${tenant}/logo`}
+              src="/logo.png"
               alt="logo"
               className="h-5 w-5"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = '/logo192.png';
-              }}
             />
             <span className="font-semibold text-sm">{t('title')}</span>
             <span className="ml-1 text-xs opacity-80">{tenantName}</span>
