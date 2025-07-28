@@ -22,13 +22,13 @@ export default function SplitScreenStory() {
           transition={{ duration: 0.6 }}
           className="space-y-4"
         >
-          <h2 className="text-3xl font-bold">CSV → AI Summary</h2>
+          <h2 className="text-3xl font-bold">Claims → Structured Data</h2>
           <p className="text-lg">
-            Upload your document CSV and instantly receive an AI-generated summary highlighting
-            key errors, trends and insights.
+            Upload insurance claim documents and instantly receive structured data with fraud detection,
+            accuracy scores, and ready-to-export information.
           </p>
           <Link to="/sandbox" className="btn btn-primary inline-block">
-            Try the Demo
+            Try Claims Demo
           </Link>
         </motion.div>
       </div>

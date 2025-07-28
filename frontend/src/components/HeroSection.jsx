@@ -26,13 +26,29 @@ export default function HeroSection({ onRequestDemo }) {
               AI Claims Data Extractor
             </h1>
             <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-              Upload insurance claims and instantly extract structured data for export.
+              Automate manual claims extraction with AI. Extract structured data from unstructured insurance claims in seconds.
+            </p>
+            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-lg mx-auto md:mx-0">
+              Built for insurance operations teams and claims processors who need fast, accurate data extraction without the manual work.
             </p>
           </>
-          <div className="flex justify-center md:justify-start">
-            <Button asChild className="text-lg px-8 py-3">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <Button onClick={onRequestDemo} className="text-lg px-8 py-3">
+              Request Demo
+            </Button>
+            <Button asChild variant="secondary" className="text-lg px-8 py-3">
               <a href="/free-trial">Start Free Trial</a>
             </Button>
+          </div>
+          <div className="flex items-center justify-center md:justify-start space-x-6 text-sm text-gray-500">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>No setup required</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Process claims in seconds</span>
+            </div>
           </div>
           <PartnerLogos />
         </motion.div>
@@ -43,8 +59,8 @@ export default function HeroSection({ onRequestDemo }) {
           className="w-full"
         >
           <img
-            src="https://dummyimage.com/800x450/f3f4f6/1e40af.png&text=Document+Dashboard"
-            alt="Product screenshot"
+            src="https://dummyimage.com/800x450/f3f4f6/1e40af.png&text=Claims+Extraction+Dashboard"
+            alt="AI Claims Data Extraction Dashboard"
             className="w-full rounded-lg shadow-lg"
           />
         </motion.div>

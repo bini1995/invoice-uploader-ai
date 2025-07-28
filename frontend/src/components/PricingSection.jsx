@@ -9,33 +9,46 @@ import {
   ChartBarIcon,
   SparklesIcon,
   LightBulbIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 
 const plans = [
   {
     id: 'usage',
     title: 'Pay As You Go',
-    subtitle: '$0.10 per claim processed',
-    price: 0.1,
-    invoices: 'per claim',
+    subtitle: '$0.25 per claim processed',
+    price: 0.25,
+    claims: 'per claim',
     summaries: 'Included',
     users: 'Unlimited',
     analytics: 'Basic',
-    scoring: false,
+    fraudDetection: false,
     cta: 'Start Processing',
   },
   {
     id: 'starter',
-    title: 'Monthly Plan',
-    subtitle: '$49 for 500 claims',
-    price: 49,
-    invoices: 500,
+    title: 'Starter Plan',
+    subtitle: '$199 for 1,000 claims',
+    price: 199,
+    claims: 1000,
     summaries: 'Unlimited',
     users: 5,
     analytics: 'Advanced',
-    scoring: true,
+    fraudDetection: true,
     cta: 'Start Free Trial',
     popular: true,
+  },
+  {
+    id: 'professional',
+    title: 'Professional',
+    subtitle: '$499 for 3,000 claims',
+    price: 499,
+    claims: 3000,
+    summaries: 'Unlimited',
+    users: 15,
+    analytics: 'Advanced',
+    fraudDetection: true,
+    cta: 'Start Free Trial',
   },
 ];
 
@@ -56,6 +69,9 @@ export default function PricingSection() {
   return (
     <section id="pricing" className="py-12 bg-gray-50 dark:bg-gray-800">
       <h2 className="text-3xl font-bold text-center mb-6">Pricing</h2>
+      <p className="text-center mb-6 text-gray-600 dark:text-gray-300">
+        Simple, transparent pricing for insurance claims processing
+      </p>
       <div className="flex justify-center mb-6 space-x-3 text-sm items-center">
         <span className={annual ? 'opacity-50' : 'font-semibold'}>Monthly</span>
         <label className="relative inline-flex items-center cursor-pointer">
@@ -102,7 +118,7 @@ export default function PricingSection() {
             <ul className="text-sm space-y-1 text-left">
               <li className="flex items-center space-x-1">
                 <CheckCircleIcon className="w-4 h-4" />
-                <span className="font-semibold">{plan.invoices}</span>{' '}invoices/mo
+                <span className="font-semibold">{plan.claims}</span>{' '}claims/mo
               </li>
               <li className="flex items-center space-x-1">
                 <UserGroupIcon className="w-4 h-4" />
@@ -110,21 +126,21 @@ export default function PricingSection() {
               </li>
               <li className="flex items-center space-x-1">
                 <SparklesIcon className="w-4 h-4" />
-                <span className="font-semibold">{plan.summaries}</span> AI summary
+                <span className="font-semibold">{plan.summaries}</span> AI summaries
               </li>
               <li className="flex items-center space-x-1">
                 <ChartBarIcon className="w-4 h-4" />
                 <span className="font-semibold">{plan.analytics}</span>
                 <span> analytics</span>
-                <Tippy content="Dashboards and spend charts">
+                <Tippy content="Claims processing dashboards and insights">
                   <span className="ml-1 cursor-help text-indigo-600">?</span>
                 </Tippy>
               </li>
-              {plan.scoring && (
+              {plan.fraudDetection && (
                 <li className="flex items-center space-x-1">
-                  <LightBulbIcon className="w-4 h-4" />
-                  <span>Smart Vendor Scoring</span>
-                  <Tippy content="Ranks vendors by risk and reliability">
+                  <ShieldCheckIcon className="w-4 h-4" />
+                  <span>Fraud Detection</span>
+                  <Tippy content="AI-powered fraud detection and risk scoring">
                     <span className="ml-1 cursor-help text-indigo-600">?</span>
                   </Tippy>
                 </li>
@@ -146,8 +162,14 @@ export default function PricingSection() {
           </Card>
         ))}
       </div>
+      <div className="text-center mt-8">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Need custom pricing for enterprise teams?
+        </p>
+        <Button variant="secondary">Contact Sales</Button>
+      </div>
       <div id="sticky-cta" className="fixed bottom-0 inset-x-0 hidden justify-center bg-indigo-600 text-white p-4 z-40">
-        <span className="mr-4 font-semibold">Ready to get started?</span>
+        <span className="mr-4 font-semibold">Ready to automate your claims processing?</span>
         <Button variant="secondary" className="bg-white text-indigo-600">Start Free Trial</Button>
       </div>
     </section>

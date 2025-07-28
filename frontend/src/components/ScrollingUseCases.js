@@ -1,23 +1,27 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  ShoppingCartIcon,
+  TruckIcon,
+  HomeIcon,
+  HeartIcon,
+  ShieldExclamationIcon,
   UserGroupIcon,
-  ScaleIcon,
   BoltIcon,
 } from '@heroicons/react/24/outline';
 import { Card } from './ui/Card';
 
 export default function ScrollingUseCases() {
   const cases = [
-    { icon: ShoppingCartIcon, title: 'Procurement', desc: 'Streamline purchase workflows.' },
-    { icon: UserGroupIcon, title: 'AP Teams', desc: 'Collaborate on documents in real-time.' },
-    { icon: ScaleIcon, title: 'Compliance', desc: 'Meet regulatory requirements with ease.' },
-    { icon: BoltIcon, title: 'Automation', desc: 'Eliminate manual data entry.' },
+    { icon: TruckIcon, title: 'Auto Claims', desc: 'Process vehicle damage claims instantly.' },
+    { icon: HomeIcon, title: 'Property Claims', desc: 'Extract data from property damage reports.' },
+    { icon: HeartIcon, title: 'Health Claims', desc: 'Process medical and health insurance claims.' },
+    { icon: ShieldExclamationIcon, title: 'Fraud Detection', desc: 'Identify suspicious claims patterns.' },
+    { icon: UserGroupIcon, title: 'Claims Teams', desc: 'Collaborate on complex claims processing.' },
+    { icon: BoltIcon, title: 'Automation', desc: 'Eliminate manual claims data entry.' },
   ];
   return (
     <section className="py-12">
-      <h2 className="text-3xl font-bold text-center mb-8">Use Cases</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">Insurance Use Cases</h2>
       <div className="overflow-x-auto pb-4 px-6">
         <div className="flex space-x-6 w-max snap-x snap-mandatory">
           {cases.map(({ icon: Icon, title, desc }, idx) => (

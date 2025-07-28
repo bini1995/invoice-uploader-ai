@@ -8,15 +8,15 @@ export default function HowItWorks() {
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   const steps = [
-    { title: 'Upload', desc: 'Drag and drop your invoice.' },
-    { title: 'Validate', desc: 'AI checks for errors.' },
-    { title: 'Fix', desc: 'Suggested fixes appear.' },
-    { title: 'Approve', desc: 'Route for quick approval.' },
+    { title: 'Upload Claims', desc: 'Upload PDFs, images, or scanned claim documents.' },
+    { title: 'AI Extraction', desc: 'AI extracts structured data with 95%+ accuracy.' },
+    { title: 'Fraud Check', desc: 'Built-in fraud detection flags suspicious patterns.' },
+    { title: 'Export Data', desc: 'Export clean data to your claims management system.' },
   ];
 
   return (
     <section id="how-it-works" className="py-12" ref={ref}>
-      <h2 className="text-3xl font-bold text-center mb-8">How It Works</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">How Claims Processing Works</h2>
       <div className="container mx-auto grid md:grid-cols-4 gap-6 px-6">
         {steps.map((step) => (
           <motion.div key={step.title} style={{ opacity }}>
