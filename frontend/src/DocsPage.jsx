@@ -1,6 +1,7 @@
 import React from 'react';
 import MainLayout from './components/MainLayout';
 import PageHeader from './components/PageHeader';
+import { API_BASE } from './api';
 
 export default function DocsPage() {
   return (
