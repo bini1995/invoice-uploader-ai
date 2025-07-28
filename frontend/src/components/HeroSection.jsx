@@ -22,11 +22,11 @@ export default function HeroSection({ onRequestDemo }) {
           className="space-y-6 text-center md:text-left"
         >
           <>
-            <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
-              AI Claims Data Extractor
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
+              Automate Claim Intake &amp; Extraction with AI
             </h1>
-            <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
-              Upload insurance claims and instantly extract structured data for export.
+            <p className="text-lg sm:text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-gray-600 dark:text-gray-300">
+              Manual claim handling wastes time and invites errors. Our AI-driven extraction and fraud checks turn raw files into audit-ready data—helping you process claims faster and cut costs.
             </p>
           </>
           <div className="flex justify-center md:justify-start">
