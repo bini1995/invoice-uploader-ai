@@ -43,6 +43,7 @@ const scenarioRoutes = require('./routes/scenarioRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const logRoutes = require('./routes/logRoutes');
+const usageRoutes = require('./routes/usageRoutes');
 const { auditLog } = require('./middleware/auditMiddleware');
 const piiMask = require('./middleware/piiMask');
 const { runRecurringInvoices } = require('./controllers/recurringController');
@@ -118,6 +119,7 @@ app.use('/api/invites', inviteRoutes);
 app.use('/api/validation', validationRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/usage', usageRoutes);
 
 app.use(Sentry.Handlers.errorHandler());
 

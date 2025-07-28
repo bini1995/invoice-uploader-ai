@@ -42,6 +42,31 @@ const exportDuration = new client.Histogram({
   labelNames: ['export_type']
 });
 
+// Usage tracking metrics
+const usageLimitExceededCounter = new client.Counter({
+  name: 'usage_limit_exceeded_total',
+  help: 'Total number of usage limit violations',
+  labelNames: ['action', 'plan_type']
+});
+
+const usageTrackingCounter = new client.Counter({
+  name: 'usage_tracking_total',
+  help: 'Total number of usage tracking events',
+  labelNames: ['action', 'plan_type']
+});
+
+const usageRemainingGauge = new client.Gauge({
+  name: 'usage_remaining',
+  help: 'Remaining usage for each action',
+  labelNames: ['action', 'plan_type']
+});
+
+const usagePercentageGauge = new client.Gauge({
+  name: 'usage_percentage',
+  help: 'Usage percentage for each action',
+  labelNames: ['action', 'plan_type']
+});
+
 module.exports = {
   register: client.register,
   claimUploadCounter,
@@ -50,5 +75,9 @@ module.exports = {
   feedbackFlaggedCounter,
   activeUsersGauge,
   extractDuration,
-  exportDuration
+  exportDuration,
+  usageLimitExceededCounter,
+  usageTrackingCounter,
+  usageRemainingGauge,
+  usagePercentageGauge
 };
