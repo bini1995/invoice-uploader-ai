@@ -130,9 +130,19 @@ const searchInputRef = useRef();
   const [loadingInvoices, setLoadingInvoices] = useState(false);
   const [username, setUsername] = useState('');
 const [password, setPassword] = useState('');
-const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [token, setToken] = useState(localStorage.getItem('token') || '');
 const [role, setRole] = useState(localStorage.getItem('role') || '');
 const [loginError, setLoginError] = useState('');
+
+  // Load token from localStorage on component mount
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    const savedRole = localStorage.getItem('role');
+    if (savedToken) {
+      setToken(savedToken);
+      setRole(savedRole);
+    }
+  }, []);
 const [vendorSummary, setVendorSummary] = useState('');
 const [monthlyInsights, setMonthlyInsights] = useState(null);
 const socket = useMemo(() => io(API_BASE), []);
@@ -1948,41 +1958,6 @@ useEffect(() => {
       setToken(tok);
       setRole(userRole);
     }} addToast={addToast} />;
-  }
-
-
-  if (!token) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-900 dark:text-gray-100">
-        <Card className="w-full max-w-sm space-y-4">
-          <h2 className="text-lg font-semibold mb-4">Login</h2>
-          {loginError && <p className="text-red-600 mb-2">{loginError}</p>}
-          <label htmlFor="username" className="block text-sm font-medium">
-            Username
-          </label>
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="input w-full mb-3"
-          />
-          <label htmlFor="password" className="block text-sm font-medium">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input w-full mb-3"
-          />
-          <button onClick={handleLogin} className="btn btn-primary w-full">
-            Log In
-          </button>
-        </Card>
-      </div>
-    );
   }
 
 
