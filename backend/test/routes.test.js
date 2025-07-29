@@ -1,5 +1,5 @@
-process.env.JWT_SECRET = 'testsecret';
-process.env.JWT_REFRESH_SECRET = 'refreshsecret';
+process.env.JWT_SECRET = 'testsecret-1234567890123456789012';
+process.env.JWT_REFRESH_SECRET = 'refreshsecret-12345678901234567890';
 
 const request = require('supertest');
 const express = require('express');
