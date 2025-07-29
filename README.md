@@ -602,6 +602,10 @@ docker-compose up --build
 ```
 
 The frontend is served on `http://localhost:3001` while the API runs on `http://localhost:3000`.
+The build reads `REACT_APP_API_BASE_URL` from `.env` to know where requests
+should be sent. In development this defaults to `http://localhost:3000`. For a
+production deployment, set `REACT_APP_API_BASE_URL` to your public API origin
+(e.g. `https://clarifyops.com/api`) and rebuild the frontend container.
 
 ### Troubleshooting
 
