@@ -24,7 +24,7 @@ services:
     ports:
       - "3001:80"
     environment:
-      - REACT_APP_API_BASE_URL=https://clarifyops.com/api
+      - REACT_APP_API_BASE_URL=http://localhost
     restart: unless-stopped
 
   db:
