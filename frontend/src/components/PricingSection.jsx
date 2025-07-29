@@ -8,7 +8,6 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   SparklesIcon,
-  LightBulbIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 

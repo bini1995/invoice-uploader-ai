@@ -7,7 +7,6 @@ import {
   ExclamationCircleIcon,
   ChartBarIcon,
   ClockIcon,
-  UserGroupIcon,
   ShieldExclamationIcon,
 } from '@heroicons/react/24/outline';
 

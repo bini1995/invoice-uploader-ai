@@ -63,7 +63,7 @@ export default function ResultsViewer() {
       sendPatch();
     }, 1000);
     return () => clearTimeout(saveTimer.current);
-  }, [editingValue]);
+  }, [editingValue, editingField, sendPatch]);
 
   const handleReextract = async (mode) => {
     try {
