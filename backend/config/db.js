@@ -7,7 +7,6 @@ const logger = require('../utils/logger');
 
 logger.info('🔎 Using DATABASE_URL:', process.env.DATABASE_URL);
 
-
 // Create a connection pool using info from your .env file
 const dbConfig = {
   host: process.env.DB_HOST || 'db',
@@ -15,6 +14,13 @@ const dbConfig = {
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'TATA1tata1',
   database: process.env.DB_NAME || 'invoices_db',
+  // Connection pool optimization
+  max: parseInt(process.env.DB_POOL_MAX || '20', 10),
+  min: parseInt(process.env.DB_POOL_MIN || '2', 10),
+  idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000', 10),
+  connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT || '2000', 10),
+  // SSL configuration for production
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 };
 
 // If a full connection string is provided, use it unless it points to localhost

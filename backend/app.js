@@ -3,9 +3,14 @@
 const express = require('express');         // web server framework
 const cors = require('cors');
 const http = require('http');
+const helmet = require('helmet');
 require('dotenv').config();                 // load environment variables
 const logger = require('./utils/logger');
 const Sentry = require('@sentry/node');
+const errorHandler = require('./middleware/errorHandler');
+const { apiLimiter } = require('./middleware/rateLimit');
+
+// Route imports
 const authRoutes = require('./routes/authRoutes');
 const exportTemplateRoutes = require('./routes/exportTemplateRoutes');
 const brandingRoutes = require('./routes/brandingRoutes');
@@ -44,11 +49,16 @@ const eventRoutes = require('./routes/eventRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const logRoutes = require('./routes/logRoutes');
 const usageRoutes = require('./routes/usageRoutes');
+
+// Middleware imports
 const { auditLog } = require('./middleware/auditMiddleware');
 const piiMask = require('./middleware/piiMask');
+const tenantContext = require('./middleware/tenantMiddleware');
+
+// Service imports
 const { runRecurringInvoices } = require('./controllers/recurringController');
 const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
-const { sendApprovalReminders } = require('./controllers/reminderController'); // used for optional manual trigger
+const { sendApprovalReminders } = require('./controllers/reminderController');
 const { autoDeleteExpiredDocuments } = require('./controllers/claimController');
 const { initDb } = require('./utils/dbInit');
 const { initChat } = require('./utils/chatServer');
@@ -57,11 +67,12 @@ const { loadModel, trainFromCorrections } = require('./utils/ocrAgent');
 const { loadSchedules } = require('./utils/automationScheduler');
 const { scheduleReports } = require('./utils/reportScheduler');
 const { scheduleAnomalyScan } = require('./utils/anomalyScanner');
+
+// Swagger and WebSocket setup
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
 const { WebSocketServer } = require('ws');
 const { setupWSConnection } = require('@y/websocket-server/utils');
-const tenantContext = require('./middleware/tenantMiddleware');
 const { parse } = require('url');
 const { initDocActivity } = require('./utils/docActivityServer');
 
@@ -70,22 +81,61 @@ const server = http.createServer(app);
 
 logger.info('🟡 Starting server...');
 
+// Initialize Sentry
 Sentry.init({ dsn: process.env.SENTRY_DSN || undefined });
+
+// Security middleware (order matters!)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Tenant-ID'],
+}));
+
+// Request parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Global rate limiting
+app.use(apiLimiter);
+
+// Sentry request handler
 app.use(Sentry.Handlers.requestHandler());
 
-app.use(cors());
-app.use(express.json());                    // allow reading JSON data
+// Tenant context middleware
 app.use(tenantContext);
+
+// Health and metrics endpoints (no auth required)
 app.use('/health', healthRoutes);
 app.use('/metrics', metricsRoutes);
+
+// API documentation
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Audit logging
 app.use(auditLog);
-// Allow auth endpoints under the new claims scope
+
+// PII masking
+app.use(piiMask);
+
+// API Routes
 app.use('/api/claims', authRoutes);
 app.use('/api/invoices', authRoutes); // backwards compat
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
-// Experimental routes
 app.use('/api/labs/feedback', feedbackRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
@@ -121,49 +171,76 @@ app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/usage', usageRoutes);
 
+// Sentry error handler
 app.use(Sentry.Handlers.errorHandler());
 
+// Global error handler (must be last)
+app.use(errorHandler);
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Initialize application
 (async () => {
-  await initDb();
-  await loadCorrections();
-  setInterval(loadCorrections, 60 * 60 * 1000); // refresh corrections hourly
-  await loadModel();
-  await trainFromCorrections();
-  setInterval(trainFromCorrections, 6 * 60 * 60 * 1000); // retrain regularly
+  try {
+    // Initialize database
+    await initDb();
+    logger.info('✅ Database initialized');
 
-  await loadSchedules();
-  // startEmailSync();
-  scheduleReports();
-  scheduleAnomalyScan();
+    // Load AI models and corrections
+    await loadCorrections();
+    setInterval(loadCorrections, 60 * 60 * 1000); // refresh corrections hourly
+    
+    await loadModel();
+    await trainFromCorrections();
+    setInterval(trainFromCorrections, 6 * 60 * 60 * 1000); // retrain regularly
 
-  // Daily cleanup tasks
-  autoDeleteExpiredDocuments();
-  setInterval(autoDeleteExpiredDocuments, 24 * 60 * 60 * 1000);
-  runRecurringInvoices();
-  setInterval(runRecurringInvoices, 24 * 60 * 60 * 1000);
-  processFailedPayments();
-  setInterval(processFailedPayments, 60 * 60 * 1000);
-  sendPaymentReminders();
-  setInterval(sendPaymentReminders, 24 * 60 * 60 * 1000);
+    // Load automation schedules
+    await loadSchedules();
+    scheduleReports();
+    scheduleAnomalyScan();
 
-  logger.info('🟢 Routes mounted');
+    // Setup recurring tasks
+    autoDeleteExpiredDocuments();
+    setInterval(autoDeleteExpiredDocuments, 24 * 60 * 60 * 1000);
+    
+    runRecurringInvoices();
+    setInterval(runRecurringInvoices, 24 * 60 * 60 * 1000);
+    
+    processFailedPayments();
+    setInterval(processFailedPayments, 60 * 60 * 1000);
+    
+    sendPaymentReminders();
+    setInterval(sendPaymentReminders, 24 * 60 * 60 * 1000);
 
-  initChat(server);
-  initDocActivity(server);
+    logger.info('🟢 Application initialized successfully');
 
-  const wss = new WebSocketServer({ noServer: true });
-  server.on('upgrade', (request, socket, head) => {
-    const { pathname, search } = parse(request.url);
-    if (pathname === '/yjs' || pathname.startsWith('/yjs/')) {
-      request.url = pathname.slice(4) + (search || '');
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        setupWSConnection(ws, request);
-      });
-    }
-  });
+    // Initialize WebSocket and chat services
+    initChat(server);
+    initDocActivity(server);
 
-  const port = process.env.PORT || 3000;
-  server.listen(port, () => {
-    logger.info(`🚀 Server running on http://localhost:${port}`);
-  });
+    // WebSocket server setup
+    const wss = new WebSocketServer({ noServer: true });
+    server.on('upgrade', (request, socket, head) => {
+      const { pathname, search } = parse(request.url);
+      if (pathname === '/yjs' || pathname.startsWith('/yjs/')) {
+        request.url = pathname.slice(4) + (search || '');
+        wss.handleUpgrade(request, socket, head, (ws) => {
+          setupWSConnection(ws, request);
+        });
+      }
+    });
+
+    // Start server
+    const port = process.env.PORT || 3000;
+    server.listen(port, () => {
+      logger.info(`🚀 Server running on http://localhost:${port}`);
+    });
+
+  } catch (error) {
+    logger.error('Failed to initialize application:', error);
+    process.exit(1);
+  }
 })();

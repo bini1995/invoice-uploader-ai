@@ -7,6 +7,18 @@ const { activeUsersGauge } = require('../metrics');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+// Validate required environment variables
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+  logger.error('JWT_SECRET is missing or too short. Must be at least 32 characters.');
+  process.exit(1);
+}
+
+if (!JWT_REFRESH_SECRET || JWT_REFRESH_SECRET.length < 32) {
+  logger.error('JWT_REFRESH_SECRET is missing or too short. Must be at least 32 characters.');
+  process.exit(1);
+}
+
 const ALLOWED_ROLES = ['admin', 'viewer', 'broker', 'adjuster', 'internal_ops'];
 
 async function userExists(username) {
