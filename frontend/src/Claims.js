@@ -350,7 +350,7 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
         if (includeArchived) params.push('includeArchived=true');
         if (assigneeFilter) params.push(`assignee=${encodeURIComponent(assigneeFilter)}`);
         const query = params.length ? `?${params.join('&')}` : '';
-        const url = `http://localhost:3000/api/invoices${query}`;
+        const url = `${API_BASE}/api/claims${query}`;
 
         const res = await fetch(url, {
           headers: {
@@ -378,7 +378,7 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
         const uniqueTags = Array.from(new Set(data.flatMap((inv) => inv.tags || [])));
         if (uniqueTags.length) {
           try {
-            const colorRes = await fetch('http://localhost:3000/api/invoices/suggest-tag-colors', {
+            const colorRes = await fetch(`${API_BASE}/api/claims/suggest-tag-colors`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
