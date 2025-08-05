@@ -1,23 +1,32 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const pool = require('../config/db');
 const { logActivity } = require('../utils/activityLogger');
 const logger = require('../utils/logger');
 const { activeUsersGauge } = require('../metrics');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+// Ensure JWT secrets are present. In production we still require them, but
+// during local development generate fallback secrets so the server can start
+// and developers can log in without extra setup.
+let JWT_SECRET = process.env.JWT_SECRET;
+let JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
-// Validate required environment variables
-if (!JWT_SECRET || JWT_SECRET.length < 32) {
-  logger.error('JWT_SECRET is missing or too short. Must be at least 32 characters.');
-  process.exit(1);
+function ensureSecret(current, name) {
+  if (current && current.length >= 32) return current;
+  if (process.env.NODE_ENV === 'production') {
+    logger.error(`${name} is missing or too short. Must be at least 32 characters.`);
+    process.exit(1);
+  }
+  const generated = crypto.randomBytes(32).toString('hex');
+  logger.warn(`${name} is missing or too short. Generated a development secret.`);
+  return generated;
 }
 
-if (!JWT_REFRESH_SECRET || JWT_REFRESH_SECRET.length < 32) {
-  logger.error('JWT_REFRESH_SECRET is missing or too short. Must be at least 32 characters.');
-  process.exit(1);
-}
+JWT_SECRET = ensureSecret(JWT_SECRET, 'JWT_SECRET');
+JWT_REFRESH_SECRET = ensureSecret(JWT_REFRESH_SECRET, 'JWT_REFRESH_SECRET');
+process.env.JWT_SECRET = JWT_SECRET;
+process.env.JWT_REFRESH_SECRET = JWT_REFRESH_SECRET;
 
 const ALLOWED_ROLES = ['admin', 'viewer', 'broker', 'adjuster', 'internal_ops'];
 
