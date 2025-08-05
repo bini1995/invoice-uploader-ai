@@ -35,7 +35,11 @@ import './i18n';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { API_BASE } from './api';
 
-// Global fetch wrapper to route API requests to configured backend
+/**
+ * Global fetch wrapper to route API requests to configured backend.
+ * 401 responses from URLs containing '/login' do NOT cause automatic redirect
+ * or token removal; this allows credential errors to surface on the login page.
+ */
 const originalFetch = window.fetch;
 window.fetch = async (url, options) => {
   if (typeof url === 'string') {
@@ -60,8 +64,9 @@ window.fetch = async (url, options) => {
       url = `${API_BASE}${url}`;
     }
   }
-  const res = await originalFetch(url, options);
-  if (res.status === 401) {
+  const finalUrl = url;
+  const res = await originalFetch(finalUrl, options);
+  if (res.status === 401 && !finalUrl.includes('/login')) {
     localStorage.removeItem('token');
     if (!window.location.pathname.startsWith('/login')) {
       window.location.href = '/login';
