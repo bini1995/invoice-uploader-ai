@@ -19,7 +19,7 @@ exports.summarizeUploadErrors = async (req, res) => {
     const errorText = errors.join('\n');
 
     const prompt = `You are a helpful assistant for the ClarifyOps AI Document Ops Engine.
-Given the following upload validation errors, provide a concise summary. Then list bullet points under "Possible Fixes" and, if relevant, a "Warnings" section.
+Given the following upload validation errors for an insurance claim or invoice, provide a concise summary using insurance terminology when appropriate. Then list bullet points under "Possible Fixes" and, if relevant, a "Warnings" section.
 \n\n${errorText}`;
 
     const response = await axios.post(

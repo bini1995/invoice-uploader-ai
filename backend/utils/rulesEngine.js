@@ -13,17 +13,55 @@ let rules = [
 // Track how many times each rule triggered
 let ruleStats = rules.map(() => 0);
 
+/**
+ * Resolve deductible and benefit amounts for claim-related rules.
+ *
+ * Domain-specific precedence:
+ * 1. Use invoice-level fields (`deductible`, `benefit_amount`) when present.
+ * 2. Otherwise fall back to the same fields inside `invoice.claim`.
+ * 3. If neither level provides a value, default both amounts to `0` so
+ *    threshold comparisons behave consistently.
+ *
+ * @param {Object} invoice - The invoice object which may include claim data.
+ * @returns {{deductible: number, benefit: number}} Amounts used for rule
+ *   evaluation where invoice values trump claim-level values and missing
+ *   fields become zero.
+ */
+function getInvoiceDeductibleBenefit(invoice) {
+  const deductible = invoice.deductible ?? invoice.claim?.deductible ?? 0; // invoice > claim > 0
+  const benefit = invoice.benefit_amount ?? invoice.claim?.benefit_amount ?? 0; // invoice > claim > 0
+  return { deductible, benefit };
+}
+
+/**
+ * Apply the active rule set to an invoice.
+ *
+ * Deductible and benefit thresholds rely on `getInvoiceDeductibleBenefit`,
+ * which enforces the invoice > claim > 0 precedence. This ensures rule
+ * matching uses invoice-level values first, falls back to claim data, and
+ * treats missing fields as zero.
+ *
+ * @param {Object} invoice - Invoice being evaluated.
+ * @returns {Object} The invoice annotated with flags and tags.
+ */
 async function applyRules(invoice) {
   let flagged = false;
   let reason = null;
   let tags = Array.isArray(invoice.tags) ? [...invoice.tags] : [];
+  // Resolve deductible/benefit with invoice-first precedence; see helper for details.
+  const { deductible: invoiceDeductible, benefit: invoiceBenefit } = getInvoiceDeductibleBenefit(invoice);
   for (let i = 0; i < rules.length; i++) {
     const r = rules[i];
     const matchVendor = !r.vendor || (invoice.vendor && invoice.vendor.toLowerCase().includes(r.vendor.toLowerCase()));
     const matchAmount = r.amountGreaterThan ? parseFloat(invoice.amount) > r.amountGreaterThan : true;
     const matchDesc = !r.descriptionContains || ((invoice.description || '').toLowerCase().includes(r.descriptionContains.toLowerCase()));
-    const matchDeductible = r.deductibleGreaterThan ? parseFloat(invoice.deductible || 0) > r.deductibleGreaterThan : true;
-    const matchBenefit = r.benefitMax ? parseFloat(invoice.benefit_amount || 0) > r.benefitMax : true;
+    // These comparisons use amounts where invoice overrides claim and defaults to 0
+    const matchDeductible = r.deductibleGreaterThan
+      ? parseFloat(invoiceDeductible) > r.deductibleGreaterThan
+      : true;
+    const matchBenefit = r.benefitMax
+      ? parseFloat(invoiceBenefit) > r.benefitMax
+      : true;
     let matchNewVendor = true;
     if (r.newVendor && invoice.vendor) {
       const { rows } = await pool.query('SELECT 1 FROM invoices WHERE vendor = $1 LIMIT 1', [invoice.vendor]);

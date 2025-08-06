@@ -17,6 +17,20 @@ exports.addRule = (req, res) => {
   if (!hasMatchField || !hasAction) {
     return res.status(400).json({ message: 'Invalid rule' });
   }
+  if (rule.deductibleGreaterThan !== undefined) {
+    const num = Number(rule.deductibleGreaterThan);
+    if (Number.isNaN(num)) {
+      return res.status(400).json({ message: 'Invalid rule' });
+    }
+    rule.deductibleGreaterThan = num;
+  }
+  if (rule.benefitMax !== undefined) {
+    const num = Number(rule.benefitMax);
+    if (Number.isNaN(num)) {
+      return res.status(400).json({ message: 'Invalid rule' });
+    }
+    rule.benefitMax = num;
+  }
   addRule(rule);
   res.json({ message: 'Rule added', rules: getRules() });
 };
@@ -25,6 +39,20 @@ exports.updateRule = (req, res) => {
   const idx = parseInt(req.params.idx);
   const rule = req.body;
   if (isNaN(idx) || !rule) return res.status(400).json({ message: 'Invalid request' });
+  if (rule.deductibleGreaterThan !== undefined) {
+    const num = Number(rule.deductibleGreaterThan);
+    if (Number.isNaN(num)) {
+      return res.status(400).json({ message: 'Invalid rule' });
+    }
+    rule.deductibleGreaterThan = num;
+  }
+  if (rule.benefitMax !== undefined) {
+    const num = Number(rule.benefitMax);
+    if (Number.isNaN(num)) {
+      return res.status(400).json({ message: 'Invalid rule' });
+    }
+    rule.benefitMax = num;
+  }
   updateRule(idx, rule);
   res.json({ message: 'Rule updated', rules: getRules() });
 };
