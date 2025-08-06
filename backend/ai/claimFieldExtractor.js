@@ -11,19 +11,29 @@ const schema = {
     date_of_incident: { type: 'string' },
     policy_number: { type: 'string' },
     total_claimed_amount: { type: 'string' },
-    loss_description: { type: 'string' }
+    loss_description: { type: 'string' },
+    cpt_codes: {
+      type: 'array',
+      items: { type: 'string' }
+    },
+    icd10_codes: {
+      type: 'array',
+      items: { type: 'string' }
+    },
+    policy_id: { type: 'string' }
   },
   additionalProperties: true
 };
 
-const model = 'openai/gpt-3.5-turbo';
+// tuned for healthcare/claim domain extraction
+const model = 'openai/gpt-4o-mini';
 
 async function extractClaimFields(text) {
   const start = Date.now();
   try {
     const prompt =
-      'Extract structured fields from this insurance claim text. ' +
-      'Return JSON with the following keys: claim_id, claimant_name, date_of_incident, policy_number, total_claimed_amount, loss_description.';
+      'Extract structured fields from this healthcare insurance claim text. ' +
+      'Return JSON with the following keys: claim_id, claimant_name, date_of_incident, policy_number, policy_id, total_claimed_amount, loss_description, cpt_codes (array), icd10_codes (array).';
     const resp = await openrouter.chat.completions.create({
       model,
       messages: [{ role: 'user', content: `${prompt}\n\n${text}` }]

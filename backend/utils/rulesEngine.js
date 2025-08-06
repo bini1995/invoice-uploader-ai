@@ -5,6 +5,9 @@ let rules = [
   { amountGreaterThan: 5000, flagReason: 'Amount exceeds $5000' },
   // Example categorization rule
   { vendor: 'Google', category: 'Marketing' },
+  // Claim-specific examples
+  { deductibleGreaterThan: 1000, flagReason: 'Deductible over $1000' },
+  { benefitMax: 10000, flagReason: 'Benefit exceeds $10000' },
 ];
 
 // Track how many times each rule triggered
@@ -19,6 +22,8 @@ async function applyRules(invoice) {
     const matchVendor = !r.vendor || (invoice.vendor && invoice.vendor.toLowerCase().includes(r.vendor.toLowerCase()));
     const matchAmount = r.amountGreaterThan ? parseFloat(invoice.amount) > r.amountGreaterThan : true;
     const matchDesc = !r.descriptionContains || ((invoice.description || '').toLowerCase().includes(r.descriptionContains.toLowerCase()));
+    const matchDeductible = r.deductibleGreaterThan ? parseFloat(invoice.deductible || 0) > r.deductibleGreaterThan : true;
+    const matchBenefit = r.benefitMax ? parseFloat(invoice.benefit_amount || 0) > r.benefitMax : true;
     let matchNewVendor = true;
     if (r.newVendor && invoice.vendor) {
       const { rows } = await pool.query('SELECT 1 FROM invoices WHERE vendor = $1 LIMIT 1', [invoice.vendor]);
@@ -33,7 +38,7 @@ async function applyRules(invoice) {
       const { rows } = await pool.query('SELECT 1 FROM invoices WHERE invoice_number = $1 LIMIT 1', [invoice.invoice_number]);
       matchDup = rows.length > 0;
     }
-    if (matchVendor && matchAmount && matchDesc && matchNewVendor && matchPastDue && matchDup) {
+    if (matchVendor && matchAmount && matchDesc && matchNewVendor && matchPastDue && matchDup && matchDeductible && matchBenefit) {
       if (r.flagReason) {
         flagged = true;
         reason = r.flagReason || 'Rule triggered';
