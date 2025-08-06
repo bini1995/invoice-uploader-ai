@@ -150,6 +150,15 @@ async function initDb() {
       "CREATE INDEX IF NOT EXISTS idx_doc_chunks_embedding ON document_chunks USING ivfflat (embedding vector_cosine_ops)"
     );
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS claim_embeddings (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      embedding VECTOR(1536)
+    )`);
+    await pool.query(
+      "CREATE INDEX IF NOT EXISTS idx_claim_embeddings ON claim_embeddings USING ivfflat (embedding vector_cosine_ops)"
+    );
+
     await pool.query(`CREATE TABLE IF NOT EXISTS document_versions (
       id SERIAL PRIMARY KEY,
       document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,

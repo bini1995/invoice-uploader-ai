@@ -109,11 +109,11 @@ export default function KanbanDashboard() {
         </Grid>
       </DragDropContext>
       <Dialog open={Boolean(selected)} onClose={() => setSelected(null)} fullWidth maxWidth="sm">
-        <DialogTitle>Edit Invoice</DialogTitle>
+        <DialogTitle>Edit Claim Document</DialogTitle>
         <DialogContent>
           {selected && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <TextField label="Invoice #" value={selected.invoice_number || ''} onChange={e => handleField('invoice_number', e.target.value)} />
+              <TextField label="Claim #" value={selected.invoice_number || ''} onChange={e => handleField('invoice_number', e.target.value)} />
               <TextField label="Vendor" value={selected.vendor || ''} onChange={e => handleField('vendor', e.target.value)} />
               <TextField label="Amount" value={selected.amount || ''} onChange={e => handleField('amount', e.target.value)} />
               <Button variant="contained" onClick={() => setSelected(null)} sx={{ mt: 1 }}>Save</Button>
