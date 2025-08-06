@@ -44,3 +44,12 @@ exports.evaluateWorkflow = async (req, res) => {
     res.status(500).json({ message: 'Failed to evaluate workflow rules' });
   }
 };
+
+exports.getInsuranceWorkflow = (_req, res) => {
+  res.json({
+    workflow: {
+      doc_type: 'claim',
+      steps: ['fnol', 'estimate', 'final_bill']
+    }
+  });
+};
