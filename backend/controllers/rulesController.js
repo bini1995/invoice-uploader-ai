@@ -6,7 +6,13 @@ exports.listRules = (_req, res) => {
 
 exports.addRule = (req, res) => {
   const rule = req.body;
-  const hasMatchField = rule && (rule.vendor || rule.amountGreaterThan || rule.descriptionContains);
+  const hasMatchField =
+    rule &&
+    (rule.vendor ||
+      rule.amountGreaterThan ||
+      rule.descriptionContains ||
+      rule.deductibleGreaterThan ||
+      rule.benefitMax);
   const hasAction = rule && (rule.category || rule.flagReason);
   if (!hasMatchField || !hasAction) {
     return res.status(400).json({ message: 'Invalid rule' });

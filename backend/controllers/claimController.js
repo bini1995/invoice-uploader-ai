@@ -4,7 +4,7 @@ const pool = require('../config/db');
 const openrouter = require('../config/openrouter');
 const { trainFromCorrections } = require('../utils/ocrAgent');
 const { extractEntities } = require('../ai/entityExtractor');
-const { extractClaimFields } = require('../ai/claimFieldExtractor');
+const { extractClaimFields: aiExtractClaimFields } = require('../ai/claimFieldExtractor');
 const { recordDocumentVersion } = require('../utils/documentVersionLogger');
 const crypto = require('crypto');
 const { DocumentType } = require('../enums/documentType');
@@ -67,7 +67,9 @@ exports.uploadDocument = async (req, res) => {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ error: 'Unsupported file type' });
     }
-    const prompt = `Classify this document into types like Invoice, Receipt, Bank Statement, W-9 or Contract. File name: ${req.file.originalname}`;
+    const prompt =
+      `Classify this document into one of the following types: claim_invoice, medical_bill, fnol_form, invoice, receipt, bank_statement, w-9, contract. ` +
+      `Return only the type name in lowercase with underscores. File name: ${req.file.originalname}`;
     const ai = await openrouter.chat.completions.create({
       model: 'openai/gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }]
@@ -135,28 +137,57 @@ exports.extractDocument = async (req, res) => {
     
     const doc = rows[0];
     const endTimer = extractDuration.startTimer({ doc_type: doc.doc_type });
-    const pipelinePath = path.join(__dirname, '../pipelines', `${doc.doc_type}.js`);
+    const pipelinePath = path.join(
+      __dirname,
+      '../pipelines',
+      `${doc.doc_type}.js`
+    );
     let result = { fields: {} };
-    if (fs.existsSync(pipelinePath)) {
+    if (
+      [
+        DocumentType.CLAIM_INVOICE,
+        DocumentType.MEDICAL_BILL,
+        DocumentType.FNOL_FORM,
+      ].includes(doc.doc_type)
+    ) {
+      const content = fs
+        .readFileSync(doc.path, 'utf8')
+        .slice(0, 4000);
+      result = await aiExtractClaimFields(content);
+    } else if (fs.existsSync(pipelinePath)) {
       const pipeline = require(pipelinePath);
       result = await pipeline(doc.path);
     } else {
-      const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
+      const content = fs
+        .readFileSync(doc.path, 'utf8')
+        .slice(0, 4000);
       result.fields = await extractEntities(content);
     }
-    const norm = {
-      party_name: result.fields.vendor || result.fields.party_name,
-      total_amount: result.fields.amount || result.fields.total_amount,
-      doc_date: result.fields.date || result.fields.doc_date,
-      category: result.fields.category,
-    };
-    await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [norm, id]);
+    const fields = [
+      DocumentType.CLAIM_INVOICE,
+      DocumentType.MEDICAL_BILL,
+      DocumentType.FNOL_FORM,
+    ].includes(doc.doc_type)
+      ? result.fields
+      : {
+          party_name: result.fields.vendor || result.fields.party_name,
+          total_amount: result.fields.amount || result.fields.total_amount,
+          doc_date: result.fields.date || result.fields.doc_date,
+          category: result.fields.category,
+        };
+    await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [fields, id]);
     await refreshSearchable(id);
-    await recordDocumentVersion(id, doc, { ...doc, fields: norm }, req.user?.userId, req.user?.username);
+    await recordDocumentVersion(
+      id,
+      doc,
+      { ...doc, fields },
+      req.user?.userId,
+      req.user?.username
+    );
     logger.info('Fields extracted', { id });
-    
+
     endTimer();
-    res.json({ data: norm, confidence: 0.9 });
+    res.json({ data: fields, confidence: 0.9 });
   } catch (err) {
     logger.error('Extract error:', err);
     if (typeof endTimer === 'function') endTimer();
@@ -166,13 +197,15 @@ exports.extractDocument = async (req, res) => {
 
 exports.extractClaimFields = async (req, res) => {
   const { id } = req.params;
+  let timer;
   try {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
-    
-    const timer = extractDuration.startTimer({ doc_type: doc.doc_type });
+
+    const doc = rows[0];
+    timer = extractDuration.startTimer({ doc_type: doc.doc_type });
     const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
-    const { fields, version } = await extractClaimFields(text);
+    const { fields, version } = await aiExtractClaimFields(text);
     await pool.query(
       `INSERT INTO claim_fields (document_id, fields, version, extracted_at)
        VALUES ($1, $2, $3, now())
@@ -182,16 +215,16 @@ exports.extractClaimFields = async (req, res) => {
          extracted_at = EXCLUDED.extracted_at`,
       [id, fields, version]
     );
-    logger.info('Claim fields extracted', { id });
-    
     timer();
+    logger.info('Claim fields extracted', { id });
     res.json({ fields, version });
   } catch (err) {
     logger.error('Claim field extract error:', err);
-    if (typeof timer === "function") timer();
+    if (typeof timer === 'function') timer();
     res.status(500).json({ message: 'Extraction failed' });
   }
 };
+
 
 exports.saveCorrections = async (req, res) => {
   const { id } = req.params;

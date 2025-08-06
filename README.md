@@ -35,6 +35,9 @@ npm install --legacy-peer-deps
 ## Features
 
 - Smart document router for all document types
+- Claim-specific types like `claim_invoice`, `medical_bill`, and `fnol_form`
+- Healthcare claim extraction for CPT codes, ICD-10, and policy IDs
+- Claim validation rules for deductible thresholds and benefit maximums
 - Schema-free data extractor with confidence scores
 - Real-time ops timeline via WebSocket
 - Conversational agent with pgvector embeddings
