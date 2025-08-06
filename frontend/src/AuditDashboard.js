@@ -112,7 +112,7 @@ export default function AuditDashboard() {
               <th className="px-2 py-1 font-bold border">Time</th>
               <th className="px-2 py-1 font-bold border">User</th>
               <th className="px-2 py-1 font-bold border">Action</th>
-              <th className="px-2 py-1 font-bold border">Invoice</th>
+              <th className="px-2 py-1 font-bold border">Claim Document</th>
             </tr>
           </thead>
           <tbody>
@@ -124,7 +124,7 @@ export default function AuditDashboard() {
                   <td colSpan="4" className="p-6 text-center text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <MagnifyingGlassIcon className="w-8 h-8 text-gray-400" />
-                      <p>No audit logs found. Try changing your filters or upload an invoice to begin tracking actions.</p>
+                      <p>No audit logs found. Try changing your filters or upload a claim document to begin tracking actions.</p>
                     </div>
                   </td>
                 </tr>

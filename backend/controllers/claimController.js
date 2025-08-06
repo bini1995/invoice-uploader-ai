@@ -117,6 +117,14 @@ exports.uploadDocument = async (req, res) => {
       ]
     );
     await refreshSearchable(rows[0].id);
+    const embRes = await openrouter.embeddings.create({
+      model: 'openai/text-embedding-ada-002',
+      input: rawText.slice(0, 2000)
+    });
+    await pool.query(
+      'INSERT INTO claim_embeddings (document_id, embedding) VALUES ($1,$2)',
+      [rows[0].id, embRes.data[0].embedding]
+    );
     logger.info('Claim uploaded', { id: rows[0].id, docType });
     claimUploadCounter.labels(docType).inc();
     const { autoAssignDocument } = require('../services/invoiceService');

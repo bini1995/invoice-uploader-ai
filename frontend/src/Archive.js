@@ -90,7 +90,7 @@ function Archive() {
   );
 
   return (
-    <MainLayout title="Invoice Archive" helpTopic="archive">
+    <MainLayout title="Claim Document Archive" helpTopic="archive">
       <div className="space-y-4">
         <div className="flex flex-wrap items-end space-x-2">
           <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor" className="input" />
