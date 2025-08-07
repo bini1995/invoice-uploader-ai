@@ -20,7 +20,7 @@ ClarifyOps now exclusively supports medical and insurance claim workflows:
 - AI-powered claim intake and summarization
 - CPT/ICD code validation
 - Workflow triage (OpsClaim)
-- Auditing & fraud detection (AuditFlow)
+- Auditing & fraud detection (AuditFlow) [See more](docs/AuditFlow.md)
 
 ## Architecture
 The stack focuses on claim processing and routing:
@@ -35,7 +35,7 @@ The stack focuses on claim processing and routing:
 
 - ClarifyClaims: Main claims experience (upload, validate, summarize)
 - OpsClaim: Action queue and workflow routing
-- AuditFlow: Risk and audit review for flagged claims
+- AuditFlow: Risk and audit review for flagged claims [See more](docs/AuditFlow.md)
 
 ## Requirements
 - Node.js 18.x LTS
@@ -58,123 +58,41 @@ npm install --legacy-peer-deps
 
 ## Features
 
-- Smart document router for all document types
-- Claim-specific types like `claim_invoice`, `medical_bill`, and `fnol_form`
-- Healthcare claim extraction for CPT codes, ICD-10, and policy IDs
-- Claim validation rules for deductible thresholds and benefit maximums
-- Schema-free data extractor with confidence scores
-- Real-time ops timeline via WebSocket
-- Conversational agent with pgvector embeddings
-- YAML-based plugin rules
-- Compliance report generator
-- Compliance checker flags missing contract clauses
-- Document lifecycle rules with flexible expiration and deletion
-- **Enterprise Add-On**: Secure DocuSign signing (stubbed) with optional blockchain hash
+ClarifyOps is a modular AI-powered claims platform focused on extraction, validation, and fraud detection for healthcare and insurance use cases.
 
- - Upload CSV, PDF and Excel document files
- - In-app guided tour for new users
- - CSV import/export for documents and vendors
- - See a clean display of parsed documents
-- Get validation feedback for bad rows
-- Real-time field validation highlights column errors as you type
-- AI-generated summaries of common CSV issues (via OpenRouter)
-- AI-generated summaries of common CSV issues with "Possible Fixes" and "Warnings"
- - Query documents using natural language (via OpenRouter)
- - Natural language chart queries show spending trends instantly
- - AI-powered document quality scores with tips
- - AI-driven document explanations and anomaly spotting for any document
- - Auto-generated payment request PDFs and vendor follow-up drafts
-- User ratings on AI responses continuously improve future accuracy
-- Ask Me Anything assistant for financial questions
-- AI assistant can answer billing support queries
-- Context-aware OpsClaim Copilot chat for each claim
-- (e.g. "Which vendors had the most inconsistencies last month?")
- - Role-based access control (Admins and Viewers for the demo)
- - Admins can generate expiring invitation links for Viewer accounts
- - Activity log of document actions
- - Downloadable audit history per vendor or document
-- Detailed logs show who made each change
-- Document version history with one-click restore
-- Auto-routing documents by vendor or tag
-- Smart auto-assignment routes documents to the usual owner using vendor history
-- Anomaly detection dashboard
-- Automatic anomaly alerts with severity tiers
-- Fraud pattern detection for suspicious vendor activity
-- Anomaly scoring currently returns a fixed risk value (Isolation Forest disabled)
-- Timeline view of document changes
-- Document duplication prevention using content hashes
-- Document similarity detection to flag lookalike documents
-- Linked document relationship graph to spot duplicates and vendor patterns
-- Smart auto-fill suggestions for vendor tags and payment terms
-- AI-powered autocomplete and cleanup for vendor and total fields
-- Analytics and reports page with filtering and PDF export
-- Trend reports for monthly spend and aging documents
-- Customizable dashboards with date filters and export options
-- Adaptive dashboard with context-aware alerts, AI suggestions and draggable KPI cards
-  - Custom KPI dashboards per department or vendor with charts like approval time by vendor and late payments trend
-- Public shareable dashboards accessible via secure link
-- Private notes on documents
-- Shared comment threads for team discussion
-- Approver reminders with escalation
-- Approval workflows track documents needing review and record status (Pending, Flagged, Approved)
-- Smart reminders for overdue documents and pending approvals (email, Slack/Teams & in-app)
-- Manual approval reminder emails can be triggered via `POST /api/reminders/approval`
-- Batch actions with bulk approval and PDF export
-- Bulk edit/delete/archive options for faster table management
-- Multi-step upload wizard guides file selection, review, tagging and final confirmation
-- Drag-and-drop upload with real-time field mapping
-- AI explanations for why a document was flagged
-- Admin settings panel with auto-archive toggle, custom AI tone and upload limits
-- Org-wide settings per tenant with custom branding
-- SOC2-ready audit logs for every action
-- Usage analytics dashboard for document volume and workflow metrics
-- Role delegation so approvers can temporarily assign their duties
-- Document expiration auto-closes past-due documents or flags them for review
-- "Why did AI say this?" links show confidence and reasoning
-- AI-powered bulk categorization of uploaded documents
-- AI-powered auto tagging with vendor/voucher recommendations
-- Predictive vendor behavior suggestions
-- Anomaly warnings before upload
-- Conversational uploading via natural language commands
-- Natural language document search
-- Hoverable vendor bios with website and industry info
-- AI fraud detection heatmaps (color-coded anomaly maps)
-- Risk heatmap with clustering graphs highlighting similar documents or vendors
-- Fraud detection reports listing flagged documents with reasons
-- Automatic vendor bios + risk scores from public data
-- Real-time document chat thread with collaborators
-- Multi-language support (Spanish and French)
-- Browser extension for uploading documents directly from Gmail
-- Fully responsive mobile layout and installable PWA
-- Capture invoice photos on mobile with built-in OCR
-- PDF Invoice OCR with AI formatting correction
-- Self-learning OCR corrections that retrain parsing from user edits
-- Autonomous agents continuously retrain OCR models from field corrections and provide smart suggestions
-- Intelligent column mapping suggestions (line items, totals, tax)
-- Supplier portal for vendors to upload documents, update banking info and check payments
-- Slack/Teams notifications for approvals or flags
-- Smart keyboard shortcuts (press **A** to archive, **F** to flag, **/** to focus search)
-- Real-time "Ops Mode" dashboard with a live feed of invoice activity
-- Live Invoice Feed shows uploads, flags and approvals in real time
-- Multi-tenant support so agencies can switch between different client accounts
-- Polite vendor notification emails for flagged or rejected documents
-- Smart Email Drafting Engine 2.0 learns from past messages
-- Scenario planning to test payment delays
-- Vendor scorecards rating responsiveness, payment consistency, and volume/price trends
-- Vendor management page with notes and spending totals per vendor
-- Smart vendor matching for inconsistent spellings
-- AI vendor matching with confidence scores and accept/reject feedback
-- Team member roles view with profile avatars
-- Shareable collaborator mode with comment-only or editor access
-- Export template builder for custom CSV layouts
-- Whitelabel themes and logo per tenant
-- New roles: Admin, Accountant and Approver
-- Manual or API-driven payment status sync
-- Multi-currency support with automatic VAT/GST calculations
-- Automation marketplace integrations (Zapier/Make) for Slack and Google Sheets, plus connectors for your accounting platform, via `/api/integrations`
-- RPA automation engine triggers post-approval exports to your ERP system
-- Low-code automation builder (`/api/automations`) for if‑then API workflows
-- Blockchain-backed invoice validation with PDF hashing for tamper-proof records
+### 🔍 Extraction
+- Smart document router with claim-specific types (`claim_invoice`, `medical_bill`, `fnol_form`).
+- Healthcare claim extraction for CPT codes, ICD‑10 and policy IDs.
+- Schema-free data extractor with confidence scores and OCR that learns from user edits.
+- Supports CSV, PDF and Excel uploads with intelligent column mapping and auto-fill suggestions.
+- Conversational uploading and natural language document search.
+
+### ✅ Validation
+- Claim validation rules for deductible thresholds and benefit maximums.
+- Real-time field validation with instant feedback and AI-generated CSV issue summaries.
+- Compliance checker and report generator for missing contract clauses.
+- Anomaly warnings before upload and document duplication prevention using content hashes.
+- AuditFlow: fraud risk scores and manual override. [See more](docs/AuditFlow.md)
+
+### 📝 Review
+- AI-generated document summaries, explanations and quality scores.
+- Document version history, detailed audit logs and timeline views of changes.
+- Analytics dashboards with trends, custom KPIs and exportable reports.
+- Linked document graphs and similarity detection to spot duplicates and patterns.
+
+### 🤝 Collaboration
+- Real-time ops timeline and context-aware OpsClaim Copilot chat.
+- Shared comment threads, private notes and document chat for reviewers.
+- Role-based access control with invite links, activity logs and audit history.
+- Approval workflows with reminders, bulk actions and Slack/Teams notifications.
+
+### ⚙️ System Features
+- Conversational agent with pgvector embeddings and YAML-based plugin rules.
+- Document lifecycle rules, auto-routing and smart auto-assignment.
+- Multi-tenant support, browser extension uploads and responsive PWA.
+- Automation builder and integrations for ERPs, Slack, Google Sheets and more.
+- **Enterprise Add-On**: secure DocuSign signing with optional blockchain hash and org-wide settings.
+
 ### Recent Backend Updates
 - Unified `documents` table with flexible JSON fields (`party_name` and `fields`).
 - `/api/claims/:id/extract` for AI entity extraction.
