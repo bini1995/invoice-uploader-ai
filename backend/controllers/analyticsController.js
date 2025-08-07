@@ -3,6 +3,7 @@ const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const { loadReportSchedules } = require('../utils/reportScheduler');
 const openai = require('../config/openrouter');
+const { detectFraud } = require('../ai/fraudDetection');
 
 function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag }) {
   const params = [];
@@ -729,5 +730,38 @@ exports.getCrossAlerts = async (_req, res) => {
   } catch (err) {
     console.error('Cross alerts error:', err);
     res.status(500).json({ message: 'Failed to fetch cross alerts' });
+  }
+};
+
+// Claim analytics
+exports.getClaimAnalytics = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT (fields->>'claim_type') AS claim_type, COUNT(*)::int AS count, SUM((fields->>'total_amount')::numeric) AS total_amount FROM documents WHERE doc_type IN ('claim_invoice','medical_bill','fnol_form') GROUP BY claim_type"
+    );
+    const claims = rows.map(r => ({
+      claim_type: r.claim_type,
+      count: Number.isFinite(Number(r.count)) ? Number(r.count) : 0,
+      total_amount: Number.isFinite(Number(r.total_amount)) ? Number(r.total_amount) : 0,
+    }));
+    res.json({ claims });
+  } catch (err) {
+    console.error('Claim analytics error:', err);
+    res.status(500).json({ message: 'Failed to fetch claim analytics' });
+  }
+};
+
+exports.detectClaimFraud = async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, (fields->>'total_amount')::float AS amount FROM documents WHERE doc_type IN ('claim_invoice','medical_bill','fnol_form')"
+    );
+    const data = rows.map(r => [r.amount || 0]);
+    const flags = detectFraud(data);
+    const suspicious = rows.filter((_, idx) => flags[idx]).map(r => r.id);
+    res.json({ suspicious });
+  } catch (err) {
+    console.error('Claim fraud detection error:', err);
+    res.status(500).json({ message: 'Failed to detect claim fraud' });
   }
 };

@@ -146,6 +146,7 @@ app.use('/api/billing', billingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/pos', poRoutes);
 app.use('/api/document-workflows', workflowRoutes);
+app.use('/api/workflows', workflowRoutes);
 app.use('/api/workflow-rules', workflowRuleRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/recurring', recurringRoutes);

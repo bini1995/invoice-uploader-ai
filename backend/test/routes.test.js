@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
 jest.mock('../config/db', () => ({ query: jest.fn() }));
 
 const authRoutes = require('../routes/authRoutes');
-const { authMiddleware } = require('../controllers/userController');
+const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 const uploadRouter = express.Router();
 uploadRouter.post('/api/claims/upload', authMiddleware, (req, res) => res.json({ ok: true }));
@@ -24,6 +24,11 @@ const feedbackRouter = express.Router();
 feedbackRouter.post('/api/claims/1/feedback', authMiddleware, (req, res) => res.json({ ok: true }));
 feedbackRouter.get('/api/claims/1/feedback', authMiddleware, (req, res) => res.json({}));
 feedbackRouter.get('/api/claims/1/review-notes', authMiddleware, (req, res) => res.json({ notes: [] }));
+const analyticsRouter = express.Router();
+analyticsRouter.get('/api/analytics/claims', authMiddleware, (req, res) => res.json({}));
+analyticsRouter.get('/api/analytics/claims/fraud', authMiddleware, (req, res) => res.json({}));
+const workflowRouter = express.Router();
+workflowRouter.get('/api/workflows', authMiddleware, authorizeRoles('admin'), (req, res) => res.json({ templates: [] }));
 
 const app = express();
 app.use(express.json());
@@ -35,6 +40,8 @@ app.use(signingRouter);
 app.use(entityRouter);
 app.use(fieldRouter);
 app.use(feedbackRouter);
+app.use(analyticsRouter);
+app.use(workflowRouter);
 
 const db = require('../config/db');
 
@@ -87,5 +94,20 @@ describe('Auth and documents', () => {
     expect(res2.statusCode).toBe(401);
     const res3 = await request(app).get('/api/claims/1/review-notes');
     expect(res3.statusCode).toBe(401);
+  });
+
+  test('claim analytics requires auth', async () => {
+    const res = await request(app).get('/api/analytics/claims');
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('claim fraud detection requires auth', async () => {
+    const res = await request(app).get('/api/analytics/claims/fraud');
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('workflow templates require auth', async () => {
+    const res = await request(app).get('/api/workflows?type=insurance');
+    expect(res.statusCode).toBe(401);
   });
 });
