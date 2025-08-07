@@ -16,7 +16,8 @@ const {
   claimUploadCounter,
   fieldExtractCounter,
   exportAttemptCounter,
-  feedbackFlaggedCounter
+  feedbackFlaggedCounter,
+  extractDuration
 } = require('../metrics');
 
 async function refreshSearchable(id) {
@@ -142,7 +143,7 @@ exports.extractDocument = async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
-    
+
     const doc = rows[0];
     const endTimer = extractDuration.startTimer({ doc_type: doc.doc_type });
     const pipelinePath = path.join(
@@ -183,6 +184,23 @@ exports.extractDocument = async (req, res) => {
           doc_date: result.fields.date || result.fields.doc_date,
           category: result.fields.category,
         };
+
+    const preset = req.query.schema;
+    let schema;
+    if (preset) {
+      try {
+        const schemaPath = path.join(__dirname, '../schemas', `${preset}.json`);
+        if (fs.existsSync(schemaPath)) {
+          schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+        } else {
+          schema = null;
+        }
+      } catch (e) {
+        schema = null;
+        logger.warn('Failed to load schema preset', { preset, error: e.message });
+      }
+    }
+
     await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [fields, id]);
     await refreshSearchable(id);
     await recordDocumentVersion(
@@ -195,7 +213,7 @@ exports.extractDocument = async (req, res) => {
     logger.info('Fields extracted', { id });
 
     endTimer();
-    res.json({ data: fields, confidence: 0.9 });
+    res.json({ data: fields, schema, confidence: 0.9 });
   } catch (err) {
     logger.error('Extract error:', err);
     if (typeof endTimer === 'function') endTimer();

@@ -4,6 +4,15 @@
     "title": "ClarifyOps API",
     "version": "1.0.0"
   },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
   "paths": {
     "/api/{tenantId}/claims": {
       "get": {
@@ -153,6 +162,114 @@
           "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "string" } } } } }
         },
         "responses": { "200": { "description": "Updated document" } }
+      }
+    },
+    "/api/claims/{id}/extract": {
+      "post": {
+        "summary": "Extract fields from a claim document",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "schema",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Optional schema preset to apply during extraction"
+          }
+        ],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Extracted claim fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "object" },
+                    "schema": { "type": "object", "nullable": true },
+                    "confidence": { "type": "number" }
+                  }
+                },
+                "example": {
+                  "data": {
+                    "party_name": "Acme Co",
+                    "total_amount": 1000,
+                    "doc_date": "2024-01-01"
+                  },
+                  "schema": { "name": "claim" },
+                  "confidence": 0.9
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/analytics/claims": {
+      "get": {
+        "summary": "Claim analytics grouped by claim type",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Claim analytics for the authenticated user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "claims": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "claim_type": { "type": "string", "nullable": true },
+                          "count": { "type": "integer" },
+                          "total_amount": { "type": "number" }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "claims": [
+                    { "claim_type": "auto", "count": 10, "total_amount": 25000 },
+                    { "claim_type": "home", "count": 5, "total_amount": 8000 }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/analytics/claims/fraud": {
+      "get": {
+        "summary": "Detect suspicious claims using ML",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of suspicious claim IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "suspicious": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                },
+                "example": { "suspicious": ["c1", "c5"] }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
       }
     },
     "/api/validation/rules": {

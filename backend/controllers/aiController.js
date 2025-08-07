@@ -941,12 +941,13 @@ exports.smartSearchParse = (req, res) => {
 // Suggest high level categories for any document content
 exports.categorizeDocument = async (req, res) => {
   try {
-    const { content } = req.body || {};
+    const { content, claim_type } = req.body || {};
     if (!content) {
       return res.status(400).json({ message: 'Missing document content' });
     }
+    const typeHint = claim_type ? `Claim type: ${claim_type}. ` : '';
     const prompt =
-      `Suggest up to 3 broad business categories like HR, Legal or Expense for this document:\n\n${content.slice(0, 2000)}`;
+      `${typeHint}Suggest up to 3 broad business categories like HR, Legal or Expense for this document:\n\n${content.slice(0, 2000)}`;
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
@@ -972,9 +973,9 @@ exports.categorizeDocument = async (req, res) => {
          VALUES ($1,$2,$3) RETURNING id`,
         [req.body.document_id || null, cat, conf]
       );
-      inserted.push({ id: r.rows[0].id, category: cat, confidence: conf });
+      inserted.push({ id: r.rows[0].id, category: cat, confidence: conf, claim_type: claim_type || null });
     }
-    res.json({ categories: inserted });
+    res.json({ categories: inserted, claim_type: claim_type || null });
   } catch (err) {
     console.error('Categorize document error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Failed to categorize document' });

@@ -24,6 +24,8 @@ const {
   getRiskHeatmap,
   getInvoiceClusters,
   getCrossAlerts,
+  getClaimAnalytics,
+  detectClaimFraud,
   listReportSchedules,
   createReportSchedule,
   deleteReportSchedule
@@ -61,5 +63,7 @@ router.get('/dashboard/cross-alerts', authMiddleware, getCrossAlerts);
 router.get('/anomalies/duplicates', authMiddleware, detectDuplicateInvoices);
 router.get('/risk/heatmap', authMiddleware, getRiskHeatmap);
 router.get('/risk/clusters', authMiddleware, getInvoiceClusters);
+router.get('/claims', authMiddleware, getClaimAnalytics);
+router.get('/claims/fraud', authMiddleware, detectClaimFraud);
 
 module.exports = router;
