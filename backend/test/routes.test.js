@@ -24,6 +24,7 @@ const feedbackRouter = express.Router();
 feedbackRouter.post('/api/claims/1/feedback', authMiddleware, (req, res) => res.json({ ok: true }));
 feedbackRouter.get('/api/claims/1/feedback', authMiddleware, (req, res) => res.json({}));
 feedbackRouter.get('/api/claims/1/review-notes', authMiddleware, (req, res) => res.json({ notes: [] }));
+feedbackRouter.get('/api/:tenantId/invoices/1/review-notes', authMiddleware, (req, res) => res.json({ notes: [] }));
 const analyticsRouter = express.Router();
 analyticsRouter.get('/api/analytics/claims', authMiddleware, (req, res) => res.json({}));
 analyticsRouter.get('/api/analytics/claims/fraud', authMiddleware, (req, res) => res.json({}));
@@ -94,6 +95,8 @@ describe('Auth and documents', () => {
     expect(res2.statusCode).toBe(401);
     const res3 = await request(app).get('/api/claims/1/review-notes');
     expect(res3.statusCode).toBe(401);
+    const res4 = await request(app).get('/api/default/invoices/1/review-notes');
+    expect(res4.statusCode).toBe(401);
   });
 
   test('claim analytics requires auth', async () => {

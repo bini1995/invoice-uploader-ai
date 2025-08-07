@@ -3,6 +3,7 @@ import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import { motion } from 'framer-motion';
 import ChatSidebar from './components/ChatSidebar';
+import NotesModal from './components/NotesModal';
 import { API_BASE } from './api';
 import {
   Cog6ToothIcon,
@@ -11,6 +12,10 @@ import {
   ChatBubbleLeftRightIcon,
   ChevronDownIcon,
   LightBulbIcon,
+  DocumentTextIcon,
+  ClockIcon,
+  InformationCircleIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -35,6 +40,9 @@ export default function OpsClaim() {
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
   const [showPrioritized, setShowPrioritized] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [notesInvoice, setNotesInvoice] = useState(null);
+  const [auditLogs, setAuditLogs] = useState({});
 
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
@@ -123,6 +131,24 @@ export default function OpsClaim() {
     }
   };
 
+  const openNotes = (inv) => {
+    setNotesInvoice(inv);
+    setNotesOpen(true);
+  };
+
+  const fetchAudit = async (id) => {
+    if (auditLogs[id]) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/audit?invoiceId=${id}`, { headers });
+      const data = await res.json();
+      if (res.ok) {
+        setAuditLogs((a) => ({ ...a, [id]: data }));
+      }
+    } catch (e) {
+      console.error('Audit fetch error', e);
+    }
+  };
+
   const toggleSelect = (id) => {
     setSelectedRows((s) =>
       s.includes(id) ? s.filter((x) => x !== id) : [...s, id]
@@ -201,10 +227,13 @@ export default function OpsClaim() {
 
   const statusBadge = (s) => {
     const base = 'px-2 py-1 rounded text-xs font-medium';
-    if (s === 'Approved') return <span className={`${base} bg-green-100 text-green-800`}>🟢 Approved</span>;
-    if (s === 'Rejected') return <span className={`${base} bg-red-100 text-red-800`}>🔴 Rejected</span>;
-    if (s === 'Flagged') return <span className={`${base} bg-red-100 text-red-800`}>🔴 Flagged</span>;
-    return <span className={`${base} bg-yellow-100 text-yellow-800`}>🟡 Review Needed</span>;
+    if (s === 'Approved') return <span className={`${base} bg-green-100 text-green-800`}>Approved</span>;
+    if (s === 'Needs Info' || s === 'Needs Review' || s === 'Pending')
+      return <span className={`${base} bg-yellow-100 text-yellow-800`}>Needs Review</span>;
+    if (s === 'Escalated') return <span className={`${base} bg-purple-100 text-purple-800`}>Escalated</span>;
+    if (s === 'Flagged') return <span className={`${base} bg-red-100 text-red-800`}>Flagged</span>;
+    if (s === 'Extracted') return <span className={`${base} bg-blue-100 text-blue-800`}>Extracted</span>;
+    return <span className={`${base} bg-gray-100 text-gray-800`}>{s}</span>;
   };
 
   const focusMode = copilotOpen || expandedRows.length > 0 || selectedRows.length > 0;
@@ -283,7 +312,7 @@ export default function OpsClaim() {
             <th className="px-3 py-4">Status</th>
             <th className="px-3 py-4">Assignee</th>
             <th className="px-3 py-4">Tags</th>
-            <th className="px-3 py-4">AI Flag</th>
+            <th className="px-3 py-4">AI Insight</th>
             <th className="px-3 py-4">Actions</th>
           </tr>
         </thead>
@@ -294,7 +323,7 @@ export default function OpsClaim() {
             </tr>
           ) : (
             sortedInvoices.map((inv) => {
-              const status = inv.flagged ? 'Flagged' : inv.approval_status || 'Pending';
+              const status = inv.flagged ? 'Flagged' : inv.approval_status || inv.status || 'Extracted';
               const borderColor =
                 status === 'Approved'
                   ? 'border-green-500'
@@ -336,39 +365,79 @@ export default function OpsClaim() {
                     </td>
                     <td className="px-3 py-4 text-xs">{Array.isArray(inv.tags) ? inv.tags.join(', ') : inv.tags || '-'}</td>
                     <td className="px-3 py-4 text-center">
-                      {inv.flag_reason && (
-                        <Tippy content={`AI flag: ${inv.flag_reason}`}>
-                          <LightBulbIcon className="w-4 h-4 text-yellow-500 inline" />
-                        </Tippy>
+                      {inv.ai_insight || inv.flag_reason ? (
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                          {inv.ai_insight || inv.flag_reason}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="px-3 py-4 space-x-1 flex justify-center relative">
-                      <select
-                        value={inv.approval_status || 'Pending'}
-                        onChange={(e) => updateStatus(inv.id, e.target.value)}
-                        className="input text-xs"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Needs Info">Needs Info</option>
-                      </select>
-                      <button
-                        onClick={() => openCopilot(inv)}
-                        className="btn btn-ghost p-1 relative"
-                        title="Chat"
-                      >
-                        <ChatBubbleLeftRightIcon className="w-4 h-4" />
-                        {Array.isArray(inv.comments) && inv.comments.length > 0 && (
-                          <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-[10px] flex items-center justify-center">{inv.comments.length}</span>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => suggestAction(inv.id)}
-                        className="btn btn-ghost p-1"
-                        title="Suggest"
-                      >
-                        <LightBulbIcon className="w-4 h-4" />
-                      </button>
+                    <td className="px-3 py-4 flex flex-col items-center gap-1 relative">
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => updateStatus(inv.id, 'Approved')}
+                          className="btn btn-ghost p-1 text-xs flex items-center gap-1"
+                        >
+                          <CheckCircleIcon className="w-4 h-4" /> Approve
+                        </button>
+                        <button
+                          onClick={() => updateStatus(inv.id, 'Needs Info')}
+                          className="btn btn-ghost p-1 text-xs flex items-center gap-1"
+                        >
+                          <InformationCircleIcon className="w-4 h-4" /> Request Info
+                        </button>
+                        <button
+                          onClick={() => updateStatus(inv.id, 'Escalated')}
+                          className="btn btn-ghost p-1 text-xs flex items-center gap-1"
+                        >
+                          <ExclamationTriangleIcon className="w-4 h-4" /> Escalate
+                        </button>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => openNotes(inv)} className="btn btn-ghost p-1" title="Notes">
+                          <DocumentTextIcon className="w-4 h-4" />
+                        </button>
+                        <Tippy
+                          content={
+                            auditLogs[inv.id]
+                              ? (
+                                  <div className="text-left">
+                                    {auditLogs[inv.id].map((l) => (
+                                      <div key={l.id} className="text-xs">
+                                        {new Date(l.created_at).toLocaleString()} - {l.action}
+                                        {l.username ? ` (${l.username})` : ''}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )
+                              : 'Loading...'
+                          }
+                          interactive={true}
+                          onShow={() => fetchAudit(inv.id)}
+                        >
+                          <button className="btn btn-ghost p-1" title="Audit Trail">
+                            <ClockIcon className="w-4 h-4" />
+                          </button>
+                        </Tippy>
+                        <button
+                          onClick={() => openCopilot(inv)}
+                          className="btn btn-ghost p-1 relative"
+                          title="Chat"
+                        >
+                          <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                          {Array.isArray(inv.comments) && inv.comments.length > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full h-4 w-4 text-[10px] flex items-center justify-center">{inv.comments.length}</span>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => suggestAction(inv.id)}
+                          className="btn btn-ghost p-1"
+                          title="Suggest"
+                        >
+                          <LightBulbIcon className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </motion.tr>
                   {expandedRows.includes(inv.id) && (
@@ -394,6 +463,11 @@ export default function OpsClaim() {
         history={chatHistory}
         loading={loadingChat}
         invoice={activeInvoice}
+      />
+      <NotesModal
+        open={notesOpen}
+        invoice={notesInvoice}
+        onClose={() => setNotesOpen(false)}
       />
     </MainLayout>
   );
