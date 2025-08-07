@@ -27,6 +27,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Check for deprecated invoice routes
+        run: node scripts/check-deprecated-invoices.js
       - name: Install backend deps
         run: cd backend && npm ci --legacy-peer-deps
       - name: Lint backend

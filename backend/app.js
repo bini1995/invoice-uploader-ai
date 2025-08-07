@@ -38,12 +38,14 @@ const complianceRoutes = require('./routes/complianceRoutes');
 const signingRoutes = require('./routes/signingRoutes');
 const workspaceRoutes = require('./routes/workspaceRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
+const crypto = require('crypto');
 const validationRoutes = require('./routes/validationRoutes');
 const metricsRoutes = require('./routes/metricsRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const logRoutes = require('./routes/logRoutes');
 const usageRoutes = require('./routes/usageRoutes');
+const { legacyInvoiceApiHitCounter } = require('./metrics');
 const auditRoutes = require('./routes/auditRoutes');
 
 // Middleware imports
@@ -92,12 +94,15 @@ app.use(helmet({
 }));
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Tenant-ID'],
-}));
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Tenant-ID'],
+    exposedHeaders: ['Deprecation', 'Sunset', 'Warning', 'Link'],
+  })
+);
 
 // Request parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -126,14 +131,79 @@ app.use(auditLog);
 app.use(piiMask);
 
 // API Routes
-function logDeprecatedInvoices(req, res, next) {
-  logger.warn(`Deprecated invoices API route used: ${req.originalUrl}`);
+const SUNSET_DATE = new Date('Sun, 31 Aug 2025 00:00:00 GMT');
+const REMOVAL_TENANTS = (process.env.INVOICE_REMOVAL_TENANTS || '')
+  .split(',')
+  .filter(Boolean);
+const REMOVE_INVOICES = process.env.INVOICE_REMOVAL_ENABLED === 'true';
+const legacyUsage = new Map();
+
+function deprecatedInvoicesNotice(req, res, next) {
+  if (req.originalUrl.startsWith('/api/claims')) return next();
+
+  const tenant = req.params.tenantId || req.tenantId || null;
+  const userId = (req.user && req.user.id) || null;
+
+  const bucket = id => {
+    if (!id) return 'none';
+    const hash = crypto.createHash('sha256').update(String(id)).digest('hex');
+    return 'b' + (parseInt(hash.slice(0, 8), 16) % 1024);
+  };
+  const tenantLabel = bucket(tenant);
+  const userLabel = bucket(userId || 'anon');
+  const traceId = req.headers['x-trace-id'];
+  legacyInvoiceApiHitCounter.inc({ tenant: tenantLabel, user_id: userLabel }, 1, undefined, traceId ? { trace_id: traceId } : undefined);
+
+  logger.warn('Deprecated invoices API route used', {
+    event: 'legacy_api_hit',
+    route: req.originalUrl,
+    tenant,
+    user_id: userId,
+  });
+
+  const key = `${tenant || 'none'}:${userId || 'anon'}`;
+  const hits = legacyUsage.get(key) || [];
+  hits.push(Date.now());
+  legacyUsage.set(key, hits);
+
+  res.set(
+    'Link',
+    '</docs/INVOICE_API_DEPRECATION.md>; rel="deprecation", </docs/INVOICE_API_DEPRECATION.md#timeline>; rel="sunset"'
+  );
+
+  const now = Date.now();
+  if (REMOVAL_TENANTS.includes(tenant) || (REMOVE_INVOICES && !tenant) || now >= SUNSET_DATE.getTime()) {
+    return res
+      .status(410)
+      .type('application/problem+json')
+      .send({
+        type: '/docs/INVOICE_API_DEPRECATION.md',
+        title: 'Invoice API removed',
+        status: 410,
+        detail: 'The Invoice API has been removed. Use /api/claims instead.',
+        instance: req.originalUrl,
+        links: { deprecation: '/docs/INVOICE_API_DEPRECATION.md' },
+      });
+  }
+
+  res.set('Deprecation', 'true');
+  res.set('Sunset', SUNSET_DATE.toUTCString());
+  res.set('Warning', '299 - "Deprecated API: use /api/claims"');
+
+  if (req.method === 'GET') {
+    const target = req.originalUrl.replace('/invoices', '/claims');
+    res.set('Cache-Control', 'public, max-age=60');
+    return res.redirect(308, target);
+  }
+
   next();
 }
 
+app.use('/api/invoices', deprecatedInvoicesNotice);
+app.use('/api/:tenantId/invoices', deprecatedInvoicesNotice);
+
 app.use('/api/claims', authRoutes);
-app.use('/api/invoices', logDeprecatedInvoices, authRoutes); // backwards compat
-app.use('/api/:tenantId/invoices', logDeprecatedInvoices, authRoutes);
+app.use('/api/invoices', authRoutes); // backwards compat login
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
 app.use('/api/labs/feedback', feedbackRoutes);
@@ -157,8 +227,8 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/claims', claimRoutes);
-app.use('/api/invoices', logDeprecatedInvoices, claimRoutes); // backwards compat
-app.use('/api/:tenantId/invoices', logDeprecatedInvoices, claimRoutes);
+app.use('/api/invoices', claimRoutes); // backwards compat
+app.use('/api/:tenantId/invoices', claimRoutes);
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);
 app.use('/api/compliance', complianceRoutes);
@@ -168,6 +238,40 @@ app.use('/api/validation', validationRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/usage', usageRoutes);
+
+app.get('/ops/legacy-invoices', (req, res) => {
+  if (process.env.OPS_TOKEN && req.headers['x-ops-token'] !== process.env.OPS_TOKEN) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const now = Date.now();
+  const seven = now - 7 * 24 * 60 * 60 * 1000;
+  const thirty = now - 30 * 24 * 60 * 60 * 1000;
+  const hits = [];
+  for (const [key, timestamps] of legacyUsage.entries()) {
+    const [tenant, user_id] = key.split(':');
+    const recent = timestamps.filter(t => t >= thirty);
+    legacyUsage.set(key, recent);
+    hits.push({
+      tenant: tenant === 'none' ? null : tenant,
+      user_id: user_id === 'anon' ? null : user_id,
+      last7: recent.filter(t => t >= seven).length,
+      last30: recent.length,
+    });
+  }
+
+  const page = parseInt(req.query.page || '1', 10);
+  const perPage = parseInt(req.query.per_page || '50', 10);
+  const start = (page - 1) * perPage;
+  const paginated = hits.slice(start, start + perPage);
+  const alert = now >= SUNSET_DATE.getTime() && hits.some(h => h.last30 > 0);
+  if (alert) {
+    const count = hits.reduce((sum, h) => sum + h.last30, 0);
+    logger.error('Legacy invoice hits after sunset', { count });
+  }
+
+  res.json({ hits: paginated, page, per_page: perPage, total: hits.length, alert });
+});
 
 // Sentry error handler
 app.use(Sentry.Handlers.errorHandler());
