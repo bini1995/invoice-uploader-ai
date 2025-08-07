@@ -349,8 +349,8 @@ function OperationsDashboard() {
                                   icon={<InboxIcon className="w-5 h-5" />}
                                   title="Claim Documents Pending"
                                   value={stats?.invoicesPending || 0}
-                                  cta="Go to Inbox"
-                                  onCta={() => navigate('/inbox')}
+                                  cta="Go to OpsClaim"
+                                  onCta={() => navigate('/opsclaim')}
                                 />
                               )}
                               {m === 'anomalies' && (

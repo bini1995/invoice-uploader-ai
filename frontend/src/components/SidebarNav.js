@@ -55,17 +55,19 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
             </Link>
             <Link
               to="/claims"
+              title="ClarifyClaims: upload, validate, and summarize claims."
               className={`nav-link border-l-4 ${location.pathname === '/claims' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <FileText className="w-5 h-5" />
-              <span>Claim Documents</span>
+              <span>ClarifyClaims</span>
             </Link>
             <Link
-              to="/inbox"
-              className={`nav-link border-l-4 ${location.pathname === '/inbox' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
+              to="/opsclaim"
+              title="Triage, route, and approve claims with live insights."
+              className={`nav-link border-l-4 ${location.pathname === '/opsclaim' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <Inbox className="w-5 h-5" />
-              <span>Inbox</span>
+              <span>OpsClaim</span>
             </Link>
             <Link
               to="/vendors"
@@ -82,11 +84,12 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
               <span>AI Spend Analytics Hub</span>
             </Link>
             <Link
-              to="/audit"
-              className={`nav-link border-l-4 ${location.pathname === '/audit' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
+              to="/auditflow"
+              title="AuditFlow: risk and audit review for flagged claims."
+              className={`nav-link border-l-4 ${location.pathname === '/auditflow' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <FileSearch className="w-5 h-5" />
-              <span>Audit</span>
+              <span>AuditFlow</span>
             </Link>
             <Link
               to="/builder"

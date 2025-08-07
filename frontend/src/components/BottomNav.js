@@ -12,8 +12,18 @@ export default function BottomNav() {
   const location = useLocation();
   const items = [
     { to: '/operations', icon: HomeIcon, label: 'Home' },
-    { to: '/claims', icon: DocumentIcon, label: 'Claim Documents' },
-    { to: '/inbox', icon: InboxIcon, label: 'Inbox' },
+    {
+      to: '/claims',
+      icon: DocumentIcon,
+      label: 'ClarifyClaims',
+      title: 'Upload, validate, and summarize claims.',
+    },
+    {
+      to: '/opsclaim',
+      icon: InboxIcon,
+      label: 'OpsClaim',
+      title: 'Triage, route, and approve claims with live insights.',
+    },
     { to: '/review', icon: DocumentIcon, label: 'Review' },
     { to: '/archive', icon: ArchiveBoxIcon, label: 'Archive' },
   ];
@@ -25,6 +35,7 @@ export default function BottomNav() {
             <motion.div whileHover={{ scale: 1.1 }} className="py-2">
               <Link
                 to={to}
+                title={item.title}
                 className={`flex flex-col items-center text-xs ${
                   location.pathname === to ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300'
                 }`}

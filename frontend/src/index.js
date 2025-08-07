@@ -7,7 +7,7 @@ import SharedDashboard from './SharedDashboard';
 import DashboardBuilder from './DashboardBuilder';
 import ExportTemplateBuilder from './ExportTemplateBuilder';
 import AISpendAnalyticsHub from './AISpendAnalyticsHub';
-import AuditDashboard from './AuditDashboard';
+import AuditFlow from './AuditFlow';
 import FraudReport from './FraudReport';
 import HumanReview from './HumanReview';
 import Archive from './Archive';
@@ -17,7 +17,7 @@ import WorkflowPage from './WorkflowPage';
 import WorkflowBuilderPage from './WorkflowBuilderPage';
 import Board from './Board';
 import KanbanDashboard from './KanbanDashboard';
-import Inbox from './Inbox';
+import OpsClaim from './OpsClaim';
 import NotFound from './NotFound';
 import ResultsViewer from './ResultsViewer';
 import ErrorBoundary from './ErrorBoundary';
@@ -27,7 +27,8 @@ import MultiUploadWizard from './MultiUploadWizard';
 import DemoSandbox from './DemoSandbox';
 import InstantTrial from './InstantTrial';
 import LoginPage from './LoginPage';
-import DocsPage from './DocsPage';
+import ClarifyClaims from './ClarifyClaims';
+import ClaimsBrandingPreview from './ClaimsBrandingPreview';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -119,9 +120,10 @@ function AnimatedRoutes() {
         <Route path="/adaptive" element={<PageWrapper><AdaptiveDashboard /></PageWrapper>} />
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
         <Route path="/claims" element={<PageWrapper><ClaimsPage /></PageWrapper>} />
-        <Route path="/inbox" element={<PageWrapper><Inbox /></PageWrapper>} />
+        <Route path="/opsclaim" element={<PageWrapper><OpsClaim /></PageWrapper>} />
+        <Route path="/claims/branding-preview" element={<PageWrapper><ClaimsBrandingPreview /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><AISpendAnalyticsHub /></PageWrapper>} />
-        <Route path="/audit" element={<PageWrapper><AuditDashboard /></PageWrapper>} />
+        <Route path="/auditflow" element={<PageWrapper><AuditFlow /></PageWrapper>} />
         <Route path="/fraud" element={<PageWrapper><FraudReport /></PageWrapper>} />
         <Route path="/review" element={<PageWrapper><HumanReview /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
@@ -137,7 +139,7 @@ function AnimatedRoutes() {
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/sandbox" element={<PageWrapper><DemoSandbox /></PageWrapper>} />
         <Route path="/free-trial" element={<PageWrapper><InstantTrial /></PageWrapper>} />
-        <Route path="/docs" element={<PageWrapper><DocsPage /></PageWrapper>} />
+        <Route path="/clarifyclaims" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />

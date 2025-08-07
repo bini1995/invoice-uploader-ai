@@ -789,7 +789,7 @@ exports.overdueEmailTemplate = async (req, res) => {
   }
 };
 
-// Inbox copilot uses invoice metadata for context-aware answers
+// OpsClaim copilot uses claim metadata for context-aware answers
 exports.invoiceCopilot = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);

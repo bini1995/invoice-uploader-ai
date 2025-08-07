@@ -13,6 +13,12 @@ The API has been consolidated to a single `/api/claims` namespace (with `/api/in
 
 Originally this project focused solely on invoice processing. It is now evolving into a general **Document AI Platform** that handles invoices, contracts and more. See [docs/TRANSFORMATION_PLAN.md](docs/TRANSFORMATION_PLAN.md) for the roadmap. A quick feature comparison against other tools is available in [docs/MARKET_POSITIONING.md](docs/MARKET_POSITIONING.md).
 
+## Claims Sub-Brand Structure
+
+- ClarifyClaims: Main claims experience (upload, validate, summarize)
+- OpsClaim: Action queue and workflow routing
+- AuditFlow: Risk and audit review for flagged claims
+
 ## Requirements
 - Node.js 18.x LTS
 
@@ -63,7 +69,7 @@ npm install --legacy-peer-deps
 - User ratings on AI responses continuously improve future accuracy
 - Ask Me Anything assistant for financial questions
 - AI assistant can answer billing support queries
- - Context-aware Inbox Copilot chat for each document
+- Context-aware OpsClaim Copilot chat for each claim
 - (e.g. "Which vendors had the most inconsistencies last month?")
  - Role-based access control (Admins and Viewers for the demo)
  - Admins can generate expiring invitation links for Viewer accounts
