@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
-import DataTable from './components/DataTable';
+import ClaimListTable from './components/ClaimListTable';
 import { API_BASE } from './api';
 
 function Archive() {
   const token = localStorage.getItem('token') || '';
-  const [invoices, setInvoices] = useState([]);
+  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [vendor, setVendor] = useState('');
+  const [provider, setProvider] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [priorityOnly, setPriorityOnly] = useState(false);
@@ -16,29 +16,32 @@ function Archive() {
   useEffect(() => {
     if (!token) return;
     setLoading(true);
-    fetch(`${API_BASE}/api/invoices?includeArchived=true`, {
+    fetch(`${API_BASE}/api/claims?includeArchived=true`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
         if (ok) {
-          setInvoices(d.filter((inv) => inv.archived));
+          setClaims(d.filter((c) => c.archived));
         }
       })
       .finally(() => setLoading(false));
   }, [token]);
 
-  const filtered = invoices.filter((inv) => {
-    if (vendor && !inv.vendor.toLowerCase().includes(vendor.toLowerCase())) {
+  const filtered = claims.filter((claim) => {
+    if (
+      provider &&
+      !claim.provider_name.toLowerCase().includes(provider.toLowerCase())
+    ) {
       return false;
     }
-    if (startDate && new Date(inv.date) < new Date(startDate)) {
+    if (startDate && new Date(claim.service_date) < new Date(startDate)) {
       return false;
     }
-    if (endDate && new Date(inv.date) > new Date(endDate)) {
+    if (endDate && new Date(claim.service_date) > new Date(endDate)) {
       return false;
     }
-    if (priorityOnly && !inv.priority) {
+    if (priorityOnly && !claim.priority) {
       return false;
     }
     return true;
@@ -46,12 +49,12 @@ function Archive() {
 
   const handleRestore = useCallback(
     async (id) => {
-      const res = await fetch(`${API_BASE}/api/invoices/${id}/unarchive`, {
+      const res = await fetch(`${API_BASE}/api/claims/${id}/unarchive`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        setInvoices((inv) => inv.filter((i) => i.id !== id));
+        setClaims((cl) => cl.filter((c) => c.id !== id));
       }
     },
     [token]
@@ -59,16 +62,13 @@ function Archive() {
 
   const columns = useMemo(
     () => [
-      { accessorKey: 'invoice_number', header: '#' },
+      { accessorKey: 'claim_id', header: 'Claim ID' },
+      { accessorKey: 'provider_name', header: 'Provider' },
+      { accessorKey: 'claim_type', header: 'Claim Type' },
+      { accessorKey: 'status', header: 'Status' },
       {
-        accessorKey: 'date',
-        header: 'Date',
-        cell: (info) => new Date(info.getValue()).toLocaleDateString(),
-      },
-      { accessorKey: 'vendor', header: 'Vendor' },
-      {
-        accessorKey: 'amount',
-        header: 'Amount',
+        accessorKey: 'total_amount',
+        header: 'Total Amount',
         cell: (info) => `$${info.getValue()}`,
       },
       {
@@ -93,7 +93,12 @@ function Archive() {
     <MainLayout title="Claim Document Archive" helpTopic="archive">
       <div className="space-y-4">
         <div className="flex flex-wrap items-end space-x-2">
-          <input value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="Vendor" className="input" />
+          <input
+            value={provider}
+            onChange={(e) => setProvider(e.target.value)}
+            placeholder="Provider"
+            className="input"
+          />
           <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="input" />
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="input" />
           <label className="flex items-center space-x-1 text-sm">
@@ -113,7 +118,7 @@ function Archive() {
               </tbody>
             </table>
           ) : (
-            <DataTable columns={columns} data={filtered} />
+            <ClaimListTable columns={columns} data={filtered} />
           )}
         </div>
       </div>

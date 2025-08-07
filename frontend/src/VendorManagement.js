@@ -5,7 +5,7 @@ import MainLayout from './components/MainLayout';
 import EmptyState from './components/EmptyState';
 import DummyDataButton from './components/DummyDataButton';
 import VendorProfilePanel from './components/VendorProfilePanel';
-import InvoiceDetailModal from './components/InvoiceDetailModal';
+import ClaimDetailModal from './components/ClaimDetailModal';
 import VendorDetailModal from './components/VendorDetailModal';
 import CTAButton from './components/ui/CTAButton';
 import {
@@ -348,7 +348,7 @@ function VendorManagement() {
       </div>
       <VendorProfilePanel vendor={profileVendor} open={!!profileVendor} onClose={() => setProfileVendor(null)} token={token} />
       <VendorDetailModal vendor={detailVendor} open={!!detailVendor} onClose={() => setDetailVendor(null)} token={token} />
-      <InvoiceDetailModal open={!!detailInvoice} invoice={detailInvoice} onClose={() => setDetailInvoice(null)} token={token} onUpdate={() => {}} />
+      <ClaimDetailModal open={!!detailInvoice} invoice={detailInvoice} onClose={() => setDetailInvoice(null)} token={token} onUpdate={() => {}} />
     </MainLayout>
   );
 }

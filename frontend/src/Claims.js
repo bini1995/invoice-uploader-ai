@@ -27,8 +27,7 @@ import EmptyState from './components/EmptyState';
 import ChatSidebar from './components/ChatSidebar';
 import GraphView from './components/GraphView';
 import ConfirmModal from './components/ConfirmModal';
-import InvoiceDetailModal from './components/InvoiceDetailModal';
-import TagEditor from './components/TagEditor';
+import ClaimDetailModal from './components/ClaimDetailModal';
 import SuggestionChips from './components/SuggestionChips';
 import PreviewModal from './components/PreviewModal';
 import VendorProfilePanel from './components/VendorProfilePanel';
@@ -60,7 +59,6 @@ import {
   CurrencyDollarIcon,
   FlagIcon,
   LightBulbIcon,
-  TagIcon,
   EyeIcon,
   TrashIcon,
   XCircleIcon,
@@ -187,10 +185,6 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
   const [editingValue, setEditingValue] = useState('');
   const [updatedFields, setUpdatedFields] = useState({});
   const [updatingField, setUpdatingField] = useState(null);
-  const [tagSuggestions, setTagSuggestions] = useState({});
-  const [tagColors, setTagColors] = useState({});
-  const [qualityScores, setQualityScores] = useState({});
-  const [riskScores, setRiskScores] = useState({});
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [featureOpen, setFeatureOpen] = useState(false);
   const [explainModal, setExplainModal] = useState(null); // { invoice, explanation, score }
@@ -750,7 +744,6 @@ const handleBulkDelete = () => {
 
         if (field === 'vendor') {
           const updatedInv = updatedList?.find((inv) => inv.id === id);
-          if (updatedInv) handleSuggestTags(updatedInv);
         }
   
         // ✅ ✅ Add this to show a green checkmark after update
@@ -1016,7 +1009,6 @@ useEffect(() => {
     // automatically fetch tag suggestions for newly uploaded invoices
     newIds.forEach((newId) => {
       const inv = updatedData.find(i => i.id === newId);
-      if (inv) handleSuggestTags(inv);
     });
 
     if (newIds.length > 0) {
@@ -1662,43 +1654,7 @@ useEffect(() => {
     setDetailInvoice(inv);
   };
 
-  const handleQualityScore = async (invoice) => {
-    try {
-      const res = await fetch('http://localhost:3000/api/invoices/quality-score', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ invoice }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setQualityScores((p) => ({ ...p, [invoice.id]: data }));
-      } else {
-        setQualityScores((p) => ({ ...p, [invoice.id]: { score: 'N/A', tips: data.message } }));
-      }
-    } catch (err) {
-      console.error('Quality score error:', err);
-      setQualityScores((p) => ({ ...p, [invoice.id]: { score: 'N/A', tips: 'Failed to score.' } }));
-    }
-  };
-
-  const handleRiskScore = async (invoice) => {
-    try {
-      const res = await fetch('http://localhost:3000/api/invoices/payment-risk', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ vendor: invoice.vendor }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setRiskScores((p) => ({ ...p, [invoice.id]: data.risk }));
-      } else {
-        setRiskScores((p) => ({ ...p, [invoice.id]: 'N/A' }));
-      }
-    } catch (err) {
-      console.error('Risk score error:', err);
-      setRiskScores((p) => ({ ...p, [invoice.id]: 'N/A' }));
-    }
-  };
+  
 
   const handleExplainInvoice = async (invoice) => {
     try {
@@ -1714,34 +1670,6 @@ useEffect(() => {
     } catch (err) {
       console.error('Explain invoice error:', err);
       addToast('Failed to explain document', 'error');
-    }
-  };
-  
-
-  const handleSuggestTags = async (invoice) => {
-    try {
-      const res = await fetch('http://localhost:3000/api/invoices/suggest-tags', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ invoice }),
-      });
-  
-      const data = await res.json();
-      if (res.ok && data.tags) {
-        setTagSuggestions((prev) => ({
-          ...prev,
-          [invoice.id]: data.tags,
-        }));
-        addNotification('Auto-tagging complete.');
-      } else {
-        addToast('⚠️ No tags returned', 'error');
-      }
-    } catch (err) {
-      console.error('Tag suggestion failed:', err);
-      addToast('⚠️ Failed to get tag suggestions', 'error');
     }
   };
   
@@ -1792,46 +1720,6 @@ useEffect(() => {
     }
   };
 
-  const handleAddTag = async (invoiceId, tag) => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/invoices/${invoiceId}/tags`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ tag }),
-      });
-  
-      if (!res.ok) {
-        throw new Error('Failed to add tag');
-      }
-
-      addToast('✅ Tag added successfully');
-      fetchInvoices(showArchived, selectedAssignee); // Refresh list
-    } catch (err) {
-      console.error(err);
-      addToast('❌ Failed to add tag', 'error');
-    }
-  };
-
-  const handleRemoveTag = async (invoiceId, tag) => {
-    try {
-      const invoice = invoices.find((inv) => inv.id === invoiceId);
-      const newTags = (invoice?.tags || []).filter((t) => t !== tag);
-      const res = await fetch(`http://localhost:3000/api/invoices/${invoiceId}/update-tags`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ tags: newTags }),
-      });
-      if (!res.ok) throw new Error('Failed to update tags');
-      addToast('✅ Tag updated');
-      fetchInvoices(showArchived, selectedAssignee);
-    } catch (err) {
-      console.error(err);
-      addToast('❌ Failed to update tags', 'error');
-    }
-  };
 
   const handleApprove = async (id) => {
     try {
@@ -2016,7 +1904,7 @@ useEffect(() => {
         tenant={tenant}
         onAddComment={addCommentFromSnapshot}
       />
-      <InvoiceDetailModal
+      <ClaimDetailModal
         open={!!detailInvoice}
         invoice={detailInvoice}
         onClose={() => setDetailInvoice(null)}
@@ -2258,7 +2146,7 @@ useEffect(() => {
     >
       <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-300">
         <CloudArrowUpIcon className="w-5 h-5" />
-        <span>Drag & drop CSV/PDF/Image here or tap to select or capture</span>
+        <span>Drag EOB / CMS-1500 here or tap to select or capture</span>
       </div>
       <input
         type="file"
@@ -2716,38 +2604,28 @@ useEffect(() => {
                         onChange={toggleSelectAll}
                       />
                     </th>
-                    <th className="border px-4 py-2">ID</th>
                     <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort('invoice_number')}>
-                      Claim Document #
+                      Claim ID
                       {sortConfig.key === 'invoice_number' && (
                         <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
                       )}
                     </th>
-                    <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort('date')}>
-                      Date
-                      {sortConfig.key === 'date' && (
-                        <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
-                      )}
-                    </th>
+                    <th className="border px-4 py-2">Claim Type</th>
+                    <th className="border px-4 py-2">CPT Summary</th>
+                    <th className="border px-4 py-2">Status</th>
                     <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort('amount')}>
-                      Amount
+                      Total Amount
                       {sortConfig.key === 'amount' && (
                         <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
                       )}
                     </th>
                     <th className="border px-4 py-2 cursor-pointer" onClick={() => handleSort('vendor')}>
-                      Entity
+                      Provider Name
                       {sortConfig.key === 'vendor' && (
                         <span>{sortConfig.direction === 'asc' ? ' ⬆' : ' ⬇'}</span>
                       )}
                     </th>
-                    <th className="border px-4 py-2">Smart Tags</th>
-                    <th className="border px-4 py-2">Created At</th>
-                    <th className="border px-4 py-2">Assignee</th>
-                    <th className="border px-4 py-2">Status</th>
-                    <th className="border px-4 py-2">Updated At</th>
-                    <th className="border px-4 py-2">Quality</th>
-                    <th className="border px-4 py-2">Risk</th>
+                    <th className="border px-4 py-2">Flagged Issues</th>
                     {role !== 'viewer' && (
                       <th className="border px-4 py-2">Actions</th>
                     )}
@@ -2765,9 +2643,9 @@ useEffect(() => {
                   <td colSpan={role !== 'viewer' ? 14 : 13}>
                     <EmptyState
                       onCta={() => fileInputRef.current?.click()}
-                      headline="Let's get started!"
-                      description="Upload your first claim file to begin tracking spend, surfacing anomalies, and unlocking AI insights."
-                      cta="Upload Claim File"
+                      headline="No recent claims found"
+                      description="Upload a new one to begin extraction."
+                      cta="Submit Claims Document"
                     />
                   </td>
                 </tr>
@@ -2802,7 +2680,6 @@ useEffect(() => {
                         onChange={() => toggleSelectInvoice(inv.id)}
                       />
                     </td>
-                    <td className="border px-4 py-2">{inv.id}</td>
                     <td className="border px-4 py-2 cursor-pointer" onClick={() => openInvoiceDetails(inv)}>
                       <div className="flex flex-col items-center">
                         <span className="font-medium">{inv.invoice_number}</span>
@@ -2822,36 +2699,6 @@ useEffect(() => {
                           {inv.flagged && <FlaggedBadge id={inv.id} />}
                         </div>
                       </div>
-                    </td>
-                    <td
-                      className={`border px-4 py-2 ${role !== 'viewer' ? 'cursor-pointer' : ''}`}
-                      onClick={() => {
-                        if (role === 'viewer') return;
-                        setEditingInvoiceId(inv.id);
-                        setEditingField('date');
-                        setEditingValue(inv.date);
-                      }}
-                    >
-                      {editingInvoiceId === inv.id && editingField === 'date' ? (
-                        <input
-                          type="date"
-                          value={editingValue}
-                          onChange={(e) => setEditingValue(e.target.value)}
-                          onBlur={() => {
-                            handleUpdateInvoice(inv.id, 'date', editingValue);
-                            setEditingInvoiceId(null);
-                          }}
-                          className="input px-1 text-sm w-full"
-                          autoFocus
-                        />
-                      ) : (
-                        <>
-                          {inv.date ? new Date(inv.date).toLocaleDateString() : ''}
-                          {updatedFields[`${inv.id}-date`] && (
-                            <span className="ml-2 text-green-600 text-xs font-semibold">✅</span>
-                          )}
-                        </>
-                      )}
                     </td>
                     <td
                       className={`border px-4 py-2 ${role !== 'viewer' ? 'cursor-pointer' : ''}`}
@@ -2923,14 +2770,7 @@ useEffect(() => {
                         </div>
                       )}
                     </td>
-                    <td className="border px-4 py-2">
-                      <TagEditor
-                        tags={inv.tags || []}
-                        colorMap={tagColors}
-                        onAddTag={(tag) => handleAddTag(inv.id, tag)}
-                        onRemoveTag={(tag) => handleRemoveTag(inv.id, tag)}
-                      />
-                    </td>
+                    <td className="border px-4 py-2">{inv.cpt_summary || '-'}</td>
                     <td className="border px-4 py-2">
                       {inv.created_at ? new Date(inv.created_at).toLocaleString() : '—'}
                     </td>
@@ -2951,23 +2791,8 @@ useEffect(() => {
                     <td className="border px-4 py-2">
                       {inv.updated_at ? new Date(inv.updated_at).toLocaleString() : '—'}
                     </td>
-                    <td className="border px-4 py-2 text-center">
-                      <button
-                        onClick={() => handleQualityScore(inv)}
-                        className="bg-teal-600 text-white px-2 py-1 rounded hover:bg-teal-700 text-xs w-full"
-                        title={qualityScores[inv.id]?.tips || ''}
-                      >
-                        {qualityScores[inv.id] ? `💯 ${qualityScores[inv.id].score}` : 'Score'}
-                      </button>
-                    </td>
-                    <td className="border px-4 py-2 text-center">
-                      <button
-                        onClick={() => handleRiskScore(inv)}
-                        className="bg-orange-600 text-white px-2 py-1 rounded hover:bg-orange-700 text-xs w-full"
-                      >
-                        {riskScores[inv.id] || 'Risk'}
-                      </button>
-                    </td>
+                    <td className="border px-4 py-2 text-center">{inv.claim_type || '-'}</td>
+                    <td className="border px-4 py-2 text-center">{inv.flag_reason || (inv.flagged ? 'Flagged' : 'None')}</td>
                     {role !== 'viewer' && (
                     <td className="border px-4 py-2 space-y-1 flex flex-col items-center">
                     {!inv.archived && (
@@ -3018,25 +2843,12 @@ useEffect(() => {
                         <LightBulbIcon className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleSuggestTags(inv)}
-                        className="bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 text-xs w-full"
-                        title="Suggest Tags"
-                      >
-                        <TagIcon className="w-4 h-4" />
-                      </button>
-                      <button
                         onClick={() => handleExplainInvoice(inv)}
                         className="bg-indigo-500 text-white px-2 py-1 rounded hover:bg-indigo-600 text-xs w-full"
                         title="Explain"
                       >
                         🧠
                       </button>
-                      {tagSuggestions[inv.id] && (
-                        <SuggestionChips
-                          suggestions={tagSuggestions[inv.id]}
-                          onClick={(tag) => handleAddTag(inv.id, tag)}
-                        />
-                      )}
                       {role === 'approver' && (
                         <button
                           onClick={() => handleFlagSuspicious(inv)}
@@ -3161,12 +2973,7 @@ useEffect(() => {
                           </div>
                           <div>💰 {inv.amount}</div>
                           <div>📅 {new Date(inv.date).toLocaleDateString()}</div>
-                          <TagEditor
-                            tags={inv.tags || []}
-                            colorMap={tagColors}
-                            onAddTag={(tag) => handleAddTag(inv.id, tag)}
-                            onRemoveTag={(tag) => handleRemoveTag(inv.id, tag)}
-                          />
+                            <div>{inv.cpt_summary || '-'}</div>
                           {inv.comments?.map((c, i) => (
                             <div key={i} className="text-xs bg-gray-100 rounded p-1">{c.text}</div>
                           ))}
