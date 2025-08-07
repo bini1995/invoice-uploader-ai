@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   flexRender,
@@ -9,11 +9,24 @@ import {
 } from '@tanstack/react-table';
 import { unparse } from 'papaparse';
 import { Button } from './ui/Button';
+import StatusChip from './StatusChip';
+import AIInsightChip from './AIInsightChip';
+import NotesPanel from './NotesPanel';
+import ReviewButtons from './ReviewButtons';
+import AuditTrailPopover from './AuditTrailPopover';
+import Toast from './Toast';
 
 export default function ClaimListTable({ columns, data }) {
   const [sorting, setSorting] = useState([]);
   const [columnSizing, setColumnSizing] = useState({});
   const [exportOpen, setExportOpen] = useState(false);
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = useCallback((text, type = 'error') => {
+    const id = Date.now();
+    setToasts((t) => [...t, { id, text, type }]);
+    setTimeout(() => setToasts((t) => t.filter((tt) => tt.id !== id)), 3000);
+  }, []);
 
   const table = useReactTable({
     data,
@@ -51,7 +64,12 @@ export default function ClaimListTable({ columns, data }) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 relative">
+      <div className="fixed top-4 right-4 space-y-2 z-50">
+        {toasts.map((t) => (
+          <Toast key={t.id} message={t.text} type={t.type} />
+        ))}
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm border rounded-lg overflow-hidden">
           <thead>
@@ -93,14 +111,52 @@ export default function ClaimListTable({ columns, data }) {
                   row.original.flagged_issues ? 'bg-red-50' : ''
                 }`}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-2 py-1">
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const value = cell.getValue();
+                  let content;
+                  switch (cell.column.id) {
+                    case 'status':
+                      content = <StatusChip status={value} />;
+                      break;
+                    case 'assignee':
+                      content = value ? (
+                        <img
+                          src={`https://api.dicebear.com/7.x/initials/svg?seed=${value}`}
+                          alt={value}
+                          className="h-6 w-6 rounded-full mx-auto"
+                        />
+                      ) : (
+                        <span className="text-xs text-gray-500">-</span>
+                      );
+                      break;
+                    case 'ai_insight':
+                      content = <AIInsightChip insight={value} />;
+                      break;
+                    case 'actions':
+                      content = (
+                        <div className="flex gap-1 items-center">
+                          <ReviewButtons
+                            claimId={row.original.claim_id}
+                            status={row.original.status}
+                            addToast={addToast}
+                          />
+                          <NotesPanel claimId={row.original.claim_id} addToast={addToast} />
+                          <AuditTrailPopover claimId={row.original.claim_id} />
+                        </div>
+                      );
+                      break;
+                    default:
+                      content = flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      );
+                  }
+                  return (
+                    <td key={cell.id} className="px-2 py-1">
+                      {content}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
@@ -182,6 +238,9 @@ ClaimListTable.propTypes = {
         'status',
         'total_amount',
         'flagged_issues',
+        'assignee',
+        'ai_insight',
+        'actions',
       ]).isRequired,
       header: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
       cell: PropTypes.func,
@@ -203,6 +262,10 @@ ClaimListTable.propTypes = {
         PropTypes.string,
         PropTypes.number,
       ]),
+      assignee: PropTypes.string,
+      ai_insight: PropTypes.string,
+      notes: PropTypes.arrayOf(PropTypes.string),
+      audit: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,
 };

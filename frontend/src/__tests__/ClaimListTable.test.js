@@ -9,6 +9,9 @@ const columns = [
   { accessorKey: 'total_amount', header: 'Total Amount' },
   { accessorKey: 'provider_name', header: 'Provider Name' },
   { accessorKey: 'flagged_issues', header: 'Flagged Issues' },
+  { accessorKey: 'assignee', header: 'Assigned To' },
+  { accessorKey: 'ai_insight', header: 'AI Insight' },
+  { accessorKey: 'actions', header: 'Actions' },
 ];
 
 test('renders claim list table with claim-centric headers', () => {
