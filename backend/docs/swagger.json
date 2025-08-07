@@ -14,6 +14,38 @@
     }
   },
   "paths": {
+    "/api/invoices": {
+      "get": {
+        "summary": "Legacy invoice endpoint",
+        "deprecated": true,
+        "description": "Redirects to `/api/claims` with HTTP 308 until Sun, 31 Aug 2025 00:00:00 GMT, then returns 410 Gone.",
+        "responses": {
+          "308": { "description": "Redirect to `/api/claims`" },
+          "410": { "description": "Invoice API removed" }
+        },
+        "x-linkTo": "/api/claims"
+      }
+    },
+    "/api/{tenantId}/invoices": {
+      "get": {
+        "summary": "Tenant-scoped legacy invoice endpoint",
+        "deprecated": true,
+        "description": "Redirects to `/api/{tenantId}/claims` with HTTP 308 until Sun, 31 Aug 2025 00:00:00 GMT, then returns 410 Gone.",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "308": { "description": "Redirect to `/api/{tenantId}/claims`" },
+          "410": { "description": "Invoice API removed" }
+        },
+        "x-linkTo": "/api/{tenantId}/claims"
+      }
+    },
     "/api/{tenantId}/claims": {
       "get": {
         "summary": "List claim documents",
