@@ -15,7 +15,7 @@ import {
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
-export default function Inbox() {
+export default function OpsClaim() {
   const token = localStorage.getItem('token') || '';
   const tenant = localStorage.getItem('tenant') || 'default';
   const [invoices, setInvoices] = useState([]);
@@ -52,7 +52,7 @@ export default function Inbox() {
         throw new Error(`HTTP ${res.status}`);
       }
     } catch (err) {
-      console.error('Inbox fetch error:', err);
+      console.error('OpsClaim fetch error:', err);
     }
     setLoading(false);
   }, [token, tenant, headers]);
@@ -210,7 +210,7 @@ export default function Inbox() {
   const focusMode = copilotOpen || expandedRows.length > 0 || selectedRows.length > 0;
 
   return (
-    <MainLayout title="Inbox" helpTopic="inbox" collapseSidebar={focusMode}>
+    <MainLayout title="OpsClaim" helpTopic="opsclaim" collapseSidebar={focusMode}>
       {selectedRows.length > 0 && (
         <div className="mb-2 flex gap-2">
           <button onClick={bulkApprove} className="btn btn-ghost text-xs flex items-center gap-1">

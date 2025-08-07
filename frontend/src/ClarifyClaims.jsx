@@ -3,10 +3,10 @@ import MainLayout from './components/MainLayout';
 import PageHeader from './components/PageHeader';
 import { API_BASE } from './api';
 
-export default function DocsPage() {
+export default function ClarifyClaims() {
   return (
-    <MainLayout title="Docs">
-      <PageHeader title="Developer Docs" subtitle="Integration Guide" />
+    <MainLayout title="ClarifyClaims">
+      <PageHeader title="ClarifyClaims" subtitle="Clarity in every claim." />
       <div className="space-y-6">
         <section>
           <h2 className="font-semibold text-lg">API Key Instructions</h2>

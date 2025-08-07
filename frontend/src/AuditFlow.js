@@ -22,7 +22,7 @@ const DEMO_LOGS = [
   },
 ];
 
-export default function AuditDashboard() {
+export default function AuditFlow() {
   const token = localStorage.getItem('token') || '';
   const role = localStorage.getItem('role') || '';
   const [logs, setLogs] = useState([]);
@@ -86,7 +86,7 @@ export default function AuditDashboard() {
   }
 
   return (
-    <MainLayout title="Audit Dashboard" helpTopic="audit">
+    <MainLayout title="AuditFlow" helpTopic="auditflow">
       <div className="space-y-4">
         <div className="flex flex-wrap items-end gap-4 mb-2">
           <input value={vendor} onChange={e=>setVendor(e.target.value)} placeholder="Vendor" className="input" />
@@ -124,7 +124,7 @@ export default function AuditDashboard() {
                   <td colSpan="4" className="p-6 text-center text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <MagnifyingGlassIcon className="w-8 h-8 text-gray-400" />
-                      <p>No audit logs found. Try changing your filters or upload a claim document to begin tracking actions.</p>
+                      <p>No AuditFlow logs found. Try changing your filters or upload a claim document to begin tracking actions.</p>
                     </div>
                   </td>
                 </tr>
