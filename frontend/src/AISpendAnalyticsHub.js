@@ -4,7 +4,7 @@ import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
 import StatCard from './components/StatCard.jsx';
 import RuleModal from './components/RuleModal';
-import InvoiceDetailModal from './components/InvoiceDetailModal';
+import ClaimDetailModal from './components/ClaimDetailModal';
 
 function AISpendAnalyticsHub() {
   const token = localStorage.getItem('token') || '';
@@ -480,7 +480,7 @@ function AISpendAnalyticsHub() {
         onSave={saveRule}
         initial={ruleForm}
       />
-      <InvoiceDetailModal
+      <ClaimDetailModal
         open={!!detailInvoice}
         invoice={detailInvoice}
         onClose={() => setDetailInvoice(null)}

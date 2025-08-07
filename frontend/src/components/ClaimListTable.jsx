@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   flexRender,
   getCoreRowModel,
@@ -9,7 +10,7 @@ import {
 import { unparse } from 'papaparse';
 import { Button } from './ui/Button';
 
-export default function DataTable({ columns, data }) {
+export default function ClaimListTable({ columns, data }) {
   const [sorting, setSorting] = useState([]);
   const [columnSizing, setColumnSizing] = useState({});
   const [exportOpen, setExportOpen] = useState(false);
@@ -86,7 +87,12 @@ export default function DataTable({ columns, data }) {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-t hover:bg-gray-100">
+              <tr
+                key={row.id}
+                className={`border-t hover:bg-gray-100 ${
+                  row.original.flagged_issues ? 'bg-red-50' : ''
+                }`}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-2 py-1">
                     {flexRender(
@@ -164,3 +170,39 @@ export default function DataTable({ columns, data }) {
     </div>
   );
 }
+
+ClaimListTable.propTypes = {
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      accessorKey: PropTypes.oneOf([
+        'claim_id',
+        'provider_name',
+        'cpt_summary',
+        'claim_type',
+        'status',
+        'total_amount',
+        'flagged_issues',
+      ]).isRequired,
+      header: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+      cell: PropTypes.func,
+    })
+  ).isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      claim_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+      provider_name: PropTypes.string.isRequired,
+      cpt_summary: PropTypes.string,
+      claim_type: PropTypes.string,
+      status: PropTypes.string,
+      total_amount: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      flagged_issues: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+    })
+  ).isRequired,
+};

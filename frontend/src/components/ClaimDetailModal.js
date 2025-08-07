@@ -3,7 +3,7 @@ import TagEditor from './TagEditor';
 import CTAButton from './ui/CTAButton';
 import { API_BASE } from '../api';
 
-export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, token }) {
+export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ invoice_number: '', date: '', amount: '', vendor: '' });
   const [timeline, setTimeline] = useState([]);
@@ -109,13 +109,13 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 ease-in-out">
       <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96 transition-all duration-300 ease-in-out">
-        <h2 className="text-lg font-semibold mb-2">Invoice #{invoice.invoice_number}</h2>
+        <h2 className="text-lg font-semibold mb-2">Claim #{invoice.invoice_number}</h2>
         <div className="space-y-2 text-sm">
           <div>
             <span className="font-semibold mr-2">ID:</span>{invoice.id}
           </div>
           <div>
-            <span className="font-semibold mr-2">Date:</span>
+            <span className="font-semibold mr-2">Service Date:</span>
             {editMode ? (
               <input
                 type="date"
@@ -149,7 +149,7 @@ export default function InvoiceDetailModal({ open, invoice, onClose, onUpdate, t
             )}
           </div>
           <div>
-            <span className="font-semibold mr-2">Vendor:</span>
+            <span className="font-semibold mr-2">Provider:</span>
             {editMode ? (
               <>
                 <input
