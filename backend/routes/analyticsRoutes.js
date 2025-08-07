@@ -7,8 +7,6 @@ const {
   exportReportCSV,
   getTrends,
   getAgingReport,
-  predictCashFlowRisk,
-  forecastCashFlow,
   getDashboardMetadata,
   getApprovalStats,
   getApprovalTimeChart,
@@ -20,7 +18,6 @@ const {
   detectDuplicateInvoices,
   getApprovalTimeByVendor,
   getLatePaymentTrend,
-  getInvoicesOverBudget,
   getRiskHeatmap,
   getInvoiceClusters,
   getCrossAlerts,
@@ -42,8 +39,6 @@ router.post('/report/schedules', authMiddleware, createReportSchedule);
 router.delete('/report/schedules/:id', authMiddleware, deleteReportSchedule);
 router.get('/trends', authMiddleware, getTrends);
 router.get('/aging', authMiddleware, getAgingReport);
-router.get('/cash-flow/predict', authMiddleware, predictCashFlowRisk);
-router.get('/cash-flow/forecast', authMiddleware, forecastCashFlow);
 router.get('/rules', authMiddleware, listRules);
 router.post('/rules', authMiddleware, addRule);
 router.put('/rules/:idx', authMiddleware, updateRule);
@@ -54,7 +49,6 @@ router.get('/spend/vendor', authMiddleware, getVendorSpend);
 router.get('/spend/heatmap', authMiddleware, getSpendHeatmap);
 router.get('/kpi/approval-time-vendor', authMiddleware, getApprovalTimeByVendor);
 router.get('/kpi/late-payments-trend', authMiddleware, getLatePaymentTrend);
-router.get('/kpi/over-budget', authMiddleware, getInvoicesOverBudget);
 router.get('/metadata', authMiddleware, getDashboardMetadata);
 router.get('/outliers', authMiddleware, detectOutliers);
 router.get('/dashboard/realtime', authMiddleware, getRealTimeDashboard);

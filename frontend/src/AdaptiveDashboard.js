@@ -31,14 +31,12 @@ export default function AdaptiveDashboard() {
   const [meta, setMeta] = useState(null);
   const [prevMeta, setPrevMeta] = useState(null);
   const [vendors, setVendors] = useState([]);
-  const [cashFlow, setCashFlow] = useState([]);
   const [logs, setLogs] = useState([]);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState([]);
   const [suggestion, setSuggestion] = useState('');
   const [recs, setRecs] = useState(null);
-  const [forecast, setForecast] = useState(null);
   const [view, setView] = useState('suggestions');
   const [cardOrder, setCardOrder] = useState(() => {
     const saved = localStorage.getItem('adaptiveCardOrder');
@@ -64,52 +62,23 @@ export default function AdaptiveDashboard() {
       fetch(`${API_BASE}/api/analytics/metadata?startDate=${curStart}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/metadata?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/invoices/top-vendors`, { headers }).then(r => r.json()),
-      fetch(`${API_BASE}/api/invoices/cash-flow?interval=monthly`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/logs?limit=20`, { headers }).then(r => r.json()),
-      fetch(`${API_BASE}/api/invoices/fraud/flagged`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/vendors`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${curStart}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/dashboard/recommendations`, { headers }).then(r => r.json()),
-      fetch(`${API_BASE}/api/analytics/dashboard/cross-alerts`, { headers }).then(r => r.json()),
-      fetch(`${API_BASE}/api/analytics/cash-flow/forecast`, { headers }).then(r => r.json()),
     ])
-      .then(([m, pm, v, c, l, flagged, vendorList, prevTimes, curTimes, rec, cross, fc]) => {
+      .then(([m, pm, v, l, vendorList, prevTimes, curTimes, rec]) => {
         setMeta(m);
         setPrevMeta(pm);
         setVendors(v.topVendors || []);
-        setCashFlow(c.data || []);
         setLogs(Array.isArray(l) ? l : []);
-        setForecast(fc || null);
 
         const newAlerts = [];
-        if (Array.isArray(flagged.invoices)) {
-          const counts = {};
-          flagged.invoices.forEach(inv => {
-            const month = inv.date?.slice(0,7);
-            if (month) counts[month] = (counts[month] || 0) + 1;
-          });
-          const months = Object.keys(counts).sort();
-          const len = months.length;
-          if (len >= 2) {
-            const last = counts[months[len-1]];
-            const prev = counts[months[len-2]] || 0;
-            if (prev && last > prev * 1.5) {
-              newAlerts.push('Spike alert: flagged invoices up sharply');
-            }
-          }
-        }
         if (vendorList?.vendors) {
           const inactive = vendorList.vendors.find(v => v.last_invoice && (Date.now() - new Date(v.last_invoice)) / 86400000 > 30);
           if (inactive) newAlerts.push(`Check in with vendor ${inactive.vendor}?`);
         }
-
-        if (Array.isArray(cross.alerts)) {
-          cross.alerts.forEach(a => {
-            newAlerts.push(`Fraud flag: #${a.invoice_number} by ${a.vendor} (flagged by ${a.username})`);
-          });
-        }
-
         if (Array.isArray(prevTimes.approvals) && Array.isArray(curTimes.approvals)) {
           const avg = arr => arr.reduce((s,a)=>s+a.hours,0)/(arr.length||1);
           const prevAvg = avg(prevTimes.approvals);
@@ -272,7 +241,6 @@ export default function AdaptiveDashboard() {
         ))}
         <div className="flex gap-2">
           <button onClick={() => setView('suggestions')} className={`btn px-2 py-1 ${view==='suggestions' ? 'btn-primary' : 'btn-secondary'}`}>AI Suggestions</button>
-          <button onClick={() => setView('forecast')} className={`btn px-2 py-1 ${view==='forecast' ? 'btn-primary' : 'btn-secondary'}`}>Forecast View</button>
         </div>
         <div className="p-4 bg-white dark:bg-gray-800 rounded shadow flex flex-wrap gap-2">
           <button onClick={openNewRule} className="btn btn-primary">Set New Auto-Flag Rule</button>
@@ -352,34 +320,6 @@ export default function AdaptiveDashboard() {
             </ResponsiveContainer>
           )}
         </div>
-        <div className="h-64">
-          {loading ? (
-            <Skeleton rows={1} className="h-full" />
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={cashFlow}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" tickFormatter={(v) => new Date(v).toLocaleDateString()} />
-                <YAxis />
-                <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
-                <Bar dataKey="total" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-        {view === 'forecast' && forecast && (
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={[...forecast.history, { month: 'Next', total: forecast.forecastNextMonth }]}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" tickFormatter={(v) => (v === 'Next' ? v : new Date(v).toLocaleDateString())} />
-                <YAxis />
-                <Tooltip labelFormatter={(v) => (v === 'Next' ? v : new Date(v).toLocaleDateString())} />
-                <Line type="monotone" dataKey="total" stroke="#10b981" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
         <div>
           <h2 className="font-semibold mb-2">Recent Activity</h2>
           <ul className="space-y-1 text-sm">

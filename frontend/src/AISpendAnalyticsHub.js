@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
-import CashflowSimulation from './components/CashflowSimulation';
 import StatCard from './components/StatCard.jsx';
 import RuleModal from './components/RuleModal';
 import InvoiceDetailModal from './components/InvoiceDetailModal';
@@ -386,8 +385,6 @@ function AISpendAnalyticsHub() {
                 <th className="px-2 py-1">Vendor</th>
                 <th className="px-2 py-1">Amount</th>
                 <th className="px-2 py-1">Status</th>
-                <th className="px-2 py-1">AI Flag</th>
-                <th className="px-2 py-1">Reason</th>
               </tr>
             </thead>
             <tbody>
@@ -406,8 +403,6 @@ function AISpendAnalyticsHub() {
                     <td className="px-2 py-1">{inv.vendor}</td>
                     <td className="px-2 py-1">${inv.amount}</td>
                     <td className="px-2 py-1">{inv.approval_status || 'Pending'}</td>
-                    <td className="px-2 py-1">{inv.flagged ? 'Yes' : 'No'}</td>
-                    <td className="px-2 py-1">{inv.flag_reason || '-'}</td>
                   </tr>
                 ))
               )}
@@ -477,11 +472,6 @@ function AISpendAnalyticsHub() {
             </table>
           </div>
           {loadingHeatmap && <p className="text-sm">Loading heatmap...</p>}
-        </div>
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Cash Flow Stress Test</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Use slider to project how delays impact available cash.</p>
-          <CashflowSimulation token={token} />
         </div>
       </div>
       <RuleModal

@@ -34,7 +34,7 @@ beforeEach(() => {
 describe('/api/ai/categorize', () => {
   test('uses claim_type hint and returns it in categories', async () => {
     axios.post.mockResolvedValue({
-      data: { choices: [{ message: { content: 'HR, Legal' } }] }
+      data: { choices: [{ message: { content: 'HR, Expense' } }] }
     });
     db.query.mockResolvedValue({ rows: [{ id: 1 }] });
 
@@ -54,7 +54,7 @@ describe('/api/ai/categorize', () => {
 
   test('omits claim_type when not provided', async () => {
     axios.post.mockResolvedValue({
-      data: { choices: [{ message: { content: 'HR, Legal' } }] }
+      data: { choices: [{ message: { content: 'HR, Expense' } }] }
     });
     db.query.mockResolvedValue({ rows: [{ id: 1 }] });
 

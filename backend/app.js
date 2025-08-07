@@ -20,14 +20,10 @@ const userRoutes = require('./routes/userRoutes');
 const apiKeyRoutes = require('./routes/apiKeyRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
 const vendorPortalRoutes = require('./routes/vendorPortalRoutes');
-const billingRoutes = require('./routes/billingRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
 const workflowRoutes = require('./routes/documentWorkflowRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const workflowRuleRoutes = require('./routes/workflowRuleRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
-const recurringRoutes = require('./routes/recurringRoutes');
-const poRoutes = require('./routes/poRoutes');
 const integrationRoutes = require('./routes/integrationRoutes');
 const featureRoutes = require('./routes/featureRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
@@ -44,7 +40,6 @@ const workspaceRoutes = require('./routes/workspaceRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
 const validationRoutes = require('./routes/validationRoutes');
 const metricsRoutes = require('./routes/metricsRoutes');
-const scenarioRoutes = require('./routes/scenarioRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const logRoutes = require('./routes/logRoutes');
@@ -56,8 +51,6 @@ const piiMask = require('./middleware/piiMask');
 const tenantContext = require('./middleware/tenantMiddleware');
 
 // Service imports
-const { runRecurringInvoices } = require('./controllers/recurringController');
-const { processFailedPayments, sendPaymentReminders } = require('./controllers/paymentController');
 const { sendApprovalReminders } = require('./controllers/reminderController');
 const { autoDeleteExpiredDocuments } = require('./controllers/claimController');
 const { initDb } = require('./utils/dbInit');
@@ -142,17 +135,12 @@ app.use('/api/users', userRoutes);
 app.use('/api/api-keys', apiKeyRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/vendor-portal', vendorPortalRoutes);
-app.use('/api/billing', billingRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/pos', poRoutes);
 app.use('/api/document-workflows', workflowRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/workflow-rules', workflowRuleRoutes);
 app.use('/api/settings', settingsRoutes);
-app.use('/api/recurring', recurringRoutes);
 app.use('/api/integrations', integrationRoutes);
 app.use('/api/features', featureRoutes);
-app.use('/api/scenarios', scenarioRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/labs/automations', automationRoutes);
@@ -207,14 +195,6 @@ app.use('*', (req, res) => {
     autoDeleteExpiredDocuments();
     setInterval(autoDeleteExpiredDocuments, 24 * 60 * 60 * 1000);
     
-    runRecurringInvoices();
-    setInterval(runRecurringInvoices, 24 * 60 * 60 * 1000);
-    
-    processFailedPayments();
-    setInterval(processFailedPayments, 60 * 60 * 1000);
-    
-    sendPaymentReminders();
-    setInterval(sendPaymentReminders, 24 * 60 * 60 * 1000);
 
     logger.info('🟢 Application initialized successfully');
 

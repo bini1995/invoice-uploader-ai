@@ -947,7 +947,7 @@ exports.categorizeDocument = async (req, res) => {
     }
     const typeHint = claim_type ? `Claim type: ${claim_type}. ` : '';
     const prompt =
-      `${typeHint}Suggest up to 3 broad business categories like HR, Legal or Expense for this document:\n\n${content.slice(0, 2000)}`;
+      `${typeHint}Suggest up to 3 broad business categories like HR or Expense for this document:\n\n${content.slice(0, 2000)}`;
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {

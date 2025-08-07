@@ -3,8 +3,6 @@ const pool = require('../config/db');
 let rules = [
   { vendor: 'X', amountGreaterThan: 500, flagReason: 'Vendor X amount > $500' },
   { amountGreaterThan: 5000, flagReason: 'Amount exceeds $5000' },
-  // Example categorization rule
-  { vendor: 'Google', category: 'Marketing' },
   // Claim-specific examples
   { deductibleGreaterThan: 1000, flagReason: 'Deductible over $1000' },
   { benefitMax: 10000, flagReason: 'Benefit exceeds $10000' },
