@@ -16,7 +16,8 @@ jest.mock('../controllers/userController', () => ({
   authMiddleware: (req, res, next) => {
     req.user = { userId: 1 };
     next();
-  }
+  },
+  authorizeRoles: () => (req, res, next) => next()
 }));
 
 jest.mock('../metrics', () => ({

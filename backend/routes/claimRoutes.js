@@ -25,7 +25,7 @@ const {
   updateStatus,
   exportClaims,
 } = require('../controllers/claimController');
-const { authMiddleware } = require('../controllers/userController');
+const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 const router = express.Router();
 const allowed = ['.pdf', '.docx', '.png', '.jpg', '.jpeg', '.txt', '.eml', '.csv'];
@@ -59,11 +59,11 @@ router.get('/search', authMiddleware, searchDocuments);
 router.get('/review-queue', authMiddleware, getReviewQueue);
 router.get('/report/pdf', authMiddleware, exportSummaryPDF);
 router.post('/export', authMiddleware, exportClaims);
-router.patch('/:id/status', authMiddleware, updateStatus);
+router.patch('/:id/status', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), updateStatus);
 router.get('/:id', authMiddleware, getDocument);
 router.get('/:id/feedback', authMiddleware, getExtractionFeedback);
 router.post('/:id/feedback', authMiddleware, submitExtractionFeedback);
 router.get('/:id/review-notes', authMiddleware, getReviewNotes);
-router.post('/:id/review-notes', authMiddleware, addReviewNote);
+router.post('/:id/review-notes', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), addReviewNote);
 
 module.exports = router;

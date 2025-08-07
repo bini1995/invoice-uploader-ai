@@ -126,9 +126,14 @@ app.use(auditLog);
 app.use(piiMask);
 
 // API Routes
+function logDeprecatedInvoices(req, res, next) {
+  logger.warn(`Deprecated invoices API route used: ${req.originalUrl}`);
+  next();
+}
+
 app.use('/api/claims', authRoutes);
-app.use('/api/invoices', authRoutes); // backwards compat
-app.use('/api/:tenantId/invoices', authRoutes);
+app.use('/api/invoices', logDeprecatedInvoices, authRoutes); // backwards compat
+app.use('/api/:tenantId/invoices', logDeprecatedInvoices, authRoutes);
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
 app.use('/api/labs/feedback', feedbackRoutes);
@@ -152,8 +157,8 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/claims', claimRoutes);
-app.use('/api/invoices', claimRoutes); // backwards compat
-app.use('/api/:tenantId/invoices', claimRoutes);
+app.use('/api/invoices', logDeprecatedInvoices, claimRoutes); // backwards compat
+app.use('/api/:tenantId/invoices', logDeprecatedInvoices, claimRoutes);
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);
 app.use('/api/compliance', complianceRoutes);

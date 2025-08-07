@@ -12,6 +12,8 @@ const PDFDocument = require('pdfkit');
 const fileToText = require('../utils/fileToText');
 const { triggerClaimWebhook } = require('../utils/claimWebhook');
 const logger = require('../utils/logger');
+const { logActivity } = require('../utils/activityLogger');
+const sanitizeHtml = require('sanitize-html');
 const {
   claimUploadCounter,
   fieldExtractCounter,
@@ -574,13 +576,20 @@ exports.getExtractionFeedback = async (req, res) => {
 exports.addReviewNote = async (req, res) => {
   const { id } = req.params;
   const { note } = req.body || {};
-  if (!note) return res.status(400).json({ message: 'Note required' });
+  if (typeof note !== 'string') return res.status(400).json({ message: 'Note required' });
+  const trimmed = note.trim();
+  const sanitized = sanitizeHtml(trimmed, { allowedTags: [], allowedAttributes: {} });
+  if (sanitized !== trimmed)
+    return res.status(400).json({ message: 'Unsafe HTML detected' });
+  if (sanitized.length < 1 || sanitized.length > 1000)
+    return res.status(400).json({ message: 'Note must be 1-1000 characters' });
   try {
-    const userId = req.user?.id || null;
+    const userId = req.user?.userId || null;
     await pool.query(
       'INSERT INTO review_notes (document_id, user_id, note) VALUES ($1,$2,$3)',
-      [id, userId, note]
+      [id, userId, sanitized]
     );
+    await logActivity(req.user?.userId, 'add_review_note', id, req.user?.username);
     res.json({ message: 'Note saved' });
   } catch (err) {
     console.error('Add note error:', err);
@@ -627,18 +636,34 @@ exports.updateStatus = async (req, res) => {
   const { status } = req.body || {};
   if (!status) return res.status(400).json({ message: 'Status required' });
   try {
+    const allowedTransitions = {
+      extracted: ['needs_review'],
+      needs_review: ['approved', 'escalated', 'needs_info'],
+      needs_info: ['needs_review'],
+      approved: [],
+      escalated: []
+    };
     const before = await pool.query('SELECT status FROM documents WHERE id = $1', [id]);
+    const current = before.rows[0]?.status;
+    if (!current) return res.status(404).json({ message: 'Document not found' });
+    if (!(allowedTransitions[current] || []).includes(status)) {
+      return res.status(400).json({ message: 'Invalid status transition' });
+    }
     const { rows } = await pool.query(
       'UPDATE documents SET status = $1 WHERE id = $2 RETURNING id, status',
       [status, id]
     );
-    if (!rows.length) return res.status(404).json({ message: 'Document not found' });
-    const previous = before.rows[0]?.status || null;
+    const previous = current;
     triggerClaimWebhook('status_changed', {
       claim_id: id,
       previous_status: previous,
       new_status: status
     });
+    let action = 'update_claim_status';
+    if (status === 'approved') action = 'approve_claim';
+    else if (status === 'needs_info') action = 'request_info_claim';
+    else if (status === 'escalated') action = 'escalate_claim';
+    await logActivity(req.user?.userId, action, id, req.user?.username);
     res.json({ message: 'Status updated', document: rows[0] });
   } catch (err) {
     console.error('Status update error:', err);
