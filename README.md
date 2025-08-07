@@ -93,17 +93,18 @@ ClarifyOps is a modular AI-powered claims platform focused on extraction, valida
 - Automation builder and integrations for ERPs, Slack, Google Sheets and more.
 - **Enterprise Add-On**: secure DocuSign signing with optional blockchain hash and org-wide settings.
 
-### Recent Backend Updates
-- Unified `documents` table with flexible JSON fields (`party_name` and `fields`).
-- `/api/claims/:id/extract` for AI entity extraction.
-- `/api/claims/:id/versions` and `/api/claims/:id/versions/:versionId/restore` for document comparison.
-- `/api/claims/:id/summary` for AI summarization.
-- `/api/document-workflows` for doc-type specific workflows.
-- `/api/ai/categorize` suggests document categories.
-- `/api/claims/:id/compliance` checks contracts for missing clauses.
-- Lifecycle rules support `retention_policy`, `expires_at` and `archived`.
-- **Enterprise Add-On**: `/api/signing/:id/start` returns a placeholder link for e-signing.
-- Enterprise features include org-wide settings, SOC2 audit logs, usage analytics and role delegation.
+### Claims API
+- `POST /api/claims` – upload and start processing a claim.
+- `POST /api/claims/:id/extract` – AI entity extraction.
+- `POST /api/claims/:id/validate` – CPT code validator.
+- `POST /api/claims/:id/analyze` – anomaly classifier.
+- `GET /api/claims/:id/summary` – AI summarization.
+- `GET /api/claims/:id/versions` and `.../restore` – document comparison.
+- `GET /api/claims/anomalies` – detect unusual spending.
+- `GET /api/analytics/dashboard/realtime` – AuditFlow dashboard metrics.
+- `POST /api/claims/seed-dummy` – seed demo claims for charts.
+
+(Recently added: CPT validator endpoint, anomaly classifier, AuditFlow dashboard support)
 
 ### API Docs & Health
 
@@ -267,22 +268,24 @@ apply custom approval rules:
  - **Finance** – requires two separate approvals.
  - **Ops** – documents under $100 auto-approve, others need one manager step.
 
-### Categorization Rules
+### Categorization Logic
 
-Define your own invoice categorization logic. Add rules via `POST /api/analytics/rules` with fields like `vendor`, `descriptionContains`, `amountGreaterThan`, and a resulting `category` or `flagReason`. All rules are returned from `GET /api/analytics/rules`.
+AI uses claim metadata and context to classify each case:
 
-Once rules are created you can automatically tag an invoice with
-`POST /api/claims/:id/auto-categorize`. The AI model suggests categories when no rule matches.
+- **CPT Code Clustering**: Similar procedures grouped for risk analysis
+- **ICD/Diagnosis Mapping**: Flags uncommon code combinations
+- **Overbilling Detection**: Flags services with low justification confidence
+- **Missing Information Detection**: Patient ID, provider NPI, or prior auth
+- **Anomaly Classification**: Duplicate claims, policy mismatch, upcoding
 
-### New Endpoints
+See [`backend/utils/rulesEngine.js`](backend/utils/rulesEngine.js) for implementation details. Example rule in YAML:
 
-- `GET /api/claims/anomalies` – list vendors with unusual spending spikes
-- `GET /api/workflows` – list saved workflows
-- `POST /api/workflows` – create or update a workflow
-- `POST /api/workflows/evaluate` – test workflow rules against a payload
-- `GET /api/analytics/report/excel` – download invoice reports in Excel format
-- `GET /api/analytics/outliers` – list documents with unusual amounts
-- `GET /api/analytics/dashboard/realtime` – real-time processing metrics
+```yaml
+rules:
+  - if: cpt_code == "99215" and avg_duration < 10min
+    then:
+      flag: "overbilling"
+```
 
 ### Workflow Builder
 
