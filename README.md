@@ -13,6 +13,24 @@ The API has been consolidated to a single `/api/claims` namespace (with `/api/in
 
 Originally this project focused solely on invoice processing. It is now evolving into a general **Document AI Platform** that handles invoices, contracts and more. See [docs/TRANSFORMATION_PLAN.md](docs/TRANSFORMATION_PLAN.md) for the roadmap. A quick feature comparison against other tools is available in [docs/MARKET_POSITIONING.md](docs/MARKET_POSITIONING.md).
 
+Looking for past invoice features? See [legacy_invoice_features.md](docs/legacy_invoice_features.md).
+
+## Current Scope
+ClarifyOps now exclusively supports medical and insurance claim workflows:
+- AI-powered claim intake and summarization
+- CPT/ICD code validation
+- Workflow triage (OpsClaim)
+- Auditing & fraud detection (AuditFlow)
+
+## Architecture
+The stack focuses on claim processing and routing:
+- React + Tailwind CSS frontend
+- Express + PostgreSQL backend
+- Claims ingestion APIs under `/api/claims`
+- AI validation and summarization via OpenRouter
+- Workflow routing through OpsClaim queues
+- Fraud and audit detection powered by AuditFlow
+
 ## Claims Sub-Brand Structure
 
 - ClarifyClaims: Main claims experience (upload, validate, summarize)
@@ -79,17 +97,13 @@ npm install --legacy-peer-deps
 - Document version history with one-click restore
 - Auto-routing documents by vendor or tag
 - Smart auto-assignment routes documents to the usual owner using vendor history
-- Budget threshold warnings
-- Budget guardrails with live upload warnings and budget forecasts
 - Anomaly detection dashboard
 - Automatic anomaly alerts with severity tiers
 - Fraud pattern detection for suspicious vendor activity
 - Anomaly scoring currently returns a fixed risk value (Isolation Forest disabled)
 - Timeline view of document changes
-- Recurring document detection with notifications
 - Document duplication prevention using content hashes
 - Document similarity detection to flag lookalike documents
-- Recurring billing templates with automated sending and payment retries
 - Linked document relationship graph to spot duplicates and vendor patterns
 - Smart auto-fill suggestions for vendor tags and payment terms
 - AI-powered autocomplete and cleanup for vendor and total fields
@@ -97,9 +111,8 @@ npm install --legacy-peer-deps
 - Trend reports for monthly spend and aging documents
 - Customizable dashboards with date filters and export options
 - Adaptive dashboard with context-aware alerts, AI suggestions and draggable KPI cards
-- Custom KPI dashboards per department or vendor with charts like approval time by vendor, late payments trend and documents over budget
+  - Custom KPI dashboards per department or vendor with charts like approval time by vendor and late payments trend
 - Public shareable dashboards accessible via secure link
-- ML predictions highlight cash-flow problem areas
 - Private notes on documents
 - Shared comment threads for team discussion
 - Approver reminders with escalation
@@ -262,18 +275,6 @@ CREATE TABLE activity_logs (
 );
 ```
 
-Create a `budgets` table for spending limits:
-
-```sql
-CREATE TABLE budgets (
-  id SERIAL PRIMARY KEY,
-  vendor TEXT,
-  tag TEXT,
-  period TEXT NOT NULL, -- 'monthly' or 'quarterly'
-  amount NUMERIC NOT NULL,
-  UNIQUE(vendor, tag, period)
-);
-```
 
 Create a `vendor_notes` table to store notes about each vendor:
 
@@ -345,30 +346,18 @@ deadline is automatically marked `expired` and flagged for admin review.
 Specify a `department` when uploading documents and the backend will
 apply custom approval rules:
 
-- **Finance** – requires two separate approvals.
-- **Legal** – auto-approves and is meant for comments only.
-- **Ops** – documents under $100 auto-approve, others need one manager step.
-
-### Purchase Order Matching
-
-Upload purchase orders separately and the backend will automatically match new documents
-by vendor and amount. Invoices without a matching PO are flagged for manual review
-and trigger Slack/Teams alerts. Approved documents must follow the defined multi-level
-workflow based on the `approval_chain`.
+ - **Finance** – requires two separate approvals.
+ - **Ops** – documents under $100 auto-approve, others need one manager step.
 
 ### Categorization Rules
 
 Define your own invoice categorization logic. Add rules via `POST /api/analytics/rules` with fields like `vendor`, `descriptionContains`, `amountGreaterThan`, and a resulting `category` or `flagReason`. All rules are returned from `GET /api/analytics/rules`.
 
 Once rules are created you can automatically tag an invoice with
-`POST /api/claims/:id/auto-categorize`. The AI model suggests categories such
-as "Marketing", "Legal", or "Recurring" when no rule matches.
+`POST /api/claims/:id/auto-categorize`. The AI model suggests categories when no rule matches.
 
 ### New Endpoints
 
-- `POST /api/claims/budgets` – create/update a monthly or quarterly budget by vendor or tag
-- `GET /api/claims/budgets/warnings` – check if spending has exceeded 90% of a budget
-- `GET /api/claims/budgets/forecast` – predict next month's spend by department
 - `GET /api/claims/anomalies` – list vendors with unusual spending spikes
 - `GET /api/workflows` – list saved workflows
 - `POST /api/workflows` – create or update a workflow
@@ -383,24 +372,12 @@ The `/workflow-builder` page lets admins design approval chains and rules with a
 interactive expression builder. Test expressions are sent to `POST /api/workflows/evaluate`
 to see how rules would route a sample invoice.
 The `/inbox` page shows newly uploaded documents waiting for approval.
-- `GET /api/claims/fraud/flagged` – list flagged documents with reasons
-- `GET /api/claims/fraud/ml-detect` – list documents with high anomaly scores
-- `POST /api/claims/fraud/:id/label` – mark invoice as confirmed fraud or not
 - `GET /api/claims/:id/timeline` – view a timeline of state changes for an invoice
 - `GET /api/:tenantId/export-templates` – list saved CSV templates
 - `POST /api/:tenantId/export-templates` – create a new export template
 - `GET /api/:tenantId/export-templates/:id/export` – export documents using a template
 - `PATCH /api/claims/:id/retention` – update an invoice retention policy (6m, 2y, forever)
-- `POST /api/claims/payment-risk` – predict payment delay risk for a vendor
-- `POST /api/claims/payment-behavior` – predict expected payment date and confidence
 - `POST /api/claims/nl-chart` – run a natural language query and return data for charts
-- `POST /api/claims/cash-flow/scenario` – recalculate cash flow under payment delay scenarios
-- `GET /api/scenarios` – list saved cash flow scenarios
-- `POST /api/scenarios` – save a cash flow scenario
-- `GET /api/scenarios/:id` – run a saved scenario
-- `POST /api/claims/:id/vendor-reply` – generate or send a polite vendor email when an invoice is flagged or rejected
-- `GET /api/claims/:id/payment-request` – download a JSON payload for a payment request form
-- `GET /api/claims/:id/payment-request/pdf` – download a PDF payment request
 - `GET /api/claims/:id/explain` – AI summary of an invoice with anomaly score
 - `POST /api/feedback` – submit a rating for an AI-generated result
 - `GET /api/feedback` – view average ratings by endpoint
@@ -413,7 +390,6 @@ The `/inbox` page shows newly uploaded documents waiting for approval.
 - `POST /api/claims/:id/copilot` – context-aware chat about an invoice
 - `GET /api/vendors/export` – download vendors as CSV
 - `POST /api/vendors/import` – import vendors from CSV
-- `PATCH /api/claims/:id/payment-status` – update payment status
 - `POST /api/claims/import-csv` – upload a CSV of documents
 - Header names are case and space insensitive (e.g. "Invoice Number" works).
 - `DELETE /api/claims/bulk/delete` – delete multiple documents
@@ -429,57 +405,12 @@ The `/inbox` page shows newly uploaded documents waiting for approval.
 - `GET /api/claims/:id/versions` – list prior versions of an invoice
 - `POST /api/claims/:id/versions/:versionId/restore` – restore a previous version
 - `GET /api/claims/:id/summary` – AI generated summary of any document
-- `POST /api/payments/:id/link` – generate a payment link for an invoice
-- `POST /api/payments/stripe/webhook` – Stripe webhook endpoint for status updates
-- `POST /api/pos/upload` – upload a CSV of purchase orders
-- `GET /api/pos` – list all purchase orders
 - `GET /api/automations` – list automation rules
 - `POST /api/automations` – create an automation
 - `PUT /api/automations/:id` – update an automation
 - `DELETE /api/automations/:id` – delete an automation
 - `POST /api/agents/suggest` – return smart suggestions for an invoice
 - `POST /api/agents/retrain` – trigger OCR retraining from corrections
-
-### Vendor Reply Drafts
-
-Request a draft:
-
-```bash
-POST /api/claims/42/vendor-reply
-{
-  "status": "flagged",
-  "reason": "Incorrect PO number"
-}
-```
-
-Optional fields:
-
-```json
-{ "tone": "formal" } // or "casual" for a more relaxed style
-```
-
-Example response:
-
-```json
-{ "draft": "Dear Vendor, ..." }
-```
-
-Send after manual edits:
-
-```bash
-POST /api/claims/42/vendor-reply
-{
-  "status": "flagged",
-  "manualEdit": "Hi team, please resend with the right PO",
-  "email": "billing@acme.com"
-}
-```
-
-Response:
-
-```json
-{ "message": "Email sent successfully." }
-```
 
 ### AI Error Summary
 
@@ -516,24 +447,6 @@ Example response:
 ```json
 { "suggestion_id": 1, "vendor": "Acme Corporation", "confidence": 0.92 }
 ```
-
-### Payment Request Form
-
-Request payment data:
-
-```bash
-GET /api/claims/42/payment-request
-```
-
-Example response:
-
-```json
-{ "vendor": "Acme", "amount": 199.99, "due_date": "2025-06-01" }
-```
-
-### Recurring & Automated Billing
-
-Create recurring templates that automatically generate new documents on a schedule. Failed payments are retried up to three times and a 2% late fee is applied after the final attempt. The AI layer predicts payment likelihood and sends Slack/Teams alerts for invoices with a low chance of payment.
 
 ### Feedback Loop
 

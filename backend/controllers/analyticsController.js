@@ -193,41 +193,6 @@ exports.getAgingReport = async (_req, res) => {
   }
 };
 
-// Predict cash-flow risk using a simple trend model
-exports.predictCashFlowRisk = async (_req, res) => {
-  try {
-    const { rows } = await pool.query(
-      `SELECT DATE_TRUNC('month', COALESCE(due_date, date)) AS m, SUM(amount) AS total
-       FROM invoices
-       GROUP BY m
-       ORDER BY m`
-    );
-    const totals = rows.map(r => parseFloat(r.total));
-    if (totals.length < 2) {
-      return res.json({ months: [], predictedNextMonth: 0, trend: 'insufficient data' });
-    }
-    const n = totals.length;
-    const xMean = (n - 1) / 2;
-    const yMean = totals.reduce((a, b) => a + b, 0) / n;
-    let num = 0;
-    let den = 0;
-    for (let i = 0; i < n; i++) {
-      num += (i - xMean) * (totals[i] - yMean);
-      den += (i - xMean) * (i - xMean);
-    }
-    const slope = den ? num / den : 0;
-    const predicted = yMean + slope * (n - xMean);
-    const trend = predicted < 0 ? 'negative' : slope < 0 ? 'decreasing' : 'increasing';
-    res.json({
-      months: rows.map(r => ({ month: r.m, total: parseFloat(r.total) })),
-      predictedNextMonth: predicted,
-      trend
-    });
-  } catch (err) {
-    console.error('Cash flow ML error:', err);
-    res.status(500).json({ message: 'Failed to predict cash flow' });
-  }
-};
 
 exports.getApprovalStats = async (req, res) => {
   const userId = req.user?.userId;
@@ -444,24 +409,6 @@ exports.detectDuplicateInvoices = async (_req, res) => {
   }
 };
 
-// Simple cash flow forecast using moving average
-exports.forecastCashFlow = async (_req, res) => {
-  try {
-    const { rows } = await pool.query(
-      `SELECT DATE_TRUNC('month', COALESCE(due_date, date)) AS m, SUM(amount) AS total
-       FROM invoices
-       GROUP BY m
-       ORDER BY m DESC
-       LIMIT 6`
-    );
-    const history = rows.map(r => ({ month: r.m, total: parseFloat(r.total) })).reverse();
-    const avg = history.reduce((a,b) => a + b.total, 0) / (history.length || 1);
-    res.json({ history, forecastNextMonth: avg });
-  } catch (err) {
-    console.error('Cash flow forecast error:', err);
-    res.status(500).json({ message: 'Failed to forecast cash flow' });
-  }
-};
 
 // Average approval time grouped by vendor
 exports.getApprovalTimeByVendor = async (_req, res) => {
@@ -508,47 +455,6 @@ exports.getLatePaymentTrend = async (_req, res) => {
 };
 
 // Departments or vendors that exceeded their budgets
-exports.getInvoicesOverBudget = async (_req, res) => {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  try {
-    const budgetRes = await pool.query(
-      `SELECT vendor, tag AS department, amount
-         FROM budgets
-        WHERE period='monthly'`
-    );
-    const over = [];
-    for (const b of budgetRes.rows) {
-      let spent = 0;
-      if (b.vendor) {
-        const r = await pool.query(
-          'SELECT SUM(amount) AS s FROM invoices WHERE vendor=$1 AND date >= $2 AND date < $3',
-          [b.vendor, start, end]
-        );
-        spent = parseFloat(r.rows[0].s) || 0;
-      } else if (b.department) {
-        const r = await pool.query(
-          'SELECT SUM(amount) AS s FROM invoices WHERE department=$1 AND date >= $2 AND date < $3',
-          [b.department, start, end]
-        );
-        spent = parseFloat(r.rows[0].s) || 0;
-      }
-      if (spent > parseFloat(b.amount)) {
-        over.push({
-          vendor: b.vendor,
-          department: b.department,
-          budget: parseFloat(b.amount),
-          spent
-        });
-      }
-    }
-    res.json({ overBudget: over });
-  } catch (err) {
-    console.error('Over budget error:', err);
-    res.status(500).json({ message: 'Failed to check budgets' });
-  }
-};
 
 // Risk heatmap showing vendors with many flagged or overdue invoices
 exports.getRiskHeatmap = async (_req, res) => {

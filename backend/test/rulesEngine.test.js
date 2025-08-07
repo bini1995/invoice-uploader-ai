@@ -7,7 +7,6 @@ describe('applyRules claim field handling', () => {
     setRules([
       { deductibleGreaterThan: 1000, flagReason: 'Deductible over $1000' },
       { benefitMax: 10000, flagReason: 'Benefit exceeds $10000' },
-      { vendor: 'Google', category: 'Marketing' },
     ]);
   });
 
@@ -22,7 +21,6 @@ describe('applyRules claim field handling', () => {
     const result = await applyRules(invoice);
     expect(result.flagged).toBe(true);
     expect(result.flag_reason).toBe('Deductible over $1000');
-    expect(result.tags).toContain('Marketing');
   });
 
   test('uses claim-level deductible/benefit fields', async () => {
@@ -38,7 +36,6 @@ describe('applyRules claim field handling', () => {
     const result = await applyRules(invoice);
     expect(result.flagged).toBe(true);
     expect(result.flag_reason).toBe('Benefit exceeds $10000');
-    expect(result.tags).toContain('Marketing');
   });
 
   test('invoice-level values take precedence over claim-level', async () => {
@@ -56,7 +53,6 @@ describe('applyRules claim field handling', () => {
     const result = await applyRules(invoice);
     expect(result.flagged).toBe(false);
     expect(result.flag_reason).toBeNull();
-    expect(result.tags).toContain('Marketing');
   });
 
   test('defaults to zero when deductible and benefit missing in both invoice and claim', async () => {
@@ -69,7 +65,6 @@ describe('applyRules claim field handling', () => {
     const result = await applyRules(invoice);
     expect(result.flagged).toBe(false);
     expect(result.flag_reason).toBeNull();
-    expect(result.tags).toContain('Marketing');
   });
 
   test('no deductible or benefit fields present', async () => {
@@ -81,7 +76,6 @@ describe('applyRules claim field handling', () => {
     const result = await applyRules(invoice);
     expect(result.flagged).toBe(false);
     expect(result.flag_reason).toBeNull();
-    expect(result.tags).toContain('Marketing');
   });
 });
 

@@ -7,7 +7,7 @@ This project aims to exceed competing document automation tools by providing all
 | Upload All Doc Types | ✅ | 🚫 Invoices only | ✅ | ✅ |
 | Real-Time Ops Timeline | ✅ Live feed | 🚫 | ✅ (some) | 🚫 |
 | Conversational AI Agent | ✅ Copilot + Chat | ✅ but limited | 🚫 | 🚫 |
-| AI Explainers & Flag Reasons | ✅ "Why was this flagged" | 🚫 | 🚫 | 🚫 |
+| AI Explainability | ✅ "Why this?" | 🚫 | 🚫 | 🚫 |
 | Anomaly + Fraud Detection | ✅ Heatmap + Alerts | ✅ | ✅ | 🚫 |
 | Natural Language Dashboards | ✅ NL → Charts | 🚫 | 🚫 | 🚫 |
 | Vendor Profiles + Scores | ✅ + Smart Matching | 🚫 | 🚫 | 🚫 |

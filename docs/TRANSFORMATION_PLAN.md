@@ -41,7 +41,7 @@ This document outlines a high level path to evolve ClarifyOps into an **AI Docum
 
 ## 5. Roadmap to Full AI Ops Platform
 
-- **Auto-categorization** – `/api/ai/categorize` suggests top categories like HR, Legal or Expense for uploaded text.
+- **Auto-categorization** – `/api/ai/categorize` suggests top categories like HR or Expense for uploaded text.
 - **Document Workflows** – `/api/document-workflows` replaces the old workflows route and stores `doc_type` and optional `conditions` for each department.
 - **Versioned Uploads** – `POST /api/claims/:id/version` lets users upload new versions while `/api/claims/:id/versions` provides a timeline of edits.
 
