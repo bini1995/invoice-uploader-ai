@@ -148,10 +148,24 @@ Admin users can aggregate data across all tenants by sending `X-Tenant-Id: all`.
 
 When `REACT_APP_DEMO_MODE=true` is set for the frontend build, a small dropdown allows switching between sample tenants without manually editing headers.
 
-### Future Roadmap
+## Roadmap
 
-- Email-to-upload via Gmail API (requires OAuth and service accounts)
-- SMS alerts powered by Twilio
+🧠 **CPT Explainability**
+- Show patients and reviewers a simple reason why a procedure was coded
+- e.g., "Code 99213: Standard outpatient visit lasting 15–20 mins"
+
+📤 **EDI / HL7 837 Ingestion**
+- Upload and parse industry-standard formats
+- Support for claim submission and remittance files
+
+📊 **Insurer Dashboards**
+- High-level view of claims in review, flagged anomalies, payout timelines
+
+📈 **Anomaly Classifier Fine-Tuning**
+- Integrate real-world feedback to improve fraud predictions
+
+🔄 **Claims Automation**
+- End-to-end claim review and payout readiness with minimal human intervention
 
 ### Database Update
 
@@ -260,13 +274,16 @@ job deletes documents once their `delete_at` date passes.
 Invoices can also include an `expires_at` date. Any invoice past this
 deadline is automatically marked `expired` and flagged for admin review.
 
-### Department Workflows
+### Claim Workflows
 
-Specify a `department` when uploading documents and the backend will
-apply custom approval rules:
+ClarifyOps supports claim handling roles directly:
 
- - **Finance** – requires two separate approvals.
- - **Ops** – documents under $100 auto-approve, others need one manager step.
+| Role | View |
+|------|------|
+| **Adjuster** | See new claim intake, route for review |
+| **Medical Reviewer** | Validate CPT/ICD accuracy and justification |
+| **Audit Officer** | Review fraud flags and perform override or hold |
+| **Finance/Payout** | Confirm approved claims and trigger payment batch |
 
 ### Categorization Logic
 
