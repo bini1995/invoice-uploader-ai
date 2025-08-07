@@ -44,6 +44,7 @@ const eventRoutes = require('./routes/eventRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const logRoutes = require('./routes/logRoutes');
 const usageRoutes = require('./routes/usageRoutes');
+const auditRoutes = require('./routes/auditRoutes');
 
 // Middleware imports
 const { auditLog } = require('./middleware/auditMiddleware');
@@ -127,6 +128,7 @@ app.use(piiMask);
 // API Routes
 app.use('/api/claims', authRoutes);
 app.use('/api/invoices', authRoutes); // backwards compat
+app.use('/api/:tenantId/invoices', authRoutes);
 app.use('/api/:tenantId/export-templates', exportTemplateRoutes);
 app.use('/api/:tenantId/logo', brandingRoutes);
 app.use('/api/labs/feedback', feedbackRoutes);
@@ -145,11 +147,13 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/labs/automations', automationRoutes);
 app.use('/api/logs', logRoutes);
+app.use('/api/audit', auditRoutes);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/claims', claimRoutes);
 app.use('/api/invoices', claimRoutes); // backwards compat
+app.use('/api/:tenantId/invoices', claimRoutes);
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);
 app.use('/api/compliance', complianceRoutes);
