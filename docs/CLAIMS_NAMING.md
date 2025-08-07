@@ -12,3 +12,7 @@ To support the claims-focused vertical, the following sub-brand naming options p
 | ClaimLayer | Your AI layer for faster claims decisions. | Positions as the intelligence layer |
 
 These names can be used for product modules, customer-facing tools, or internal vertical code names.
+
+## API naming
+
+The canonical API namespace for this vertical is `/api/claims`. Legacy `/api/invoices` routes remain as backward-compatible aliases but log a deprecation warning. Migrate clients to `/api/:tenant/claims/:id/review-notes` and related endpoints.
