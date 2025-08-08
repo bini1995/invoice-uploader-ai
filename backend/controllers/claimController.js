@@ -749,6 +749,11 @@ exports.getClaimMetrics = async (req, res) => {
       if (r.count >= 5) status_counts[r.status || 'Unknown'] = r.count;
     });
     res.set('Cache-Control', 'public, max-age=30');
+    const { avg, p50, p90, p99 } = durationRes.rows[0] || {};
+    const toNumber = (val) => {
+      const num = Number(val);
+      return Number.isFinite(num) ? num : 0;
+    };
     res.json({
       window: { from: from || null, to: to || null, timezone: 'UTC' },
       definitions: {
@@ -758,10 +763,10 @@ exports.getClaimMetrics = async (req, res) => {
       },
       total,
       flagged_rate: total ? flagged / total : 0,
-      avg_processing_hours: Number(durationRes.rows[0].avg) || 0,
-      p50_processing_hours: Number(durationRes.rows[0].p50) || 0,
-      p90_processing_hours: Number(durationRes.rows[0].p90) || 0,
-      p99_processing_hours: Number(durationRes.rows[0].p99) || 0,
+      avg_processing_hours: toNumber(avg),
+      p50_processing_hours: toNumber(p50),
+      p90_processing_hours: toNumber(p90),
+      p99_processing_hours: toNumber(p99),
       status_counts,
     });
     endTimer();

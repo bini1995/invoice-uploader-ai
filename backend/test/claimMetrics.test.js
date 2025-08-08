@@ -51,4 +51,29 @@ describe('getClaimMetrics', () => {
     const sql = pool.query.mock.calls[2][0];
     expect(sql).toMatch(/status IN \('Approved','Rejected','Closed'\)/);
   });
+
+  test('returns zero for missing duration values', async () => {
+    pool.query
+      .mockResolvedValueOnce({ rows: [{ total: '1', flagged: '0' }] })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            avg: null,
+            p50: undefined,
+            p90: NaN,
+            p99: 'not-a-number',
+          },
+        ],
+      });
+    await getClaimMetrics({ query: {}, headers: {} }, res);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        avg_processing_hours: 0,
+        p50_processing_hours: 0,
+        p90_processing_hours: 0,
+        p99_processing_hours: 0,
+      })
+    );
+  });
 });
