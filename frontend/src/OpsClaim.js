@@ -12,21 +12,27 @@ import {
   ChatBubbleLeftRightIcon,
   ChevronDownIcon,
   LightBulbIcon,
-  DocumentTextIcon,
+  ClipboardIcon,
   ClockIcon,
   InformationCircleIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { useSearchParams } from 'react-router-dom';
 
 export default function OpsClaim() {
   const token = localStorage.getItem('token') || '';
   const tenant = localStorage.getItem('tenant') || 'default';
-  const [invoices, setInvoices] = useState([]);
+  const [searchParams] = useSearchParams();
+  const initialFlagged = searchParams.get('flagged') === 'true';
+  const initialStatus = searchParams.get('status') || 'Pending';
+  const from = searchParams.get('from');
+  const to = searchParams.get('to');
+  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [copilotOpen, setCopilotOpen] = useState(false);
-  const [activeInvoice, setActiveInvoice] = useState(null);
+  const [activeClaim, setActiveClaim] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [loadingChat, setLoadingChat] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -37,23 +43,27 @@ export default function OpsClaim() {
   const [selectedAssignee, setSelectedAssignee] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
+  const [showFlaggedOnly, setShowFlaggedOnly] = useState(initialFlagged);
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [sortBy, setSortBy] = useState('newest');
   const [showPrioritized, setShowPrioritized] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
-  const [notesInvoice, setNotesInvoice] = useState(null);
+  const [notesClaim, setNotesClaim] = useState(null);
   const [auditLogs, setAuditLogs] = useState({});
 
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
-  const fetchInvoices = useCallback(async () => {
+  const fetchClaims = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/${tenant}/invoices?status=Pending`, { headers });
+      let url = `${API_BASE}/api/${tenant}/claims?status=${encodeURIComponent(statusFilter)}`;
+      if (from) url += `&from=${encodeURIComponent(from)}`;
+      if (to) url += `&to=${encodeURIComponent(to)}`;
+      const res = await fetch(url, { headers });
       const data = await res.json();
       if (res.ok && Array.isArray(data)) {
-        setInvoices(data);
+        setClaims(data);
         setVendorList([...new Set(data.map((i) => i.vendor).filter(Boolean))]);
         setAssigneeList([...new Set(data.map((i) => i.assignee).filter(Boolean))]);
       } else {
@@ -63,24 +73,24 @@ export default function OpsClaim() {
       console.error('OpsClaim fetch error:', err);
     }
     setLoading(false);
-  }, [token, tenant, headers]);
+  }, [token, tenant, headers, statusFilter, from, to]);
 
   useEffect(() => {
-    fetchInvoices();
-  }, [fetchInvoices]);
+    fetchClaims();
+  }, [fetchClaims]);
 
 
   const archive = async (id) => {
-    await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/archive`, {
+    await fetch(`${API_BASE}/api/${tenant}/claims/${id}/archive`, {
       method: 'PATCH',
       headers,
     }).catch(() => {});
-    fetchInvoices();
+    fetchClaims();
   };
 
   const suggestAction = async (id) => {
     try {
-      const res = await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/think-suggestion`, {
+      const res = await fetch(`${API_BASE}/api/${tenant}/claims/${id}/think-suggestion`, {
         method: 'POST',
         headers,
       });
@@ -94,25 +104,25 @@ export default function OpsClaim() {
   };
 
   const updateStatus = async (id, status) => {
-    await fetch(`${API_BASE}/api/${tenant}/invoices/${id}/update`, {
+    await fetch(`${API_BASE}/api/${tenant}/claims/${id}/update`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ field: 'approval_status', value: status }),
     }).catch(() => {});
-    fetchInvoices();
+    fetchClaims();
   };
 
   const openCopilot = (inv) => {
-    setActiveInvoice(inv);
+    setActiveClaim(inv);
     setChatHistory([]);
     setCopilotOpen(true);
   };
 
   const handleCopilotAsk = async (question) => {
-    if (!question.trim() || !activeInvoice) return;
+    if (!question.trim() || !activeClaim) return;
     try {
       setLoadingChat(true);
-      const res = await fetch(`${API_BASE}/api/${tenant}/invoices/${activeInvoice.id}/copilot`, {
+      const res = await fetch(`${API_BASE}/api/${tenant}/claims/${activeClaim.id}/copilot`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ question }),
@@ -132,14 +142,14 @@ export default function OpsClaim() {
   };
 
   const openNotes = (inv) => {
-    setNotesInvoice(inv);
+    setNotesClaim(inv);
     setNotesOpen(true);
   };
 
   const fetchAudit = async (id) => {
     if (auditLogs[id]) return;
     try {
-      const res = await fetch(`${API_BASE}/api/audit?invoiceId=${id}`, { headers });
+      const res = await fetch(`${API_BASE}/api/audit?claimId=${id}`, { headers });
       const data = await res.json();
       if (res.ok) {
         setAuditLogs((a) => ({ ...a, [id]: data }));
@@ -162,53 +172,53 @@ export default function OpsClaim() {
   };
 
   const bulkApprove = async () => {
-    await fetch(`${API_BASE}/api/${tenant}/invoices/bulk/approve`, {
+    await fetch(`${API_BASE}/api/${tenant}/claims/bulk/approve`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ ids: selectedRows }),
     }).catch(() => {});
     setSelectedRows([]);
-    fetchInvoices();
+    fetchClaims();
   };
 
   const bulkReject = async () => {
-    await fetch(`${API_BASE}/api/${tenant}/invoices/bulk/reject`, {
+    await fetch(`${API_BASE}/api/${tenant}/claims/bulk/reject`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ ids: selectedRows }),
     }).catch(() => {});
     setSelectedRows([]);
-    fetchInvoices();
+    fetchClaims();
   };
 
   const bulkAssign = async () => {
     const assignee = prompt('Assign to who?');
     if (!assignee) return;
-    await fetch(`${API_BASE}/api/${tenant}/invoices/bulk/assign`, {
+    await fetch(`${API_BASE}/api/${tenant}/claims/bulk/assign`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ ids: selectedRows, assignee }),
     }).catch(() => {});
     setSelectedRows([]);
-    fetchInvoices();
+    fetchClaims();
   };
 
   const toggleSelectAll = () => {
-    if (selectedRows.length === sortedInvoices.length) {
+    if (selectedRows.length === sortedClaims.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(sortedInvoices.map((i) => i.id));
+      setSelectedRows(sortedClaims.map((i) => i.id));
     }
   };
 
-  const filteredInvoices = invoices
+  const filteredClaims = claims
     .filter((inv) => !selectedVendor || inv.vendor === selectedVendor)
     .filter((inv) => !selectedAssignee || inv.assignee === selectedAssignee)
     .filter((inv) => !startDate || new Date(inv.date) >= new Date(startDate))
     .filter((inv) => !endDate || new Date(inv.date) <= new Date(endDate))
     .filter((inv) => (showFlaggedOnly ? inv.flagged : true));
 
-  const sortedInvoices = [...filteredInvoices].sort((a, b) => {
+  const sortedClaims = [...filteredClaims].sort((a, b) => {
     if (showPrioritized) {
       const riskA = (a.flagged ? 2 : 0) + (a.risk_score ?? 0);
       const riskB = (b.flagged ? 2 : 0) + (b.risk_score ?? 0);
@@ -302,10 +312,10 @@ export default function OpsClaim() {
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center">
             <th className="px-3 py-4">
-              <input type="checkbox" onChange={toggleSelectAll} checked={selectedRows.length === sortedInvoices.length && sortedInvoices.length > 0} />
+              <input type="checkbox" onChange={toggleSelectAll} checked={selectedRows.length === sortedClaims.length && sortedClaims.length > 0} />
             </th>
             <th className="px-3 py-4"></th>
-            <th className="px-3 py-4">Invoice #</th>
+            <th className="px-3 py-4">Claim #</th>
             <th className="px-3 py-4">Vendor</th>
             <th className="px-3 py-4">Uploaded</th>
             <th className="px-3 py-4">Amount</th>
@@ -322,7 +332,7 @@ export default function OpsClaim() {
               <td colSpan="11" className="p-4"><Skeleton rows={5} height="h-4" /></td>
             </tr>
           ) : (
-            sortedInvoices.map((inv) => {
+            sortedClaims.map((inv) => {
               const status = inv.flagged ? 'Flagged' : inv.approval_status || inv.status || 'Extracted';
               const borderColor =
                 status === 'Approved'
@@ -349,7 +359,7 @@ export default function OpsClaim() {
                         <ChevronDownIcon className={`w-4 h-4 transition-transform ${expandedRows.includes(inv.id) ? 'rotate-180' : ''}`} />
                       </button>
                     </td>
-                    <td className="px-3 py-4">{inv.invoice_number}</td>
+                    <td className="px-3 py-4">{inv.claim_number || inv.invoice_number}</td>
                     <td className="px-3 py-4">{inv.vendor}</td>
                     <td className="px-3 py-4">
                       {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : '-'}
@@ -396,7 +406,7 @@ export default function OpsClaim() {
                       </div>
                       <div className="flex gap-1">
                         <button onClick={() => openNotes(inv)} className="btn btn-ghost p-1" title="Notes">
-                          <DocumentTextIcon className="w-4 h-4" />
+                          <ClipboardIcon className="w-4 h-4" />
                         </button>
                         <Tippy
                           content={
@@ -462,11 +472,11 @@ export default function OpsClaim() {
         onAsk={handleCopilotAsk}
         history={chatHistory}
         loading={loadingChat}
-        invoice={activeInvoice}
+        invoice={activeClaim}
       />
       <NotesModal
         open={notesOpen}
-        invoice={notesInvoice}
+        invoice={notesClaim}
         onClose={() => setNotesOpen(false)}
       />
     </MainLayout>

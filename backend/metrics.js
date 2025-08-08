@@ -48,6 +48,16 @@ const exportDuration = new client.Histogram({
   labelNames: ['export_type'],
 });
 
+const claimMetricsDuration = new client.Histogram({
+  name: 'claim_metrics_latency_seconds',
+  help: 'Latency of claim metrics endpoint',
+});
+
+const claimMetricsErrorCounter = new client.Counter({
+  name: 'claim_metrics_error_total',
+  help: 'Total errors from claim metrics endpoint',
+});
+
 // Usage tracking metrics
 const usageLimitExceededCounter = new client.Counter({
   name: 'usage_limit_exceeded_total',
@@ -83,6 +93,8 @@ module.exports = {
   activeUsersGauge,
   extractDuration,
   exportDuration,
+  claimMetricsDuration,
+  claimMetricsErrorCounter,
   usageLimitExceededCounter,
   usageTrackingCounter,
   usageRemainingGauge,

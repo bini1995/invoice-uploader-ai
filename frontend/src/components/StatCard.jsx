@@ -17,6 +17,7 @@ export default function StatCard({
   onCta,
   badge,
   children,
+  onClick,
 }) {
   const TrendIcon =
     typeof trend === 'number'
@@ -36,7 +37,13 @@ export default function StatCard({
       : 'text-gray-500';
 
   return (
-    <Card className="p-6 flex flex-col gap-2 relative">
+    <Card
+      onClick={onClick}
+      className={cn(
+        'p-6 flex flex-col gap-2 relative',
+        onClick && 'cursor-pointer'
+      )}
+    >
       <div className="flex items-start gap-1">
         {icon && <span className="text-indigo-600">{icon}</span>}
         <span className="text-xs text-gray-500 dark:text-gray-400 flex-1">

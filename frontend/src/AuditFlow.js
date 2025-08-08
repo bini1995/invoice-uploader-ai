@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
-import { CalendarIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import StatCard from './components/StatCard.jsx';
+import {
+  CalendarIcon,
+  MagnifyingGlassIcon,
+  ExclamationTriangleIcon,
+  PillIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
 
 // Demo logs shown when the API returns none
@@ -11,14 +18,14 @@ const DEMO_LOGS = [
     created_at: '2024-07-09T13:00:00Z',
     username: 'admin',
     action: 'Login',
-    invoice_id: null,
+    claim_id: null,
   },
   {
     id: 2,
     created_at: '2024-07-09T13:05:00Z',
     username: 'admin',
-    action: 'Approved invoice #1001',
-    invoice_id: '1001',
+    action: 'Approved claim #1001',
+    claim_id: '1001',
   },
 ];
 
@@ -31,6 +38,9 @@ export default function AuditFlow() {
   const [action, setAction] = useState('');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [anomalyCount, setAnomalyCount] = useState(0);
+  const [cptIssues, setCptIssues] = useState([]);
+  const [reviewerCount, setReviewerCount] = useState(0);
 
   const resetFilters = () => {
     setVendor('');
@@ -73,13 +83,28 @@ export default function AuditFlow() {
     const data = await res.json();
     if (res.ok && Array.isArray(data) && data.length) {
       setLogs(data);
+      setReviewerCount(new Set(data.map(l => l.username || l.user_id)).size);
     } else {
       setLogs(DEMO_LOGS);
+      setReviewerCount(new Set(DEMO_LOGS.map(l => l.username)).size);
     }
     setLoading(false);
   }, [token, vendor, action, start, end]);
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
+
+  useEffect(() => {
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+    Promise.all([
+      fetch(`${API_BASE}/api/analytics/claims/fraud`, { headers })
+        .then(r => r.json()).then(d => setAnomalyCount(d.suspicious ? d.suspicious.length : 0))
+        .catch(() => setAnomalyCount(0)),
+      fetch(`${API_BASE}/api/analytics/claims`, { headers })
+        .then(r => r.json()).then(d => setCptIssues(d.claims || []))
+        .catch(() => setCptIssues([])),
+    ]);
+  }, [token]);
 
   if (!['admin','finance','legal'].includes(role)) {
     return <div className="min-h-screen flex items-center justify-center">Access denied.</div>;
@@ -88,6 +113,30 @@ export default function AuditFlow() {
   return (
     <MainLayout title="AuditFlow" helpTopic="auditflow">
       <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <StatCard
+            icon={<ExclamationTriangleIcon className="w-6 h-6" />}
+            title="Anomalies"
+            value={anomalyCount}
+          />
+          <StatCard
+            icon={<PillIcon className="w-6 h-6" />}
+            title="CPT Issue Types"
+            value={cptIssues.length}
+          >
+            <ul className="text-xs mt-1">
+              {cptIssues.slice(0,3).map(c => (
+                <li key={c.claim_type}>{c.claim_type}: {c.count}</li>
+              ))}
+            </ul>
+          </StatCard>
+          <StatCard
+            icon={<UserGroupIcon className="w-6 h-6" />}
+            title="Reviewers"
+            value={reviewerCount}
+            subtext={`${logs.length} actions`}
+          />
+        </div>
         <div className="flex flex-wrap items-end gap-4 mb-2">
           <input value={vendor} onChange={e=>setVendor(e.target.value)} placeholder="Vendor" className="input" />
           <input value={action} onChange={e=>setAction(e.target.value)} placeholder="Action" className="input" />
@@ -134,7 +183,7 @@ export default function AuditFlow() {
                     <td className="px-2 py-1 border">{new Date(log.created_at).toLocaleString()}</td>
                     <td className="px-2 py-1 border">{log.username || log.user_id}</td>
                     <td className="px-2 py-1 border">{log.action}</td>
-                    <td className="px-2 py-1 border">{log.invoice_id || '-'}</td>
+                    <td className="px-2 py-1 border">{log.claim_id || log.invoice_id || '-'}</td>
                   </tr>
                 ))
               )

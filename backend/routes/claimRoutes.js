@@ -24,6 +24,7 @@ const {
   getReviewQueue,
   updateStatus,
   exportClaims,
+  getClaimMetrics,
 } = require('../controllers/claimController');
 const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
@@ -57,6 +58,12 @@ router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
 router.get('/review-queue', authMiddleware, getReviewQueue);
+router.get(
+  '/metrics',
+  authMiddleware,
+  authorizeRoles('admin', 'internal_ops'),
+  getClaimMetrics
+);
 router.get('/report/pdf', authMiddleware, exportSummaryPDF);
 router.post('/export', authMiddleware, exportClaims);
 router.patch('/:id/status', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), updateStatus);
