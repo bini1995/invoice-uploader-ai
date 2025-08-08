@@ -19,7 +19,9 @@ const {
   fieldExtractCounter,
   exportAttemptCounter,
   feedbackFlaggedCounter,
-  extractDuration
+  extractDuration,
+  claimMetricsDuration,
+  claimMetricsErrorCounter
 } = require('../metrics');
 
 async function refreshSearchable(id) {
@@ -698,5 +700,80 @@ exports.exportClaims = async (req, res) => {
   } catch (err) {
     console.error('Claims export error:', err);
     res.status(500).json({ message: 'Failed to export claims' });
+  }
+};
+
+exports.getClaimMetrics = async (req, res) => {
+  const { from, to } = req.query;
+  const params = [];
+  let where =
+    "doc_type IN ('claim_invoice','medical_bill','fnol_form')";
+  if (from) {
+    params.push(new Date(from));
+    where += ` AND created_at >= $${params.length}`;
+  }
+  if (to) {
+    params.push(new Date(to));
+    where += ` AND created_at <= $${params.length}`;
+  }
+  const endTimer = claimMetricsDuration.startTimer();
+  const requestId = req.headers['x-request-id'] || crypto.randomUUID();
+  res.set('X-Request-Id', requestId);
+  logger.info('Claim metrics requested', { request_id: requestId, from, to });
+  try {
+    const totalRes = await pool.query(
+      `SELECT COUNT(*) AS total,
+              COUNT(*) FILTER (WHERE status = 'Flagged') AS flagged
+         FROM documents WHERE ${where}`,
+      params
+    );
+    const statusRes = await pool.query(
+      `SELECT status, COUNT(*)::int AS count
+         FROM documents WHERE ${where} GROUP BY status`,
+      params
+    );
+    const durationRes = await pool.query(
+      `SELECT
+          AVG(EXTRACT(EPOCH FROM (updated_at - created_at)) / 3600) AS avg,
+          PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (updated_at - created_at)) / 3600) AS p50,
+          PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (updated_at - created_at)) / 3600) AS p90,
+          PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY EXTRACT(EPOCH FROM (updated_at - created_at)) / 3600) AS p99
+        FROM documents
+        WHERE ${where} AND status IN ('Approved','Rejected','Closed')`,
+      params
+    );
+    const total = parseInt(totalRes.rows[0].total, 10) || 0;
+    const flagged = parseInt(totalRes.rows[0].flagged, 10) || 0;
+    const status_counts = {};
+    statusRes.rows.forEach((r) => {
+      if (r.count >= 5) status_counts[r.status || 'Unknown'] = r.count;
+    });
+    res.set('Cache-Control', 'public, max-age=30');
+    const { avg, p50, p90, p99 } = durationRes.rows[0] || {};
+    const toNumber = (val) => {
+      const num = Number(val);
+      return Number.isFinite(num) ? num : 0;
+    };
+    res.json({
+      window: { from: from || null, to: to || null, timezone: 'UTC' },
+      definitions: {
+        flagged: "status = 'Flagged'",
+        avg_processing_hours:
+          'mean hours between created_at and updated_at for closed claims',
+      },
+      total,
+      flagged_rate: total ? flagged / total : 0,
+      avg_processing_hours: toNumber(avg),
+      p50_processing_hours: toNumber(p50),
+      p90_processing_hours: toNumber(p90),
+      p99_processing_hours: toNumber(p99),
+      status_counts,
+    });
+    endTimer();
+  } catch (err) {
+    claimMetricsErrorCounter.inc();
+    endTimer();
+    console.error('Claim metrics error:', err);
+    res.status(500).json({ message: 'Failed to fetch claim metrics' });
   }
 };

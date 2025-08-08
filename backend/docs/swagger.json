@@ -90,6 +90,76 @@
         }
       }
     },
+    "/api/claims/metrics": {
+      "get": {
+        "summary": "Aggregated claim metrics",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Start of window (inclusive, UTC)"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "End of window (inclusive, UTC)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metrics for claims in window",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "window": {
+                      "type": "object",
+                      "properties": {
+                        "from": { "type": "string", "format": "date-time" },
+                        "to": { "type": "string", "format": "date-time" },
+                        "timezone": { "type": "string" }
+                      }
+                    },
+                    "definitions": { "type": "object" },
+                    "total": { "type": "integer" },
+                    "flagged_rate": { "type": "number" },
+                    "avg_processing_hours": { "type": "number" },
+                    "p50_processing_hours": { "type": "number" },
+                    "p90_processing_hours": { "type": "number" },
+                    "p99_processing_hours": { "type": "number" },
+                    "status_counts": { "type": "object" }
+                  }
+                },
+                "examples": {
+                  "24h": {
+                    "value": {
+                      "window": {
+                        "from": "2024-01-09T00:00:00Z",
+                        "to": "2024-01-10T00:00:00Z",
+                        "timezone": "UTC"
+                      },
+                      "definitions": { "flagged": "status = 'Flagged'" },
+                      "total": 10,
+                      "flagged_rate": 0.2,
+                      "avg_processing_hours": 12,
+                      "p50_processing_hours": 8,
+                      "p90_processing_hours": 20,
+                      "p99_processing_hours": 30,
+                      "status_counts": { "Pending": 5, "Approved": 5 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/claims/summarize-errors": {
       "post": {
         "summary": "AI summarize CSV errors",
