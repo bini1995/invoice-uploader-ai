@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snapshot threaded conversation 1`] = `
+<div>
+  <div>
+    <div
+      aria-label="Comments"
+      class="space-y-1 max-h-40 overflow-y-auto"
+      role="list"
+    >
+      <div
+        class="mb-1"
+        id="comment-1"
+        role="listitem"
+        style="margin-left: 0px;"
+        tabindex="-1"
+      >
+        <div
+          class="text-xs bg-gray-100 p-1 rounded"
+        >
+          top
+        </div>
+        <button
+          aria-label="Reply to comment 1"
+          class="text-[10px] text-blue-600"
+          type="button"
+        >
+          Reply
+        </button>
+      </div>
+      <div
+        class="mb-1"
+        id="comment-2"
+        role="listitem"
+        style="margin-left: 16px;"
+        tabindex="-1"
+      >
+        <div
+          class="text-xs bg-gray-100 p-1 rounded"
+        >
+          reply
+        </div>
+        <button
+          aria-label="Reply to comment 2"
+          class="text-[10px] text-blue-600"
+          type="button"
+        >
+          Reply
+        </button>
+      </div>
+    </div>
+    <div
+      class="mt-1"
+    >
+      <textarea
+        aria-label="Comment text"
+        class="input text-xs w-full resize-none px-1"
+        placeholder="Add comment"
+        rows="2"
+      />
+      <div
+        class="flex items-center justify-between mt-1"
+      >
+        <span
+          class="text-[10px] text-gray-500"
+        >
+          0
+          /1000
+        </span>
+        <button
+          class="bg-indigo-600 disabled:opacity-50 text-white text-xs px-2 py-1 ml-1 rounded"
+          disabled=""
+          type="button"
+        >
+          Post
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

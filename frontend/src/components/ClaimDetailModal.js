@@ -2,30 +2,17 @@ import React, { useState, useEffect } from 'react';
 import TagEditor from './TagEditor';
 import CTAButton from './ui/CTAButton';
 import { API_BASE } from '../api';
+import DocumentViewer from './DocumentViewer';
+import ICDCPTField from './ICDCPTField';
+import CommentThread from './CommentThread';
+import FlaggedCodeChat from './FlaggedCodeChat';
 
 export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({ invoice_number: '', date: '', amount: '', vendor: '' });
+  const [form, setForm] = useState({ invoice_number: '', date: '', amount: '', vendor: '', icd: '', cpt: '' });
   const [timeline, setTimeline] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [commentInput, setCommentInput] = useState('');
   const [vendorSuggestions, setVendorSuggestions] = useState([]);
   const [amountSuggestions, setAmountSuggestions] = useState([]);
-
-  const startDictation = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Speech recognition not supported');
-      return;
-    }
-    const rec = new SpeechRecognition();
-    rec.lang = 'en-US';
-    rec.onresult = (e) => {
-      const text = Array.from(e.results).map(r => r[0].transcript).join(' ');
-      setCommentInput(text);
-    };
-    rec.start();
-  };
 
   useEffect(() => {
     if (invoice) {
@@ -34,8 +21,9 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
         date: invoice.date ? invoice.date.substring(0, 10) : '',
         amount: invoice.amount || '',
         vendor: invoice.vendor || '',
+        icd: invoice.icd || '',
+        cpt: invoice.cpt || '',
       });
-      setComments(invoice.comments || []);
       if (token) {
         fetch(`${API_BASE}/api/invoices/${invoice.id}/timeline`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -88,23 +76,6 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
     setEditMode(false);
   };
 
-  const handleAddComment = async () => {
-    if (!commentInput) return;
-    try {
-      const res = await fetch(`${API_BASE}/api/invoices/${invoice.id}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ text: commentInput }),
-      });
-      const data = await res.json();
-      if (res.ok && data.comments) {
-        setComments(data.comments);
-        setCommentInput('');
-      }
-    } catch (e) {
-      console.error('Add comment error:', e);
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 ease-in-out">
@@ -201,6 +172,27 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
               }}
             />
           </div>
+        <div className="mt-3">
+          <h3 className="font-semibold text-sm mb-1">Document</h3>
+          <DocumentViewer
+            sections={invoice.sections || []}
+            claim={invoice.claim || {}}
+            findings={invoice.aiFindings || {}}
+          />
+        </div>
+        <div className="mt-3">
+          <h3 className="font-semibold text-sm mb-1">Codes</h3>
+          <ICDCPTField
+            initialICD={invoice.icd || ''}
+            initialCPT={invoice.cpt || ''}
+            suggestion={invoice.suggestions || {}}
+            onChange={(vals) => {
+              handleChange('icd', vals.icd);
+              handleChange('cpt', vals.cpt);
+            }}
+          />
+          <FlaggedCodeChat code={invoice.flaggedCode} />
+        </div>
         </div>
         <div className="mt-3">
           <h3 className="font-semibold text-sm mb-1">Status History</h3>
@@ -216,24 +208,7 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
         </div>
         <div className="mt-3">
           <h3 className="font-semibold text-sm mb-1">Comments</h3>
-          <div className="space-y-1 max-h-32 overflow-y-auto text-xs mb-2">
-            {comments.length ? comments.map((c, i) => (
-              <div key={i} className="bg-gray-100 rounded p-1">{c.text}</div>
-            )) : <em className="text-gray-500">No comments</em>}
-          </div>
-          <div className="flex">
-            <input
-              type="text"
-              value={commentInput}
-              onChange={(e) => setCommentInput(e.target.value)}
-              className="input text-xs flex-1 px-1"
-              placeholder="Add comment"
-            />
-            <button onClick={startDictation} className="bg-gray-200 dark:bg-gray-700 text-xs px-2 py-1 ml-1 rounded" title="Dictate">
-              🗣
-            </button>
-            <button onClick={handleAddComment} className="bg-indigo-600 text-white text-xs px-2 py-1 ml-1 rounded">Post</button>
-          </div>
+          <CommentThread claimId={invoice.id} token={token} />
         </div>
         <div className="mt-4 flex justify-end space-x-2">
           {editMode ? (

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ChatBubbleLeftRightIcon, MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-export default function ChatWidget() {
+export default function ChatWidget({ initialMessage = 'Hi! Ask me anything about the AI Claims Data Extractor.' }) {
   const [open, setOpen] = useState(false);
   const [voice, setVoice] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Hi! Ask me anything about the AI Claims Data Extractor.' }
+    { sender: 'bot', text: initialMessage }
   ]);
 
   const send = () => {

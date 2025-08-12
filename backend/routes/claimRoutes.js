@@ -21,6 +21,8 @@ const {
   getExtractionFeedback,
   addReviewNote,
   getReviewNotes,
+  addComment,
+  getComments,
   getReviewQueue,
   updateStatus,
   exportClaims,
@@ -72,5 +74,12 @@ router.get('/:id/feedback', authMiddleware, getExtractionFeedback);
 router.post('/:id/feedback', authMiddleware, submitExtractionFeedback);
 router.get('/:id/review-notes', authMiddleware, getReviewNotes);
 router.post('/:id/review-notes', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), addReviewNote);
+router.get('/:id/comments', authMiddleware, getComments);
+router.post(
+  '/:id/comments',
+  authMiddleware,
+  authorizeRoles('admin', 'internal_ops', 'adjuster'),
+  addComment
+);
 
 module.exports = router;

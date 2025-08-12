@@ -617,6 +617,99 @@ exports.getReviewNotes = async (req, res) => {
   }
 };
 
+exports.addComment = async (req, res) => {
+  const { id } = req.params;
+  const { text, parent_id } = req.body || {};
+  if (typeof text !== 'string') {
+    return res
+      .status(400)
+      .json({
+        type: 'https://example.com/validation-error',
+        title: 'Validation error',
+        detail: 'Text required'
+      });
+  }
+  const trimmed = text.trim();
+  const sanitized = sanitizeHtml(trimmed, { allowedTags: [], allowedAttributes: {} });
+  if (sanitized !== trimmed)
+    return res
+      .status(400)
+      .json({
+        type: 'https://example.com/validation-error',
+        title: 'Validation error',
+        detail: 'HTML not allowed'
+      });
+  if (sanitized.length < 1 || sanitized.length > 1000)
+    return res
+      .status(400)
+      .json({
+        type: 'https://example.com/validation-error',
+        title: 'Validation error',
+        detail: 'Comment must be 1-1000 characters'
+      });
+  try {
+    const docCheck = await pool.query('SELECT id FROM documents WHERE id = $1', [id]);
+    if (!docCheck.rows.length) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+    const userId = req.user?.userId || null;
+    const { rows } = await pool.query(
+      'INSERT INTO claim_comments (document_id, user_id, parent_id, text) VALUES ($1,$2,$3,$4) RETURNING id, parent_id, text, created_at',
+      [id, userId, parent_id || null, sanitized]
+    );
+    await logActivity(req.user?.userId, 'add_comment', id, req.user?.username);
+    const comment = rows[0];
+    res
+      .status(201)
+      .set('Location', `/api/claims/${id}/comments/${comment.id}`)
+      .json(comment);
+  } catch (err) {
+    console.error('Add comment error:', err);
+    res.status(500).json({ message: 'Failed to save comment' });
+  }
+};
+
+exports.getComments = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const docCheck = await pool.query('SELECT id FROM documents WHERE id = $1', [id]);
+    if (!docCheck.rows.length) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+    const { rows } = await pool.query(
+      'SELECT id, parent_id, text, created_at FROM claim_comments WHERE document_id = $1 ORDER BY created_at ASC',
+      [id]
+    );
+    const map = new Map();
+    rows.forEach((r) => {
+      r.children = [];
+      map.set(r.id, r);
+    });
+    const roots = [];
+    rows.forEach((r) => {
+      if (r.parent_id && map.has(r.parent_id)) map.get(r.parent_id).children.push(r);
+      else roots.push(r);
+    });
+    const flat = [];
+    const walk = (node, depth) => {
+      flat.push({ id: node.id, parent_id: node.parent_id, depth, text: node.text, created_at: node.created_at });
+      node.children
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        .forEach((c) => walk(c, depth + 1));
+    };
+    roots
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      .forEach((r) => walk(r, 0));
+    const etag = crypto.createHash('md5').update(JSON.stringify(flat)).digest('hex');
+    if (req.headers['if-none-match'] === etag) return res.status(304).end();
+    res.set('ETag', etag);
+    res.json({ comments: flat });
+  } catch (err) {
+    console.error('Get comments error:', err);
+    res.status(500).json({ message: 'Failed to fetch comments' });
+  }
+};
+
 exports.getReviewQueue = async (_req, res) => {
   try {
     const { rows } = await pool.query(
