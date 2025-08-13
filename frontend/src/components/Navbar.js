@@ -77,7 +77,7 @@ export default function Navbar({
 
   return (
     <nav className="sticky top-0 z-30 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow">
-      <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4 p-2">
+      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
           <Link to="/claims" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img
@@ -112,7 +112,7 @@ export default function Navbar({
           onChange={(e) => onSearchChange?.(e.target.value)}
           placeholder={t('searchPlaceholder')}
           aria-label={t('searchPlaceholder')}
-          className="input text-gray-800 dark:text-gray-100 h-7 text-sm"
+          className="input text-gray-800 dark:text-gray-100 h-7 text-sm w-full sm:w-auto"
         />
         <input
           id="smartSearchInput"
@@ -122,9 +122,9 @@ export default function Navbar({
           onKeyDown={(e) => e.key === 'Enter' && onSmartSearch?.()}
           placeholder="Claim Documents from Amazon last quarter > $1,000"
           aria-label="Smart search"
-          className="input text-gray-800 dark:text-gray-100 h-7 text-sm w-52"
+          className="input text-gray-800 dark:text-gray-100 h-7 text-sm w-full sm:w-52"
         />
-        <div className="flex items-center space-x-3 relative">
+        <div className="flex items-center space-x-3 relative w-full sm:w-auto justify-end">
           <TenantSwitcher tenant={tenant} onChange={onTenantChange} />
           <LanguageSelector />
           <NotificationBell notifications={notifications} onOpen={onNotificationsOpen} />

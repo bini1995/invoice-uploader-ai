@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 30000,
   use: {
     baseURL: 'http://localhost:3001',
-    viewport: { width: 375, height: 667 },
+    viewport: { width: 375, height: 812 },
   },
   webServer: {
     command: 'npm start',
