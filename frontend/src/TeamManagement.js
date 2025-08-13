@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
 import CTAButton from './components/ui/CTAButton';
+import { ROLE_EMOJI } from './theme/roles';
+import { logEvent } from './lib/analytics';
 
 function TeamManagement() {
   const token = localStorage.getItem('token') || '';
@@ -18,6 +21,8 @@ function TeamManagement() {
   const [csvLimit, setCsvLimit] = useState(5);
   const [pdfLimit, setPdfLimit] = useState(10);
   const [defaultRetention, setDefaultRetention] = useState('forever');
+  const [showRoleEmojis, setShowRoleEmojis] = useState(true);
+  const { t } = useTranslation();
   const [keys, setKeys] = useState([]);
   const [newLabel, setNewLabel] = useState('');
 
@@ -47,6 +52,8 @@ function TeamManagement() {
       setCsvLimit(data.csvSizeLimitMB);
       setPdfLimit(data.pdfSizeLimitMB);
       if (data.defaultRetention) setDefaultRetention(data.defaultRetention);
+      setShowRoleEmojis(data.showRoleEmojis ?? true);
+      localStorage.setItem('showRoleEmojis', String(data.showRoleEmojis ?? true));
     }
   }, [headers]);
 
@@ -131,8 +138,11 @@ function TeamManagement() {
         csvSizeLimitMB: Number(csvLimit),
         pdfSizeLimitMB: Number(pdfLimit),
         defaultRetention,
+        showRoleEmojis,
       })
     });
+    logEvent('toggle_role_emojis', { enabled: showRoleEmojis });
+    localStorage.setItem('showRoleEmojis', String(showRoleEmojis));
   };
 
   if (role !== 'admin') {
@@ -150,8 +160,9 @@ function TeamManagement() {
           <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" className="input w-full" />
           <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" className="input w-full" />
           <select value={newRole} onChange={e => setNewRole(e.target.value)} className="input w-full">
-            <option value="viewer">viewer</option>
-            <option value="admin">admin</option>
+            {['viewer','admin','adjuster','medical_reviewer','auditor','broker','internal_ops'].map(r => (
+              <option key={r} value={r}>{t(`roles.${r}`, r)}</option>
+            ))}
           </select>
           <button onClick={addUser} className="bg-indigo-600 text-white px-3 py-1 rounded" title="Add User">Add User</button>
         </div>
@@ -174,17 +185,36 @@ function TeamManagement() {
               users.map(u => (
                 <tr key={u.id} className="border-t hover:bg-gray-100">
                   <td className="p-2">
-                    <img
-                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${u.username}`}
-                      alt={u.username}
-                      className="h-6 w-6 rounded-full"
-                    />
+                    <div className="relative" title={t(`roles.${u.role}`, u.role)}>
+                      <img
+                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${u.username}`}
+                        alt={u.username}
+                        className="h-6 w-6 rounded-full"
+                      />
+                      {showRoleEmojis && ROLE_EMOJI[u.role] && (
+                        <span
+                          className="absolute -bottom-1 -right-1 text-xs"
+                          role="img"
+                          aria-label={`role: ${t(`roles.${u.role}`, u.role)}`}
+                        >
+                          {ROLE_EMOJI[u.role]}
+                        </span>
+                      )}
+                    </div>
                   </td>
-                  <td className="p-2">{u.username}</td>
+                  <td className="p-2 group">
+                    {u.username}
+                    {ROLE_EMOJI[u.role] && (
+                      <span className="badge ml-1 hidden group-hover:inline group-focus-within:inline">
+                        {t(`roles.${u.role}`, u.role)}
+                      </span>
+                    )}
+                  </td>
                   <td className="p-2">
                     <select value={u.role} onChange={e => changeRole(u.id, e.target.value)} className="input p-1">
-                      <option value="viewer">viewer</option>
-                      <option value="admin">admin</option>
+                      {['viewer','admin','adjuster','medical_reviewer','auditor','broker','internal_ops'].map(r => (
+                        <option key={r} value={r}>{t(`roles.${r}`, r)}</option>
+                      ))}
                     </select>
                   </td>
                   <td className="p-2">
@@ -267,6 +297,10 @@ function TeamManagement() {
               <option value="1yr">1 year</option>
               <option value="forever">Forever</option>
             </select>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input type="checkbox" checked={showRoleEmojis} onChange={e => setShowRoleEmojis(e.target.checked)} />
+            <span>Show role emojis</span>
           </label>
           <CTAButton onClick={saveSettings} className="px-3 py-1">Save Settings</CTAButton>
         </div>

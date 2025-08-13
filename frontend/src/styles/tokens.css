@@ -6,7 +6,7 @@
     /* Colors - base palette */
     --color-ink: #0f172a; /* deep blue/ink */
     --color-charcoal: #f5f5f4; /* soft charcoal */
-    --color-emerald: #059669; /* accent emerald */
+    --color-emerald: #0ea5e9; /* accent medical blue */
     --color-gold: #b45309; /* accent gold */
     --color-red: #ef4444;
     --color-green: #10b981;
@@ -22,9 +22,9 @@
     --focus-ring-color: var(--color-emerald, #059669);
     --focus-ring-width: 2px;
     --focus-ring-offset: 2px;
-    --cta-bg: var(--color-emerald, #059669);
-    --cta-hover: #047857;
-    --cta-active: #065f46;
+    --cta-bg: var(--color-emerald, #0ea5e9);
+    --cta-hover: #0284c7;
+    --cta-active: #0369a1;
 
     /* Status colors */
     --status-neutral: var(--color-gray, #6b7280);

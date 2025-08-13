@@ -1,484 +1,165 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import {
-  DocumentArrowUpIcon,
-  CheckCircleIcon,
-  ChartBarIcon,
-  BriefcaseIcon,
-  EnvelopeIcon,
-  TagIcon,
-  ShieldExclamationIcon,
-  LightBulbIcon,
-  ArrowLongRightIcon,
-  ShieldCheckIcon,
-  GlobeAltIcon,
-  LockClosedIcon,
-  ExclamationCircleIcon,
-  ArrowDownTrayIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
-import { Card } from './components/ui/Card';
+import React, { useState } from 'react';
+import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { Stethoscope } from 'lucide-react';
 import { Button } from './components/ui/Button';
-import ProgressDashboard from './components/ProgressDashboard';
-import AiSearchDemo from './components/AiSearchDemo';
-import DummyDataButton from './components/DummyDataButton';
-import SplitScreenStory from './components/SplitScreenStory';
-import ScrollingUseCases from './components/ScrollingUseCases';
-import HowItWorks from './components/HowItWorks';
-import HeroSection from './components/HeroSection';
-import FeatureCard from './components/FeatureCard';
-import ProblemSolutionSection from './components/ProblemSolutionSection';
-import ScheduleDemoModal from './components/ScheduleDemoModal';
-import SocialProofSection from './components/SocialProofSection';
-import CsvUploadFlowDemo from './components/CsvUploadFlowDemo';
-import BlogSection from './components/BlogSection';
-import ChatWidget from './components/ChatWidget';
-import PricingSection from './components/PricingSection';
-import FeatureComparisonTable from './components/FeatureComparisonTable';
-import AddOnsTable from './components/AddOnsTable';
-import FaqAccordion from './components/FaqAccordion';
-import TestimonialSlider from './components/TestimonialSlider';
-import PriceCalculator from './components/PriceCalculator';
-import TrustSection from './components/TrustSection';
 import { logEvent } from './lib/analytics';
 
 export default function LandingPage() {
-  const [demoOpen, setDemoOpen] = useState(false);
-  const [sent50, setSent50] = useState(false);
-  const [sent90, setSent90] = useState(false);
-  const timeRange = JSON.parse(localStorage.getItem('timeRange') || '{}');
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const onScroll = () => {
-      const depth = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
-      if (!sent50 && depth >= 0.5) {
-        logEvent('scroll_depth', { depth: 50 });
-        setSent50(true);
-      }
-      if (!sent90 && depth >= 0.9) {
-        logEvent('scroll_depth', { depth: 90 });
-        setSent90(true);
-      }
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [sent50, sent90]);
+  const submit = async e => {
+    e.preventDefault();
+    setError('');
+    const spamTrap = e.target.elements.company?.value;
+    if (spamTrap) return;
+    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
+      setError('Please enter a valid email');
+      return;
+    }
+    try {
+      const res = await fetch('/api/landing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      if (!res.ok) throw new Error('Server error');
+      setSubmitted(true);
+      setEmail('');
+      logEvent('landing_form_submit', { status: 'success' });
+    } catch (err) {
+      console.error('form submit failed', err);
+      setError('Something went wrong. Please try again.');
+      logEvent('landing_form_submit', { status: 'error' });
+    }
+  };
 
   return (
-    <>
-      <a
-        href="#hero"
-        className="sr-only focus:not-sr-only focus:absolute top-0 left-0 bg-surface text-accent p-2"
-      >
-        Skip to content
-      </a>
-      <div className="min-h-screen flex flex-col bg-surface text-ink">
-      <nav className="sticky top-0 bg-surface/80 backdrop-blur shadow z-30">
-        <div className="container mx-auto flex justify-between items-center p-4">
-          <div className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="ClarifyOps logo" className="h-7 w-auto" />
-            <span className="font-bold text-lg">ClarifyClaims</span>
-          </div>
-          <div className="hidden md:flex items-center space-x-6 text-sm">
-            <a href="#product" className="hover:text-accent transition-colors duration-fast">Claims Processing</a>
-            <a href="#how-it-works" className="hover:text-accent transition-colors duration-fast">How It Works</a>
-            <a href="#customers" className="hover:text-accent transition-colors duration-fast">Insurance Teams</a>
-            <a href="#pricing" className="hover:text-accent transition-colors duration-fast">Pricing</a>
-            <a href="#resources" className="hover:text-accent transition-colors duration-fast">Resources</a>
-          </div>
-          <div className="hidden sm:flex items-center space-x-2">
-            <Button onClick={() => setDemoOpen(true)}>Request Demo</Button>
-            <a
-              href="#pricing"
-              className="underline text-sm hover:text-accent transition-colors duration-fast"
-            >
-              See all plans
-            </a>
-            <Button asChild variant="secondary">
-              <Link to="/login">Log In</Link>
-            </Button>
-          </div>
-          <div className="sm:hidden flex items-center space-x-2">
-            <Button size="sm" asChild variant="secondary">
-              <Link to="/login">Log In</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div id="hero" tabIndex="-1">
-          <HeroSection onRequestDemo={() => setDemoOpen(true)} />
-        </div>
-      <ProblemSolutionSection />
-      <section className="py-16">
-        <h2 className="text-3xl font-bold text-center mb-6">Interactive Claims Processing Demo</h2>
-        <CsvUploadFlowDemo />
-      </section>
-      <section id="features" className="py-16 bg-gray-50 dark:bg-gray-800">
-        <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-6">
-          <FeatureCard
-            icon={DocumentArrowUpIcon}
-            title="Claims Upload"
-            description="Upload PDFs, images, or scanned documents instantly."
-          />
-          <FeatureCard
-            icon={CheckCircleIcon}
-            title="AI Extraction"
-            description="Extract structured data with 95%+ accuracy."
-          />
-          <FeatureCard
-            icon={ExclamationCircleIcon}
-            title="Fraud Detection"
-            description="AI-powered fraud detection and risk scoring."
-          />
-          <FeatureCard
-            icon={ChartBarIcon}
-            title="Analytics"
-            description="Claims processing insights and dashboards."
-          />
-          <FeatureCard
-            icon={ArrowDownTrayIcon}
-            title="Export & Integrate"
-            description="Export to your claims management system."
-          />
-        </div>
-      </section>
-      <SocialProofSection />
-      <PricingSection />
-      <section id="customers" className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-8">Why Insurance Teams Choose Us Over Other Tools</h2>
-        <div className="container mx-auto overflow-x-auto px-6">
-          <div className="flex space-x-4 w-max">
-            {[
-              {
-                label: 'AI Claims Extraction',
-                ours: true,
-                a: false,
-                b: true,
-              },
-              {
-                label: 'Fraud Detection',
-                ours: true,
-                a: false,
-                b: false,
-              },
-              {
-                label: 'Multi-format Support',
-                ours: true,
-                a: false,
-                b: false,
-              },
-              {
-                label: 'Real-time Processing',
-                ours: true,
-                a: true,
-                b: true,
-              },
-              {
-                label: 'API Integration',
-                ours: true,
-                a: false,
-                b: true,
-              },
-            ].map((f) => (
-              <Card key={f.label} className="min-w-[220px] p-4 space-y-3 text-center">
-                <h4 className="font-semibold mb-2">{f.label}</h4>
-                <div className="grid grid-cols-3 gap-2 text-sm items-center">
-                  <span className="font-medium text-left">AI Claims Data Extractor</span>
-                  <span className="font-medium">Competitor A</span>
-                  <span className="font-medium">Competitor B</span>
-                  {f.ours ? (
-                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <XMarkIcon className="w-5 h-5 text-red-500" />
-                  )}
-                  {f.a ? (
-                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <XMarkIcon className="w-5 h-5 text-red-500" />
-                  )}
-                  {f.b ? (
-                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <XMarkIcon className="w-5 h-5 text-red-500" />
-                  )}
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section id="resources" className="py-16">
-        <h2 className="text-3xl font-bold text-center mb-8">Key Benefits for Insurance Operations</h2>
-        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-          <Card className="text-center space-y-4 p-6">
-            <LightBulbIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">Reduce Processing Time by 70%</h3>
-            <p className="text-sm">AI extracts claims data in seconds instead of hours of manual processing.</p>
-            <div className="flex justify-center space-x-2">
-              <Button asChild className="text-sm px-4 py-2">
-                <Link to="/onboarding">Start Now</Link>
-              </Button>
-              <Button asChild variant="secondary" className="text-sm px-4 py-2">
-                <Link to="/sandbox">Learn more</Link>
-              </Button>
-            </div>
-          </Card>
-          <Card className="text-center space-y-4 p-6">
-            <BriefcaseIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">Eliminate Manual Errors</h3>
-            <p className="text-sm">95%+ accuracy reduces costly mistakes and improves claims processing quality.</p>
-            <div className="flex justify-center space-x-2">
-              <Button asChild className="text-sm px-4 py-2">
-                <Link to="/onboarding">Start Now</Link>
-              </Button>
-              <Button asChild variant="secondary" className="text-sm px-4 py-2">
-                <Link to="/sandbox">Learn more</Link>
-              </Button>
-            </div>
-          </Card>
-          <Card className="text-center space-y-4 p-6">
-            <GlobeAltIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">Built-in Fraud Detection</h3>
-            <p className="text-sm">AI-powered fraud detection identifies suspicious patterns and potential red flags.</p>
-            <div className="flex justify-center space-x-2">
-              <Button asChild className="text-sm px-4 py-2">
-                <Link to="/onboarding">Start Now</Link>
-              </Button>
-              <Button asChild variant="secondary" className="text-sm px-4 py-2">
-                <Link to="/sandbox">Learn more</Link>
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </section>
-      <section className="py-16">
-        <h2 className="text-3xl font-bold text-center mb-2">Try Claims Processing →</h2>
-        <p className="text-center mb-4 text-muted">No signup needed. Test claims extraction instantly.</p>
-        <div className="container mx-auto px-6">
-          <ProgressDashboard from={timeRange.from} to={timeRange.to} />
-          <div className="text-center mt-4">
-            <DummyDataButton className="btn btn-primary text-lg" />
-          </div>
-        </div>
-      </section>
-      <SplitScreenStory />
-      <HowItWorks />
-      <section id="search-demo" className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-4">AI-Powered Claims Search</h2>
-        <div className="container mx-auto px-6">
-          <AiSearchDemo />
-        </div>
-      </section>
-      <ScrollingUseCases />
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-8">AI Claims Processing Workflow</h2>
-        <div className="container mx-auto overflow-x-auto px-6">
-          <div className="flex items-center space-x-4 w-max">
-            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
-              <DocumentArrowUpIcon className="w-8 h-8 text-accent" />
-              <span className="font-semibold">Upload Claim</span>
-            </Card>
-            <ArrowLongRightIcon className="w-6 h-6 text-accent flex-shrink-0" />
-            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
-              <CheckCircleIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-              <span className="font-semibold">AI Extract</span>
-            </Card>
-            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
-            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
-              <TagIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-              <span className="font-semibold">Auto-categorize</span>
-            </Card>
-            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
-            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
-              <ShieldExclamationIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-              <span className="font-semibold">Fraud Check</span>
-            </Card>
-            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
-            <Card className="min-w-[150px] flex flex-col items-center space-y-2">
-              <LightBulbIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
-              <span className="font-semibold">Export Data</span>
-            </Card>
-          </div>
-        </div>
-      </section>
-      <section className="py-16">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-3xl font-bold text-center mb-8"
-        >
-          What Insurance Teams Are Saying
-        </motion.h2>
-        <TestimonialSlider
-          testimonials={[
-            {
-              quote: 'This AI tool cut our claims processing time by 70% and eliminated manual data entry errors.',
-              author: 'Sarah Johnson',
-              company: 'Claims Manager, State Farm',
-              image: 'https://i.pravatar.cc/100?img=12',
-              highlight: true,
-            },
-            {
-              quote: 'The fraud detection features have saved us thousands in prevented fraudulent claims.',
-              author: 'Michael Chen',
-              company: 'Director of Operations, Allstate',
-              image: 'https://i.pravatar.cc/100?img=5',
-            },
-            {
-              quote: 'Setup took 5 minutes and we were processing claims immediately. Game changer for our team.',
-              author: 'Lisa Rodriguez',
-              company: 'Claims Processor, Progressive',
-              image: 'https://i.pravatar.cc/100?img=6',
-            },
-            {
-              quote: 'The accuracy is incredible - we trust the AI extraction more than manual processing.',
-              author: 'David Thompson',
-              company: 'VP Claims, Liberty Mutual',
-              image: 'https://i.pravatar.cc/100?img=8',
-            },
-          ]}
-        />
-      </section>
-      <BlogSection />
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-2">Security &amp; Insurance Compliance</h2>
-        <p className="text-center mb-8 text-indigo-600 dark:text-indigo-400 font-medium">
-          Enterprise-grade security for sensitive insurance claims data
+    <div className="flex flex-col min-h-screen bg-surface text-ink">
+      <header className="py-12 px-4 text-center">
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4">Streamline medical claims review</h1>
+        <p className="text-lg text-muted max-w-2xl mx-auto mb-8">
+          Upload, audit and approve claims with AI assistance.
         </p>
-        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-          <Card className="text-center space-y-2">
-            <GlobeAltIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">HIPAA Compliant</h3>
-          </Card>
-          <Card className="text-center space-y-2">
-            <ShieldCheckIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">SOC 2 Type II</h3>
-          </Card>
-          <Card className="text-center space-y-2">
-            <LockClosedIcon className="w-10 h-10 text-indigo-600 dark:text-indigo-400 mx-auto" />
-            <h3 className="font-semibold">End-to-End Encryption</h3>
-          </Card>
+        {submitted ? (
+          <p role="status" className="text-green-700">Thanks! We'll be in touch.</p>
+        ) : (
+          <form onSubmit={submit} className="flex flex-col sm:flex-row gap-2 justify-center max-w-md mx-auto">
+            <label htmlFor="email" className="sr-only">Email address</label>
+            <input
+              id="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="input flex-1"
+              placeholder="you@example.com"
+              aria-label="Email address"
+            />
+            <input type="text" name="company" className="hidden" tabIndex="-1" autoComplete="off" />
+            <Button type="submit" className="px-6">Request Demo</Button>
+          </form>
+        )}
+        {error && <p className="text-red-600 mt-2" role="alert">{error}</p>}
+        {!submitted && (
+          <p className="text-xs text-muted mt-2">
+            By submitting you agree to our <a href="#privacy" className="underline">Privacy Policy</a>.
+          </p>
+        )}
+      </header>
+
+      <section aria-label="Proof points" className="bg-gray-50 py-4">
+        <div className="container mx-auto flex flex-wrap justify-center gap-6 text-center">
+          <div>
+            <p className="font-bold">-42% review time</p>
+            <p className="text-xs text-muted">internal pilot 2024</p>
+          </div>
+          <div>
+            <p className="font-bold">HIPAA-ready</p>
+            <p className="text-xs text-muted">arch security review</p>
+          </div>
+          <div>
+            <p className="font-bold">p50 turnaround 2.1h</p>
+            <p className="text-xs text-muted">claims dataset Q1</p>
+          </div>
         </div>
-        <p className="text-center mt-6 font-semibold text-indigo-600 dark:text-indigo-400">Insurance industry security standards</p>
       </section>
-      <section className="py-16">
-        <h2 className="text-3xl font-bold text-center mb-8">Integrations &amp; API</h2>
-        <p className="text-center mb-4">Connect with your existing claims management systems and build custom workflows.</p>
-        <div className="text-center">
-          <Button asChild className="text-lg px-8 py-3">
-            <Link to="/docs">View API Docs</Link>
-          </Button>
+
+      <main className="flex-1">
+        <section className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
+          <img
+            src="https://placehold.co/600x400/webp?text=App+Dashboard"
+            srcSet="https://placehold.co/300x200/webp?text=App+Dashboard 300w, https://placehold.co/600x400/webp?text=App+Dashboard 600w"
+            sizes="(max-width: 768px) 100vw, 600px"
+            alt="App dashboard screenshot"
+            className="rounded-lg shadow-lg"
+            loading="lazy"
+            width="600" height="400"
+          />
+          <ul className="space-y-4">
+            <li className="flex items-center gap-2">
+              <ClipboardDocumentListIcon className="w-6 h-6 text-emerald-600" aria-hidden="true"/>
+              Fast digital intake
+            </li>
+            <li className="flex items-center gap-2">
+              <Stethoscope className="w-6 h-6 text-emerald-600" aria-hidden="true"/>
+              Built for medical review
+            </li>
+            <li className="flex items-center gap-2">
+              <ClipboardDocumentListIcon className="w-6 h-6 text-emerald-600" aria-hidden="true"/>
+              Audit trails and exports
+            </li>
+          </ul>
+        </section>
+
+        <section id="how" className="bg-gray-50 py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-8">How it works</h2>
+            <div className="grid gap-8 sm:grid-cols-3">
+              <div>
+                <span className="text-2xl font-bold text-emerald-600">1</span>
+                <p className="mt-2">Upload claim</p>
+              </div>
+              <div>
+                <span className="text-2xl font-bold text-emerald-600">2</span>
+                <p className="mt-2">Review with AI</p>
+              </div>
+              <div>
+                <span className="text-2xl font-bold text-emerald-600">3</span>
+                <p className="mt-2">Approve & export</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="container mx-auto px-4 py-16">
+          <h2 className="text-3xl font-bold text-center mb-4">Security & Compliance</h2>
+          <p className="text-center max-w-2xl mx-auto text-muted">
+            HIPAA-ready architecture with encrypted storage and audit trails.
+          </p>
+        </section>
+
+        <section id="pricing" className="bg-gray-50 py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-4">Simple pricing</h2>
+            <p className="text-muted mb-6">Start with a free demo and upgrade as you grow.</p>
+            <Button asChild className="px-8"><a href="/login">Get Started</a></Button>
+          </div>
+        </section>
+      </main>
+
+      <footer className="bg-gray-900 text-gray-300 text-sm">
+        <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row justify-between gap-4">
+          <p>© {new Date().getFullYear()} ClarifyClaims</p>
+          <nav className="flex gap-4 justify-center">
+            <a href="#privacy" className="hover:text-white">Privacy</a>
+            <a href="#security" className="hover:text-white">Security</a>
+          </nav>
         </div>
-      </section>
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-8">Insurance Company Case Studies</h2>
-        <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-          <Card className="space-y-2">
-            <h3 className="font-semibold">State Farm</h3>
-            <p className="text-sm">Reduced claims processing time by 70% and eliminated manual data entry errors.</p>
-          </Card>
-          <Card className="space-y-2">
-            <h3 className="font-semibold">Allstate</h3>
-            <p className="text-sm">Saved $50K monthly in fraud detection and improved processing accuracy to 98%.</p>
-          </Card>
-          <Card className="space-y-2">
-            <h3 className="font-semibold">Progressive</h3>
-            <p className="text-sm">Processed 10,000+ claims daily with AI automation and real-time fraud alerts.</p>
-          </Card>
-        </div>
-      </section>
-      <FeatureComparisonTable />
-      <PriceCalculator />
-      <AddOnsTable />
-      <TrustSection />
-      <FaqAccordion />
-      <footer className="bg-gray-100 dark:bg-gray-900 p-8 text-gray-600 dark:text-gray-400">
-        <div className="container mx-auto grid md:grid-cols-4 gap-8 text-sm">
-          <div>
-            <h3 className="font-semibold mb-2">Product</h3>
-            <ul className="space-y-1">
-              <li>
-                <a href="#features" className="hover:underline">Claims Processing</a>
-              </li>
-              <li>
-                <a href="#pricing" className="hover:underline">Pricing</a>
-              </li>
-              <li>
-                <a href="#how-it-works" className="hover:underline">How It Works</a>
-              </li>
-              <li>
-                <a href="#customers" className="hover:underline">Case Studies</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2">Company</h3>
-            <ul className="space-y-1">
-              <li>
-                <a href="#about" className="hover:underline">About</a>
-              </li>
-              <li>
-                <Link to="/careers" className="hover:underline">Careers</Link>
-              </li>
-              <li>
-                <a href="mailto:contact@clarifyops.com" className="hover:underline">Contact</a>
-              </li>
-              <li>
-                <Link to="/blog" className="hover:underline">Blog</Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2">Legal</h3>
-            <ul className="space-y-1">
-              <li>
-                <Link to="/terms" className="hover:underline">Terms of Service</Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
-              </li>
-              <li>
-                <Link to="/compliance" className="hover:underline">Compliance</Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2">Resources</h3>
-            <form className="flex space-x-2 mb-2" aria-label="Subscribe to updates">
-              <input
-                type="email"
-                placeholder="you@example.com"
-                className="input flex-1 text-xs"
-              />
-              <Button type="submit" className="px-3 flex items-center">
-                <EnvelopeIcon className="w-4 h-4 mr-1" />
-                Subscribe
-              </Button>
-            </form>
-            <ul className="space-y-1">
-              <li>
-                <a href="/docs" className="hover:underline">API Docs</a>
-              </li>
-              <li>
-                <a href="#resources" className="hover:underline">Help Center</a>
-              </li>
-              <li>
-                <a href="/integration" className="hover:underline">Integrations</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p className="text-center mt-8 text-xs">
-          © {new Date().getFullYear()} AI Claims Data Extractor - Insurance Claims Processing Automation
-        </p>
       </footer>
     </div>
-    <ChatWidget />
-    <ScheduleDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
-  </>
   );
 }

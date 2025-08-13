@@ -28,7 +28,7 @@ JWT_REFRESH_SECRET = ensureSecret(JWT_REFRESH_SECRET, 'JWT_REFRESH_SECRET');
 process.env.JWT_SECRET = JWT_SECRET;
 process.env.JWT_REFRESH_SECRET = JWT_REFRESH_SECRET;
 
-const ALLOWED_ROLES = ['admin', 'viewer', 'broker', 'adjuster', 'internal_ops'];
+const ALLOWED_ROLES = ['admin', 'viewer', 'broker', 'adjuster', 'medical_reviewer', 'auditor', 'internal_ops'];
 
 async function userExists(username) {
   const { rows } = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);

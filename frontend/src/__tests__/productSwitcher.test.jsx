@@ -9,6 +9,6 @@ test('product switcher preserves query params and time filters', () => {
       <Navbar tenant="t" role="admin" />
     </MemoryRouter>
   );
-  const link = screen.getByTitle('switchProduct');
+  const link = screen.getByTitle('Switch product');
   expect(link.getAttribute('href')).toBe('/claims?status=open&from=1&to=2&page=3');
 });
