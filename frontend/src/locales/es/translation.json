@@ -30,5 +30,14 @@
     "proof1": "-42% tiempo de revisión",
     "proof2": "Preparado para HIPAA",
     "proof3": "p50 tiempo de respuesta 2.1h"
+  },
+  "roles": {
+    "adjuster": "Ajustador",
+    "medical_reviewer": "Revisor médico",
+    "auditor": "Auditor",
+    "admin": "Administrador",
+    "viewer": "Observador",
+    "broker": "Corredor",
+    "internal_ops": "Operaciones internas"
   }
 }

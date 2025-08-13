@@ -6,7 +6,8 @@ const { trackEvent } = require('../utils/eventTracker');
 
 exports.createInvite = async (req, res) => {
   const { role = 'viewer', expiresInHours = 24 } = req.body || {};
-  if (!['viewer', 'editor', 'broker', 'adjuster', 'internal_ops'].includes(role)) {
+  if (!['viewer', 'editor', 'broker', 'adjuster', 'medical_reviewer', 'auditor', 'internal_ops'].includes(role)) {
+    await trackEvent('default', req.user?.userId, 'invite_create_failed', { reason: 'invalid_role' });
     return res.status(400).json({ message: 'Invalid role' });
   }
   const token = crypto.randomBytes(16).toString('hex');
@@ -17,9 +18,11 @@ exports.createInvite = async (req, res) => {
       [token, role, expiresAt, req.user?.userId]
     );
     logActivity(req.user?.userId, 'create_invite', null, req.user?.username);
+    await trackEvent('default', req.user?.userId, 'invite_created', { role });
     res.json({ url: `/api/invites/${token}` });
   } catch (err) {
     console.error('Create invite error:', err);
+    await trackEvent('default', req.user?.userId, 'invite_create_failed', { reason: 'error' });
     res.status(500).json({ message: 'Failed to create invite' });
   }
 };

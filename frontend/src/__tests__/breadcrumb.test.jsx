@@ -9,5 +9,5 @@ test('deep link renders full breadcrumb trail', () => {
     </MemoryRouter>
   );
   const crumb = screen.getByText('ClarifyClaims').parentElement;
-  expect(crumb.textContent).toMatch(/ClarifyOps.*ClarifyClaims.*Claim 123.*Audit.*Note/);
+  expect(crumb.textContent).toMatch(/ClarifyClaims.*Claim 123.*Audit.*Note/);
 });

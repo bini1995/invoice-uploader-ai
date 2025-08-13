@@ -30,5 +30,14 @@
     "proof1": "-42% review time",
     "proof2": "HIPAA-ready",
     "proof3": "p50 turnaround 2.1h"
+  },
+  "roles": {
+    "adjuster": "Adjuster",
+    "medical_reviewer": "Medical Reviewer",
+    "auditor": "Auditor",
+    "admin": "Admin",
+    "viewer": "Viewer",
+    "broker": "Broker",
+    "internal_ops": "Internal Ops"
   }
 }

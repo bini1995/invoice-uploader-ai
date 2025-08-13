@@ -38,6 +38,7 @@ const complianceRoutes = require('./routes/complianceRoutes');
 const signingRoutes = require('./routes/signingRoutes');
 const workspaceRoutes = require('./routes/workspaceRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
+const landingRoutes = require('./routes/landingRoutes');
 const crypto = require('crypto');
 const validationRoutes = require('./routes/validationRoutes');
 const metricsRoutes = require('./routes/metricsRoutes');
@@ -91,6 +92,14 @@ app.use(helmet({
     },
   },
   crossOriginEmbedderPolicy: false,
+  referrerPolicy: { policy: 'no-referrer' },
+  permissionsPolicy: {
+    features: {
+      geolocation: ["'none'"],
+      camera: ["'none'"],
+      microphone: ["'none'"]
+    }
+  },
 }));
 
 // CORS configuration
@@ -234,6 +243,7 @@ app.use('/api/plugins', pluginRoutes);
 app.use('/api/compliance', complianceRoutes);
 app.use('/api/signing', signingRoutes);
 app.use('/api/invites', inviteRoutes);
+app.use('/api', landingRoutes);
 app.use('/api/validation', validationRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/events', eventRoutes);

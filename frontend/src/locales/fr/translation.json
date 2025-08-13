@@ -30,5 +30,14 @@
     "proof1": "-42% temps d'examen",
     "proof2": "Compatible HIPAA",
     "proof3": "p50 délai de traitement 2,1 h"
+  },
+  "roles": {
+    "adjuster": "Expert",
+    "medical_reviewer": "Relecteur médical",
+    "auditor": "Auditeur",
+    "admin": "Admin",
+    "viewer": "Lecteur",
+    "broker": "Courtier",
+    "internal_ops": "Opérations internes"
   }
 }

@@ -9,6 +9,7 @@ import HighContrastToggle from './HighContrastToggle';
 import useDarkMode from '../hooks/useDarkMode';
 import useOutsideClick from '../hooks/useOutsideClick';
 import { useTranslation } from 'react-i18next';
+import { ROLE_EMOJI } from '../theme/roles';
 import {
   Bars3Icon,
   AdjustmentsHorizontalIcon,
@@ -50,6 +51,8 @@ export default function Navbar({
   useOutsideClick(menuRef, () => setMenuOpen(false));
   useOutsideClick(userRef, () => setUserOpen(false));
   const { t } = useTranslation();
+  const [showBadge, setShowBadge] = useState(localStorage.getItem('showMyRoleBadge') !== 'false');
+  const showRoleEmojis = localStorage.getItem('showRoleEmojis') !== 'false';
   const location = useLocation();
 
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -221,7 +224,7 @@ export default function Navbar({
               <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setUserOpen((o) => !o)}
-                  className="flex items-center space-x-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                  className="flex items-center space-x-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded relative"
                   title={t('account')}
                   aria-label={t('account')}
                 >
@@ -230,6 +233,9 @@ export default function Navbar({
                     alt="avatar"
                     className="h-6 w-6 rounded-full"
                   />
+                  {showRoleEmojis && showBadge && ROLE_EMOJI[role] && (
+                    <span className="absolute -bottom-1 -right-1 text-xs" aria-hidden="true">{ROLE_EMOJI[role]}</span>
+                  )}
                   <span className="text-sm">Bini</span>
                 </button>
                 {userOpen && (
@@ -242,6 +248,19 @@ export default function Navbar({
                         {t('startTour')}
                       </button>
                     )}
+                    <label className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={showBadge}
+                        onChange={() => {
+                          const next = !showBadge;
+                          setShowBadge(next);
+                          localStorage.setItem('showMyRoleBadge', String(next));
+                        }}
+                      />
+                      <span className="text-left flex-1">Show role badge</span>
+                    </label>
                     <button
                       onClick={onLogout}
                       className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700"
