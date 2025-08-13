@@ -7,22 +7,16 @@ import DarkModeToggle from './DarkModeToggle';
 import HighContrastToggle from './HighContrastToggle';
 
 export default function TopNavbar({ title, helpTopic }) {
-  const token = localStorage.getItem('token') || '';
   const { t } = useTranslation();
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
   return (
     <header className="sticky top-0 z-30 h-12 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow flex items-center justify-between px-4">
-      <h1 className="text-lg font-semibold flex items-center space-x-2">
-        <img src="/logo.png" alt="logo" className="h-6 w-6" />
+      <div className="text-lg font-semibold flex items-center space-x-2">
+        <img src="/logo.svg" alt="ClarifyOps logo" className="h-7 w-auto" />
         <span>{t('title')}</span>
         <span className="opacity-70">/ {title}</span>
-        {helpTopic && (
-          <span className="relative group cursor-help">❓
-            <span className="hidden group-hover:block absolute z-10">
-              <HelpTooltip topic={helpTopic} token={token} />
-            </span>
-          </span>
-        )}
-      </h1>
+        {helpTopic && <HelpTooltip term={helpTopic} />}
+      </div>
       <div className="flex items-center gap-2">
         <LanguageSelector />
         <HighContrastToggle />

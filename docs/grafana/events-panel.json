@@ -1,0 +1,25 @@
+{
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Hero CTA Clicks",
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "sum(increase(hero_cta_click_total[5m]))" }],
+      "id": 1
+    },
+    {
+      "type": "timeseries",
+      "title": "Glossary Tooltip Opens",
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "sum(increase(glossary_tooltip_open_total[5m]))" }],
+      "id": 2
+    },
+    {
+      "type": "timeseries",
+      "title": "Dashboard Drilldowns",
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "sum(increase(dashboard_drilldown_total[5m]))" }],
+      "id": 3
+    }
+  ]
+}

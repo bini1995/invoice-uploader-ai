@@ -17,9 +17,9 @@ import {
   ArchiveBoxIcon,
   ArrowUpTrayIcon,
   UsersIcon,
-  QuestionMarkCircleIcon,
   Squares2X2Icon,
   FlagIcon,
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline';
 import HelpTooltip from './HelpTooltip';
 
@@ -43,7 +43,6 @@ export default function Navbar({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
   const [darkMode, setDarkMode] = useDarkMode();
   const [tenantName, setTenantName] = useState(tenant);
   const menuRef = useRef(null);
@@ -53,10 +52,17 @@ export default function Navbar({
   const { t } = useTranslation();
   const location = useLocation();
 
-  const crumbs = location.pathname
-    .split('/')
-    .filter(Boolean)
-    .map((c) => c[0].toUpperCase() + c.slice(1));
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const crumbs = pathParts.slice(1).map((c, i) => {
+    if (i === 0 && /^\d+$/.test(c)) return `Claim ${c}`;
+    return c.replace(/-/g, ' ').replace(/^./, (ch) => ch.toUpperCase());
+  });
+
+  useEffect(() => {
+    if (location.pathname.startsWith('/claims')) {
+      sessionStorage.setItem('claimsQuery', location.search);
+    }
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     if (!token) return;
@@ -72,16 +78,29 @@ export default function Navbar({
         <div className="flex items-center space-x-2">
           <Link to="/claims" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img
-              src="/logo.png"
-              alt="logo"
-              className="h-5 w-5"
+              src="/logo.svg"
+              alt="ClarifyOps logo"
+              className="h-7 w-auto"
             />
             <span className="font-semibold text-sm">{t('title')}</span>
             <span className="ml-1 text-xs opacity-80">{tenantName}</span>
           </Link>
-          {crumbs.length > 0 && (
-            <span className="text-xs opacity-80">/ {crumbs.join(' / ')}</span>
-          )}
+          <span className="text-xs opacity-80">›</span>
+          <Link
+            to={`/claims${sessionStorage.getItem('claimsQuery') || ''}`}
+            className="flex items-center text-sm font-medium"
+            title={t('switchProduct')}
+            aria-label={t('switchProduct')}
+          >
+            ClarifyClaims
+            <ChevronDownIcon className="h-4 w-4 ml-1" />
+          </Link>
+          {crumbs.map((c) => (
+            <React.Fragment key={c}>
+              <span className="text-xs opacity-80">›</span>
+              <span className="text-xs opacity-80">{c}</span>
+            </React.Fragment>
+          ))}
         </div>
         <input
           id="searchInput"
@@ -134,8 +153,8 @@ export default function Navbar({
                 <button
                   className="focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
                   onClick={() => setMenuOpen((o) => !o)}
-                  title="Menu"
-                  aria-label="Menu"
+                  title={t('menu')}
+                  aria-label={t('menu')}
                 >
                   <Bars3Icon className="h-6 w-6" />
                 </button>
@@ -195,14 +214,7 @@ export default function Navbar({
                   </div>
                 )}
               </div>
-              <div
-                className="relative"
-                onMouseEnter={() => setHelpOpen(true)}
-                onMouseLeave={() => setHelpOpen(false)}
-              >
-              <QuestionMarkCircleIcon className="h-6 w-6 cursor-help" />
-              {helpOpen && <HelpTooltip topic="dashboard" token={token} />}
-            </div>
+            <HelpTooltip term="dashboard" />
             <HighContrastToggle />
             <DarkModeToggle />
             <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} tenant={tenant} />
@@ -210,8 +222,8 @@ export default function Navbar({
                 <button
                   onClick={() => setUserOpen((o) => !o)}
                   className="flex items-center space-x-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
-                  title="Account"
-                  aria-label="Account"
+                  title={t('account')}
+                  aria-label={t('account')}
                 >
                   <img
                     src="https://api.dicebear.com/7.x/initials/svg?seed=bini&backgroundColor=5B21B6&textColor=ffffff"
@@ -227,14 +239,14 @@ export default function Navbar({
                         onClick={() => { onStartTour(); setUserOpen(false); }}
                         className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
-                        Start Tour
+                        {t('startTour')}
                       </button>
                     )}
                     <button
                       onClick={onLogout}
                       className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
-                      Logout
+                      {t('logout')}
                     </button>
                   </div>
                 )}

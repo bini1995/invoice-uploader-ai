@@ -35,5 +35,23 @@ jobs:
         run: cd backend && npm run lint || true
       - name: Install frontend deps
         run: cd frontend && npm ci --legacy-peer-deps
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+      - name: Install Playwright browsers
+        run: cd frontend && npx playwright install --with-deps
+      - name: Frontend tests
+        run: cd frontend && npm test -- --watchAll=false --testPathIgnorePatterns=visual.test.jsx
+      - name: Backend tests
+        run: cd backend && npm test
+      - name: Playwright smoke tests
+        run: cd frontend && npx playwright test
+      - name: Visual regression tests
+        if: github.event_name == 'pull_request'
+        run: cd frontend && npm test src/components/__tests__/visual.pr.test.jsx
       - name: Build frontend
         run: cd frontend && npm run build
+      - name: Lighthouse CI
+        run: cd frontend && npx lhci autorun --config=lighthouserc.js

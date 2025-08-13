@@ -4,6 +4,7 @@ import Skeleton from './components/Skeleton';
 import { motion } from 'framer-motion';
 import ChatSidebar from './components/ChatSidebar';
 import NotesModal from './components/NotesModal';
+import PageHeader from './components/PageHeader';
 import { API_BASE } from './api';
 import {
   Cog6ToothIcon,
@@ -70,7 +71,7 @@ export default function OpsClaim() {
         throw new Error(`HTTP ${res.status}`);
       }
     } catch (err) {
-      console.error('OpsClaim fetch error:', err);
+      console.error('ClarifyClaims fetch error:', err);
     }
     setLoading(false);
   }, [token, tenant, headers, statusFilter, from, to]);
@@ -249,7 +250,8 @@ export default function OpsClaim() {
   const focusMode = copilotOpen || expandedRows.length > 0 || selectedRows.length > 0;
 
   return (
-    <MainLayout title="OpsClaim" helpTopic="opsclaim" collapseSidebar={focusMode}>
+    <MainLayout title="ClarifyOps › ClarifyClaims" helpTopic="opsclaim" collapseSidebar={focusMode}>
+      <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Triage Queue" />
       {selectedRows.length > 0 && (
         <div className="mb-2 flex gap-2">
           <button onClick={bulkApprove} className="btn btn-ghost text-xs flex items-center gap-1">
