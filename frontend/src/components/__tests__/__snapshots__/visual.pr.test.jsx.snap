@@ -1,0 +1,463 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hero snapshot light and dark 1`] = `
+<DocumentFragment>
+  <section
+    class="relative overflow-hidden min-h-[70vh] px-6 py-20 flex items-center justify-center bg-surface text-ink"
+    id="product"
+  >
+    <img
+      alt="ClarifyOps watermark"
+      class="hidden md:block absolute right-10 bottom-0 w-1/2 max-w-md opacity-10 pointer-events-none select-none"
+      src="/logo.svg"
+    />
+    <div
+      class="container mx-auto grid md:grid-cols-2 gap-8 items-center"
+    >
+      <div
+        class="space-y-6 text-center md:text-left"
+        style="opacity: 0; transform: translateX(-20px);"
+      >
+        <h1
+          class="text-5xl md:text-6xl font-extrabold tracking-tight"
+        >
+          extract, validate, and resolve medical claims with AI. faster reviews, fewer denials.
+        </h1>
+        <p
+          class="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-muted"
+        >
+          from CMS-1500 and UB-04 to CPT/HCPCS checks and audit trails—built for adjusters, reviewers, and payers. 
+          <span
+            class="inline-block relative"
+          >
+            <button
+              aria-label="AI Extracted from CMS1500"
+              class="ml-1 text-muted focus:outline-none focus:ring-focus focus:ring-offset-2 rounded transition-colors duration-fast "
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4"
+                data-slot="icon"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </span>
+        </p>
+        <div
+          class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
+        >
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium transition-colors duration-fast focus:outline-none focus:ring-focus focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-white hover:bg-accent-hover h-10 text-lg px-8 py-3 min-h-[44px]"
+          >
+            Request Demo
+          </button>
+          <a
+            class="self-center text-muted hover:text-ink underline mt-2 sm:mt-0"
+            href="/free-trial"
+          >
+            Start Free Trial
+          </a>
+        </div>
+        <ul
+          class="flex items-center justify-center md:justify-start space-x-6 text-sm text-muted"
+        >
+          <li>
+            -42% review time
+          </li>
+          <li>
+            HIPAA-ready
+          </li>
+          <li>
+            p50 turnaround 2.1h
+          </li>
+        </ul>
+        <div
+          class="pt-4 text-center md:text-left"
+        >
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-medium"
+          >
+            Trusted by insurance teams at
+          </p>
+          <div
+            class="flex justify-center md:justify-start items-center gap-4 opacity-80"
+          >
+            <img
+              alt="State Farm"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=State%20Farm"
+            />
+            <img
+              alt="Allstate"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=Allstate"
+            />
+            <img
+              alt="Progressive"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=Progressive"
+            />
+            <img
+              alt="Liberty Mutual"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=Liberty%20Mutual"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-full"
+        style="opacity: 0; transform: translateX(20px);"
+      >
+        <img
+          alt="AI Claims Data Extraction Dashboard"
+          class="w-full rounded-lg shadow-lg"
+          loading="lazy"
+          src="https://placehold.co/800x450/webp?text=Claims+Extraction+Dashboard"
+        />
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`hero snapshot light and dark 2`] = `
+<DocumentFragment>
+  <section
+    class="relative overflow-hidden min-h-[70vh] px-6 py-20 flex items-center justify-center bg-surface text-ink"
+    id="product"
+  >
+    <img
+      alt="ClarifyOps watermark"
+      class="hidden md:block absolute right-10 bottom-0 w-1/2 max-w-md opacity-10 pointer-events-none select-none"
+      src="/logo.svg"
+    />
+    <div
+      class="container mx-auto grid md:grid-cols-2 gap-8 items-center"
+    >
+      <div
+        class="space-y-6 text-center md:text-left"
+        style="opacity: 0; transform: translateX(-20px);"
+      >
+        <h1
+          class="text-5xl md:text-6xl font-extrabold tracking-tight"
+        >
+          extract, validate, and resolve medical claims with AI. faster reviews, fewer denials.
+        </h1>
+        <p
+          class="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 text-muted"
+        >
+          from CMS-1500 and UB-04 to CPT/HCPCS checks and audit trails—built for adjusters, reviewers, and payers. 
+          <span
+            class="inline-block relative"
+          >
+            <button
+              aria-label="AI Extracted from CMS1500"
+              class="ml-1 text-muted focus:outline-none focus:ring-focus focus:ring-offset-2 rounded transition-colors duration-fast "
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4"
+                data-slot="icon"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </span>
+        </p>
+        <div
+          class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
+        >
+          <button
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-full font-medium transition-colors duration-fast focus:outline-none focus:ring-focus focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-white hover:bg-accent-hover h-10 text-lg px-8 py-3 min-h-[44px]"
+          >
+            Request Demo
+          </button>
+          <a
+            class="self-center text-muted hover:text-ink underline mt-2 sm:mt-0"
+            href="/free-trial"
+          >
+            Start Free Trial
+          </a>
+        </div>
+        <ul
+          class="flex items-center justify-center md:justify-start space-x-6 text-sm text-muted"
+        >
+          <li>
+            -42% review time
+          </li>
+          <li>
+            HIPAA-ready
+          </li>
+          <li>
+            p50 turnaround 2.1h
+          </li>
+        </ul>
+        <div
+          class="pt-4 text-center md:text-left"
+        >
+          <p
+            class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-medium"
+          >
+            Trusted by insurance teams at
+          </p>
+          <div
+            class="flex justify-center md:justify-start items-center gap-4 opacity-80"
+          >
+            <img
+              alt="State Farm"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=State%20Farm"
+            />
+            <img
+              alt="Allstate"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=Allstate"
+            />
+            <img
+              alt="Progressive"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=Progressive"
+            />
+            <img
+              alt="Liberty Mutual"
+              class="h-8 object-contain rounded"
+              src="https://dummyimage.com/120x60/4b2ad3/ffffff.png&text=Liberty%20Mutual"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-full"
+        style="opacity: 0; transform: translateX(20px);"
+      >
+        <img
+          alt="AI Claims Data Extraction Dashboard"
+          class="w-full rounded-lg shadow-lg"
+          loading="lazy"
+          src="https://placehold.co/800x450/webp?text=Claims+Extraction+Dashboard"
+        />
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`navbar snapshot light and dark 1`] = `
+<DocumentFragment>
+  <header
+    class="sticky top-0 z-30 h-12 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow flex items-center justify-between px-4"
+  >
+    <div
+      class="text-lg font-semibold flex items-center space-x-2"
+    >
+      <img
+        alt="ClarifyOps logo"
+        class="h-7 w-auto"
+        src="/logo.svg"
+      />
+      <span>
+        ClarifyOps
+      </span>
+      <span
+        class="opacity-70"
+      >
+        / Test
+      </span>
+    </div>
+    <div
+      class="flex items-center gap-2"
+    >
+      <select
+        class="input px-1 text-sm"
+      >
+        <option
+          value="en"
+        >
+          EN
+        </option>
+        <option
+          value="es"
+        >
+          ES
+        </option>
+        <option
+          value="fr"
+        >
+          FR
+        </option>
+      </select>
+      <button
+        aria-label="Toggle high contrast mode"
+        class="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+        title="Enable high contrast"
+      >
+        <svg
+          aria-hidden="true"
+          class="h-6 w-6"
+          data-slot="icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15 11.25 1.5 1.5.75-.75V8.758l2.276-.61a3 3 0 1 0-3.675-3.675l-.61 2.277H12l-.75.75 1.5 1.5M15 11.25l-8.47 8.47c-.34.34-.8.53-1.28.53s-.94.19-1.28.53l-.97.97-.75-.75.97-.97c.34-.34.53-.8.53-1.28s.19-.94.53-1.28L12.75 9M15 11.25 12.75 9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Toggle dark mode"
+        class="p-2 ml-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
+        title="Switch to dark mode"
+      >
+        <svg
+          aria-hidden="true"
+          class="h-6 w-6 text-indigo-200 transform transition-transform duration-300"
+          data-slot="icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+      <a
+        class="underline"
+        href="/"
+      >
+        Back to App
+      </a>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`navbar snapshot light and dark 2`] = `
+<DocumentFragment>
+  <header
+    class="sticky top-0 z-30 h-12 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow flex items-center justify-between px-4"
+  >
+    <div
+      class="text-lg font-semibold flex items-center space-x-2"
+    >
+      <img
+        alt="ClarifyOps logo"
+        class="h-7 w-auto"
+        src="/logo.svg"
+      />
+      <span>
+        ClarifyOps
+      </span>
+      <span
+        class="opacity-70"
+      >
+        / Test
+      </span>
+    </div>
+    <div
+      class="flex items-center gap-2"
+    >
+      <select
+        class="input px-1 text-sm"
+      >
+        <option
+          value="en"
+        >
+          EN
+        </option>
+        <option
+          value="es"
+        >
+          ES
+        </option>
+        <option
+          value="fr"
+        >
+          FR
+        </option>
+      </select>
+      <button
+        aria-label="Toggle high contrast mode"
+        class="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+        title="Enable high contrast"
+      >
+        <svg
+          aria-hidden="true"
+          class="h-6 w-6"
+          data-slot="icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15 11.25 1.5 1.5.75-.75V8.758l2.276-.61a3 3 0 1 0-3.675-3.675l-.61 2.277H12l-.75.75 1.5 1.5M15 11.25l-8.47 8.47c-.34.34-.8.53-1.28.53s-.94.19-1.28.53l-.97.97-.75-.75.97-.97c.34-.34.53-.8.53-1.28s.19-.94.53-1.28L12.75 9M15 11.25 12.75 9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Toggle dark mode"
+        class="p-2 ml-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
+        title="Switch to dark mode"
+      >
+        <svg
+          aria-hidden="true"
+          class="h-6 w-6 text-indigo-200 transform transition-transform duration-300"
+          data-slot="icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+      <a
+        class="underline"
+        href="/"
+      >
+        Back to App
+      </a>
+    </div>
+  </header>
+</DocumentFragment>
+`;

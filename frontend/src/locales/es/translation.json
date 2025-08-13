@@ -1,5 +1,5 @@
 {
-  "title": "AI Claims Data Extractor",
+  "title": "ClarifyOps",
   "upload": "Subir",
   "searchPlaceholder": "Buscar...",
   "demoUpload": "Carga de Demostración",
@@ -8,6 +8,27 @@
   "close": "Cerrar",
   "seedDummyData": "Generar Datos de Prueba",
   "seeding": "Generando...",
-  "seeded": "¡Generado!"
-  ,"uploadSummary": "Resumen de Subida"
+  "seeded": "¡Generado!",
+  "uploadSummary": "Resumen de Subida",
+  "lastUpdated": "Última actualización",
+  "switchProduct": "Cambiar producto",
+  "menu": "Menú",
+  "account": "Cuenta",
+  "logout": "Cerrar sesión",
+  "startTour": "Iniciar recorrido",
+  "glossary": {
+    "version": "2023-09-15",
+    "ai_extracted_from_cms1500": "Documento de origen y confianza de extracción mostrados.",
+    "overcoded": "El CPT facturado puede no coincidir con la documentación; considere bajar el código.",
+    "missing_modifier": "La reclamación puede requerir un modificador (p. ej., 25, 59) para evitar ediciones NCCI."
+  },
+  "hero": {
+    "headline": "extraiga, valide y resuelva reclamaciones médicas con IA. revisiones más rápidas, menos denegaciones.",
+    "subhead": "de CMS-1500 y UB-04 a comprobaciones CPT/HCPCS y rastros de auditoría—para ajustadores, revisores y pagadores.",
+    "cta": "Solicitar demostración",
+    "secondary": "Iniciar prueba gratuita",
+    "proof1": "-42% tiempo de revisión",
+    "proof2": "Preparado para HIPAA",
+    "proof3": "p50 tiempo de respuesta 2.1h"
+  }
 }

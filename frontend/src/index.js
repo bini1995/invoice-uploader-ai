@@ -17,7 +17,6 @@ import WorkflowPage from './WorkflowPage';
 import WorkflowBuilderPage from './WorkflowBuilderPage';
 import Board from './Board';
 import KanbanDashboard from './KanbanDashboard';
-import OpsClaim from './OpsClaim';
 import NotFound from './NotFound';
 import ResultsViewer from './ResultsViewer';
 import ErrorBoundary from './ErrorBoundary';
@@ -29,7 +28,8 @@ import InstantTrial from './InstantTrial';
 import LoginPage from './LoginPage';
 import ClarifyClaims from './ClarifyClaims';
 import ClaimsBrandingPreview from './ClaimsBrandingPreview';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import LegacyClaimsRedirect from './LegacyClaimsRedirect';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import './i18n';
@@ -129,7 +129,7 @@ function AnimatedRoutes() {
         <Route path="/adaptive" element={<PageWrapper><AdaptiveDashboard /></PageWrapper>} />
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
         <Route path="/claims" element={<PageWrapper><ClaimsPage /></PageWrapper>} />
-        <Route path="/opsclaim" element={<PageWrapper><OpsClaim /></PageWrapper>} />
+        <Route path="/opsclaim/*" element={<LegacyClaimsRedirect />} />
         <Route path="/claims/branding-preview" element={<PageWrapper><ClaimsBrandingPreview /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><AISpendAnalyticsHub /></PageWrapper>} />
         <Route path="/auditflow" element={<PageWrapper><AuditFlow /></PageWrapper>} />
@@ -148,10 +148,12 @@ function AnimatedRoutes() {
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/sandbox" element={<PageWrapper><DemoSandbox /></PageWrapper>} />
         <Route path="/free-trial" element={<PageWrapper><InstantTrial /></PageWrapper>} />
-        <Route path="/clarifyclaims" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
+        <Route path="/claims/summary" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+        <Route path="/invoice" element={<Navigate to="/claims" replace />} />
+        <Route path="/invoices/*" element={<Navigate to="/claims" replace />} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>

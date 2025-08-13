@@ -129,7 +129,7 @@ export default function DashboardBuilder() {
 
   return (
     <MainLayout title="Dashboard Builder">
-      <PageHeader title="AI Claims Data Extractor / Dashboard" subtitle="Create Your Dashboard" />
+      <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Create Your Dashboard" />
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="widgets">
             {(provided) => (

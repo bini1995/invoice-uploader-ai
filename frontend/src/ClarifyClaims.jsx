@@ -64,7 +64,7 @@ export default function ClarifyClaims() {
     const params = new URLSearchParams({ from, to });
     if (opts.flagged) params.set('flagged', 'true');
     if (opts.status) params.set('status', opts.status);
-    navigate(`/opsclaim?${params.toString()}`);
+    navigate(`/claims?${params.toString()}`);
   };
 
   return (

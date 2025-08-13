@@ -1,5 +1,5 @@
 {
-  "title": "AI Claims Data Extractor",
+  "title": "ClarifyOps",
   "upload": "Téléverser",
   "searchPlaceholder": "Recherche...",
   "demoUpload": "Téléversement Démo",
@@ -8,6 +8,27 @@
   "close": "Fermer",
   "seedDummyData": "Générer des Données d'Essai",
   "seeding": "Génération...",
-  "seeded": "Généré !"
-  ,"uploadSummary": "Récapitulatif de Téléversement"
+  "seeded": "Généré !",
+  "uploadSummary": "Récapitulatif de Téléversement",
+  "lastUpdated": "Dernière mise à jour",
+  "switchProduct": "Changer de produit",
+  "menu": "Menu",
+  "account": "Compte",
+  "logout": "Déconnexion",
+  "startTour": "Démarrer la visite",
+  "glossary": {
+    "version": "2023-09-15",
+    "ai_extracted_from_cms1500": "Document source et confiance d'extraction affichés.",
+    "overcoded": "Le CPT facturé peut ne pas correspondre aux pièces; envisagez une décote.",
+    "missing_modifier": "La demande peut nécessiter un modificateur (ex. 25, 59) pour éviter les éditions NCCI."
+  },
+  "hero": {
+    "headline": "extraire, valider et résoudre les demandes médicales avec l'IA. examens plus rapides, moins de refus.",
+    "subhead": "du CMS-1500 et UB-04 aux vérifications CPT/HCPCS et pistes d'audit—conçu pour les experts, réviseurs et payeurs.",
+    "cta": "Demander une démo",
+    "secondary": "Commencer l'essai gratuit",
+    "proof1": "-42% temps d'examen",
+    "proof2": "Compatible HIPAA",
+    "proof3": "p50 délai de traitement 2,1 h"
+  }
 }

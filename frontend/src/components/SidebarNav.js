@@ -11,7 +11,6 @@ import {
   LayoutGrid,
   Archive,
   Flag,
-  Inbox,
   FileBarChart2,
   ChevronLeft,
   Menu,
@@ -60,14 +59,6 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
             >
               <FileText className="w-5 h-5" />
               <span>ClarifyClaims</span>
-            </Link>
-            <Link
-              to="/opsclaim"
-              title="Triage, route, and approve claims with live insights."
-              className={`nav-link border-l-4 ${location.pathname === '/opsclaim' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
-            >
-              <Inbox className="w-5 h-5" />
-              <span>OpsClaim</span>
             </Link>
             <Link
               to="/vendors"

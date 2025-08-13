@@ -36,12 +36,12 @@ export default function ExportTemplateBuilder() {
   };
 
   return (
-    <MainLayout title="Export Templates">
+    <MainLayout title="ClarifyOps › ClarifyClaims">
       <div className="space-y-4 max-w-xl">
-        <PageHeader
-          title="Export Templates"
-          subtitle="Select which fields to include in your export template."
-        />
+        <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Export Templates" />
+        <p className="text-sm text-gray-500">
+          Select which fields to include in your export template.
+        </p>
         <div className="bg-white p-6 rounded-xl shadow-sm space-y-4">
           <h2 className="text-lg font-semibold mb-2">Export Template Fields</h2>
           <p className="text-sm text-gray-500 mb-4">

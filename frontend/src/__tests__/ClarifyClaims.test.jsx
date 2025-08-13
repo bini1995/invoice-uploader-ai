@@ -57,7 +57,7 @@ test('fetches metrics for range, allows drilldown and refetch', async () => {
 
   fireEvent.click(flaggedLabel.parentElement);
   expect(mockNavigate).toHaveBeenCalledWith(
-    `/opsclaim?from=${encodeURIComponent(from7d)}&to=${encodeURIComponent(to)}&flagged=true`
+    `/claims?from=${encodeURIComponent(from7d)}&to=${encodeURIComponent(to)}&flagged=true`
   );
 
   fetch.mockClear();

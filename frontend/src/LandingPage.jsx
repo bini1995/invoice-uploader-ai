@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -41,29 +41,57 @@ import FaqAccordion from './components/FaqAccordion';
 import TestimonialSlider from './components/TestimonialSlider';
 import PriceCalculator from './components/PriceCalculator';
 import TrustSection from './components/TrustSection';
+import { logEvent } from './lib/analytics';
 
 export default function LandingPage() {
   const [demoOpen, setDemoOpen] = useState(false);
+  const [sent50, setSent50] = useState(false);
+  const [sent90, setSent90] = useState(false);
+  const timeRange = JSON.parse(localStorage.getItem('timeRange') || '{}');
+
+  useEffect(() => {
+    const onScroll = () => {
+      const depth = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
+      if (!sent50 && depth >= 0.5) {
+        logEvent('scroll_depth', { depth: 50 });
+        setSent50(true);
+      }
+      if (!sent90 && depth >= 0.9) {
+        logEvent('scroll_depth', { depth: 90 });
+        setSent90(true);
+      }
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [sent50, sent90]);
+
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <nav className="sticky top-0 bg-white/80 backdrop-blur dark:bg-gray-900/80 shadow z-30">
+    <>
+      <a
+        href="#hero"
+        className="sr-only focus:not-sr-only focus:absolute top-0 left-0 bg-surface text-accent p-2"
+      >
+        Skip to content
+      </a>
+      <div className="min-h-screen flex flex-col bg-surface text-ink">
+      <nav className="sticky top-0 bg-surface/80 backdrop-blur shadow z-30">
         <div className="container mx-auto flex justify-between items-center p-4">
           <div className="flex items-center space-x-2">
-            <img src="/logo.png" alt="AI Claims Data Extractor" className="w-6 h-6" />
-            <span className="font-bold text-lg">AI Claims Data Extractor</span>
+            <img src="/logo.svg" alt="ClarifyOps logo" className="h-7 w-auto" />
+            <span className="font-bold text-lg">ClarifyClaims</span>
           </div>
           <div className="hidden md:flex items-center space-x-6 text-sm">
-            <a href="#product" className="hover:text-indigo-600">Claims Processing</a>
-            <a href="#how-it-works" className="hover:text-indigo-600">How It Works</a>
-            <a href="#customers" className="hover:text-indigo-600">Insurance Teams</a>
-            <a href="#pricing" className="hover:text-indigo-600">Pricing</a>
-            <a href="#resources" className="hover:text-indigo-600">Resources</a>
+            <a href="#product" className="hover:text-accent transition-colors duration-fast">Claims Processing</a>
+            <a href="#how-it-works" className="hover:text-accent transition-colors duration-fast">How It Works</a>
+            <a href="#customers" className="hover:text-accent transition-colors duration-fast">Insurance Teams</a>
+            <a href="#pricing" className="hover:text-accent transition-colors duration-fast">Pricing</a>
+            <a href="#resources" className="hover:text-accent transition-colors duration-fast">Resources</a>
           </div>
           <div className="hidden sm:flex items-center space-x-2">
             <Button onClick={() => setDemoOpen(true)}>Request Demo</Button>
             <a
               href="#pricing"
-              className="underline text-sm hover:text-indigo-600"
+              className="underline text-sm hover:text-accent transition-colors duration-fast"
             >
               See all plans
             </a>
@@ -79,7 +107,9 @@ export default function LandingPage() {
         </div>
       </nav>
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <HeroSection onRequestDemo={() => setDemoOpen(true)} />
+        <div id="hero" tabIndex="-1">
+          <HeroSection onRequestDemo={() => setDemoOpen(true)} />
+        </div>
       <ProblemSolutionSection />
       <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-6">Interactive Claims Processing Demo</h2>
@@ -225,9 +255,9 @@ export default function LandingPage() {
       </section>
       <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-2">Try Claims Processing →</h2>
-        <p className="text-center mb-4 text-gray-600 dark:text-gray-300">No signup needed. Test claims extraction instantly.</p>
+        <p className="text-center mb-4 text-muted">No signup needed. Test claims extraction instantly.</p>
         <div className="container mx-auto px-6">
-          <ProgressDashboard />
+          <ProgressDashboard from={timeRange.from} to={timeRange.to} />
           <div className="text-center mt-4">
             <DummyDataButton className="btn btn-primary text-lg" />
           </div>
@@ -247,10 +277,10 @@ export default function LandingPage() {
         <div className="container mx-auto overflow-x-auto px-6">
           <div className="flex items-center space-x-4 w-max">
             <Card className="min-w-[150px] flex flex-col items-center space-y-2">
-              <DocumentArrowUpIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+              <DocumentArrowUpIcon className="w-8 h-8 text-accent" />
               <span className="font-semibold">Upload Claim</span>
             </Card>
-            <ArrowLongRightIcon className="w-6 h-6 text-indigo-600 flex-shrink-0" />
+            <ArrowLongRightIcon className="w-6 h-6 text-accent flex-shrink-0" />
             <Card className="min-w-[150px] flex flex-col items-center space-y-2">
               <CheckCircleIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
               <span className="font-semibold">AI Extract</span>
@@ -446,9 +476,9 @@ export default function LandingPage() {
           © {new Date().getFullYear()} AI Claims Data Extractor - Insurance Claims Processing Automation
         </p>
       </footer>
-      </div>
-      <ChatWidget />
-      <ScheduleDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
+    <ChatWidget />
+    <ScheduleDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
+  </>
   );
 }

@@ -2105,7 +2105,7 @@ useEffect(() => {
 
       <main className="flex-1 w-full bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 m-4">
         <div className="flex justify-between items-center mb-4">
-          <PageHeader title="AI Claims Data Extractor / Dashboard" />
+          <PageHeader title="ClarifyOps › ClarifyClaims" />
           <LiveFeed token={token} tenant={tenant} />
         </div>
   
@@ -2964,7 +2964,7 @@ useEffect(() => {
                         }`}
                       >
                         <div className="flex items-center space-x-2">
-                          <img src="/logo.png" alt="logo" className="w-8 h-8 object-contain rounded" />
+                          <img src="/logo.svg" alt="ClarifyOps logo" className="w-8 h-8 object-contain rounded" />
                           <span className="text-sm font-semibold">{inv.vendor}</span>
                         </div>
                         <div className="flex-1 text-sm space-y-1">

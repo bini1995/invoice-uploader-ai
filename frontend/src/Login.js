@@ -38,10 +38,10 @@ export default function Login({ onLogin, addToast }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-2 z-20 flex justify-between items-center">
-        <h1 className="text-xl font-bold flex items-center space-x-1">
-          <img src="/logo.png" alt="logo" className="h-5 w-5" />
-          <span>AI Claims Data Extractor</span>
-        </h1>
+        <div className="text-xl font-bold flex items-center space-x-1">
+          <img src="/logo.svg" alt="ClarifyOps logo" className="h-7 w-auto" />
+          <span>ClarifyClaims</span>
+        </div>
         <div className="flex items-center gap-2">
           <HighContrastToggle />
           <DarkModeToggle />
@@ -50,7 +50,7 @@ export default function Login({ onLogin, addToast }) {
       <div className="flex-1 flex items-center justify-center pt-20">
         <Card className="w-80 space-y-4">
           <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
-          <PageHeader title="AI Claims Data Extractor / Dashboard" subtitle="Login" />
+          <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Login" />
 
           {error && (
             <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded" role="alert">{error}</div>

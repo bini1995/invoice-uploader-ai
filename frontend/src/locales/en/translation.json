@@ -1,5 +1,5 @@
 {
-  "title": "AI Claims Data Extractor",
+  "title": "ClarifyOps",
   "upload": "Upload",
   "searchPlaceholder": "Search...",
   "demoUpload": "Demo Upload",
@@ -8,6 +8,27 @@
   "close": "Close",
   "seedDummyData": "Load Demo Data",
   "seeding": "Seeding...",
-  "seeded": "Seeded!"
-  ,"uploadSummary": "Upload Summary"
+  "seeded": "Seeded!",
+  "uploadSummary": "Upload Summary",
+  "lastUpdated": "Last updated",
+  "switchProduct": "Switch product",
+  "menu": "Menu",
+  "account": "Account",
+  "logout": "Logout",
+  "startTour": "Start Tour",
+  "glossary": {
+    "version": "2023-09-15",
+    "ai_extracted_from_cms1500": "Source document and extraction confidence shown.",
+    "overcoded": "The billed CPT may not match documentation detail; consider downcoding.",
+    "missing_modifier": "Claim may require a modifier (e.g., 25, 59) to bypass NCCI edits."
+  },
+  "hero": {
+    "headline": "extract, validate, and resolve medical claims with AI. faster reviews, fewer denials.",
+    "subhead": "from CMS-1500 and UB-04 to CPT/HCPCS checks and audit trails—built for adjusters, reviewers, and payers.",
+    "cta": "Request Demo",
+    "secondary": "Start Free Trial",
+    "proof1": "-42% review time",
+    "proof2": "HIPAA-ready",
+    "proof3": "p50 turnaround 2.1h"
+  }
 }
