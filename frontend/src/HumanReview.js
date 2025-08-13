@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
+import { getStatusDetails } from './theme/statuses';
 
 function HumanReview() {
   const token = localStorage.getItem('token') || '';
@@ -21,12 +22,13 @@ function HumanReview() {
   useEffect(() => { fetchDocs(); }, [fetchDocs]);
 
   const badge = (s) => {
-    const map = {
-      needs_review: 'bg-yellow-200 text-yellow-800',
-      incorrect: 'bg-red-200 text-red-800',
-      correct: 'bg-green-200 text-green-800'
-    };
-    return <span className={`px-1 rounded text-xs ${map[s] || 'bg-gray-200 text-gray-800'}`}>{s}</span>;
+    const { class: cls, icon: Icon } = getStatusDetails(s);
+    return (
+      <span className={`px-1 rounded text-xs inline-flex items-center gap-1 ${cls}`}>
+        <Icon className="w-3 h-3" aria-hidden="true" />
+        {s}
+      </span>
+    );
   };
 
   return (

@@ -3,25 +3,32 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --accent-color: #4338ca;
-  --accent-color-dark: #6366f1;
-  --font-base: 'InterVariable', 'Inter', 'Work Sans', ui-sans-serif, system-ui;
-}
+@import './styles/tokens.css';
 
+  body {
+    margin: 0;
+    font-family: var(--font-ui), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+      'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-surface, rgb(245 245 244));
+    color: var(--text-default, rgb(15 23 42));
+    transition: background-color var(--motion-medium) var(--motion-ease-in-out),
+      color var(--motion-medium) var(--motion-ease-in-out);
+    color-scheme: light dark;
+  }
 
-body {
-  margin: 0;
-  font-family: var(--font-base), -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  @apply bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100;
-  color-scheme: light dark;
+/* Global focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 @media (max-width: 640px) {
@@ -63,14 +70,15 @@ code {
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-lg text-sm transition-all duration-300 ease-in-out shadow-md hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400;
+    letter-spacing: 0.025em;
+    line-height: 1.25;
+    transition-duration: var(--motion-fast);
+    transition-timing-function: var(--motion-ease-out);
+    @apply px-4 py-2 rounded-lg text-sm transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5;
   }
   .btn-primary {
-    background-image: linear-gradient(to bottom right, var(--accent-color), var(--accent-color-dark));
-    @apply text-white hover:brightness-110;
-  }
-  .dark .btn-primary {
-    background-image: linear-gradient(to bottom right, var(--accent-color-dark), #8b5cf6);
+    background-color: var(--cta-bg);
+    @apply text-white hover:bg-[var(--cta-hover)] active:bg-[var(--cta-active)];
   }
   .btn-secondary {
     @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
@@ -85,10 +93,11 @@ code {
     @apply bg-yellow-400 text-black hover:bg-yellow-500;
   }
   .nav-link {
-    @apply flex items-center space-x-2 px-4 py-2 rounded transition text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400;
+    @apply flex items-center space-x-2 px-4 py-2 rounded transition text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700;
   }
   .input {
-    @apply border border-gray-300 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none;
+    @apply border rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100;
+    border-color: var(--border-default);
   }
   .card {
     @apply bg-white/80 dark:bg-gray-800/70 backdrop-blur rounded-xl shadow-md p-6;
@@ -99,10 +108,10 @@ code {
 .high-contrast body {
   @apply bg-black text-yellow-300;
 }
-.high-contrast .btn-primary {
-  background-color: #ffff00;
-  @apply text-black;
-}
+  .high-contrast .btn-primary {
+    background-color: rgb(255 255 0);
+    @apply text-black;
+  }
 .high-contrast .input {
   @apply border-yellow-400 bg-black text-yellow-300;
 }
@@ -135,6 +144,16 @@ code {
 /* Badges */
 .badge {
   @apply inline-block px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200;
+}
+
+/* Status badges */
+  .status-neutral { background-color: var(--status-neutral, rgb(107 114 128)); color: rgb(255 255 255); }
+  .status-amber { background-color: var(--status-amber, rgb(245 158 11)); color: rgb(0 0 0); }
+  .status-green { background-color: var(--status-green, rgb(4 120 87)); color: rgb(255 255 255); }
+  .status-red { background-color: var(--status-red, rgb(220 38 38)); color: rgb(255 255 255); }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
 }
 
 @media (max-width: 640px) {

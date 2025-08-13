@@ -3,6 +3,8 @@ node_modules/
 .env
 dist/
 build/
+frontend/test-results/
+frontend/tests/__screenshots__/
 
 # macOS
 .DS_Store
