@@ -13,9 +13,9 @@ beforeEach(() => {
   localStorage.setItem('tenant', 'default');
 });
 
-afterEach(() => {
-  jest.resetAllMocks();
-});
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
 test('audit trail popover fetches and displays log data', async () => {
   const claim = {
@@ -129,4 +129,43 @@ test('includes from/to parameters when present', async () => {
     )}&to=${encodeURIComponent(to)}`,
     expect.any(Object)
   );
+});
+
+test('mobile action bar hidden for viewer role', async () => {
+  localStorage.setItem('role', 'viewer');
+  const claim = { id: 1, claim_number: 'CLM-1', vendor: 'V', amount: 100, approval_status: 'Pending', flagged_issues: 0 };
+  global.fetch = jest.fn((url) => {
+    if (url.includes('/api/default/claims?status=Pending')) {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([claim]) });
+    }
+    return Promise.reject(new Error('unknown url'));
+  });
+  render(
+    <MemoryRouter initialEntries={['/opsclaim']}>
+      <OpsClaim />
+    </MemoryRouter>
+  );
+  expect(await screen.findByText('CLM-1')).toBeInTheDocument();
+  expect(screen.queryByLabelText('Approve selected claims')).toBeNull();
+});
+
+test('action buttons disable when claim not pending', async () => {
+  localStorage.setItem('role', 'admin');
+  const claim = { id: 1, claim_number: 'CLM-1', vendor: 'V', amount: 100, approval_status: 'Approved', flagged_issues: 0 };
+  global.fetch = jest.fn((url) => {
+    if (url.includes('/api/default/claims?status=Pending')) {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([claim]) });
+    }
+    return Promise.reject(new Error('unknown url'));
+  });
+  render(
+    <MemoryRouter initialEntries={['/opsclaim']}>
+      <OpsClaim />
+    </MemoryRouter>
+  );
+  expect(await screen.findByText('CLM-1')).toBeInTheDocument();
+  const checkbox = screen.getAllByRole('checkbox')[1];
+  fireEvent.click(checkbox);
+  const approve = screen.getByLabelText('Approve selected claims');
+  expect(approve).toBeDisabled();
 });

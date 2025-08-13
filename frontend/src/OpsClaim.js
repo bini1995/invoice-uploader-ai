@@ -25,6 +25,7 @@ import { useSearchParams } from 'react-router-dom';
 export default function OpsClaim() {
   const token = localStorage.getItem('token') || '';
   const tenant = localStorage.getItem('tenant') || 'default';
+  const role = localStorage.getItem('role') || 'viewer';
   const [searchParams] = useSearchParams();
   const initialFlagged = searchParams.get('flagged') === 'true';
   const initialStatus = searchParams.get('status') || 'Pending';
@@ -51,6 +52,7 @@ export default function OpsClaim() {
   const [notesOpen, setNotesOpen] = useState(false);
   const [notesClaim, setNotesClaim] = useState(null);
   const [auditLogs, setAuditLogs] = useState({});
+  const canReview = ['admin', 'reviewer'].includes(role);
 
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
@@ -172,6 +174,11 @@ export default function OpsClaim() {
     );
   };
 
+  const bulkUpdate = async (status) => {
+    await Promise.all(selectedRows.map((id) => updateStatus(id, status)));
+    setSelectedRows([]);
+  };
+
   const bulkApprove = async () => {
     await fetch(`${API_BASE}/api/${tenant}/claims/bulk/approve`, {
       method: 'PATCH',
@@ -251,21 +258,22 @@ export default function OpsClaim() {
 
   return (
     <MainLayout title="ClarifyOps › ClarifyClaims" helpTopic="opsclaim" collapseSidebar={focusMode}>
-      <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Triage Queue" />
-      {selectedRows.length > 0 && (
-        <div className="mb-2 flex gap-2">
-          <button onClick={bulkApprove} className="btn btn-ghost text-xs flex items-center gap-1">
-            <CheckCircleIcon className="w-4 h-4" /> Approve All
-          </button>
-          <button onClick={bulkReject} className="btn btn-ghost text-xs flex items-center gap-1">
-            <XCircleIcon className="w-4 h-4" /> Reject All
-          </button>
-          <button onClick={bulkAssign} className="btn btn-ghost text-xs flex items-center gap-1">
-            <Cog6ToothIcon className="w-4 h-4" /> Assign
-          </button>
-        </div>
-      )}
-      <div className="flex flex-wrap gap-4 mb-4 items-end">
+      <div className="pb-32">
+        <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Triage Queue" />
+        {selectedRows.length > 0 && (
+          <div className="mb-2 flex gap-2">
+            <button onClick={bulkApprove} className="btn btn-ghost text-xs flex items-center gap-1">
+              <CheckCircleIcon className="w-4 h-4" /> Approve All
+            </button>
+            <button onClick={bulkReject} className="btn btn-ghost text-xs flex items-center gap-1">
+              <XCircleIcon className="w-4 h-4" /> Reject All
+            </button>
+            <button onClick={bulkAssign} className="btn btn-ghost text-xs flex items-center gap-1">
+              <Cog6ToothIcon className="w-4 h-4" /> Assign
+            </button>
+          </div>
+        )}
+        <div className="flex flex-wrap gap-4 mb-4 items-end">
         <div className="flex flex-col">
           <label className="text-xs font-medium mb-1">Vendor</label>
           <select value={selectedVendor} onChange={(e) => setSelectedVendor(e.target.value)} className="input">
@@ -468,6 +476,7 @@ export default function OpsClaim() {
         </tbody>
       </table>
       </div>
+      </div>
       <ChatSidebar
         open={copilotOpen}
         onClose={() => setCopilotOpen(false)}
@@ -481,6 +490,42 @@ export default function OpsClaim() {
         invoice={notesClaim}
         onClose={() => setNotesOpen(false)}
       />
+      {canReview && (
+        <div
+          className="sm:hidden fixed bottom-12 left-0 right-0 bg-white dark:bg-gray-800 border-t flex z-30 transition-transform"
+          style={{ transitionDuration: 'var(--motion-medium)' }}
+        >
+          <button
+            aria-label="Approve selected claims"
+            onClick={() => bulkUpdate('Approved')}
+            disabled={
+              selectedRows.length === 0 ||
+              claims
+                .filter((c) => selectedRows.includes(c.id))
+                .some((c) => c.approval_status !== 'Pending')
+            }
+            className="flex-1 h-11 text-sm flex items-center justify-center gap-1 btn btn-ghost disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            <CheckCircleIcon className="w-5 h-5" aria-hidden="true" /> Approve
+          </button>
+          <button
+            aria-label="Request info on selected claims"
+            onClick={() => bulkUpdate('Needs Info')}
+            disabled={selectedRows.length === 0}
+            className="flex-1 h-11 text-sm flex items-center justify-center gap-1 btn btn-ghost disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            <InformationCircleIcon className="w-5 h-5" aria-hidden="true" /> Request Info
+          </button>
+          <button
+            aria-label="Escalate selected claims"
+            onClick={() => bulkUpdate('Escalated')}
+            disabled={selectedRows.length === 0}
+            className="flex-1 h-11 text-sm flex items-center justify-center gap-1 btn btn-ghost disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            <ExclamationTriangleIcon className="w-5 h-5" aria-hidden="true" /> Escalate
+          </button>
+        </div>
+      )}
     </MainLayout>
   );
 }

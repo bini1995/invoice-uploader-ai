@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "18.x"
+    "node": ">=18"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -38,6 +38,7 @@
     "react-router-dom": "6.22.3",
     "react-scripts": "5.0.1",
     "react-scroll": "^1.8.9",
+    "react-window": "^1.8.7",
     "recharts": "^2.15.3",
     "socket.io-client": "^4.8.1",
     "swr": "^2.3.4",
@@ -54,6 +55,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:e2e": "playwright test",
+    "e2e": "playwright test",
+    "pree2e": "playwright install --with-deps",
     "eject": "react-scripts eject",
     "prestart": "node scripts/check-node.js",
     "storybook": "storybook dev -p 6006",

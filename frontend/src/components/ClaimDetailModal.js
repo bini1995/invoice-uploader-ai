@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TagEditor from './TagEditor';
 import CTAButton from './ui/CTAButton';
 import { API_BASE } from '../api';
@@ -13,6 +13,9 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
   const [timeline, setTimeline] = useState([]);
   const [vendorSuggestions, setVendorSuggestions] = useState([]);
   const [amountSuggestions, setAmountSuggestions] = useState([]);
+  const dialogRef = useRef(null);
+  const lastFocused = useRef(null);
+  const scrollPos = useRef(0);
 
   useEffect(() => {
     if (invoice) {
@@ -61,6 +64,42 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
       .catch(() => {});
   }, [form.amount, token]);
 
+  useEffect(() => {
+    if (open) {
+      lastFocused.current = document.activeElement;
+      const node = dialogRef.current;
+      const handleKey = (e) => {
+        if (e.key === 'Escape') onClose();
+        if (e.key === 'Tab' && node) {
+          const focusable = node.querySelectorAll(
+            'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+          );
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+      document.addEventListener('keydown', handleKey);
+      node && node.focus();
+      scrollPos.current = window.scrollY;
+      window.history.pushState({ modal: true }, '');
+      const pop = () => onClose();
+      window.addEventListener('popstate', pop);
+      return () => {
+        document.removeEventListener('keydown', handleKey);
+        window.removeEventListener('popstate', pop);
+        window.scrollTo(0, scrollPos.current);
+        lastFocused.current && lastFocused.current.focus();
+      };
+    }
+  }, [open, onClose]);
+
   if (!open || !invoice) return null;
 
   const handleChange = (field, value) => {
@@ -78,8 +117,27 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
 
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300 ease-in-out">
-      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg w-96 transition-all duration-300 ease-in-out">
+    <div
+      data-testid="claim-detail-overlay"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 transition-all ease-in-out"
+      style={{ transitionDuration: 'var(--motion-modal)' }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="relative bg-white dark:bg-gray-800 p-4 rounded-t-lg sm:rounded-lg shadow-lg w-full h-full sm:h-auto sm:w-96 overflow-y-auto transition-all ease-in-out"
+        style={{ transitionDuration: 'var(--motion-modal)' }}
+        role="dialog"
+        aria-modal="true"
+        ref={dialogRef}
+        tabIndex={-1}
+      >
+        <button
+          aria-label="Close"
+          onClick={onClose}
+          className="absolute top-2 right-2 w-11 h-11 flex items-center justify-center btn btn-ghost"
+        >
+          ×
+        </button>
         <h2 className="text-lg font-semibold mb-2">Claim #{invoice.invoice_number}</h2>
         <div className="space-y-2 text-sm">
           <div>
@@ -213,15 +271,15 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
         <div className="mt-4 flex justify-end space-x-2">
           {editMode ? (
             <>
-              <CTAButton onClick={handleSave} title="Save">Save</CTAButton>
-              <button onClick={() => setEditMode(false)} className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out" title="Cancel">Cancel</button>
+              <CTAButton onClick={handleSave} title="Save" className="px-4 py-2">Save</CTAButton>
+              <button onClick={() => setEditMode(false)} className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 transition-all duration-300 ease-in-out" title="Cancel">Cancel</button>
             </>
           ) : (
-            <button onClick={() => setEditMode(true)} className="bg-indigo-600 text-white px-3 py-1 rounded transition-all duration-300 ease-in-out" title="Edit">Edit</button>
+            <button onClick={() => setEditMode(true)} className="bg-indigo-600 text-white px-4 py-2 rounded transition-all duration-300 ease-in-out" title="Edit">Edit</button>
           )}
           <button
             onClick={onClose}
-            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all duration-300 ease-in-out"
+            className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all duration-300 ease-in-out"
             title="Close"
             aria-label="Close details"
           >
