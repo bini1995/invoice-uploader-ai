@@ -7,7 +7,7 @@ export default function ThemePicker({ darkMode, setDarkMode, tenant = 'default' 
   const wrapperRef = useRef(null);
   useOutsideClick(wrapperRef, () => setOpen(false));
   const [mode, setMode] = useState(() => localStorage.getItem(`themeMode_${tenant}`) || (darkMode ? 'dark' : 'light'));
-  const [accent, setAccent] = useState(() => localStorage.getItem(`accentColor_${tenant}`) || '#4f46e5');
+  const [accent, setAccent] = useState(() => localStorage.getItem(`accentColor_${tenant}`) || '#059669');
   const [font, setFont] = useState(() => localStorage.getItem(`fontFamily_${tenant}`) || 'Inter');
 
   useEffect(() => {
@@ -29,27 +29,35 @@ export default function ThemePicker({ darkMode, setDarkMode, tenant = 'default' 
   }, [mode, setDarkMode, tenant]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--accent-color', accent);
+    document.documentElement.style.setProperty('--cta-bg', accent);
+    document.documentElement.style.setProperty('--cta-hover', accent);
+    document.documentElement.style.setProperty('--cta-active', accent);
+    document.documentElement.style.setProperty('--focus-ring-color', accent);
     localStorage.setItem(`accentColor_${tenant}`, accent);
   }, [accent, tenant]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--font-base', font);
+    document.documentElement.style.setProperty('--font-ui', font);
     localStorage.setItem(`fontFamily_${tenant}`, font);
   }, [font, tenant]);
 
   useEffect(() => {
     const savedAccent = localStorage.getItem(`accentColor_${tenant}`);
-    if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
+    if (savedAccent) {
+      document.documentElement.style.setProperty('--cta-bg', savedAccent);
+      document.documentElement.style.setProperty('--cta-hover', savedAccent);
+      document.documentElement.style.setProperty('--cta-active', savedAccent);
+      document.documentElement.style.setProperty('--focus-ring-color', savedAccent);
+    }
     const savedFont = localStorage.getItem(`fontFamily_${tenant}`);
-    if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
+    if (savedFont) document.documentElement.style.setProperty('--font-ui', savedFont);
   }, [tenant]);
 
   return (
     <div className="relative" ref={wrapperRef}>
       <button
         onClick={() => setOpen(o => !o)}
-        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+        className="rounded"
         title="Theme Picker"
         aria-label="Theme Picker"
       >

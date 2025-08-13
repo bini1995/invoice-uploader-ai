@@ -77,18 +77,27 @@ window.fetch = async (url, options) => {
 };
 
 const currentTenant = localStorage.getItem('tenant') || 'default';
-const savedTheme = localStorage.getItem(`themeMode_${currentTenant}`);
-if (savedTheme === 'dark') {
+const savedTheme = localStorage.getItem(`themeMode_${currentTenant}`) || localStorage.getItem('theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (savedTheme === 'dark' || ((!savedTheme || savedTheme === 'system') && prefersDark)) {
   document.documentElement.classList.add('dark');
+  document.documentElement.setAttribute('data-theme', 'dark');
+} else {
+  document.documentElement.setAttribute('data-theme', 'light');
 }
 const savedContrast = localStorage.getItem('contrast');
 if (savedContrast === 'high') {
   document.documentElement.classList.add('high-contrast');
 }
 const savedAccent = localStorage.getItem(`accentColor_${currentTenant}`);
-if (savedAccent) document.documentElement.style.setProperty('--accent-color', savedAccent);
+if (savedAccent) {
+  document.documentElement.style.setProperty('--cta-bg', savedAccent);
+  document.documentElement.style.setProperty('--cta-hover', savedAccent);
+  document.documentElement.style.setProperty('--cta-active', savedAccent);
+  document.documentElement.style.setProperty('--focus-ring-color', savedAccent);
+}
 const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
-if (savedFont) document.documentElement.style.setProperty('--font-base', savedFont);
+if (savedFont) document.documentElement.style.setProperty('--font-ui', savedFont);
 
 if (API_BASE) {
   // Hit the health endpoint instead of /api/claims since the
@@ -104,7 +113,7 @@ function PageWrapper({ children }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.25, ease: 'easeInOut' }}
     >
       {children}
     </motion.div>

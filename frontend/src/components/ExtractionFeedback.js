@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE } from '../api';
+import { getStatusDetails } from '../theme/statuses';
 
 export default function ExtractionFeedback({ documentId, initialStatus, onChange }) {
   const [status, setStatus] = useState(initialStatus || '');
@@ -42,15 +43,29 @@ export default function ExtractionFeedback({ documentId, initialStatus, onChange
     }
   };
 
-  const btnCls = (val, base) =>
-    `px-2 py-1 border rounded text-xs ${base} ${status === val ? 'opacity-100' : 'opacity-50'}`;
+  const btnCls = (val) => {
+    const { class: cls } = getStatusDetails(val);
+    return `px-2 py-1 border rounded text-xs inline-flex items-center gap-1 ${cls} ${status === val ? 'opacity-100' : 'opacity-50'}`;
+  };
+  const IconCorrect = getStatusDetails('correct').icon;
+  const IconIncorrect = getStatusDetails('incorrect').icon;
+  const IconReview = getStatusDetails('needs_review').icon;
 
   return (
     <div className="mt-2 space-y-2">
       <div className="flex gap-2">
-        <button onClick={() => send('correct')} className={btnCls('correct','bg-green-200 dark:bg-green-700')}>Correct</button>
-        <button onClick={() => send('incorrect')} className={btnCls('incorrect','bg-red-200 dark:bg-red-700')}>Incorrect</button>
-        <button onClick={() => send('needs_review')} className={btnCls('needs_review','bg-yellow-200 dark:bg-yellow-700')}>Needs Review</button>
+        <button onClick={() => send('correct')} className={btnCls('correct')}>
+          <IconCorrect className="w-3 h-3" aria-hidden="true" />
+          Correct
+        </button>
+        <button onClick={() => send('incorrect')} className={btnCls('incorrect')}>
+          <IconIncorrect className="w-3 h-3" aria-hidden="true" />
+          Incorrect
+        </button>
+        <button onClick={() => send('needs_review')} className={btnCls('needs_review')}>
+          <IconReview className="w-3 h-3" aria-hidden="true" />
+          Needs Review
+        </button>
       </div>
       {status && (
         <div className="flex flex-col gap-2">
