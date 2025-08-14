@@ -8,13 +8,17 @@ import TopNavbar from '../TopNavbar';
 
 test('hero snapshot light and dark', () => {
   const { asFragment, unmount } = render(
-    <HeroSection onRequestDemo={() => {}} />
+    <MemoryRouter>
+      <HeroSection onRequestDemo={() => {}} />
+    </MemoryRouter>
   );
   expect(asFragment()).toMatchSnapshot();
   unmount();
   document.documentElement.classList.add('dark');
   const { asFragment: darkFrag } = render(
-    <HeroSection onRequestDemo={() => {}} />
+    <MemoryRouter>
+      <HeroSection onRequestDemo={() => {}} />
+    </MemoryRouter>
   );
   expect(darkFrag()).toMatchSnapshot();
   document.documentElement.classList.remove('dark');

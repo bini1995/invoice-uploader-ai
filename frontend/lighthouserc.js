@@ -1,7 +1,10 @@
+import { chromium } from 'playwright';
+
 export default {
   ci: {
     collect: {
       staticDistDir: 'build',
+      chromePath: chromium.executablePath(),
       numberOfRuns: 1,
       settings: { emulatedFormFactor: 'mobile' }
     },

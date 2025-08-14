@@ -6,11 +6,11 @@ const pillars = [
     description: 'Reviewers always make the final call.',
   },
   {
-    title: 'Built for claims',
+    title: 'Claims-first design',
     description: 'Medical forms, coding, and compliance first.',
   },
   {
-    title: 'Transparent by design',
+    title: 'Transparent by default',
     description: 'Every action traceable, every insight sourced.',
   },
 ];

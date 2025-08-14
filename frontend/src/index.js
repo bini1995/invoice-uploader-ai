@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import ClaimsPage from './Claims';
 import OperationsDashboard from './OperationsDashboard';
 import AdaptiveDashboard from './AdaptiveDashboard';
@@ -35,6 +35,7 @@ import './index.css';
 import './i18n';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { API_BASE } from './api';
+import { getRequestId } from './lib/analytics';
 
 /**
  * Global fetch wrapper to route API requests to configured backend.
@@ -42,7 +43,7 @@ import { API_BASE } from './api';
  * or token removal; this allows credential errors to surface on the login page.
  */
 const originalFetch = window.fetch;
-window.fetch = async (url, options) => {
+window.fetch = async (url, options = {}) => {
   if (typeof url === 'string') {
     const tenant = localStorage.getItem('tenant') || 'default';
     if (url.startsWith('http://localhost:3000')) {
@@ -66,12 +67,16 @@ window.fetch = async (url, options) => {
     }
   }
   const finalUrl = url;
+  options.headers = { ...(options.headers || {}), 'X-Request-Id': getRequestId() };
   const res = await originalFetch(finalUrl, options);
   if (res.status === 401 && !finalUrl.includes('/login')) {
     localStorage.removeItem('token');
-    if (!window.location.pathname.startsWith('/login')) {
-      window.location.href = '/login';
-    }
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    localStorage.setItem('sessionExpired', '1');
+    window.location.href = `/login?next=${next}`;
+  } else if (res.status === 403 && !finalUrl.includes('/login')) {
+    const tenant = localStorage.getItem('tenant') || 'default';
+    alert(`No access to tenant ${tenant}`);
   }
   return res;
 };
@@ -106,7 +111,7 @@ if (API_BASE) {
     console.error('API connection failed', err);
   });
 }
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
 function PageWrapper({ children }) {
   return (
     <motion.div
@@ -151,6 +156,7 @@ function AnimatedRoutes() {
         <Route path="/claims/summary" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
+        <Route path="/app" element={<Navigate to="/claims" replace />} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="/invoice" element={<Navigate to="/claims" replace />} />
         <Route path="/invoices/*" element={<Navigate to="/claims" replace />} />
@@ -160,13 +166,19 @@ function AnimatedRoutes() {
   );
 }
 
-root.render(
-  <BrowserRouter>
-    <ErrorBoundary>
-      <AnimatedRoutes />
-    </ErrorBoundary>
-  </BrowserRouter>
-);
+  const app = (
+    <BrowserRouter>
+      <ErrorBoundary>
+        <AnimatedRoutes />
+      </ErrorBoundary>
+    </BrowserRouter>
+  );
+
+  if (container.hasChildNodes()) {
+    hydrateRoot(container, app);
+  } else {
+    createRoot(container).render(app);
+  }
 
 // disable service worker to avoid registration errors
 serviceWorkerRegistration.unregister();

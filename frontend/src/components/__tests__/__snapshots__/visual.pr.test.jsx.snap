@@ -15,12 +15,12 @@ exports[`hero snapshot light and dark 1`] = `
         <h1
           class="text-5xl md:text-6xl font-bold"
         >
-          AI-native claims data extractor for payers & TPAs.
+          AI-native claims data extraction & validation — built for payers, TPAs, and adjusters.
         </h1>
         <p
           class="text-xl text-muted max-w-xl mx-auto md:mx-0"
         >
-          Extract, validate, and route medical claims with audit-ready accuracy. Faster reviews, fewer denials.
+          From CMS-1500/UB-04 capture to CPT/HCPCS checks and audit trails — fast, accurate, audit-ready.
         </p>
         <div
           class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
@@ -38,6 +38,17 @@ exports[`hero snapshot light and dark 1`] = `
             See how it works
           </a>
         </div>
+        <p
+          class="text-sm text-muted"
+        >
+          Already have an account? 
+          <a
+            class="underline hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cta"
+            href="/login?next=%2F"
+          >
+            Log in
+          </a>
+        </p>
       </div>
       <img
         alt="Screenshot of ClarifyOps claims dashboard"
@@ -67,12 +78,12 @@ exports[`hero snapshot light and dark 2`] = `
         <h1
           class="text-5xl md:text-6xl font-bold"
         >
-          AI-native claims data extractor for payers & TPAs.
+          AI-native claims data extraction & validation — built for payers, TPAs, and adjusters.
         </h1>
         <p
           class="text-xl text-muted max-w-xl mx-auto md:mx-0"
         >
-          Extract, validate, and route medical claims with audit-ready accuracy. Faster reviews, fewer denials.
+          From CMS-1500/UB-04 capture to CPT/HCPCS checks and audit trails — fast, accurate, audit-ready.
         </p>
         <div
           class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
@@ -90,6 +101,17 @@ exports[`hero snapshot light and dark 2`] = `
             See how it works
           </a>
         </div>
+        <p
+          class="text-sm text-muted"
+        >
+          Already have an account? 
+          <a
+            class="underline hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cta"
+            href="/login?next=%2F"
+          >
+            Log in
+          </a>
+        </p>
       </div>
       <img
         alt="Screenshot of ClarifyOps claims dashboard"
