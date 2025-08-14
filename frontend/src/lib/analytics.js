@@ -11,3 +11,16 @@ export function logEvent(event, data = {}) {
     // swallow analytics errors
   }
 }
+
+export function getRequestId() {
+  try {
+    let id = sessionStorage.getItem('request_id');
+    if (!id) {
+      id = crypto.randomUUID();
+      sessionStorage.setItem('request_id', id);
+    }
+    return id;
+  } catch {
+    return undefined;
+  }
+}

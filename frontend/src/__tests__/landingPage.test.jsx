@@ -1,10 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 import LandingPage from '../LandingPage';
 
 describe('LandingPage', () => {
   test('has one H1, hero CTA, and how-it-works link', () => {
-    render(<LandingPage />);
+    render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>
+    );
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     const heroCta = document.getElementById('hero-cta');
     expect(heroCta).toHaveAccessibleName('Schedule a demo');
