@@ -107,7 +107,7 @@ if (savedFont) document.documentElement.style.setProperty('--font-ui', savedFont
 if (API_BASE) {
   // Hit the health endpoint instead of /api/claims since the
   // claims listing route may not exist in some deployments.
-  fetch(`${API_BASE}/health`).catch((err) => {
+  fetch(`${API_BASE}/api/health`).catch((err) => {
     console.error('API connection failed', err);
   });
 }

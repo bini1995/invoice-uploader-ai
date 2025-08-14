@@ -7,7 +7,7 @@ const apiLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.path.startsWith('/health') || req.path.startsWith('/metrics'),
+  skip: (req) => req.path.startsWith('/api/health') || req.path.startsWith('/metrics'),
 });
 
 // Upload rate limiter - more restrictive
