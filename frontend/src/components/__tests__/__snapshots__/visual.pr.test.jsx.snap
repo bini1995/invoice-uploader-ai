@@ -15,12 +15,12 @@ exports[`hero snapshot light and dark 1`] = `
         <h1
           class="text-5xl md:text-6xl font-bold"
         >
-          AI-native claims data extraction & validation — built for payers, TPAs, and adjusters.
+          AI-native claims data extractor
         </h1>
         <p
           class="text-xl text-muted max-w-xl mx-auto md:mx-0"
         >
-          From CMS-1500/UB-04 capture to CPT/HCPCS checks and audit trails — fast, accurate, audit-ready.
+          Extract, validate, and audit medical claims faster.
         </p>
         <div
           class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
@@ -50,14 +50,51 @@ exports[`hero snapshot light and dark 1`] = `
           </a>
         </p>
       </div>
-      <img
-        alt="Screenshot of ClarifyOps claims dashboard"
+      <svg
+        aria-label="ClarifyOps claims dashboard screenshot"
         class="w-full rounded-lg shadow-lg"
-        height="400"
-        loading="lazy"
-        src="https://placehold.co/600x400/webp?text=App+Dashboard"
-        width="600"
-      />
+        role="img"
+        viewBox="0 0 600 400"
+      >
+        <rect
+          fill="#ffffff"
+          height="400"
+          rx="8"
+          width="600"
+        />
+        <rect
+          fill="#E5E7EB"
+          height="24"
+          rx="4"
+          width="160"
+          x="32"
+          y="32"
+        />
+        <rect
+          fill="#F3F4F6"
+          height="120"
+          rx="4"
+          width="536"
+          x="32"
+          y="80"
+        />
+        <rect
+          fill="#F3F4F6"
+          height="144"
+          rx="4"
+          width="256"
+          x="32"
+          y="224"
+        />
+        <rect
+          fill="#F3F4F6"
+          height="144"
+          rx="4"
+          width="256"
+          x="312"
+          y="224"
+        />
+      </svg>
     </div>
   </section>
 </DocumentFragment>
@@ -78,12 +115,12 @@ exports[`hero snapshot light and dark 2`] = `
         <h1
           class="text-5xl md:text-6xl font-bold"
         >
-          AI-native claims data extraction & validation — built for payers, TPAs, and adjusters.
+          AI-native claims data extractor
         </h1>
         <p
           class="text-xl text-muted max-w-xl mx-auto md:mx-0"
         >
-          From CMS-1500/UB-04 capture to CPT/HCPCS checks and audit trails — fast, accurate, audit-ready.
+          Extract, validate, and audit medical claims faster.
         </p>
         <div
           class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
@@ -113,14 +150,51 @@ exports[`hero snapshot light and dark 2`] = `
           </a>
         </p>
       </div>
-      <img
-        alt="Screenshot of ClarifyOps claims dashboard"
+      <svg
+        aria-label="ClarifyOps claims dashboard screenshot"
         class="w-full rounded-lg shadow-lg"
-        height="400"
-        loading="lazy"
-        src="https://placehold.co/600x400/webp?text=App+Dashboard"
-        width="600"
-      />
+        role="img"
+        viewBox="0 0 600 400"
+      >
+        <rect
+          fill="#ffffff"
+          height="400"
+          rx="8"
+          width="600"
+        />
+        <rect
+          fill="#E5E7EB"
+          height="24"
+          rx="4"
+          width="160"
+          x="32"
+          y="32"
+        />
+        <rect
+          fill="#F3F4F6"
+          height="120"
+          rx="4"
+          width="536"
+          x="32"
+          y="80"
+        />
+        <rect
+          fill="#F3F4F6"
+          height="144"
+          rx="4"
+          width="256"
+          x="32"
+          y="224"
+        />
+        <rect
+          fill="#F3F4F6"
+          height="144"
+          rx="4"
+          width="256"
+          x="312"
+          y="224"
+        />
+      </svg>
     </div>
   </section>
 </DocumentFragment>
