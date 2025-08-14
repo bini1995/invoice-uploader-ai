@@ -103,19 +103,31 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : true,
+    origin(origin, cb) {
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Tenant-ID'],
-    exposedHeaders: ['Deprecation', 'Sunset', 'Warning', 'Link'],
+    exposedHeaders: ['Deprecation', 'Sunset', 'Warning', 'Link', 'X-Request-Id'],
   })
 );
+app.options('*', cors());
 
 // Request parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Health and metrics endpoints (no auth required)
+app.use('/api/health', healthRoutes);
+app.use('/metrics', metricsRoutes);
 
 // Global rate limiting
 app.use(apiLimiter);
@@ -125,10 +137,6 @@ app.use(Sentry.Handlers.requestHandler());
 
 // Tenant context middleware
 app.use(tenantContext);
-
-// Health and metrics endpoints (no auth required)
-app.use('/health', healthRoutes);
-app.use('/metrics', metricsRoutes);
 
 // API documentation
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

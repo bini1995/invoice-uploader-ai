@@ -108,7 +108,7 @@ ClarifyOps is a modular AI-powered claims platform focused on extraction, valida
 
 ### API Docs & Health
 
-Swagger documentation is available at [`/api/docs`](http://localhost:3000/api/docs) when the backend is running. A lightweight `/health` endpoint returns a simple `{ "status": "ok" }` payload for uptime monitoring tools.
+Swagger documentation is available at [`/api/docs`](http://localhost:3000/api/docs) when the backend is running. A lightweight `/api/health` endpoint returns a simple `{ "status": "ok" }` payload for uptime monitoring tools.
 
 ### Webhook Integration
 
@@ -462,10 +462,11 @@ docker-compose up --build
 ```
 
 The frontend is served on `http://localhost:3001` while the API runs on `http://localhost:3000`.
-The build reads `REACT_APP_API_BASE_URL` from `.env` to know where requests
-should be sent. In development this defaults to `http://localhost:3000`. For a
-production deployment, set `REACT_APP_API_BASE_URL` to your public API origin
-(e.g. `https://clarifyops.com/api`) and rebuild the frontend container.
+The build reads `VITE_API_BASE_URL` or `REACT_APP_API_BASE_URL` from `.env` to
+know where requests should be sent. In development this defaults to
+`http://localhost:4000/api`. For a production deployment, set one of these values to
+your public API origin (e.g. `https://clarifyops.com/api`) and rebuild the
+frontend container.
 
 ### Troubleshooting
 
