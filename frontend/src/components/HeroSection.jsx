@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from './ui/Button';
 import LoginLink from './LoginLink';
-import { logEvent, getRequestId } from '../lib/analytics';
+import DashboardIllustration from './DashboardIllustration';
 
 export default function HeroSection({ onRequestDemo, onHowItWorks }) {
   return (
@@ -12,12 +12,10 @@ export default function HeroSection({ onRequestDemo, onHowItWorks }) {
       <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
         <div className="space-y-6 text-center md:text-left">
           <h1 className="text-5xl md:text-6xl font-bold">
-            AI-native claims data extraction &amp; validation — built for payers,
-            TPAs, and adjusters.
+            AI-native claims data extractor
           </h1>
           <p className="text-xl text-muted max-w-xl mx-auto md:mx-0">
-            From CMS-1500/UB-04 capture to CPT/HCPCS checks and audit trails —
-            fast, accurate, audit-ready.
+            Extract, validate, and audit medical claims faster.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Button id="hero-cta" onClick={onRequestDemo} className="px-8 py-3">
@@ -44,14 +42,7 @@ export default function HeroSection({ onRequestDemo, onHowItWorks }) {
             </LoginLink>
           </p>
         </div>
-        <img
-          src="https://placehold.co/600x400/webp?text=App+Dashboard"
-          alt="Screenshot of ClarifyOps claims dashboard"
-          className="w-full rounded-lg shadow-lg"
-          width="600"
-          height="400"
-          loading="lazy"
-        />
+        <DashboardIllustration />
       </div>
     </section>
   );
