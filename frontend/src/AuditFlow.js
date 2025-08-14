@@ -6,7 +6,7 @@ import {
   CalendarIcon,
   MagnifyingGlassIcon,
   ExclamationTriangleIcon,
-  PillIcon,
+  ClipboardDocumentListIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
@@ -120,7 +120,7 @@ export default function AuditFlow() {
             value={anomalyCount}
           />
           <StatCard
-            icon={<PillIcon className="w-6 h-6" />}
+            icon={<ClipboardDocumentListIcon className="w-6 h-6" />}
             title="CPT Issue Types"
             value={cptIssues.length}
           >

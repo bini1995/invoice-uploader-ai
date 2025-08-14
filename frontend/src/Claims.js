@@ -391,10 +391,8 @@ const [selectedAssignee, setSelectedAssignee] = useState('');
               body: JSON.stringify({ tags: uniqueTags }),
             });
             if (colorRes.ok) {
-              const colorData = await colorRes.json();
-              if (colorData.colors) {
-                setTagColors(colorData.colors);
-              }
+              // Tag color suggestions are fetched but currently unused
+              await colorRes.json();
             }
           } catch (e) {
             console.error('Tag color fetch failed:', e);

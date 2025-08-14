@@ -7,7 +7,6 @@ import useClaimActions from '../hooks/useClaimActions';
 const ENABLED = process.env.REACT_APP_REVIEW_ACTIONS === 'true';
 
 export default function ReviewButtons({ claimId, status, addToast }) {
-  if (!ENABLED) return null;
   const {
     canApprove,
     canRequestInfo,
@@ -19,6 +18,8 @@ export default function ReviewButtons({ claimId, status, addToast }) {
     escalate,
     escalating,
   } = useClaimActions(claimId, status);
+
+  if (!ENABLED) return null;
 
   const handle = async (actionFn, confirm = false) => {
     if (confirm && !window.confirm('Are you sure?')) return;
