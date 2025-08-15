@@ -9,7 +9,11 @@ try {
 const cleaned = fromEnv.replace(/\/+$/, '').replace(/\/api$/, '');
 
 export const API_BASE =
-  cleaned || (location.origin.includes('localhost') ? 'http://localhost:4000' : '');
+  cleaned ||
+  (typeof window !== 'undefined' &&
+  window.location.origin.includes('localhost')
+    ? 'http://localhost:4000'
+    : '');
 
 // Simple health check helper used by status indicators
 export async function pingHealth() {
