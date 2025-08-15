@@ -13,6 +13,7 @@ export default function LogoStrip() {
             viewBox="0 0 120 60"
             role="img"
             aria-label={`${name} logo`}
+            className="logo-animate grayscale opacity-60 hover:opacity-100 hover:grayscale-0 transition"
           >
             <rect width="120" height="60" rx="8" fill="#E5E7EB" />
             <text

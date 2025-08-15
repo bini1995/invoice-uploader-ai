@@ -160,6 +160,21 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .typewriter,
+  .logo-animate,
+  .carousel-auto {
+    animation: none !important;
+    transition: none !important;
+  }
+  .hero-video {
+    display: none !important;
+  }
+  .hero-poster {
+    display: block !important;
+  }
+}
+
 @media (max-width: 640px) {
   .card {
     @apply p-4;

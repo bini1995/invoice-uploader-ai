@@ -5,7 +5,11 @@ export default function FinalCTA({ onRequestDemo }) {
   return (
     <section className="py-20 text-center bg-surface motion-safe:animate-fade-in">
       <p className="text-2xl font-semibold mb-6">Ready to see it in action?</p>
-      <Button onClick={onRequestDemo} className="px-8 py-3">
+      <Button
+        onClick={onRequestDemo}
+        size="lg"
+        className="bg-gradient-to-r from-accent to-pink-500 text-white hover:from-pink-500 hover:to-accent transition-transform hover:scale-105 focus-visible:ring-white"
+      >
         Schedule a demo
       </Button>
     </section>
