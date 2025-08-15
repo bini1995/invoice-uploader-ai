@@ -6,6 +6,13 @@ build/
 frontend/test-results/
 frontend/tests/__screenshots__/
 
+# Media assets kept out of version control
+frontend/public/hero-bg.mp4
+frontend/public/hero-poster.jpg
+frontend/public/feature-ai-extraction.webp
+frontend/public/feature-validation.webp
+frontend/public/feature-audit.webp
+
 # macOS
 .DS_Store
 

@@ -3,30 +3,75 @@
 exports[`hero snapshot light and dark 1`] = `
 <DocumentFragment>
   <section
-    class="bg-surface text-ink px-6 py-20 motion-safe:animate-fade-in"
+    class="relative bg-surface text-ink px-6 py-20 overflow-hidden motion-safe:animate-fade-in"
     id="product"
   >
+    <video
+      aria-hidden="true"
+      autoplay=""
+      class="hero-video absolute inset-0 w-full h-full object-cover -z-20 hidden md:block"
+      loop=""
+      playsinline=""
+      poster="https://cdn.example.com/hero-poster.jpg"
+      preload="none"
+      src="https://cdn.example.com/hero-bg.mp4"
+    />
+    <img
+      alt=""
+      aria-hidden="true"
+      class="hero-poster absolute inset-0 w-full h-full object-cover -z-20 md:hidden"
+      height="675"
+      src="https://cdn.example.com/hero-poster.jpg"
+      width="1200"
+    />
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 bg-black/35 -z-10"
+    />
     <div
       class="container mx-auto grid md:grid-cols-2 gap-8 items-center"
     >
       <div
         class="space-y-6 text-center md:text-left"
       >
-        <h1
+        <div
           class="text-5xl md:text-6xl font-bold"
         >
-          AI-native claims data extractor
-        </h1>
+          <h1
+            class="sr-only"
+          >
+            AI-native claims data extractor
+          </h1>
+          <div
+            aria-hidden="true"
+          >
+            <span
+              class="typewriter "
+            />
+          </div>
+        </div>
         <p
           class="text-xl text-muted max-w-xl mx-auto md:mx-0"
         >
-          Extract, validate, and audit medical claims faster.
+          <span
+            class="sr-only"
+          >
+            Extract, validate, and audit medical claims faster.
+          </span>
+          <span
+            aria-hidden="true"
+            class="block"
+          >
+            <span
+              class="typewriter "
+            />
+          </span>
         </p>
         <div
           class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
         >
           <button
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium transition-colors duration-fast focus:outline-none focus:ring-focus focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-white hover:bg-accent-hover h-10 px-8 py-3"
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors duration-fast focus:outline-none focus:ring-focus focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-white hover:bg-accent-hover h-11 px-8 rounded-md"
             id="hero-cta"
           >
             Schedule a demo
@@ -103,30 +148,75 @@ exports[`hero snapshot light and dark 1`] = `
 exports[`hero snapshot light and dark 2`] = `
 <DocumentFragment>
   <section
-    class="bg-surface text-ink px-6 py-20 motion-safe:animate-fade-in"
+    class="relative bg-surface text-ink px-6 py-20 overflow-hidden motion-safe:animate-fade-in"
     id="product"
   >
+    <video
+      aria-hidden="true"
+      autoplay=""
+      class="hero-video absolute inset-0 w-full h-full object-cover -z-20 hidden md:block"
+      loop=""
+      playsinline=""
+      poster="https://cdn.example.com/hero-poster.jpg"
+      preload="none"
+      src="https://cdn.example.com/hero-bg.mp4"
+    />
+    <img
+      alt=""
+      aria-hidden="true"
+      class="hero-poster absolute inset-0 w-full h-full object-cover -z-20 md:hidden"
+      height="675"
+      src="https://cdn.example.com/hero-poster.jpg"
+      width="1200"
+    />
+    <div
+      aria-hidden="true"
+      class="absolute inset-0 bg-black/35 -z-10"
+    />
     <div
       class="container mx-auto grid md:grid-cols-2 gap-8 items-center"
     >
       <div
         class="space-y-6 text-center md:text-left"
       >
-        <h1
+        <div
           class="text-5xl md:text-6xl font-bold"
         >
-          AI-native claims data extractor
-        </h1>
+          <h1
+            class="sr-only"
+          >
+            AI-native claims data extractor
+          </h1>
+          <div
+            aria-hidden="true"
+          >
+            <span
+              class="typewriter "
+            />
+          </div>
+        </div>
         <p
           class="text-xl text-muted max-w-xl mx-auto md:mx-0"
         >
-          Extract, validate, and audit medical claims faster.
+          <span
+            class="sr-only"
+          >
+            Extract, validate, and audit medical claims faster.
+          </span>
+          <span
+            aria-hidden="true"
+            class="block"
+          >
+            <span
+              class="typewriter "
+            />
+          </span>
         </p>
         <div
           class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
         >
           <button
-            class="inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium transition-colors duration-fast focus:outline-none focus:ring-focus focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-white hover:bg-accent-hover h-10 px-8 py-3"
+            class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors duration-fast focus:outline-none focus:ring-focus focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-white hover:bg-accent-hover h-11 px-8 rounded-md"
             id="hero-cta"
           >
             Schedule a demo

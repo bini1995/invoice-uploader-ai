@@ -56,6 +56,11 @@ cd frontend
 npm install --legacy-peer-deps
 ```
 
+## Assets
+
+- All large media assets (videos, images) are hosted externally on a CDN and excluded from version control.
+- For local development, ensure the CDN is accessible or place lightweight placeholder files in `frontend/public`.
+
 ## Features
 
 ClarifyOps is a modular AI-powered claims platform focused on extraction, validation, and fraud detection for healthcare and insurance use cases.
