@@ -35,13 +35,13 @@ export default function HeroSection({ onRequestDemo, onHowItWorks }) {
       <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
         <div className="space-y-6 text-center md:text-left">
           {/* Logo */}
-          <div className="flex justify-center md:justify-start mb-4">
+          <div className="flex justify-center md:justify-start mb-6">
             <img 
               src="/logo.svg" 
               alt="ClarifyOps" 
-              className="h-12 md:h-16 w-auto"
-              width="200"
-              height="80"
+              className="h-10 md:h-14 w-auto opacity-90 hover:opacity-100 transition-opacity"
+              width="160"
+              height="64"
             />
           </div>
           <div className="text-4xl md:text-5xl font-bold">

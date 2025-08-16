@@ -90,7 +90,7 @@ export default function LandingPage() {
       </a>
       <header className="sticky top-0 bg-surface/80 backdrop-blur z-10">
         <nav className="container mx-auto flex items-center justify-between py-4 px-4 relative">
-          <a href="/" className="flex items-center gap-2">
+          <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img 
               src="/logo.svg" 
               alt="ClarifyOps" 
