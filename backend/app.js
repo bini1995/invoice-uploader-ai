@@ -125,6 +125,9 @@ app.options('*', cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Trust proxy for rate limiting behind nginx
+app.set('trust proxy', 1);
+
 // Health and metrics endpoints (no auth required)
 app.use('/api/health', healthRoutes);
 app.use('/metrics', metricsRoutes);

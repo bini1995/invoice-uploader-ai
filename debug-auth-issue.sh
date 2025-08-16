@@ -20,9 +20,9 @@ echo ""
 echo "Testing login endpoint directly:"
 curl -s -X POST http://localhost:3000/api/claims/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin"}' | jq . 2>/dev/null || curl -s -X POST http://localhost:3000/api/claims/login \
+  -d '{"username":"admin","password":"password123"}' | jq . 2>/dev/null || curl -s -X POST http://localhost:3000/api/claims/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin"}'
+  -d '{"username":"admin","password":"password123"}'
 
 echo ""
 echo "🔍 Checking backend logs for authentication errors..."
