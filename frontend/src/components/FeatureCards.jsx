@@ -5,22 +5,22 @@ const features = [
     title: 'AI Extraction',
     description: 'CMS-1500 / UB-04 captured with confidence.',
     anchor: '#ai-extraction',
-    screenshot: '/feature-ai-extraction.webp',
-    video: '/feature-ai-extraction.mp4',
+    screenshot: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+    video: 'https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4',
   },
   {
     title: 'Automated Checks',
     description: 'CPT/HCPCS + NCCI validations with explainable flags.',
     anchor: '#automated-validation',
-    screenshot: '/feature-validation.webp',
-    video: '/feature-validation.mp4',
+    screenshot: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+    video: 'https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_2mb.mp4',
   },
   {
     title: 'Audit & Oversight',
     description: 'Status, notes, and immutable log trails.',
     anchor: '#audit-oversight',
-    screenshot: '/feature-audit.webp',
-    video: '/feature-audit.mp4',
+    screenshot: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+    video: 'https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_5mb.mp4',
   },
 ];
 

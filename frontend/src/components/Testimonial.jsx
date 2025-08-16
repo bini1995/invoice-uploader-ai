@@ -8,21 +8,21 @@ export default function Testimonial() {
       author: 'Sarah Chen',
       title: 'Director of Claims Operations',
       company: 'Regional Health System',
-      avatar: '/testimonial-1.jpg',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80',
     },
     {
       quote: 'The AI extraction is remarkably accurate, and the audit trail gives us complete confidence in our process.',
       author: 'Michael Rodriguez',
       title: 'VP of Revenue Cycle',
       company: 'Multi-specialty Practice',
-      avatar: '/testimonial-2.jpg',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80',
     },
     {
       quote: 'We processed 30% more claims with the same staff while reducing errors by 40%.',
       author: 'Dr. Jennifer Park',
       title: 'Chief Medical Officer',
       company: 'TPA Organization',
-      avatar: '/testimonial-3.jpg',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80',
     },
   ];
 

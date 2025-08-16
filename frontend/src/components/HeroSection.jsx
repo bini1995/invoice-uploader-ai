@@ -12,18 +12,18 @@ export default function HeroSection({ onRequestDemo, onHowItWorks }) {
     >
       {/* Hero Video Background */}
       <video
-        src="/hero-demo.mp4"
+        src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
         className="hero-video absolute inset-0 w-full h-full object-cover -z-20 hidden md:block"
         autoPlay
         muted
         loop
         playsInline
         preload="none"
-        poster="/hero-poster.jpg"
+        poster="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
         aria-hidden="true"
       />
       <img
-        src="/hero-poster.jpg"
+        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
         alt=""
         width="1200"
         height="675"
