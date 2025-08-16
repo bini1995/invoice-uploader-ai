@@ -7,6 +7,7 @@ WORKDIR /app
 # Increase Node.js heap size for memory-constrained environments
 ENV NODE_OPTIONS="--max-old-space-size=1536"
 ENV NPM_CONFIG_CACHE=/tmp/npm-cache
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Copy package files
 COPY package*.json ./
