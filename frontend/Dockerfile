@@ -1,11 +1,34 @@
-# Use Nginx to serve static files
+# Multi-stage build for React app
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Set environment variables for build
+ARG REACT_APP_API_BASE_URL
+ARG VITE_API_BASE_URL
+ARG REACT_APP_LITE_MODE
+
+# Build the app
+RUN npm run build
+
+# Production stage
 FROM nginx:stable-alpine
 
 # Remove default Nginx static files
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy locally built frontend files into Nginx's public directory
-COPY build /usr/share/nginx/html
+# Copy built files from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
 
 # Replace default nginx config to support client-side routing
 COPY nginx.conf /etc/nginx/conf.d/default.conf
