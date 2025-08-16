@@ -34,6 +34,16 @@ export default function HeroSection({ onRequestDemo, onHowItWorks }) {
       
       <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
         <div className="space-y-6 text-center md:text-left">
+          {/* Logo */}
+          <div className="flex justify-center md:justify-start mb-4">
+            <img 
+              src="/logo.svg" 
+              alt="ClarifyOps" 
+              className="h-12 md:h-16 w-auto"
+              width="200"
+              height="80"
+            />
+          </div>
           <div className="text-4xl md:text-5xl font-bold">
             <h1 className="sr-only">AI-native claims data extractor</h1>
             <div aria-hidden="true" className="text-ink">

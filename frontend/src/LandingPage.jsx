@@ -90,7 +90,15 @@ export default function LandingPage() {
       </a>
       <header className="sticky top-0 bg-surface/80 backdrop-blur z-10">
         <nav className="container mx-auto flex items-center justify-between py-4 px-4 relative">
-          <a href="/" className="text-xl font-bold">ClarifyOps</a>
+          <a href="/" className="flex items-center gap-2">
+            <img 
+              src="/logo.svg" 
+              alt="ClarifyOps" 
+              className="h-8 w-auto"
+              width="160"
+              height="64"
+            />
+          </a>
           <div className="hidden md:flex items-center gap-6 text-sm">
             <a href="#product" className="hover:underline">Product</a>
             <a href="#why" className="hover:underline">Why us</a>
