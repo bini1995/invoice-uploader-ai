@@ -12,7 +12,7 @@ export const API_BASE =
   cleaned ||
   (typeof window !== 'undefined' &&
   window.location.origin.includes('localhost')
-    ? 'http://localhost:4000'
+    ? 'https://clarifyops.com'  // Use your VPS domain instead of localhost
     : '');
 
 // Simple health check helper used by status indicators
