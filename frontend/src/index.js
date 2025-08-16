@@ -70,7 +70,9 @@ window.fetch = async (url, options = {}) => {
   const finalUrl = url;
   options.headers = { ...(options.headers || {}), 'X-Request-Id': getRequestId() };
   const res = await originalFetch(finalUrl, options);
-  if (res.status === 401 && !finalUrl.includes('/login')) {
+  
+  // Only handle 401 for non-login requests
+  if (res.status === 401 && !finalUrl.includes('/login') && !finalUrl.includes('/api/claims/login')) {
     localStorage.removeItem('token');
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     localStorage.setItem('sessionExpired', '1');
