@@ -160,18 +160,106 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
+/* Enhanced Landing Page Styles */
+.hero-video {
+  filter: brightness(0.7) contrast(1.1);
+}
+
+.hero-poster {
+  filter: brightness(0.7) contrast(1.1);
+}
+
+/* Feature card hover effects */
+.feature-card {
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Testimonial card styling */
+.testimonial-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Security badge animations */
+.security-badge {
+  transition: all 0.2s ease;
+}
+
+.security-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Typewriter effect */
+.typewriter {
+  border-right: 2px solid currentColor;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: currentColor }
+}
+
+/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .typewriter,
-  .logo-animate,
-  .carousel-auto {
-    animation: none !important;
-    transition: none !important;
+  .typewriter {
+    border-right: none;
+    animation: none;
   }
+  
+  .feature-card:hover {
+    transform: none;
+  }
+  
+  .security-badge:hover {
+    transform: none;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
   .hero-video {
-    display: none !important;
+    display: none;
   }
+  
   .hero-poster {
-    display: block !important;
+    display: block;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-contrast: high) {
+  .hero-video,
+  .hero-poster {
+    filter: brightness(0.5) contrast(1.5);
+  }
+}
+
+/* Focus styles for better accessibility */
+.focus-visible\:ring-2:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--cta-bg, #3b82f6);
+}
+
+/* Loading states */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 

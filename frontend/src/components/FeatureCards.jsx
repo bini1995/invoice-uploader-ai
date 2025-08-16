@@ -1,31 +1,26 @@
 import React from 'react';
-import {
-  ClipboardDocumentListIcon,
-  CheckBadgeIcon,
-  ClipboardDocumentCheckIcon,
-} from '@heroicons/react/24/outline';
 
 const features = [
   {
-    icon: ClipboardDocumentListIcon,
     title: 'AI Extraction',
-    description: 'CMS-1500 & UB-04 fields captured with confidence.',
+    description: 'CMS-1500 / UB-04 captured with confidence.',
     anchor: '#ai-extraction',
-    screenshot: 'https://cdn.example.com/feature-ai-extraction.webp',
+    screenshot: '/feature-ai-extraction.webp',
+    video: '/feature-ai-extraction.mp4',
   },
   {
-    icon: CheckBadgeIcon,
-    title: 'Automated Validation',
-    description: 'CPT/HCPCS + NCCI checks with explainable flags.',
+    title: 'Automated Checks',
+    description: 'CPT/HCPCS + NCCI validations with explainable flags.',
     anchor: '#automated-validation',
-    screenshot: 'https://cdn.example.com/feature-validation.webp',
+    screenshot: '/feature-validation.webp',
+    video: '/feature-validation.mp4',
   },
   {
-    icon: ClipboardDocumentCheckIcon,
     title: 'Audit & Oversight',
-    description: 'Real-time status, notes, and immutable log trails.',
+    description: 'Status, notes, and immutable log trails.',
     anchor: '#audit-oversight',
-    screenshot: 'https://cdn.example.com/feature-audit.webp',
+    screenshot: '/feature-audit.webp',
+    video: '/feature-audit.mp4',
   },
 ];
 
@@ -35,35 +30,54 @@ export default function FeatureCards() {
       id="how-it-works"
       className="py-20 bg-surface scroll-mt-24 motion-safe:animate-fade-in"
     >
-      <div className="container mx-auto px-4 grid gap-8 md:grid-cols-3">
-        {features.map(({ icon: Icon, title, description, anchor, screenshot }) => (
-          <div
-            key={title}
-            className="text-center space-y-2 flex flex-col items-center h-full group"
-          >
-            <Icon
-              className="w-10 h-10 mx-auto text-accent transition-transform group-hover:scale-110"
-              aria-hidden="true"
-            />
-            <h3 className="text-xl font-semibold">{title}</h3>
-            <p className="text-sm text-muted">{description}</p>
-            <img
-              src={screenshot}
-              alt=""
-              width="200"
-              height="120"
-              loading="lazy"
-              decoding="async"
-              className="mt-4 rounded shadow-sm"
-            />
-            <a
-              href={anchor}
-              className="text-sm text-accent underline mt-2"
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">How it works</h2>
+          <p className="text-muted max-w-2xl mx-auto">
+            Three powerful features that transform your claims processing workflow
+          </p>
+        </div>
+        <div className="grid gap-8 md:grid-cols-3">
+          {features.map(({ title, description, anchor, screenshot, video }) => (
+            <div
+              key={title}
+              className="text-center space-y-4 flex flex-col items-center h-full group"
             >
-              Learn more
-            </a>
-          </div>
-        ))}
+              <div className="relative w-full max-w-sm">
+                <img
+                  src={screenshot}
+                  alt={`${title} feature screenshot`}
+                  width="320"
+                  height="200"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-auto rounded-lg shadow-lg border border-gray-200 group-hover:shadow-xl transition-shadow duration-300"
+                />
+                {video && (
+                  <video
+                    src={video}
+                    className="absolute inset-0 w-full h-full object-cover rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    muted
+                    loop
+                    playsInline
+                    preload="none"
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold">{title}</h3>
+                <p className="text-sm text-muted max-w-xs">{description}</p>
+              </div>
+              <a
+                href={anchor}
+                className="text-sm text-accent underline mt-auto hover:text-accent-dark transition-colors"
+              >
+                How it works
+              </a>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

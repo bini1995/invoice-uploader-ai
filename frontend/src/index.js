@@ -21,6 +21,7 @@ import NotFound from './NotFound';
 import ResultsViewer from './ResultsViewer';
 import ErrorBoundary from './ErrorBoundary';
 import LandingPage from './LandingPage.jsx';
+import SecurityPage from './SecurityPage';
 import OnboardingWizard from './OnboardingWizard';
 import MultiUploadWizard from './MultiUploadWizard';
 import DemoSandbox from './DemoSandbox';
@@ -156,6 +157,7 @@ function AnimatedRoutes() {
         <Route path="/claims/summary" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
+        <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
         <Route path="/app" element={<Navigate to="/claims" replace />} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="/invoice" element={<Navigate to="/claims" replace />} />
