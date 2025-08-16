@@ -27,7 +27,7 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
 
   return (
     <aside
-      className={`hidden sm:block fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur shadow-xl border-r z-20 ${open ? 'w-64' : 'w-16'} p-4 space-y-2 transition-all`}
+      className={`hidden sm:block fixed left-0 top-0 h-screen overflow-y-auto bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur shadow-xl border-r z-20 ${open ? 'w-64' : 'w-16'} p-4 space-y-2 transition-all`}
     >
       <button
         onClick={() => setOpen(!open)}

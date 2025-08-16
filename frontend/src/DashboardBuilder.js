@@ -59,7 +59,7 @@ export default function DashboardBuilder() {
     const headers = { Authorization: `Bearer ${token}` };
 
     setLoadingVendors(true);
-    fetch(`${API_BASE}/api/invoices/top-vendors`, { headers })
+    fetch(`${API_BASE}/api/claims/top-vendors`, { headers })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
         if (ok && Array.isArray(d.topVendors) && d.topVendors.length) {
@@ -72,7 +72,7 @@ export default function DashboardBuilder() {
       .finally(() => setLoadingVendors(false));
 
     setLoadingHeatmap(true);
-    fetch(`${API_BASE}/api/invoices/upload-heatmap`, { headers })
+    fetch(`${API_BASE}/api/claims/upload-heatmap`, { headers })
       .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
         if (ok) setHeatmap(d.heatmap || []);
@@ -82,12 +82,12 @@ export default function DashboardBuilder() {
       .finally(() => setLoadingHeatmap(false));
 
     setLoadingTimeline(true);
-    fetch(`${API_BASE}/api/invoices`)
+    fetch(`${API_BASE}/api/claims`)
       .then((r) => r.json())
       .then((list) => {
         if (list && list[0]) {
           const id = list[0].id;
-          fetch(`${API_BASE}/api/invoices/${id}/timeline`, { headers })
+          fetch(`${API_BASE}/api/claims/${id}/timeline`, { headers })
             .then((res) => res.json())
             .then((data) => {
               if (Array.isArray(data) && data.length) {

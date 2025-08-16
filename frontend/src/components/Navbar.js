@@ -76,7 +76,7 @@ export default function Navbar({
   }, [tenant, token]);
 
   return (
-    <nav className="sticky top-0 z-30 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow">
+    <nav className="sticky top-0 z-30 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow h-16">
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
           <Link to="/claims" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
