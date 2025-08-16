@@ -4,6 +4,9 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
+# Increase Node.js heap size for memory-constrained environments
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+
 # Copy package files
 COPY package*.json ./
 
@@ -18,7 +21,7 @@ ARG REACT_APP_API_BASE_URL
 ARG VITE_API_BASE_URL
 ARG REACT_APP_LITE_MODE
 
-# Build the app
+# Build the app with increased memory
 RUN npm run build
 
 # Production stage
