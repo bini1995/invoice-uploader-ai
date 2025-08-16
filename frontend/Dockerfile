@@ -4,8 +4,8 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Increase Node.js heap size and optimize for memory-constrained environments
-ENV NODE_OPTIONS="--max-old-space-size=1536 --optimize-for-size"
+# Increase Node.js heap size for memory-constrained environments
+ENV NODE_OPTIONS="--max-old-space-size=1536"
 ENV NPM_CONFIG_CACHE=/tmp/npm-cache
 
 # Copy package files
