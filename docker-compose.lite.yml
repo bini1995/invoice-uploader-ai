@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: clarifyops-backend-lite
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.lite
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: TATA1tata1
+      DB_NAME: invoices_db_lite
+      LITE_MODE: true
+      REACT_APP_LITE_MODE: true
+    depends_on:
+      - db
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: clarifyops-frontend-lite
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_BASE_URL=https://clarifyops.com
+      - REACT_APP_LITE_MODE=true
+      - REACT_APP_DEMO_MODE=false
+      - REACT_APP_SHOW_UPGRADE_PROMPTS=true
+    restart: unless-stopped
+
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: clarifyops-db-lite
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: TATA1tata1
+      POSTGRES_DB: invoices_db_lite
+    ports:
+      - "5433:5432"
+    volumes:
+      - db-data-lite:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.28
+    container_name: clarifyops-nginx-lite
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
+
+volumes:
+  db-data-lite: 
