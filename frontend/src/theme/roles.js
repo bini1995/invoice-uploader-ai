@@ -1,9 +1,10 @@
 import i18n from '../i18n';
 
 export const ROLE_EMOJI = {
-  adjuster: '👨\u200d⚖️',
-  medical_reviewer: '🩺',
-  auditor: '👀',
+  admin: '👑',
+  user: '👤',
+  reviewer: '🔍',
+  manager: '📊'
 };
 
 export const getRoleDisplay = (role, showEmoji = true) => {

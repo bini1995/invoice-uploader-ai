@@ -4,8 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { API_BASE } from './api';
 import LiveFeed from './components/LiveFeed';
-import Navbar from './components/Navbar';
-import SidebarNav from './components/SidebarNav';
+import ImprovedNavbar from './components/ImprovedNavbar';
+import ImprovedSidebarNav from './components/ImprovedSidebarNav';
 import PageHeader from './components/PageHeader';
 import {
   BarChart,
@@ -1909,7 +1909,7 @@ useEffect(() => {
         onUpdate={handleUpdateInvoice}
         token={token}
       />
-      <Navbar
+      <ImprovedNavbar
         tenant={tenant}
         onTenantChange={setTenant}
         notifications={notifications}
@@ -1943,7 +1943,7 @@ useEffect(() => {
           } border-r border-gray-200 dark:border-gray-700 max-h-screen overflow-y-auto sticky top-16 z-20`}
         >
           <div className="p-4 space-y-4 overflow-y-auto h-full">
-            <SidebarNav notifications={notifications} />
+            <ImprovedSidebarNav notifications={notifications} />
             <button
               className="md:hidden text-right w-full"
               onClick={() => setFilterSidebarOpen(false)}

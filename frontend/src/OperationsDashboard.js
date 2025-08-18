@@ -20,7 +20,7 @@ import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import FloatingButton from './components/FloatingButton';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import StatCard from './components/StatCard.jsx';
 import LiveFeed from './components/LiveFeed';
 import OnboardingChecklist from './components/OnboardingChecklist';
@@ -255,7 +255,7 @@ function OperationsDashboard() {
   }, [stats, anomalies]);
 
   return (
-    <MainLayout title="AI Dashboard">
+    <ImprovedMainLayout title="AI Dashboard">
       <div className="mb-4 flex justify-end gap-2">
         <Tippy content="Export PDF" placement="bottom">
           <Button onClick={handleExportPDF} size="icon" variant="outline">
@@ -706,7 +706,7 @@ function OperationsDashboard() {
       </div>
     )}
     <FloatingButton onClick={() => navigate('/upload-wizard')} />
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 
