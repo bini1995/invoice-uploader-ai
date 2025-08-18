@@ -82,17 +82,26 @@ logger.info('🟡 Starting server...');
 Sentry.init({ dsn: process.env.SENTRY_DSN || undefined });
 
 // Security middleware (order matters!)
+const { securityHeaders, corsOptions, requestLogger, errorHandler: securityErrorHandler } = require('./middleware/security');
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://script.hotjar.com", "https://www.googletagmanager.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
+      mediaSrc: ["'self'", "https://sample-videos.com", "https://*.sample-videos.com"],
+      connectSrc: ["'self'", "https://api.openrouter.ai", "https://script.hotjar.com", "https://www.google-analytics.com"],
+      frameSrc: ["'self'", "https://www.google.com"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"]
     },
   },
   crossOriginEmbedderPolicy: false,
-  referrerPolicy: { policy: 'no-referrer' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   permissionsPolicy: {
     features: {
       geolocation: ["'none'"],
