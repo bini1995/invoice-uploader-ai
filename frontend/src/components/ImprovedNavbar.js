@@ -76,11 +76,11 @@ export default function ImprovedNavbar({
   }, [tenant, token]);
 
   return (
-    <nav className="bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow h-16">
-      <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-4">
+    <nav className="bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow h-16 flex-shrink-0">
+      <div className="h-full flex items-center justify-between px-4">
         {/* Left side - Logo and breadcrumbs */}
-        <div className="flex items-center space-x-4">
-          <Link to="/claims" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+        <div className="flex items-center space-x-4 min-w-0 flex-1">
+          <Link to="/claims" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0">
             <img
               src="/logo.svg"
               alt="ClarifyOps logo"
@@ -89,21 +89,21 @@ export default function ImprovedNavbar({
             <span className="font-semibold text-sm hidden sm:block">{t('title')}</span>
           </Link>
           
-          <div className="hidden md:flex items-center space-x-2 text-sm">
-            <span className="text-indigo-200">›</span>
+          <div className="hidden md:flex items-center space-x-2 text-sm min-w-0">
+            <span className="text-indigo-200 flex-shrink-0">›</span>
             <Link
               to={`/claims${sessionStorage.getItem('claimsQuery') || ''}`}
-              className="flex items-center font-medium hover:text-indigo-200 transition-colors"
+              className="flex items-center font-medium hover:text-indigo-200 transition-colors flex-shrink-0"
               title={t('switchProduct')}
             >
               ClarifyClaims
-              <ChevronDownIcon className="h-4 w-4 ml-1" />
+              <ChevronDownIcon className="h-4 w-4 ml-1 flex-shrink-0" />
             </Link>
             
             {crumbs.length > 0 && (
               <>
-                <span className="text-indigo-200">›</span>
-                <span className="text-indigo-100">{crumbs[0]}</span>
+                <span className="text-indigo-200 flex-shrink-0">›</span>
+                <span className="text-indigo-100 truncate">{crumbs[0]}</span>
               </>
             )}
           </div>
@@ -111,29 +111,29 @@ export default function ImprovedNavbar({
 
         {/* Center - Search (if provided) */}
         {onSearchChange && (
-          <div className="hidden lg:flex flex-1 max-w-md mx-8">
+          <div className="hidden lg:flex flex-1 max-w-md mx-4">
             <div className="relative w-full">
               <input
                 type="text"
                 placeholder="Search claims..."
                 value={search || ''}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-sm"
               />
             </div>
           </div>
         )}
 
         {/* Right side - Actions and user menu */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 flex-shrink-0">
           {/* Upload button */}
           {onUpload && (
             <button
               onClick={onUpload}
-              className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors"
+              className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors text-sm"
             >
               <ArrowUpTrayIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">Upload</span>
+              <span className="font-medium">Upload</span>
             </button>
           )}
 
@@ -155,39 +155,41 @@ export default function ImprovedNavbar({
 
           {/* Notifications */}
           {token && (
-            <NotificationBell
-              notifications={notifications}
-              onOpen={onNotificationsOpen}
-            />
+            <div className="flex-shrink-0">
+              <NotificationBell
+                notifications={notifications}
+                onOpen={onNotificationsOpen}
+              />
+            </div>
           )}
 
           {/* Theme toggles */}
-          <div className="hidden sm:flex items-center space-x-2">
+          <div className="hidden sm:flex items-center space-x-1 flex-shrink-0">
             <DarkModeToggle />
             <HighContrastToggle />
           </div>
 
           {/* User menu */}
           {token && (
-            <div className="relative" ref={userRef}>
+            <div className="relative flex-shrink-0" ref={userRef}>
               <button
                 className="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/10 transition-colors"
                 onClick={() => setUserOpen(!userOpen)}
               >
-                <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-sm font-medium">
                     {showRoleEmojis && role ? ROLE_EMOJI[role] : 'U'}
                   </span>
                 </div>
-                <div className="hidden md:block text-left">
-                  <div className="text-sm font-medium">Admin</div>
-                  <div className="text-xs text-indigo-200">{role}</div>
+                <div className="hidden md:block text-left min-w-0">
+                  <div className="text-sm font-medium truncate">Admin</div>
+                  <div className="text-xs text-indigo-200 truncate">{role}</div>
                 </div>
-                <ChevronDownIcon className="h-4 w-4" />
+                <ChevronDownIcon className="h-4 w-4 flex-shrink-0" />
               </button>
 
               {userOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
                   <Link
                     to="/settings"
                     className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -214,7 +216,7 @@ export default function ImprovedNavbar({
           {/* Mobile menu button */}
           <button
             ref={menuRef}
-            className="lg:hidden p-2 text-indigo-200 hover:text-white transition-colors"
+            className="lg:hidden p-2 text-indigo-200 hover:text-white transition-colors flex-shrink-0"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             <Bars3Icon className="h-5 w-5" />
@@ -224,7 +226,7 @@ export default function ImprovedNavbar({
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div className="lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 absolute top-full left-0 right-0 z-50">
           <div className="px-4 py-2 space-y-2">
             <Link
               to="/operations"

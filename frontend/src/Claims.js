@@ -1909,41 +1909,58 @@ useEffect(() => {
         onUpdate={handleUpdateInvoice}
         token={token}
       />
-      <ImprovedNavbar
-        tenant={tenant}
-        onTenantChange={setTenant}
-        notifications={notifications}
-        onNotificationsOpen={handleNotificationsOpen}
-        role={role}
-        onLogout={handleLogout}
-        token={token}
-        onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
-        onUpload={() => fileInputRef.current?.click()}
-        search={searchTerm}
-        onSearchChange={setSearchTerm}
-        smartQuery={smartQuery}
-        onSmartQueryChange={setSmartQuery}
-        onSmartSearch={handleSmartSearch}
-        onStartTour={() => setShowTour(true)}
-        activeFilterCount={activeFilters.length}
-      />
+      <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+        {/* Sidebar */}
+        <ImprovedSidebarNav notifications={notifications} />
+        
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col overflow-hidden ml-64 min-w-0">
+          {/* Header */}
+          <div className="flex-shrink-0">
+            <ImprovedNavbar
+              tenant={tenant}
+              onTenantChange={setTenant}
+              notifications={notifications}
+              onNotificationsOpen={handleNotificationsOpen}
+              role={role}
+              onLogout={handleLogout}
+              token={token}
+              onToggleFilters={() => setFilterSidebarOpen((o) => !o)}
+              onUpload={() => fileInputRef.current?.click()}
+              search={searchTerm}
+              onSearchChange={setSearchTerm}
+              smartQuery={smartQuery}
+              onSmartQueryChange={setSmartQuery}
+              onSmartSearch={handleSmartSearch}
+              onStartTour={() => setShowTour(true)}
+              activeFilterCount={activeFilters.length}
+            />
+          </div>
 
-      {filterSidebarOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black/30 z-30"
-          onClick={() => setFilterSidebarOpen(false)}
-        />
-      )}
+          {/* Main content */}
+          <main className="flex-1 overflow-y-auto min-w-0">
+            <div className="max-w-7xl mx-auto px-4 py-6">
+              {filterSidebarOpen && (
+                <div
+                  className="md:hidden fixed inset-0 bg-black/30 z-30"
+                  onClick={() => setFilterSidebarOpen(false)}
+                />
+              )}
 
-      <div className="flex flex-col md:flex-row md:gap-4 min-h-screen">
-        {token && (
-          <aside
-          className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
-            filterSidebarOpen ? '' : 'hidden'
-          } border-r border-gray-200 dark:border-gray-700 max-h-screen overflow-y-auto sticky top-16 z-20`}
-        >
-          <div className="p-4 space-y-4 overflow-y-auto h-full">
-            <ImprovedSidebarNav notifications={notifications} />
+              <div className="flex flex-col md:flex-row md:gap-4">
+                {token && (
+                  <aside
+                  className={`order-last md:order-first bg-white dark:bg-gray-800 shadow-lg w-full md:w-64 md:flex-shrink-0 ${
+                    filterSidebarOpen ? '' : 'hidden'
+                  } border-r border-gray-200 dark:border-gray-700 max-h-screen overflow-y-auto sticky top-16 z-20`}
+                >
+                  <div className="p-4 space-y-4 overflow-y-auto h-full">
+                    <button
+                      className="md:hidden text-right w-full"
+                      onClick={() => setFilterSidebarOpen(false)}
+                    >
+                      ✖
+                    </button>
             <button
               className="md:hidden text-right w-full"
               onClick={() => setFilterSidebarOpen(false)}
@@ -3208,6 +3225,10 @@ useEffect(() => {
           <FeatureWidget open={featureOpen} onClose={() => setFeatureOpen(false)} />
         </>
       )}
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );
