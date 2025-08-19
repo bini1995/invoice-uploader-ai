@@ -148,6 +148,57 @@ CREATE TABLE api_keys (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Workflows table for advanced workflow engine
+CREATE TABLE workflows (
+    id VARCHAR(100) PRIMARY KEY,
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    nodes JSONB NOT NULL DEFAULT '[]',
+    connections JSONB NOT NULL DEFAULT '[]',
+    version INTEGER DEFAULT 1,
+    is_active BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workflow executions for tracking
+CREATE TABLE workflow_executions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    workflow_id VARCHAR(100) REFERENCES workflows(id) ON DELETE CASCADE,
+    execution_id VARCHAR(100) NOT NULL,
+    status VARCHAR(50) DEFAULT 'running',
+    execution_log JSONB DEFAULT '[]',
+    execution_time INTEGER DEFAULT 0,
+    fraud_detected BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP
+);
+
+-- Workflow events for audit trail
+CREATE TABLE workflow_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    workflow_id VARCHAR(100) REFERENCES workflows(id) ON DELETE CASCADE,
+    event_type VARCHAR(100) NOT NULL,
+    event_data JSONB DEFAULT '{}',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Approval requests for workflow approvals
+CREATE TABLE approval_requests (
+    id VARCHAR(100) PRIMARY KEY,
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    workflow_node_id VARCHAR(100) NOT NULL,
+    approvers JSONB DEFAULT '[]',
+    timeout_hours INTEGER DEFAULT 24,
+    status VARCHAR(50) DEFAULT 'pending',
+    approved_by UUID REFERENCES users(id),
+    approved_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for performance
 CREATE INDEX idx_claims_tenant_id ON claims(tenant_id);
 CREATE INDEX idx_claims_status ON claims(status);
@@ -157,6 +208,11 @@ CREATE INDEX idx_documents_claim_id ON documents(claim_id);
 CREATE INDEX idx_fraud_events_claim_id ON fraud_events(claim_id);
 CREATE INDEX idx_analytics_events_tenant_id ON analytics_events(tenant_id);
 CREATE INDEX idx_performance_metrics_tenant_date ON performance_metrics(tenant_id, metric_date);
+CREATE INDEX idx_workflows_tenant_id ON workflows(tenant_id);
+CREATE INDEX idx_workflows_active ON workflows(is_active);
+CREATE INDEX idx_workflow_executions_workflow_id ON workflow_executions(workflow_id);
+CREATE INDEX idx_workflow_events_workflow_id ON workflow_events(workflow_id);
+CREATE INDEX idx_approval_requests_tenant_id ON approval_requests(tenant_id);
 
 -- Insert default tenant
 INSERT INTO tenants (name, slug, subscription_tier) VALUES 
