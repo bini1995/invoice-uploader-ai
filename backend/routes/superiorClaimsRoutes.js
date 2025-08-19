@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const SuperiorClaimsController = require('../controllers/superiorClaimsController');
+const SuperiorAnalyticsController = require('../controllers/superiorAnalyticsController');
 const authMiddleware = require('../middleware/authMiddleware');
 const tenantMiddleware = require('../middleware/tenantMiddleware');
 
 const claimsController = new SuperiorClaimsController();
+const analyticsController = new SuperiorAnalyticsController();
 
 // Apply middleware
 router.use(authMiddleware);
@@ -24,5 +26,6 @@ router.post('/claims/:claimId/comments', claimsController.addComment.bind(claims
 
 // Analytics and reporting
 router.get('/analytics/fraud-statistics', claimsController.getFraudStatistics.bind(claimsController));
+router.get('/analytics/dashboard', analyticsController.getDashboardData.bind(analyticsController));
 
 module.exports = router; 
