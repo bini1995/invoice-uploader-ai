@@ -32,6 +32,7 @@ const automationRoutes = require('./routes/automationRoutes');
 const tenantRoutes = require('./routes/tenantRoutes');
 const agentRoutes = require('./routes/agentRoutes');
 const claimRoutes = require('./routes/claimRoutes');
+const superiorClaimsRoutes = require('./routes/superiorClaimsRoutes');
 const timelineRoutes = require('./routes/timelineRoutes');
 const pluginRoutes = require('./routes/pluginRoutes');
 const complianceRoutes = require('./routes/complianceRoutes');
@@ -258,6 +259,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/claims', claimRoutes);
 app.use('/api/invoices', claimRoutes); // backwards compat
 app.use('/api/:tenantId/invoices', claimRoutes);
+app.use('/api/superior', superiorClaimsRoutes); // Superior claims platform
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);
 app.use('/api/compliance', complianceRoutes);
