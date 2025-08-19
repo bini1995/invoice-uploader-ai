@@ -199,6 +199,35 @@ CREATE TABLE approval_requests (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Integrations table for third-party connections
+CREATE TABLE integrations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    provider VARCHAR(100) NOT NULL,
+    api_key TEXT,
+    api_secret TEXT,
+    webhook_url VARCHAR(500),
+    environment VARCHAR(50) DEFAULT 'production',
+    status VARCHAR(50) DEFAULT 'pending',
+    is_active BOOLEAN DEFAULT false,
+    last_sync TIMESTAMP,
+    data_points INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Integration logs for audit trail
+CREATE TABLE integration_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id UUID REFERENCES tenants(id) ON DELETE CASCADE,
+    integration_id UUID REFERENCES integrations(id) ON DELETE CASCADE,
+    activity VARCHAR(100) NOT NULL,
+    data JSONB DEFAULT '{}',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for performance
 CREATE INDEX idx_claims_tenant_id ON claims(tenant_id);
 CREATE INDEX idx_claims_status ON claims(status);
@@ -213,6 +242,10 @@ CREATE INDEX idx_workflows_active ON workflows(is_active);
 CREATE INDEX idx_workflow_executions_workflow_id ON workflow_executions(workflow_id);
 CREATE INDEX idx_workflow_events_workflow_id ON workflow_events(workflow_id);
 CREATE INDEX idx_approval_requests_tenant_id ON approval_requests(tenant_id);
+CREATE INDEX idx_integrations_tenant_id ON integrations(tenant_id);
+CREATE INDEX idx_integrations_provider ON integrations(provider);
+CREATE INDEX idx_integrations_active ON integrations(is_active);
+CREATE INDEX idx_integration_logs_integration_id ON integration_logs(integration_id);
 
 -- Insert default tenant
 INSERT INTO tenants (name, slug, subscription_tier) VALUES 
