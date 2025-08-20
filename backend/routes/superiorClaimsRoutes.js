@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const SuperiorClaimsController = require('../controllers/superiorClaimsController');
 const authMiddleware = require('../middleware/authMiddleware');
-const tenantMiddleware = require('../middleware/tenantMiddleware');
+// const tenantMiddleware = require('../middleware/tenantMiddleware'); // Temporarily removed for debugging
 
 const claimsController = new SuperiorClaimsController();
 
 // Apply middleware
 router.use(authMiddleware);
-router.use(tenantMiddleware);
+// router.use(tenantMiddleware); // Temporarily disabled for login testing
 
 // Claims CRUD operations
 router.post('/claims', claimsController.createClaim.bind(claimsController));

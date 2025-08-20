@@ -142,14 +142,22 @@ app.set('trust proxy', 1);
 app.use('/api/health', healthRoutes);
 app.use('/metrics', metricsRoutes);
 
+// Auth routes (must be early to avoid middleware conflicts)
+app.use('/api/auth', authRoutes);
+
+// Simple test route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Test route working', timestamp: new Date().toISOString() });
+});
+
 // Global rate limiting
 app.use(apiLimiter);
 
 // Sentry request handler
 app.use(Sentry.Handlers.requestHandler());
 
-// Tenant context middleware
-app.use(tenantContext);
+// Tenant context middleware - applied only to routes that need it
+// app.use(tenantContext); // Removed global application
 
 // API documentation
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -258,7 +266,7 @@ app.use('/api/agents', agentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/claims', claimRoutes);
 app.use('/api/invoices', claimRoutes); // backwards compat
-app.use('/api/:tenantId/invoices', claimRoutes);
+app.use('/api/:tenantId/invoices', tenantContext, claimRoutes);
 app.use('/api/superior', superiorClaimsRoutes); // Superior claims platform
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);

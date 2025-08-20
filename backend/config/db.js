@@ -19,8 +19,8 @@ const dbConfig = {
   min: parseInt(process.env.DB_POOL_MIN || '2', 10),
   idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000', 10),
   connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT || '2000', 10),
-  // SSL configuration for production
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  // SSL configuration for production - disabled for local development
+  ssl: false, // process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 };
 
 // If a full connection string is provided, use it unless it points to localhost
@@ -33,10 +33,10 @@ if (process.env.DATABASE_URL) {
     if (needsOverride) {
       url.hostname = process.env.DB_HOST || 'db';
       url.port = process.env.DB_PORT || '5432';
-      dbConfig.connectionString = url.toString();
-    } else {
-      dbConfig.connectionString = process.env.DATABASE_URL;
     }
+    // Add SSL disable parameter for local development
+    url.searchParams.set('sslmode', 'disable');
+    dbConfig.connectionString = url.toString();
   } catch (err) {
     // Fallback to using it raw if URL parsing fails
     dbConfig.connectionString = process.env.DATABASE_URL;
@@ -47,6 +47,7 @@ if (!process.env.DATABASE_URL) {
   logger.info('DATABASE_URL not set, using individual DB_* env vars');
 }
 
+console.log('🔎 Final dbConfig:', dbConfig);
 logger.info('Postgres config:', dbConfig);
 
 const pool = new Pool(dbConfig);

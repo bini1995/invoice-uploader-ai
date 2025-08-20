@@ -9,6 +9,7 @@ services:
     env_file:
       - .env
     environment:
+      NODE_ENV: development
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres

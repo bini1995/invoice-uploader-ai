@@ -1,175 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { Card } from './ui/Card';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { CheckIcon, StarIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Button } from './ui/Button';
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
-import {
-  CheckCircleIcon,
-  UserGroupIcon,
-  ChartBarIcon,
-  SparklesIcon,
-  ShieldCheckIcon,
-} from '@heroicons/react/24/outline';
-
-const plans = [
-  {
-    id: 'usage',
-    title: 'Pay As You Go',
-    subtitle: '$0.25 per claim processed',
-    price: 0.25,
-    claims: 'per claim',
-    summaries: 'Included',
-    users: 'Unlimited',
-    analytics: 'Basic',
-    fraudDetection: false,
-    cta: 'Start Processing',
-  },
-  {
-    id: 'starter',
-    title: 'Starter Plan',
-    subtitle: '$199 for 1,000 claims',
-    price: 199,
-    claims: 1000,
-    summaries: 'Unlimited',
-    users: 5,
-    analytics: 'Advanced',
-    fraudDetection: true,
-    cta: 'Start Free Trial',
-    popular: true,
-  },
-  {
-    id: 'professional',
-    title: 'Professional',
-    subtitle: '$499 for 3,000 claims',
-    price: 499,
-    claims: 3000,
-    summaries: 'Unlimited',
-    users: 15,
-    analytics: 'Advanced',
-    fraudDetection: true,
-    cta: 'Start Free Trial',
-  },
-];
 
 export default function PricingSection() {
-  const [annual, setAnnual] = useState(false);
-  const price = p => (p === 'Custom' ? p : annual ? p * 12 * 0.8 : p);
-  useEffect(() => {
-    const handle = () => {
-      const bar = document.getElementById('sticky-cta');
-      const pricing = document.getElementById('pricing');
-      if (!bar || !pricing) return;
-      const threshold = pricing.offsetTop - window.innerHeight / 2;
-      bar.style.display = window.scrollY > threshold ? 'flex' : 'none';
-    };
-    window.addEventListener('scroll', handle);
-    return () => window.removeEventListener('scroll', handle);
-  }, []);
+  const plans = [
+    {
+      name: "Starter",
+      price: "$299",
+      period: "/month",
+      description: "Perfect for small insurance companies",
+      features: [
+        "Up to 1,000 claims/month",
+        "AI-powered fraud detection",
+        "Basic analytics dashboard",
+        "Email support",
+        "Standard security"
+      ],
+      cta: "Start Free Trial",
+      popular: false
+    },
+    {
+      name: "Professional",
+      price: "$899",
+      period: "/month",
+      description: "Ideal for growing insurance companies",
+      features: [
+        "Up to 10,000 claims/month",
+        "Advanced AI fraud detection",
+        "Real-time analytics",
+        "Priority support",
+        "SOC 2 compliance",
+        "Custom workflows",
+        "API access"
+      ],
+      cta: "Start Free Trial",
+      popular: true
+    },
+    {
+      name: "Enterprise",
+      price: "Custom",
+      period: "",
+      description: "For large insurance companies",
+      features: [
+        "Unlimited claims",
+        "Custom AI models",
+        "White-label solution",
+        "Dedicated support",
+        "On-premise deployment",
+        "Custom integrations",
+        "SLA guarantees",
+        "Blockchain integration"
+      ],
+      cta: "Contact Sales",
+      popular: false
+    }
+  ];
+
   return (
-    <section id="pricing" className="py-12 bg-gray-50 dark:bg-gray-800">
-      <h2 className="text-3xl font-bold text-center mb-6">Pricing</h2>
-      <p className="text-center mb-6 text-gray-600 dark:text-gray-300">
-        Simple, transparent pricing for insurance claims processing
-      </p>
-      <div className="flex justify-center mb-6 space-x-3 text-sm items-center">
-        <span className={annual ? 'opacity-50' : 'font-semibold'}>Monthly</span>
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            value=""
-            className="sr-only peer"
-            checked={annual}
-            onChange={() => setAnnual(v => !v)}
-            aria-label="Toggle annual pricing"
-          />
-          <div className="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600"></div>
-        </label>
-        <span className={annual ? 'font-semibold' : 'opacity-50'}>Annual</span>
-        {annual && (
-          <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full ml-1">
-            Save 20%
-          </span>
-        )}
-      </div>
-      <div className="container mx-auto grid md:grid-cols-3 gap-8 px-6">
-        {plans.map(plan => (
-          <Card
-            key={plan.id}
-            id={plan.id}
-            className={
-              'text-center space-y-4 p-6 transform transition hover:scale-105 hover:shadow-xl ' +
-              (plan.popular ? 'ring-2 ring-indigo-600' : '')
-            }
-          >
-            {plan.popular && (
-              <span className="inline-block bg-indigo-600 text-white text-xs px-2 py-1 rounded-full shadow">Most Popular</span>
-            )}
-            <h3 className="text-xl font-semibold">{plan.title}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{plan.subtitle}</p>
-            <p className="text-4xl font-bold">
-              {typeof plan.price === 'number' ? `$${price(plan.price)}` : plan.price}
-            </p>
-            {typeof plan.price === 'number' && annual && (
-              <p className="text-xs text-gray-600 dark:text-gray-400">
-                billed annually • save ${plan.price * 12 * 0.2}/year
-              </p>
-            )}
-            <ul className="text-sm space-y-1 text-left">
-              <li className="flex items-center space-x-1">
-                <CheckCircleIcon className="w-4 h-4" />
-                <span className="font-semibold">{plan.claims}</span>{' '}claims/mo
-              </li>
-              <li className="flex items-center space-x-1">
-                <UserGroupIcon className="w-4 h-4" />
-                <span className="font-semibold">{plan.users}</span> users
-              </li>
-              <li className="flex items-center space-x-1">
-                <SparklesIcon className="w-4 h-4" />
-                <span className="font-semibold">{plan.summaries}</span> AI summaries
-              </li>
-              <li className="flex items-center space-x-1">
-                <ChartBarIcon className="w-4 h-4" />
-                <span className="font-semibold">{plan.analytics}</span>
-                <span> analytics</span>
-                <Tippy content="Claims processing dashboards and insights">
-                  <span className="ml-1 cursor-help text-indigo-600">?</span>
-                </Tippy>
-              </li>
-              {plan.fraudDetection && (
-                <li className="flex items-center space-x-1">
-                  <ShieldCheckIcon className="w-4 h-4" />
-                  <span>Fraud Detection</span>
-                  <Tippy content="AI-powered fraud detection and risk scoring">
-                    <span className="ml-1 cursor-help text-indigo-600">?</span>
-                  </Tippy>
-                </li>
+    <section id="pricing" className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="max-w-7xl mx-auto">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Transparent, Enterprise-Grade Pricing
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            No hidden fees, no surprises. Choose the plan that fits your needs and scale as you grow.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {plans.map((plan, index) => (
+            <motion.div
+              key={plan.name}
+              className={`relative p-8 rounded-2xl border-2 transition-all duration-300 ${
+                plan.popular 
+                  ? 'border-blue-500 bg-white shadow-2xl scale-105' 
+                  : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-lg'
+              }`}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              whileHover={{ scale: plan.popular ? 1.05 : 1.02 }}
+            >
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
+                    <StarIcon className="h-4 w-4" />
+                    Most Popular
+                  </span>
+                </div>
               )}
-            </ul>
-            <Button>{plan.cta}</Button>
-            <div className="flex justify-center mt-2 gap-2 opacity-80">
-              <img
-                src="https://dummyimage.com/40x20/4b2ad3/ffffff.png&text=A"
-                alt="Logo A"
-                className="h-5 rounded"
-              />
-              <img
-                src="https://dummyimage.com/40x20/4b2ad3/ffffff.png&text=B"
-                alt="Logo B"
-                className="h-5 rounded"
-              />
+
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                <div className="flex items-baseline justify-center mb-2">
+                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                  <span className="text-gray-600 ml-1">{plan.period}</span>
+                </div>
+                <p className="text-gray-600">{plan.description}</p>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                {plan.features.map((feature, featureIndex) => (
+                  <li key={featureIndex} className="flex items-start gap-3">
+                    <CheckIcon className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button 
+                className={`w-full py-3 font-semibold ${
+                  plan.popular 
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
+                }`}
+              >
+                {plan.cta}
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div 
+          className="text-center mt-12 p-8 bg-white rounded-xl border border-gray-200"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+        >
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            Why Choose ClarifyOps Over Competitors?
+          </h3>
+          <div className="grid md:grid-cols-3 gap-8 text-left">
+            <div className="flex items-start gap-3">
+              <SparklesIcon className="h-6 w-6 text-blue-600 mt-1" />
+              <div>
+                <h4 className="font-semibold text-gray-900">Superior AI Technology</h4>
+                <p className="text-gray-600 text-sm">Our AI is 40% more accurate than industry standard</p>
+              </div>
             </div>
-          </Card>
-        ))}
-      </div>
-      <div className="text-center mt-8">
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Need custom pricing for enterprise teams?
-        </p>
-        <Button variant="secondary">Contact Sales</Button>
-      </div>
-      <div id="sticky-cta" className="fixed bottom-0 inset-x-0 hidden justify-center bg-indigo-600 text-white p-4 z-40">
-        <span className="mr-4 font-semibold">Ready to automate your claims processing?</span>
-        <Button variant="secondary" className="bg-white text-indigo-600">Start Free Trial</Button>
+            <div className="flex items-start gap-3">
+              <SparklesIcon className="h-6 w-6 text-blue-600 mt-1" />
+              <div>
+                <h4 className="font-semibold text-gray-900">Faster Processing</h4>
+                <p className="text-gray-600 text-sm">Process claims in under 1 day vs 2+ days industry average</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <SparklesIcon className="h-6 w-6 text-blue-600 mt-1" />
+              <div>
+                <h4 className="font-semibold text-gray-900">Better ROI</h4>
+                <p className="text-gray-600 text-sm">Reduce claim costs by up to 40% with predictive analytics</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
