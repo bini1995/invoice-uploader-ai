@@ -27,6 +27,8 @@ const {
   updateStatus,
   exportClaims,
   getClaimMetrics,
+  getUploadHeatmap,
+  getTopVendors,
 } = require('../controllers/claimController');
 const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
@@ -47,6 +49,8 @@ const fileSizeLimit = require('../middleware/fileSizeLimit');
 const { uploadLimiter } = require('../middleware/rateLimit');
 
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
+router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
+router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/', authMiddleware, listDocuments);
 router.post('/:id/extract', authMiddleware, extractDocument);
 router.post('/:id/extract-fields', authMiddleware, extractClaimFields);
