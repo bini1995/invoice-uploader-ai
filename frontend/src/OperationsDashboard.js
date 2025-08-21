@@ -400,7 +400,7 @@ function OperationsDashboard() {
               headline="Let's get started!"
               description="Upload your first document to begin tracking spend, surfacing anomalies, and unlocking AI insights."
               cta="Upload Document"
-              onCta={() => navigate('/upload')}
+              onCta={() => navigate('/upload-wizard')}
             />
           )}
           <div className="h-64">
