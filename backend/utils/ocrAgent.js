@@ -45,14 +45,16 @@ async function trainFromCorrections() {
       }
     }
 
+    // Note: documents table doesn't have vendor column, so we'll skip this query for now
+    // TODO: Update this query when vendor information is properly stored in documents table
     const { rows: fbRows } = await pool.query(
-      `SELECT d.vendor, f.suggested_category FROM category_feedback f JOIN documents d ON f.document_id = d.id WHERE f.accepted = TRUE`
+      `SELECT f.suggested_category FROM category_feedback f WHERE f.accepted = TRUE`
     );
     for (const r of fbRows) {
-      const vendor = r.vendor?.toLowerCase();
-      if (!vendor || !r.suggested_category) continue;
-      model.categoryMap[vendor] = model.categoryMap[vendor] || {};
-      model.categoryMap[vendor][r.suggested_category] = (model.categoryMap[vendor][r.suggested_category] || 0) + 1;
+      if (!r.suggested_category) continue;
+      // Store category suggestions without vendor association for now
+      model.categoryMap['general'] = model.categoryMap['general'] || {};
+      model.categoryMap['general'][r.suggested_category] = (model.categoryMap['general'][r.suggested_category] || 0) + 1;
     }
 
     const file = path.join(__dirname, '..', 'data', 'ocr_model.json');
