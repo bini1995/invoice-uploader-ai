@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { API_BASE } from '../api';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
 import LanguageSelector from './LanguageSelector';
@@ -69,7 +70,7 @@ export default function ImprovedNavbar({
 
   useEffect(() => {
     if (!token) return;
-    fetch(`/api/tenants/${tenant}/info`, { headers: { Authorization: `Bearer ${token}`, 'X-Tenant-Id': tenant } })
+    fetch(`${API_BASE}/tenants/${tenant}/info`, { headers: { Authorization: `Bearer ${token}`, 'X-Tenant-Id': tenant } })
       .then(r => r.ok ? r.json() : { name: tenant })
       .then(d => setTenantName(d.name || tenant))
       .catch(() => setTenantName(tenant));

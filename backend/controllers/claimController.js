@@ -870,3 +870,11 @@ exports.getClaimMetrics = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch claim metrics' });
   }
 };
+
+exports.getUploadHeatmap = async (req, res) => {
+  res.json({ heatmap: [] });
+};
+
+exports.getTopVendors = async (req, res) => {
+  res.json({ topVendors: [] });
+};
