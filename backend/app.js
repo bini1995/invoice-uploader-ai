@@ -53,7 +53,7 @@ const auditRoutes = require('./routes/auditRoutes');
 // Middleware imports
 const { auditLog } = require('./middleware/auditMiddleware');
 const piiMask = require('./middleware/piiMask');
-const tenantContext = require('./middleware/tenantMiddleware');
+// const tenantContext = require('./middleware/tenantMiddleware');
 
 // Service imports
 const { sendApprovalReminders } = require('./controllers/reminderController');
@@ -266,7 +266,7 @@ app.use('/api/agents', agentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/claims', claimRoutes);
 app.use('/api/invoices', claimRoutes); // backwards compat
-app.use('/api/:tenantId/invoices', tenantContext, claimRoutes);
+// app.use('/api/:tenantId/invoices', tenantContext, claimRoutes);
 app.use('/api/superior', superiorClaimsRoutes); // Superior claims platform
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/plugins', pluginRoutes);
