@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { LightBulbIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { API_BASE } from '../api';
 
 export default function FeatureWidget({ open, onClose }) {
   const [text, setText] = useState('');
@@ -10,7 +11,7 @@ export default function FeatureWidget({ open, onClose }) {
   const submit = async () => {
     if (!text.trim()) return;
     try {
-      await fetch('http://localhost:3000/api/features', {
+      await fetch(`${API_BASE}/api/features`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),

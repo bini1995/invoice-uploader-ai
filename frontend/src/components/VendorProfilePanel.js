@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE } from '../api';
 
 export default function VendorProfilePanel({ vendor, open, onClose, token }) {
   const [history, setHistory] = useState([]);
@@ -11,9 +12,9 @@ export default function VendorProfilePanel({ vendor, open, onClose, token }) {
     const headers = { Authorization: `Bearer ${token}` };
     setLoading(true);
     Promise.all([
-      fetch(`http://localhost:3000/api/invoices/search?vendor=${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
-      fetch(`http://localhost:3000/api/invoices/vendor-profile/${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
-      fetch('http://localhost:3000/api/vendors', { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/invoices/search?vendor=${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/invoices/vendor-profile/${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/vendors`, { headers }).then(r => r.json()),
     ])
       .then(([hist, prof, vendors]) => {
         setHistory(Array.isArray(hist) ? hist : []);

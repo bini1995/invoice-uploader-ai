@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
+import { API_BASE } from '../api';
 
 const GraphView = ({ token, tenant }) => {
   const [data, setData] = useState({ nodes: [], links: [] });
@@ -8,7 +9,7 @@ const GraphView = ({ token, tenant }) => {
   useEffect(() => {
     const fetchGraph = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/invoices/graph', {
+        const res = await fetch(`${API_BASE}/api/invoices/graph`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'X-Tenant-Id': tenant,
