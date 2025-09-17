@@ -12,8 +12,8 @@ export const API_BASE =
   cleaned ||
   (typeof window !== 'undefined' &&
   window.location.origin.includes('localhost')
-    ? 'https://clarifyops.com/api'  // Use your VPS domain with /api
-    : '');
+    ? 'http://localhost:3000'  // Local development
+    : 'https://clarifyops.com/api');  // Production - always use this for clarifyops.com
 
 // Simple health check helper used by status indicators
 export async function pingHealth() {
