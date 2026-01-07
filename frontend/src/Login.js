@@ -12,11 +12,12 @@ export default function Login({ onLogin, addToast, next }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const ssoEnabled = localStorage.getItem('sso_enabled') === 'true';
+  const loginUrl = `${API_BASE}/api/claims/login`;
 
   const handleLogin = async () => {
     logEvent('login_click', { source: 'login_form', request_id: getRequestId(), method: 'password' });
     try {
-      const res = await fetch(`${API_BASE}/api/claims/login`, {
+      const res = await fetch(loginUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
