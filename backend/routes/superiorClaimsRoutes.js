@@ -1,28 +1,8 @@
 import express from 'express';
-import SuperiorClaimsController from '../controllers/superiorClaimsController.js';
-import authMiddleware from '../middleware/authMiddleware.js';
+import claimRoutes from './claimRoutes.js';
+
 const router = express.Router();
-// const tenantMiddleware = require('../middleware/tenantMiddleware'); // Temporarily removed for debugging
 
-const claimsController = new SuperiorClaimsController();
-
-// Apply middleware
-router.use(authMiddleware);
-// router.use(tenantMiddleware); // Temporarily disabled for login testing
-
-// Claims CRUD operations
-router.post('/claims', claimsController.createClaim.bind(claimsController));
-router.get('/claims', claimsController.getClaims.bind(claimsController));
-router.get('/claims/:claimId', claimsController.getClaim.bind(claimsController));
-router.put('/claims/:claimId', claimsController.updateClaim.bind(claimsController));
-
-// Document management
-router.post('/claims/:claimId/documents', claimsController.uploadDocuments.bind(claimsController));
-
-// Comments and communication
-router.post('/claims/:claimId/comments', claimsController.addComment.bind(claimsController));
-
-// Analytics and reporting
-router.get('/analytics/fraud-statistics', claimsController.getFraudStatistics.bind(claimsController));
+router.use('/claims', claimRoutes);
 
 export default router;
