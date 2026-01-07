@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 
 let ReviewButtons;
 
@@ -7,7 +8,7 @@ describe('ReviewButtons', () => {
     localStorage.setItem('role', 'adjuster');
     global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
     window.confirm = jest.fn(() => true);
-    process.env.REACT_APP_REVIEW_ACTIONS = 'true';
+    vi.stubEnv('VITE_REVIEW_ACTIONS', 'true');
     ReviewButtons = require('../ReviewButtons').default;
   });
 

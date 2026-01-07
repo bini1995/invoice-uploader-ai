@@ -4,7 +4,7 @@ import { CheckCircleIcon, InformationCircleIcon, ExclamationTriangleIcon } from 
 import Spinner from './Spinner';
 import useClaimActions from '../hooks/useClaimActions';
 
-const ENABLED = process.env.REACT_APP_REVIEW_ACTIONS === 'true';
+const ENABLED = import.meta.env.VITE_REVIEW_ACTIONS === 'true';
 
 export default function ReviewButtons({ claimId, status, addToast }) {
   const {

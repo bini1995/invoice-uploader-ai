@@ -2,7 +2,7 @@ import React from 'react';
 import animation from '../invoice-hero.json';
 
 let Lottie = null;
-if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
+if (typeof window !== 'undefined' && import.meta.env.MODE !== 'test') {
   Lottie = require('lottie-react').default;
 }
 
