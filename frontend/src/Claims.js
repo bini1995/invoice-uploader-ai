@@ -61,7 +61,7 @@ function ClaimsPage() {
   const fetchClaims = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE}/superior/claims`, {
+      const response = await fetch(`${API_BASE}/api/claims`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ function ClaimsPage() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`${API_BASE}/notifications`, {
+      const response = await fetch(`${API_BASE}/api/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -106,7 +106,7 @@ function ClaimsPage() {
 
   const handleDeleteClaim = async (claimId) => {
     try {
-      const response = await fetch(`${API_BASE}/superior/claims/${claimId}`, {
+      const response = await fetch(`${API_BASE}/api/claims/${claimId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
