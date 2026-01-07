@@ -1,11 +1,5 @@
 // Resolve the API base from env vars or fall back to dev/prod defaults
-let fromEnv = '';
-try {
-  // eslint-disable-next-line no-new-func
-  fromEnv = new Function('return import.meta.env.VITE_API_BASE_URL')();
-} catch (_e) {
-  fromEnv = process.env.REACT_APP_API_BASE_URL || '';
-}
+const fromEnv = import.meta.env.VITE_API_BASE_URL || '';
 const cleaned = fromEnv.replace(/\/+$/, '').replace(/\/api$/, '');
 
 export const API_BASE =

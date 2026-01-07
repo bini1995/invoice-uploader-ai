@@ -1,8 +1,8 @@
 // Feature Flags Configuration
 // This file controls which features are enabled in Lite vs Full mode
 
-const isLiteMode = process.env.REACT_APP_LITE_MODE === 'true';
-const isDemoMode = process.env.REACT_APP_DEMO_MODE === 'true';
+const isLiteMode = import.meta.env.VITE_LITE_MODE === 'true';
+const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
 
 export const FEATURE_FLAGS = {
   // Core Features (Always enabled)

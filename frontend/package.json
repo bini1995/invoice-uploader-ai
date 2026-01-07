@@ -36,7 +36,7 @@
     "react-i18next": "^15.5.3",
     "react-joyride": "^2.6.0",
     "react-router-dom": "6.22.3",
-    "react-scripts": "5.0.1",
+    "vite": "^5.4.8",
     "react-scroll": "^1.8.9",
     "react-window": "^1.8.7",
     "recharts": "^2.15.3",
@@ -50,15 +50,14 @@
     "yjs": "^13.6.27"
   },
   "scripts": {
-    "start": "PORT=3001 react-scripts start",
+    "start": "vite --port 3001",
     "prebuild": "node scripts/update-sitemap.js",
-    "build": "react-scripts build",
+    "build": "vite build",
     "postbuild": "echo 'Skipping react-snap for Docker build'",
-    "test": "react-scripts test",
+    "test": "vitest",
     "test:e2e": "playwright test",
     "e2e": "playwright test",
     "pree2e": "playwright install --with-deps",
-    "eject": "react-scripts eject",
     "prestart": "node scripts/check-node.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -97,11 +96,11 @@
     "@lhci/cli": "^0.13.0",
     "@playwright/test": "^1.45.0",
     "@storybook/addon-essentials": "^8.1.0",
-    "@storybook/react": "^8.1.0",
+    "@storybook/react-vite": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.5",
+    "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
-    "react-snap": "^1.23.0",
     "semver": "^7.5.4",
     "storybook": "^8.1.0",
     "stylelint": "^16.23.1",
@@ -109,15 +108,7 @@
     "stylelint-config-standard": "^39.0.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.8.3",
+    "vitest": "^1.6.0",
     "wcag-contrast": "^3.0.0"
-  },
-  "reactSnap": {
-    "puppeteerArgs": [
-      "--no-sandbox"
-    ],
-    "inlineCss": true,
-    "routes": [
-      "/"
-    ]
   }
 }
