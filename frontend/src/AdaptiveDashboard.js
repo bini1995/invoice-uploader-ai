@@ -5,7 +5,9 @@ import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import RuleModal from './components/RuleModal';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DndContext } from '@dnd-kit/core';
+import { SortableContext, useSortable, arrayMove, rectSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
 import { API_BASE } from './api';
@@ -23,6 +25,21 @@ function Sparkline({ prev = 0, cur = 0 }) {
         <Line type="monotone" dataKey="v" stroke="#3b82f6" dot={false} strokeWidth={2} />
       </LineChart>
     </ResponsiveContainer>
+  );
+}
+
+function AdaptiveCard({ cardId, children }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: cardId });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
   );
 }
 
@@ -101,12 +118,17 @@ export default function AdaptiveDashboard() {
     localStorage.setItem('adaptivePinned', JSON.stringify(Array.from(pinned)));
   }, [pinned]);
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-    const items = Array.from(cardOrder);
-    const [moved] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, moved);
-    setCardOrder(items);
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return;
+    const orderedCards = [
+      ...cardOrder.filter((c) => pinned.has(c)),
+      ...cardOrder.filter((c) => !pinned.has(c)),
+    ];
+    const sourceIndex = orderedCards.indexOf(active.id);
+    const destinationIndex = orderedCards.indexOf(over.id);
+    if (sourceIndex === -1 || destinationIndex === -1) return;
+    const nextOrder = arrayMove(cardOrder, sourceIndex, destinationIndex);
+    setCardOrder(nextOrder);
   };
 
   const togglePin = (key) => {
@@ -276,34 +298,26 @@ export default function AdaptiveDashboard() {
             </div>
           </div>
         )}
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="cards" direction="horizontal">
-            {(provided) => (
-              <div
-                className="grid grid-cols-2 md:grid-cols-3 gap-4"
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {loading ? (
-                  <Skeleton rows={1} className="h-20 col-span-2 md:col-span-3" />
-                ) : (
-                  [...cardOrder.filter((c) => pinned.has(c)), ...cardOrder.filter((c) => !pinned.has(c))].map(
-                    (key, index) => (
-                      <Draggable key={key} draggableId={key} index={index}>
-                        {(prov) => (
-                          <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
-                            {renderCard(key)}
-                          </div>
-                        )}
-                      </Draggable>
-                    )
+        <DndContext onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={[...cardOrder.filter((c) => pinned.has(c)), ...cardOrder.filter((c) => !pinned.has(c))]}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {loading ? (
+                <Skeleton rows={1} className="h-20 col-span-2 md:col-span-3" />
+              ) : (
+                [...cardOrder.filter((c) => pinned.has(c)), ...cardOrder.filter((c) => !pinned.has(c))].map(
+                  (key) => (
+                    <AdaptiveCard key={key} cardId={key}>
+                      {renderCard(key)}
+                    </AdaptiveCard>
                   )
-                )}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+                )
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
         <div className="h-64">
           {loading ? (
             <Skeleton rows={1} className="h-full" />

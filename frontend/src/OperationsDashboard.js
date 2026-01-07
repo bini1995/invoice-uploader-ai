@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DndContext } from '@dnd-kit/core';
+import { SortableContext, useSortable, arrayMove, rectSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
   PieChart,
   Pie,
@@ -47,6 +49,24 @@ const METRIC_LABELS = {
   anomalies: '⚠️ Anomalies Found',
   ai: '🤖 AI Suggestions Available',
 };
+
+function MetricTile({ metricId, disabled, children }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: metricId,
+    disabled,
+  });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+}
 
 function OperationsDashboard() {
   const token = localStorage.getItem('token') || '';
@@ -211,12 +231,12 @@ function OperationsDashboard() {
     alert('Approval reminder emails sent');
   };
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-    const items = Array.from(metricsOrder);
-    const [moved] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, moved);
-    setMetricsOrder(items);
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return;
+    const sourceIndex = metricsOrder.indexOf(active.id);
+    const destinationIndex = metricsOrder.indexOf(over.id);
+    if (sourceIndex === -1 || destinationIndex === -1) return;
+    setMetricsOrder(arrayMove(metricsOrder, sourceIndex, destinationIndex));
   };
 
   const toggleMetric = (m) => {
@@ -317,78 +337,70 @@ function OperationsDashboard() {
         <p className="text-center text-gray-600">Please log in from the main app.</p>
       ) : (
         <div className="space-y-8">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="metrics" direction="horizontal">
-              {(provided) => (
-                <div
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  {loading ? (
-                    <Skeleton rows={1} className="h-20 col-span-2 md:col-span-4" />
-                  ) : (
-                    metricsOrder.map((m, index) =>
-                      hiddenMetrics.has(m) ? null : (
-                        <Draggable key={m} draggableId={m} index={index} isDragDisabled={!customizeOpen}>
-                          {(prov) => (
-                            <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
-                              {m === 'total' && (
-                                <StatCard
-                                  icon={<ArrowTrendingUpIcon className="w-5 h-5" />}
-                                  title="Total Document Spend"
-                                  value={`$${stats?.totalInvoicedThisMonth?.toFixed(2) || 0}`}
-                                  subtext={`${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(1)}% from last month`}
-                                  trend={percentChange}
-                                  cta="View Report"
-                                  onCta={() => navigate('/analytics')}
-                                />
-                              )}
-                              {m === 'pending' && (
-                                <StatCard
-                                  icon={<InboxIcon className="w-5 h-5" />}
-                                  title="Claim Documents Pending"
-                                  value={stats?.invoicesPending || 0}
-                                  cta="Go to ClarifyClaims"
-                                  onCta={() => navigate('/claims')}
-                                />
-                              )}
-                              {m === 'anomalies' && (
-                                <StatCard
-                                  icon={<ExclamationTriangleIcon className="w-5 h-5" />}
-                                  title="Anomalies Found"
-                                  value={stats?.anomaliesFound || 0}
-                                  badge={stats?.anomaliesFound > 0}
-                                  cta={stats?.anomaliesFound > 0 ? 'Review Now' : undefined}
-                                  onCta={() => navigate('/audit')}
-                                />
-                              )}
-                              {m === 'ai' && (
-                                <StatCard
-                                  icon={<SparklesIcon className="w-5 h-5" />}
-                                  title="AI Suggestions"
-                                  value={stats?.aiSuggestions || 0}
-                                  cta="Explore Suggestions"
-                                  onCta={() => navigate('/analytics')}
-                                >
-                                  {insights && insights.slice(0, 2).map((v) => (
-                                    <div key={v.vendor} className="text-xs text-gray-500">
-                                      {v.vendor}: ${v.total.toFixed(2)}
-                                    </div>
-                                  ))}
-                                </StatCard>
-                              )}
-                            </div>
-                          )}
-                        </Draggable>
-                      )
+          <DndContext onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={metricsOrder.filter((m) => !hiddenMetrics.has(m))}
+              strategy={rectSortingStrategy}
+            >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {loading ? (
+                  <Skeleton rows={1} className="h-20 col-span-2 md:col-span-4" />
+                ) : (
+                  metricsOrder.map((m) =>
+                    hiddenMetrics.has(m) ? null : (
+                      <MetricTile key={m} metricId={m} disabled={!customizeOpen}>
+                        {m === 'total' && (
+                          <StatCard
+                            icon={<ArrowTrendingUpIcon className="w-5 h-5" />}
+                            title="Total Document Spend"
+                            value={`$${stats?.totalInvoicedThisMonth?.toFixed(2) || 0}`}
+                            subtext={`${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(1)}% from last month`}
+                            trend={percentChange}
+                            cta="View Report"
+                            onCta={() => navigate('/analytics')}
+                          />
+                        )}
+                        {m === 'pending' && (
+                          <StatCard
+                            icon={<InboxIcon className="w-5 h-5" />}
+                            title="Claim Documents Pending"
+                            value={stats?.invoicesPending || 0}
+                            cta="Go to ClarifyClaims"
+                            onCta={() => navigate('/claims')}
+                          />
+                        )}
+                        {m === 'anomalies' && (
+                          <StatCard
+                            icon={<ExclamationTriangleIcon className="w-5 h-5" />}
+                            title="Anomalies Found"
+                            value={stats?.anomaliesFound || 0}
+                            badge={stats?.anomaliesFound > 0}
+                            cta={stats?.anomaliesFound > 0 ? 'Review Now' : undefined}
+                            onCta={() => navigate('/audit')}
+                          />
+                        )}
+                        {m === 'ai' && (
+                          <StatCard
+                            icon={<SparklesIcon className="w-5 h-5" />}
+                            title="AI Suggestions"
+                            value={stats?.aiSuggestions || 0}
+                            cta="Explore Suggestions"
+                            onCta={() => navigate('/analytics')}
+                          >
+                            {insights && insights.slice(0, 2).map((v) => (
+                              <div key={v.vendor} className="text-xs text-gray-500">
+                                {v.vendor}: ${v.total.toFixed(2)}
+                              </div>
+                            ))}
+                          </StatCard>
+                        )}
+                      </MetricTile>
                     )
-                  )}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+                  )
+                )}
+              </div>
+            </SortableContext>
+          </DndContext>
           {approvalStats && (
             <div className="text-center text-sm text-gray-700 dark:text-gray-300">
               🎉 You've approved {approvalStats.total} invoices this week! Streak: {approvalStats.streak} days

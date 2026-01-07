@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import MainLayout from './components/MainLayout';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DndContext, useDroppable } from '@dnd-kit/core';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
   Grid,
   Card,
@@ -15,6 +17,49 @@ import {
   Button
 } from '@mui/material';
 import { API_BASE } from './api';
+
+function InvoiceCard({ inv, columnId, onSelect }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: String(inv.id),
+    data: { columnId },
+  });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    marginBottom: 8,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
+      <Tooltip title={`Amount: $${inv.amount}`}>
+        <Card onDoubleClick={() => onSelect(inv)} sx={{ cursor: 'pointer' }}>
+          <CardContent>
+            <Typography variant="subtitle2">#{inv.invoice_number}</Typography>
+            <Typography variant="body2">{inv.vendor}</Typography>
+          </CardContent>
+        </Card>
+      </Tooltip>
+    </div>
+  );
+}
+
+function KanbanColumn({ columnId, title, items, onSelect }) {
+  const { setNodeRef } = useDroppable({ id: columnId });
+
+  return (
+    <Grid item xs={12} md={4}>
+      <div ref={setNodeRef} style={{ minHeight: 200 }}>
+        <Typography variant="h6" gutterBottom>{title}</Typography>
+        <SortableContext items={items.map((inv) => String(inv.id))} strategy={verticalListSortingStrategy}>
+          {items.map((inv) => (
+            <InvoiceCard key={inv.id} inv={inv} columnId={columnId} onSelect={onSelect} />
+          ))}
+        </SortableContext>
+      </div>
+    </Grid>
+  );
+}
 
 export default function KanbanDashboard() {
   const token = localStorage.getItem('token') || '';
@@ -44,18 +89,20 @@ export default function KanbanDashboard() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  const onDragEnd = async ({ source, destination, draggableId }) => {
-    if (!destination) return;
-    if (source.droppableId === destination.droppableId) return;
-    const id = draggableId;
+  const onDragEnd = async ({ active, over }) => {
+    if (!over) return;
+    const sourceColumnId = active.data.current?.columnId;
+    const destinationColumnId = over.data.current?.columnId ?? over.id;
+    if (!destinationColumnId || sourceColumnId === destinationColumnId) return;
+    const id = active.id;
     let url = '';
     let options = { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } };
-    if (destination.droppableId === 'approved') {
+    if (destinationColumnId === 'approved') {
       url = `${API_BASE}/api/invoices/${id}/approve`;
-    } else if (destination.droppableId === 'flagged') {
+    } else if (destinationColumnId === 'flagged') {
       url = `${API_BASE}/api/invoices/${id}/flag`;
       options.body = JSON.stringify({ flagged: true });
-    } else if (destination.droppableId === 'pending') {
+    } else if (destinationColumnId === 'pending') {
       url = `${API_BASE}/api/invoices/${id}/flag`;
       options.body = JSON.stringify({ flagged: false });
     }
@@ -65,35 +112,6 @@ export default function KanbanDashboard() {
     }
   };
 
-  const renderColumn = (key, title, items) => (
-    <Grid item xs={12} md={4}>
-      <Droppable droppableId={key}>
-        {(provided) => (
-          <div ref={provided.innerRef} {...provided.droppableProps} style={{ minHeight: 200 }}>
-            <Typography variant="h6" gutterBottom>{title}</Typography>
-            {items.map((inv, index) => (
-              <Draggable key={inv.id} draggableId={String(inv.id)} index={index}>
-                {(prov) => (
-                  <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps} style={{ marginBottom: 8 }}>
-                    <Tooltip title={`Amount: $${inv.amount}`}> 
-                      <Card onDoubleClick={() => setSelected(inv)} sx={{ cursor: 'pointer' }}>
-                        <CardContent>
-                          <Typography variant="subtitle2">#{inv.invoice_number}</Typography>
-                          <Typography variant="body2">{inv.vendor}</Typography>
-                        </CardContent>
-                      </Card>
-                    </Tooltip>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </Grid>
-  );
-
   const handleField = (field, value) => {
     setSelected(prev => ({ ...prev, [field]: value }));
   };
@@ -101,13 +119,13 @@ export default function KanbanDashboard() {
   return (
     <MainLayout title="Kanban Dashboard">
       {loading && <CircularProgress />}
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DndContext onDragEnd={onDragEnd}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
-          {renderColumn('pending', 'Pending', columns.pending)}
-          {renderColumn('approved', 'Approved', columns.approved)}
-          {renderColumn('flagged', 'Flagged', columns.flagged)}
+          <KanbanColumn columnId="pending" title="Pending" items={columns.pending} onSelect={setSelected} />
+          <KanbanColumn columnId="approved" title="Approved" items={columns.approved} onSelect={setSelected} />
+          <KanbanColumn columnId="flagged" title="Flagged" items={columns.flagged} onSelect={setSelected} />
         </Grid>
-      </DragDropContext>
+      </DndContext>
       <Dialog open={Boolean(selected)} onClose={() => setSelected(null)} fullWidth maxWidth="sm">
         <DialogTitle>Edit Claim Document</DialogTitle>
         <DialogContent>
