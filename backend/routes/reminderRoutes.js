@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { sendApprovalReminders } from '../controllers/reminderController.js';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
 const router = express.Router();
-const { sendApprovalReminders } = require('../controllers/reminderController');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 router.post('/approval', authMiddleware, authorizeRoles('admin','approver'), async (req, res) => {
   try {
@@ -13,4 +13,4 @@ router.post('/approval', authMiddleware, authorizeRoles('admin','approver'), asy
   }
 });
 
-module.exports = router;
+export default router;

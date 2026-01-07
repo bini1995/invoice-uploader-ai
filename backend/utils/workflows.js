@@ -1,5 +1,5 @@
-const pool = require('../config/db');
 
+import pool from '../config/db.js';
 async function getWorkflowForDocument(department, docType, amount) {
   const dept = (department || '').toLowerCase();
   const type = (docType || '').toLowerCase();
@@ -33,4 +33,4 @@ async function getWorkflowForDocument(department, docType, amount) {
   return { approvalChain: ['Manager', 'Finance', 'CFO'], autoApprove: false };
 }
 
-module.exports = { getWorkflowForDocument };
+export { getWorkflowForDocument };

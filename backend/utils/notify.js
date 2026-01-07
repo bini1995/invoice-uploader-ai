@@ -1,7 +1,7 @@
-const axios = require('axios');
-const { sendMail } = require('./email');
 
-exports.sendSlackNotification = async (message) => {
+import axios from 'axios';
+import { sendMail } from './email.js';
+export const sendSlackNotification = async (message) => {
   if (!process.env.SLACK_WEBHOOK_URL) return;
   try {
     await axios.post(process.env.SLACK_WEBHOOK_URL, { text: message });
@@ -10,7 +10,7 @@ exports.sendSlackNotification = async (message) => {
   }
 };
 
-exports.sendTeamsNotification = async (message) => {
+export const sendTeamsNotification = async (message) => {
   if (!process.env.TEAMS_WEBHOOK_URL) return;
   try {
     await axios.post(process.env.TEAMS_WEBHOOK_URL, { text: message });
@@ -19,7 +19,7 @@ exports.sendTeamsNotification = async (message) => {
   }
 };
 
-exports.sendEmailNotification = async (to, subject, message) => {
+export const sendEmailNotification = async (to, subject, message) => {
   const recipient = to || process.env.EMAIL_TO;
   if (!recipient) return;
   try {
@@ -29,6 +29,6 @@ exports.sendEmailNotification = async (to, subject, message) => {
   }
 };
 
-exports.sendSmsNotification = async (to, message) => {
+export const sendSmsNotification = async (to, message) => {
   console.log('SMS alert stub:', { to, message });
 };

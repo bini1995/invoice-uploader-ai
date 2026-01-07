@@ -1,7 +1,7 @@
-const openrouter = require('../config/openrouter');
-const logger = require('../utils/logger');
-const Ajv = require('ajv');
 
+import openrouter from '../config/openrouter.js';
+import logger from '../utils/logger.js';
+import Ajv from 'ajv';
 const ajv = new Ajv();
 const schema = {
   type: 'object',
@@ -57,4 +57,4 @@ async function extractClaimFields(text) {
   }
 }
 
-module.exports = { extractClaimFields };
+export { extractClaimFields };

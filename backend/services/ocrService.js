@@ -1,9 +1,9 @@
-const { parseCSV } = require('../utils/csvParser');
-const { parsePDF } = require('../utils/pdfParser');
-const { parseImage } = require('../utils/imageParser');
-const { parseExcel } = require('../utils/excelParser');
-const path = require('path');
 
+import { parseCSV } from '../utils/csvParser.js';
+import { parsePDF } from '../utils/pdfParser.js';
+import { parseImage } from '../utils/imageParser.js';
+import { parseExcel } from '../utils/excelParser.js';
+import path from 'path';
 async function parseFile(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   if (ext === '.csv') return parseCSV(filePath);
@@ -13,4 +13,4 @@ async function parseFile(filePath) {
   throw new Error('Unsupported file type');
 }
 
-module.exports = { parseFile };
+export { parseFile };

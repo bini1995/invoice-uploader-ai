@@ -1,6 +1,9 @@
-jest.mock('../config/db', () => ({ query: jest.fn() }));
+import { jest } from '@jest/globals';
 
-const { applyRules, setRules } = require('../utils/rulesEngine');
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
+
+const { applyRules, setRules } = await import('../utils/rulesEngine.js');
+
 
 describe('applyRules claim field handling', () => {
   beforeEach(() => {
@@ -78,4 +81,3 @@ describe('applyRules claim field handling', () => {
     expect(result.flag_reason).toBeNull();
   });
 });
-

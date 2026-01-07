@@ -1,14 +1,14 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const pool = require('../config/db');
-const { logActivity } = require('../utils/activityLogger');
-const logger = require('../utils/logger');
-const { activeUsersGauge } = require('../metrics');
 
 // Ensure JWT secrets are present. In production we still require them, but
 // during local development generate fallback secrets so the server can start
 // and developers can log in without extra setup.
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import pool from '../config/db.js';
+import { logActivity } from '../utils/activityLogger.js';
+import logger from '../utils/logger.js';
+import { activeUsersGauge } from '../metrics.js';
 let JWT_SECRET = process.env.JWT_SECRET;
 let JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
@@ -45,7 +45,7 @@ async function createUser(username, password, role) {
 }
 
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   const { username, password } = req.body;
   try {
     const { rows } = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.refreshToken = async (req, res) => {
+export const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {
     return res.status(401).json({ message: 'Invalid refresh token' });
@@ -94,14 +94,14 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
   const { refreshToken } = req.body;
   activeUsersGauge.dec();
   logger.info('User logged out');
   res.json({ message: 'Logged out' });
 };
 
-exports.authMiddleware = (req, res, next) => {
+export const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token provided' });
@@ -116,14 +116,14 @@ exports.authMiddleware = (req, res, next) => {
   }
 };
 
-exports.authorizeRoles = (...roles) => (req, res, next) => {
+export const authorizeRoles = (...roles) => (req, res, next) => {
   if (!req.user || !roles.includes(req.user.role)) {
     return res.status(403).json({ message: 'Forbidden' });
   }
   next();
 };
 
-exports.getUsers = async (_req, res) => {
+export const getUsers = async (_req, res) => {
   try {
     const { rows } = await pool.query('SELECT id, username, role FROM users ORDER BY id');
     res.json(rows);
@@ -133,7 +133,7 @@ exports.getUsers = async (_req, res) => {
   }
 };
 
-exports.addUser = async (req, res) => {
+export const addUser = async (req, res) => {
   const { username, password, role } = req.body;
   if (!username || !password || !role) {
     return res.status(400).json({ message: 'Missing fields' });
@@ -154,7 +154,7 @@ exports.addUser = async (req, res) => {
   }
 };
 
-exports.deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
     const { rowCount } = await pool.query('DELETE FROM users WHERE id = $1', [id]);
@@ -169,7 +169,7 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-exports.updateUserRole = async (req, res) => {
+export const updateUserRole = async (req, res) => {
   const { id } = req.params;
   const { role } = req.body;
   if (!ALLOWED_ROLES.includes(role)) {
@@ -191,5 +191,4 @@ exports.updateUserRole = async (req, res) => {
   }
 };
 
-exports.createUser = createUser;
-exports.userExists = userExists;
+export { createUser, userExists };

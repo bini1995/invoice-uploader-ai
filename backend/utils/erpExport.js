@@ -1,6 +1,6 @@
-const axios = require('axios');
-const logger = require('./logger');
 
+import axios from 'axios';
+import logger from './logger.js';
 async function exportToErpA(invoice) {
   if (!process.env.ERP_A_URL || !process.env.ERP_A_TOKEN) return;
   try {
@@ -25,4 +25,4 @@ async function exportToErpB(invoice) {
   }
 }
 
-module.exports = { exportToErpA, exportToErpB };
+export { exportToErpA, exportToErpB };

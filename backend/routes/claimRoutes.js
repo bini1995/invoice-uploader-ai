@@ -1,7 +1,10 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const {
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
+import fileSizeLimit from '../middleware/fileSizeLimit.js';
+import { uploadLimiter } from '../middleware/rateLimit.js';
+import {
   uploadDocument,
   extractDocument,
   extractClaimFields,
@@ -29,8 +32,7 @@ const {
   getClaimMetrics,
   getUploadHeatmap,
   getTopVendors,
-} = require('../controllers/claimController');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
+} from '../controllers/claimController.js';
 
 const router = express.Router();
 const allowed = ['.pdf', '.docx', '.png', '.jpg', '.jpeg', '.txt', '.eml', '.csv'];
@@ -45,8 +47,6 @@ const upload = multer({
     cb(null, true);
   }
 });
-const fileSizeLimit = require('../middleware/fileSizeLimit');
-const { uploadLimiter } = require('../middleware/rateLimit');
 
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
@@ -86,4 +86,4 @@ router.post(
   addComment
 );
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
-const pool = require('../config/db');
-const logger = require('../utils/logger');
 
+import pool from '../config/db.js';
+import logger from '../utils/logger.js';
 class SuperiorClaimsController {
   async getClaims(req, res) {
     try {
@@ -111,4 +111,4 @@ class SuperiorClaimsController {
   }
 }
 
-module.exports = SuperiorClaimsController;
+export default SuperiorClaimsController;

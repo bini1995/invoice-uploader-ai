@@ -6,7 +6,7 @@ function mask(obj) {
   return out;
 }
 
-module.exports = function piiMask(req, res, next) {
+export default function piiMask(req, res, next) {
   const send = res.json.bind(res);
   res.json = (data) => {
     if (req.user && req.user.role !== 'admin') {
@@ -16,4 +16,4 @@ module.exports = function piiMask(req, res, next) {
     return send(data);
   };
   next();
-};
+}

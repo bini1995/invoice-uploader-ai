@@ -1,5 +1,5 @@
-const logger = require('../utils/logger');
 
+import logger from '../utils/logger.js';
 function errorHandler(err, req, res, next) {
   // Log the error with context
   logger.error('Error occurred:', {
@@ -68,4 +68,4 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-module.exports = errorHandler;
+export default errorHandler;

@@ -1,6 +1,6 @@
-const openai = require('../config/openrouter');
-const logger = require('../utils/logger');
 
+import openai from '../config/openrouter.js';
+import logger from '../utils/logger.js';
 async function aiDuplicateCheck(filename, invoice_number, amount, vendor, flags) {
   if (!process.env.OPENROUTER_API_KEY) return { flag: false };
   const start = Date.now();
@@ -48,4 +48,4 @@ async function generateErrorSummary(errors) {
   }
 }
 
-module.exports = { aiDuplicateCheck, generateErrorSummary };
+export { aiDuplicateCheck, generateErrorSummary };

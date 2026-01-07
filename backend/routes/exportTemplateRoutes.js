@@ -1,16 +1,17 @@
-const express = require('express');
-const router = express.Router({ mergeParams: true });
-const { authMiddleware } = require('../controllers/userController');
-const {
+import express from 'express';
+import { authMiddleware } from '../controllers/userController.js';
+import {
   getTemplates,
   createTemplate,
   deleteTemplate,
   exportWithTemplate,
-} = require('../controllers/exportTemplateController');
+} from '../controllers/exportTemplateController.js';
+
+const router = express.Router({ mergeParams: true });
 
 router.get('/', authMiddleware, getTemplates);
 router.post('/', authMiddleware, createTemplate);
 router.delete('/:id', authMiddleware, deleteTemplate);
 router.get('/:id/export', authMiddleware, exportWithTemplate);
 
-module.exports = router;
+export default router;

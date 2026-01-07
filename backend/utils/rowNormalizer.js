@@ -7,4 +7,4 @@ function normalizeRow(row) {
   return result;
 }
 
-module.exports = { normalizeRow };
+export { normalizeRow };

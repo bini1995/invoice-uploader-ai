@@ -1,6 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import multer from 'multer';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
+import { uploadLimiter, aiLimiter } from '../middleware/rateLimit.js';
+import {
   listVendors,
   updateVendorNotes,
   getVendorInfo,
@@ -18,12 +20,10 @@ const {
   vendorMatchFeedback,
   getDuplicateVendors,
   getVendorAnomalies,
-} = require('../controllers/vendorController');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
-const { uploadLimiter, aiLimiter } = require('../middleware/rateLimit');
+} from '../controllers/vendorController.js';
 
+const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
 router.get('/', authMiddleware, listVendors);
 router.get('/export', authMiddleware, authorizeRoles('admin'), exportVendorsCSV);
 router.post('/import', uploadLimiter, authMiddleware, authorizeRoles('admin'), upload.single('file'), importVendorsCSV);
@@ -42,4 +42,4 @@ router.patch('/:vendor/profile', authMiddleware, authorizeRoles('admin'), update
 router.delete('/:vendor', authMiddleware, authorizeRoles('admin'), deleteVendor);
 router.get('/:vendor/risk', authMiddleware, authorizeRoles('admin'), getVendorRiskProfile);
 
-module.exports = router;
+export default router;

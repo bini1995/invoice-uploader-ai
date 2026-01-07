@@ -1,12 +1,13 @@
+import { jest } from '@jest/globals';
+import request from 'supertest';
+import express from 'express';
+
 process.env.JWT_SECRET = 'test';
 
-const request = require('supertest');
-const express = require('express');
-
-jest.mock('../config/db', () => ({ query: jest.fn() }));
-jest.mock('../utils/activityLogger', () => ({ logActivity: jest.fn() }));
-jest.mock('../utils/eventTracker', () => ({ trackEvent: jest.fn() }));
-jest.mock('../controllers/userController', () => ({
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
+jest.unstable_mockModule('../utils/activityLogger.js', () => ({ logActivity: jest.fn() }));
+jest.unstable_mockModule('../utils/eventTracker.js', () => ({ trackEvent: jest.fn() }));
+jest.unstable_mockModule('../controllers/userController.js', () => ({
   authMiddleware: (req, res, next) => { if (req.user) return next(); return res.status(401).end(); },
   authorizeRoles: (...roles) => (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) return res.status(403).end();
@@ -14,7 +15,9 @@ jest.mock('../controllers/userController', () => ({
   },
 }));
 
-const inviteRoutes = require('../routes/inviteRoutes');
+const { default: inviteRoutes } = await import('../routes/inviteRoutes.js');
+const { default: db } = await import('../config/db.js');
+const { logActivity } = await import('../utils/activityLogger.js');
 
 function makeApp(user) {
   const app = express();
@@ -26,8 +29,8 @@ function makeApp(user) {
 
 describe('invite flow', () => {
   beforeEach(() => {
-    require('../config/db').query.mockReset();
-    require('../utils/activityLogger').logActivity.mockReset();
+    db.query.mockReset();
+    logActivity.mockReset();
   });
 
   test('rejects invalid role', async () => {
@@ -43,11 +46,10 @@ describe('invite flow', () => {
   });
 
   test('success logs audit entry', async () => {
-    const db = require('../config/db');
     db.query.mockResolvedValueOnce({});
     const app = makeApp({ role: 'admin', userId: 1, username: 'a' });
     const res = await request(app).post('/api/invites').send({ role: 'viewer' });
     expect(res.status).toBe(200);
-    expect(require('../utils/activityLogger').logActivity).toHaveBeenCalled();
+    expect(logActivity).toHaveBeenCalled();
   });
 });

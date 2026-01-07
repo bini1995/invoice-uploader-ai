@@ -1,16 +1,17 @@
-const {
+import {
   trackUsage,
-  checkUsageLimit,
-  getUsageStats,
-  getUsageLogs,
-  getUsageTrends,
-  resetUsage,
-  USAGE_LIMITS
-} = require('../utils/usageTracker');
-const logger = require('../utils/logger');
+  checkUsageLimit as checkUsageLimitService,
+  getUsageStats as getUsageStatsService,
+  getUsageLogs as getUsageLogsService,
+  getUsageTrends as getUsageTrendsService,
+  resetUsage as resetUsageService,
+  USAGE_LIMITS,
+} from '../utils/usageTracker.js';
+import pool from '../config/db.js';
+import logger from '../utils/logger.js';
 
 // Get current usage statistics
-exports.getUsageStats = async (req, res) => {
+export const getUsageStats = async (req, res) => {
   try {
     const { period = 'current_month' } = req.query;
     const tenantId = req.tenantId || 'default';
@@ -20,7 +21,7 @@ exports.getUsageStats = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const stats = await getUsageStats(tenantId, userId, period);
+    const stats = await getUsageStatsService(tenantId, userId, period);
     
     res.json({
       success: true,
@@ -35,7 +36,7 @@ exports.getUsageStats = async (req, res) => {
 };
 
 // Get detailed usage logs
-exports.getUsageLogs = async (req, res) => {
+export const getUsageLogs = async (req, res) => {
   try {
     const { 
       action, 
@@ -60,7 +61,7 @@ exports.getUsageLogs = async (req, res) => {
       offset: parseInt(offset)
     };
 
-    const logs = await getUsageLogs(tenantId, userId, options);
+    const logs = await getUsageLogsService(tenantId, userId, options);
     
     res.json({
       success: true,
@@ -73,7 +74,7 @@ exports.getUsageLogs = async (req, res) => {
 };
 
 // Get usage trends
-exports.getUsageTrends = async (req, res) => {
+export const getUsageTrends = async (req, res) => {
   try {
     const { period = 'last_6_months' } = req.query;
     const tenantId = req.tenantId || 'default';
@@ -83,7 +84,7 @@ exports.getUsageTrends = async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const trends = await getUsageTrends(tenantId, period);
+    const trends = await getUsageTrendsService(tenantId, period);
     
     res.json({
       success: true,
@@ -97,7 +98,7 @@ exports.getUsageTrends = async (req, res) => {
 };
 
 // Check usage limit for a specific action
-exports.checkUsageLimit = async (req, res) => {
+export const checkUsageLimit = async (req, res) => {
   try {
     const { action } = req.params;
     const tenantId = req.tenantId || 'default';
@@ -111,7 +112,7 @@ exports.checkUsageLimit = async (req, res) => {
       return res.status(400).json({ message: 'Action parameter is required' });
     }
 
-    const limitCheck = await checkUsageLimit(tenantId, userId, action);
+    const limitCheck = await checkUsageLimitService(tenantId, userId, action);
     
     res.json({
       success: true,
@@ -124,7 +125,7 @@ exports.checkUsageLimit = async (req, res) => {
 };
 
 // Track usage for a specific action
-exports.trackUsageAction = async (req, res) => {
+export const trackUsageAction = async (req, res) => {
   try {
     const { action } = req.params;
     const { details = {} } = req.body;
@@ -140,7 +141,7 @@ exports.trackUsageAction = async (req, res) => {
     }
 
     // Check usage limit before tracking
-    const limitCheck = await checkUsageLimit(tenantId, userId, action);
+    const limitCheck = await checkUsageLimitService(tenantId, userId, action);
     if (!limitCheck.allowed) {
       return res.status(429).json({
         message: 'Usage limit exceeded',
@@ -172,7 +173,7 @@ exports.trackUsageAction = async (req, res) => {
 };
 
 // Get usage limits for current plan
-exports.getUsageLimits = async (req, res) => {
+export const getUsageLimits = async (req, res) => {
   try {
     const tenantId = req.tenantId || 'default';
     const userId = req.user?.userId;
@@ -182,7 +183,7 @@ exports.getUsageLimits = async (req, res) => {
     }
 
     // Get user's plan
-    const { rows } = await require('../config/db').query(
+    const { rows } = await pool.query(
       'SELECT plan_type FROM users WHERE id = $1',
       [userId]
     );
@@ -205,7 +206,7 @@ exports.getUsageLimits = async (req, res) => {
 };
 
 // Admin endpoint to reset usage (for testing/development)
-exports.resetUsage = async (req, res) => {
+export const resetUsage = async (req, res) => {
   try {
     const { month } = req.body;
     const tenantId = req.tenantId || 'default';
@@ -216,7 +217,7 @@ exports.resetUsage = async (req, res) => {
     }
 
     // Check if user is admin (you may want to add admin role checking)
-    const { rows } = await require('../config/db').query(
+    const { rows } = await pool.query(
       'SELECT role FROM users WHERE id = $1',
       [userId]
     );
@@ -225,7 +226,7 @@ exports.resetUsage = async (req, res) => {
       return res.status(403).json({ message: 'Admin access required' });
     }
 
-    const result = await resetUsage(tenantId, month);
+    const result = await resetUsageService(tenantId, month);
     
     if (result.success) {
       res.json({
@@ -246,7 +247,7 @@ exports.resetUsage = async (req, res) => {
 };
 
 // Get usage analytics dashboard data
-exports.getUsageAnalytics = async (req, res) => {
+export const getUsageAnalytics = async (req, res) => {
   try {
     const tenantId = req.tenantId || 'default';
     const userId = req.user?.userId;
@@ -256,13 +257,13 @@ exports.getUsageAnalytics = async (req, res) => {
     }
 
     // Get current month stats
-    const currentStats = await getUsageStats(tenantId, userId, 'current_month');
+    const currentStats = await getUsageStatsService(tenantId, userId, 'current_month');
     
     // Get trends for last 6 months
-    const trends = await getUsageTrends(tenantId, 'last_6_months');
+    const trends = await getUsageTrendsService(tenantId, 'last_6_months');
     
     // Get user's plan
-    const { rows } = await require('../config/db').query(
+    const { rows } = await pool.query(
       'SELECT plan_type FROM users WHERE id = $1',
       [userId]
     );

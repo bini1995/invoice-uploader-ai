@@ -1,13 +1,13 @@
 // backend/controllers/aiController.js
-const axios = require('axios');
-const chrono = require('chrono-node');
-require('dotenv').config();
-const pool = require("../config/db");
-const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
 
+import axios from 'axios';
+import chrono from 'chrono-node';
+import 'dotenv/config';
+import pool from '../config/db.js';
+import { sendSlackNotification, sendTeamsNotification } from '../utils/notify.js';
 console.log('🔧 AI Controller loaded');
 
-exports.summarizeUploadErrors = async (req, res) => {
+export const summarizeUploadErrors = async (req, res) => {
   try {
     const { errors } = req.body;
 
@@ -52,7 +52,7 @@ Given the following upload validation errors for an insurance claim or invoice, 
   }
 };
 
-exports.summarizeVendorData = async (req, res) => {
+export const summarizeVendorData = async (req, res) => {
   try {
     const { vendorData } = req.body;
 
@@ -91,7 +91,7 @@ exports.summarizeVendorData = async (req, res) => {
   }
 };
 
-exports.suggestVendor = async (req, res) => {
+export const suggestVendor = async (req, res) => {
   try {
     const { invoice_number, amount } = req.body;
 
@@ -134,7 +134,7 @@ exports.suggestVendor = async (req, res) => {
   }
 };
 
-exports.suggestVoucher = async (req, res) => {
+export const suggestVoucher = async (req, res) => {
   try {
     const { vendor, amount } = req.body || {};
     if (!vendor && !amount) {
@@ -179,7 +179,7 @@ exports.suggestVoucher = async (req, res) => {
 
 
 // Natural language invoice query -> SQL
-exports.naturalLanguageQuery = async (req, res) => {
+export const naturalLanguageQuery = async (req, res) => {
   try {
     const { question } = req.body;
 
@@ -223,10 +223,10 @@ exports.naturalLanguageQuery = async (req, res) => {
   }
 };
 
-exports.naturalLanguageSearch = exports.naturalLanguageQuery;
+export const naturalLanguageSearch = naturalLanguageQuery;
 
 // Invoice quality scoring
-exports.invoiceQualityScore = async (req, res) => {
+export const invoiceQualityScore = async (req, res) => {
   try {
     const { invoice } = req.body;
 
@@ -283,7 +283,7 @@ exports.invoiceQualityScore = async (req, res) => {
 };
 
 // Payment risk scoring
-exports.paymentRiskScore = async (req, res) => {
+export const paymentRiskScore = async (req, res) => {
   try {
     const { vendor } = req.body;
     if (!vendor) {
@@ -359,7 +359,7 @@ async function computePaymentLikelihood(vendor) {
   return match ? parseInt(match[0], 10) : Math.round((paidCount / total) * 100);
 }
 
-exports.paymentLikelihood = async (req, res) => {
+export const paymentLikelihood = async (req, res) => {
   try {
     const { vendor } = req.body;
     if (!vendor) return res.status(400).json({ message: 'Missing vendor.' });
@@ -371,7 +371,7 @@ exports.paymentLikelihood = async (req, res) => {
   }
 };
 
-exports.paymentBehaviorByVendor = async (req, res) => {
+export const paymentBehaviorByVendor = async (req, res) => {
   try {
     const { vendor, invoice_date } = req.body;
     if (!vendor) return res.status(400).json({ message: 'Missing vendor.' });
@@ -394,7 +394,7 @@ exports.paymentBehaviorByVendor = async (req, res) => {
   }
 };
 
-exports.alertHighRiskInvoices = async () => {
+export const alertHighRiskInvoices = async () => {
   try {
     const { rows } = await pool.query("SELECT id, vendor FROM invoices WHERE paid = false");
     for (const inv of rows) {
@@ -410,7 +410,7 @@ exports.alertHighRiskInvoices = async () => {
 };
 
 // Conversational assistant
-exports.assistantQuery = async (req, res) => {
+export const assistantQuery = async (req, res) => {
   try {
     const { question } = req.body;
     if (!question) return res.status(400).json({ message: 'Missing question.' });
@@ -473,7 +473,7 @@ exports.assistantQuery = async (req, res) => {
   }
 };
 
-exports.billingQuery = async (req, res) => {
+export const billingQuery = async (req, res) => {
   try {
     const { question } = req.body;
     if (!question) return res.status(400).json({ message: 'Missing question.' });
@@ -513,7 +513,7 @@ exports.billingQuery = async (req, res) => {
 };
 
 // Natural language query for charting
-exports.nlChartQuery = async (req, res) => {
+export const nlChartQuery = async (req, res) => {
   try {
     const { question } = req.body;
     if (!question) return res.status(400).json({ message: 'Missing question.' });
@@ -562,7 +562,7 @@ exports.nlChartQuery = async (req, res) => {
 };
 
 // Suggest semantic colors for invoice tags
-exports.suggestTagColors = async (req, res) => {
+export const suggestTagColors = async (req, res) => {
   try {
     const { tags } = req.body;
     if (!Array.isArray(tags)) {
@@ -645,7 +645,7 @@ exports.suggestTagColors = async (req, res) => {
 };
 
 // --- Feedback Handling ---
-exports.logFeedback = async (endpoint, rating) => {
+export const logFeedback = async (endpoint, rating) => {
   try {
     await pool.query('INSERT INTO feedback (endpoint, rating) VALUES ($1,$2)', [endpoint, rating]);
   } catch (err) {
@@ -667,7 +667,7 @@ async function aggregateFeedback() {
 // aggregate feedback once a day
 setInterval(aggregateFeedback, 24 * 60 * 60 * 1000);
 
-exports.onboardingHelp = async (req, res) => {
+export const onboardingHelp = async (req, res) => {
   try {
     const { topic } = req.query;
     const prompt = `Provide a short step-by-step onboarding guide for the following feature: ${topic}.`;
@@ -698,7 +698,7 @@ exports.onboardingHelp = async (req, res) => {
 };
 
 // Suggest actions for an invoice based on vendor history
-exports.thinkSuggestion = async (req, res) => {
+export const thinkSuggestion = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (!id) return res.status(400).json({ message: 'Missing invoice id.' });
@@ -749,7 +749,7 @@ In one short sentence, suggest an action for accounts payable (e.g. \"Delay invo
 };
 
 // Generate an email reminder template for an overdue invoice
-exports.overdueEmailTemplate = async (req, res) => {
+export const overdueEmailTemplate = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (!id) return res.status(400).json({ message: 'Missing invoice id.' });
@@ -790,7 +790,7 @@ exports.overdueEmailTemplate = async (req, res) => {
 };
 
 // OpsClaim copilot uses claim metadata for context-aware answers
-exports.invoiceCopilot = async (req, res) => {
+export const invoiceCopilot = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     const { question } = req.body || {};
@@ -844,7 +844,7 @@ exports.invoiceCopilot = async (req, res) => {
 };
 
 // Use OpenAI function calling to suggest fixes for CSV upload errors
-exports.suggestFixes = async (req, res) => {
+export const suggestFixes = async (req, res) => {
   try {
     const { errors } = req.body;
     if (!Array.isArray(errors) || errors.length === 0) {
@@ -909,7 +909,7 @@ exports.suggestFixes = async (req, res) => {
 };
 
 // Parse natural language search queries into filter parameters
-exports.smartSearchParse = (req, res) => {
+export const smartSearchParse = (req, res) => {
   try {
     const { query } = req.body;
     if (!query) return res.status(400).json({ message: 'Missing query text.' });
@@ -939,7 +939,7 @@ exports.smartSearchParse = (req, res) => {
 };
 
 // Suggest high level categories for any document content
-exports.categorizeDocument = async (req, res) => {
+export const categorizeDocument = async (req, res) => {
   try {
     const { content, claim_type } = req.body || {};
     if (!content) {
@@ -982,7 +982,7 @@ exports.categorizeDocument = async (req, res) => {
   }
 };
 
-exports.categoryFeedback = async (req, res) => {
+export const categoryFeedback = async (req, res) => {
   const { id } = req.params;
   const { accepted } = req.body || {};
   if (typeof accepted === 'undefined') {

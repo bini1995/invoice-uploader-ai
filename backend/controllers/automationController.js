@@ -1,6 +1,6 @@
-const pool = require('../config/db');
 
-exports.listAutomations = async (_req, res) => {
+import pool from '../config/db.js';
+export const listAutomations = async (_req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM automations ORDER BY id ASC');
     res.json({ automations: rows });
@@ -10,7 +10,7 @@ exports.listAutomations = async (_req, res) => {
   }
 };
 
-exports.addAutomation = async (req, res) => {
+export const addAutomation = async (req, res) => {
   const { event, condition, action, config, cron, active } = req.body || {};
   if (!event || !action) return res.status(400).json({ message: 'event and action required' });
   try {
@@ -26,7 +26,7 @@ exports.addAutomation = async (req, res) => {
   }
 };
 
-exports.updateAutomation = async (req, res) => {
+export const updateAutomation = async (req, res) => {
   const id = parseInt(req.params.id);
   const { event, condition, action, config, cron, active } = req.body || {};
   try {
@@ -49,7 +49,7 @@ exports.updateAutomation = async (req, res) => {
   }
 };
 
-exports.deleteAutomation = async (req, res) => {
+export const deleteAutomation = async (req, res) => {
   const id = parseInt(req.params.id);
   try {
     await pool.query('DELETE FROM automations WHERE id = $1', [id]);

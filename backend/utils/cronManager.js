@@ -1,6 +1,6 @@
-const cron = require('node-cron');
-const logger = require('./logger');
 
+import cron from 'node-cron';
+import logger from './logger.js';
 function schedule(name, pattern, task) {
   const job = cron.schedule(pattern, async () => {
     try {
@@ -20,4 +20,4 @@ function schedule(name, pattern, task) {
   return job;
 }
 
-module.exports = { schedule };
+export { schedule };

@@ -1,6 +1,6 @@
-const pool = require('../config/db');
 
-exports.getOpsTimeline = async (_req, res) => {
+import pool from '../config/db.js';
+export const getOpsTimeline = async (_req, res) => {
   try {
     const { rows: acts } = await pool.query(
       'SELECT created_at, action AS detail FROM activity_logs ORDER BY created_at DESC LIMIT 50'

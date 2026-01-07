@@ -1,6 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import { listRules, addRule, updateRule, deleteRule } from '../controllers/rulesController.js';
+import { authMiddleware } from '../controllers/userController.js';
+import {
   getReport,
   exportReportPDF,
   exportReportExcel,
@@ -25,11 +26,10 @@ const {
   detectClaimFraud,
   listReportSchedules,
   createReportSchedule,
-  deleteReportSchedule
-} = require('../controllers/analyticsController');
-const { listRules, addRule, updateRule, deleteRule } = require('../controllers/rulesController');
-const { authMiddleware } = require('../controllers/userController');
+  deleteReportSchedule,
+} from '../controllers/analyticsController.js';
 
+const router = express.Router();
 router.get('/report', authMiddleware, getReport);
 router.get('/report/pdf', authMiddleware, exportReportPDF);
 router.get('/report/excel', authMiddleware, exportReportExcel);
@@ -60,4 +60,4 @@ router.get('/risk/clusters', authMiddleware, getInvoiceClusters);
 router.get('/claims', authMiddleware, getClaimAnalytics);
 router.get('/claims/fraud', authMiddleware, detectClaimFraud);
 
-module.exports = router;
+export default router;

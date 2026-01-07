@@ -1,5 +1,5 @@
-const { createWorker } = require('tesseract.js');
 
+import { createWorker } from 'tesseract.js';
 async function ocrImage(path) {
   const worker = await createWorker();
   await worker.loadLanguage('eng');
@@ -9,7 +9,7 @@ async function ocrImage(path) {
   return text;
 }
 
-exports.parseImage = async (filePath) => {
+export const parseImage = async (filePath) => {
   const text = await ocrImage(filePath);
   const invoices = [];
   const regex = /Invoice\s*#?:?\s*(\S+)\s+Date:?\s*([\d\/-]+)\s+Amount:?\s*\$?([0-9,.]+)\s+Vendor:?\s*(\w+)/gi;

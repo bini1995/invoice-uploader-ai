@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
-const pool = require('./backend/config/db');
 
+import bcrypt from 'bcrypt';
+import pool from './config/db.js';
 async function createTestUser() {
   try {
     const username = 'test@example.com';

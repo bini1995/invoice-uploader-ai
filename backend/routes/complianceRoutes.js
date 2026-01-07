@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
+import { exportComplianceReport } from '../controllers/activityController.js';
 const router = express.Router();
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
-const { exportComplianceReport } = require('../controllers/activityController');
 
 router.get('/report', authMiddleware, authorizeRoles('admin'), exportComplianceReport);
 
-module.exports = router;
+export default router;

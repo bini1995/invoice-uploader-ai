@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { getActivityLogs } from '../controllers/activityController.js';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
 const router = express.Router();
-const { getActivityLogs } = require('../controllers/activityController');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 router.get('/', authMiddleware, authorizeRoles('admin'), getActivityLogs);
 
-module.exports = router;
+export default router;

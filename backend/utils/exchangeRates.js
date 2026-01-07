@@ -1,5 +1,5 @@
-const axios = require('axios');
 
+import axios from 'axios';
 async function getExchangeRate(currency) {
   if (!currency || currency.toUpperCase() === 'USD') {
     return 1;
@@ -14,4 +14,4 @@ async function getExchangeRate(currency) {
   }
 }
 
-module.exports = { getExchangeRate };
+export { getExchangeRate };

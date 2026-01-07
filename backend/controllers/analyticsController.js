@@ -1,10 +1,12 @@
-const pool = require('../config/db');
-const PDFDocument = require('pdfkit');
-const ExcelJS = require('exceljs');
-const { loadReportSchedules } = require('../utils/reportScheduler');
-const openai = require('../config/openrouter');
-const { detectFraud } = require('../ai/fraudDetection');
 
+import pool from '../config/db.js';
+import PDFDocument from 'pdfkit';
+import ExcelJS from 'exceljs';
+import { Parser } from 'json2csv';
+import levenshtein from 'fast-levenshtein';
+import { loadReportSchedules } from '../utils/reportScheduler.js';
+import openai from '../config/openrouter.js';
+import { detectFraud } from '../ai/fraudDetection.js';
 function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag }) {
   const params = [];
   const conditions = [];
@@ -52,9 +54,9 @@ function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, m
   return { where, params };
 }
 
-exports.buildFilterQuery = buildFilterQuery;
+export const buildFilterQuery = buildFilterQuery;
 
-exports.getReport = async (req, res) => {
+export const getReport = async (req, res) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
@@ -71,7 +73,7 @@ exports.getReport = async (req, res) => {
   }
 };
 
-exports.exportReportPDF = async (req, res) => {
+export const exportReportPDF = async (req, res) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag, includeInsights } = req.query;
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
@@ -130,7 +132,7 @@ exports.exportReportPDF = async (req, res) => {
 };
 
 // Monthly spending trends
-exports.getTrends = async (req, res) => {
+export const getTrends = async (req, res) => {
   const { startDate, endDate } = req.query;
   const params = [];
   const conditions = [];
@@ -163,7 +165,7 @@ exports.getTrends = async (req, res) => {
 };
 
 // Aging invoices breakdown
-exports.getAgingReport = async (_req, res) => {
+export const getAgingReport = async (_req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT id, invoice_number, vendor, amount, due_date FROM invoices WHERE due_date IS NOT NULL`
@@ -194,7 +196,7 @@ exports.getAgingReport = async (_req, res) => {
 };
 
 
-exports.getApprovalStats = async (req, res) => {
+export const getApprovalStats = async (req, res) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: 'Unauthorized' });
   try {
@@ -226,7 +228,7 @@ exports.getApprovalStats = async (req, res) => {
 };
 
 // Aggregate metadata for adaptive dashboard
-exports.getDashboardMetadata = async (req, res) => {
+export const getDashboardMetadata = async (req, res) => {
   const { startDate, endDate } = req.query;
   const params = [];
   const conditions = [];
@@ -262,7 +264,7 @@ exports.getDashboardMetadata = async (req, res) => {
 };
 
 // Average approval times for charting
-exports.getApprovalTimeChart = async (req, res) => {
+export const getApprovalTimeChart = async (req, res) => {
   const { startDate, endDate } = req.query;
   const params = [];
   const conditions = ["approval_status = 'Approved'"]; 
@@ -283,7 +285,7 @@ exports.getApprovalTimeChart = async (req, res) => {
 };
 
 // Spending totals grouped by vendor
-exports.getVendorSpend = async (req, res) => {
+export const getVendorSpend = async (req, res) => {
   const { startDate, endDate } = req.query;
   const params = [];
   const conditions = [];
@@ -304,7 +306,7 @@ exports.getVendorSpend = async (req, res) => {
 };
 
 // Export report as Excel
-exports.exportReportExcel = async (req, res) => {
+export const exportReportExcel = async (req, res) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
@@ -331,7 +333,7 @@ exports.exportReportExcel = async (req, res) => {
   }
 };
 
-exports.exportReportCSV = async (req, res) => {
+export const exportReportCSV = async (req, res) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
@@ -339,7 +341,6 @@ exports.exportReportCSV = async (req, res) => {
       `SELECT invoice_number, date, vendor, amount FROM invoices ${where} ORDER BY date DESC`,
       params
     );
-    const { Parser } = require('json2csv');
     const parser = new Parser({ fields: ['invoice_number', 'date', 'vendor', 'amount'] });
     const csv = parser.parse(result.rows);
     res.setHeader('Content-Type', 'text/csv');
@@ -352,7 +353,7 @@ exports.exportReportCSV = async (req, res) => {
 };
 
 // Outlier detection on invoice amounts
-exports.detectOutliers = async (_req, res) => {
+export const detectOutliers = async (_req, res) => {
   try {
     const { rows } = await pool.query(
       "SELECT id, vendor, amount, date FROM invoices WHERE date >= NOW() - INTERVAL '90 days'"
@@ -371,7 +372,7 @@ exports.detectOutliers = async (_req, res) => {
 };
 
 // Real-time dashboard metrics
-exports.getRealTimeDashboard = async (_req, res) => {
+export const getRealTimeDashboard = async (_req, res) => {
   try {
     const processed = await pool.query(
       "SELECT COUNT(*) FROM invoices WHERE created_at >= NOW() - INTERVAL '1 day'"
@@ -394,7 +395,7 @@ exports.getRealTimeDashboard = async (_req, res) => {
 };
 
 // Detect duplicate invoices
-exports.detectDuplicateInvoices = async (_req, res) => {
+export const detectDuplicateInvoices = async (_req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT invoice_number, vendor, amount, COUNT(*) AS c
@@ -411,7 +412,7 @@ exports.detectDuplicateInvoices = async (_req, res) => {
 
 
 // Average approval time grouped by vendor
-exports.getApprovalTimeByVendor = async (_req, res) => {
+export const getApprovalTimeByVendor = async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT vendor,
@@ -432,7 +433,7 @@ exports.getApprovalTimeByVendor = async (_req, res) => {
 };
 
 // Trend of late payments over time
-exports.getLatePaymentTrend = async (_req, res) => {
+export const getLatePaymentTrend = async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT DATE_TRUNC('month', due_date) AS month,
@@ -457,7 +458,7 @@ exports.getLatePaymentTrend = async (_req, res) => {
 // Departments or vendors that exceeded their budgets
 
 // Risk heatmap showing vendors with many flagged or overdue invoices
-exports.getRiskHeatmap = async (_req, res) => {
+export const getRiskHeatmap = async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT vendor,
@@ -477,13 +478,13 @@ exports.getRiskHeatmap = async (_req, res) => {
 };
 
 // Simple clustering of invoices by vendor name and amount similarity
-exports.getInvoiceClusters = async (_req, res) => {
+export const getInvoiceClusters = async (_req, res) => {
   try {
     const { rows } = await pool.query('SELECT id, vendor, amount FROM invoices');
     const clusters = [];
     const used = new Set();
     const dist = (a, b) => {
-      const nameDist = require('fast-levenshtein').get(a.vendor.toLowerCase(), b.vendor.toLowerCase());
+      const nameDist = levenshtein.get(a.vendor.toLowerCase(), b.vendor.toLowerCase());
       const amountDiff = Math.abs(parseFloat(a.amount) - parseFloat(b.amount));
       const amountAvg = (parseFloat(a.amount) + parseFloat(b.amount)) / 2 || 1;
       return nameDist + amountDiff / amountAvg;
@@ -509,7 +510,7 @@ exports.getInvoiceClusters = async (_req, res) => {
 };
 
 // Heatmap of spending over time
-exports.getSpendHeatmap = async (req, res) => {
+export const getSpendHeatmap = async (req, res) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
   const { where, params } = buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag });
   try {
@@ -531,7 +532,7 @@ exports.getSpendHeatmap = async (req, res) => {
   }
 };
 
-exports.listReportSchedules = async (_req, res) => {
+export const listReportSchedules = async (_req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM report_schedules ORDER BY id DESC');
     res.json({ schedules: rows });
@@ -541,7 +542,7 @@ exports.listReportSchedules = async (_req, res) => {
   }
 };
 
-exports.createReportSchedule = async (req, res) => {
+export const createReportSchedule = async (req, res) => {
   const { email, vendor, department, start_date, end_date, cron } = req.body || {};
   if (!email) return res.status(400).json({ message: 'email required' });
   try {
@@ -557,7 +558,7 @@ exports.createReportSchedule = async (req, res) => {
   }
 };
 
-exports.deleteReportSchedule = async (req, res) => {
+export const deleteReportSchedule = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   try {
     await pool.query('DELETE FROM report_schedules WHERE id = $1', [id]);
@@ -570,7 +571,7 @@ exports.deleteReportSchedule = async (req, res) => {
 };
 
 // Personalized dashboard recommendations
-exports.getDashboardRecommendations = async (_req, res) => {
+export const getDashboardRecommendations = async (_req, res) => {
   const client = await pool.connect();
   try {
     const now = new Date();
@@ -629,7 +630,7 @@ exports.getDashboardRecommendations = async (_req, res) => {
 };
 
 // Cross-referenced fraud/audit alerts
-exports.getCrossAlerts = async (_req, res) => {
+export const getCrossAlerts = async (_req, res) => {
   try {
     const { rows } = await pool.query(`SELECT i.id, i.invoice_number, i.vendor, a.username, a.created_at FROM invoices i JOIN audit_logs a ON a.invoice_id = i.id AND a.action = 'flag_invoice' WHERE i.flagged = TRUE ORDER BY a.created_at DESC LIMIT 5`);
     res.json({ alerts: rows });
@@ -640,7 +641,7 @@ exports.getCrossAlerts = async (_req, res) => {
 };
 
 // Claim analytics
-exports.getClaimAnalytics = async (_req, res) => {
+export const getClaimAnalytics = async (_req, res) => {
   try {
     const { rows } = await pool.query(
       "SELECT (fields->>'claim_type') AS claim_type, COUNT(*)::int AS count, SUM((fields->>'total_amount')::numeric) AS total_amount FROM documents WHERE doc_type IN ('claim_invoice','medical_bill','fnol_form') GROUP BY claim_type"
@@ -657,7 +658,7 @@ exports.getClaimAnalytics = async (_req, res) => {
   }
 };
 
-exports.detectClaimFraud = async (_req, res) => {
+export const detectClaimFraud = async (_req, res) => {
   try {
     const { rows } = await pool.query(
       "SELECT id, (fields->>'total_amount')::float AS amount FROM documents WHERE doc_type IN ('claim_invoice','medical_bill','fnol_form')"

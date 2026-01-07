@@ -1,7 +1,7 @@
-const { validateHeaders, getValidationRules, addValidationRule } = require('../utils/validationEngine');
-const { validate } = require('../utils/schemaValidator');
 
-exports.validateHeaders = (req, res) => {
+import { validateHeaders, getValidationRules, addValidationRule } from '../utils/validationEngine.js';
+import { validate } from '../utils/schemaValidator.js';
+export const validateHeaders = (req, res) => {
   const { headers } = req.body;
   if (!Array.isArray(headers)) {
     return res.status(400).json({ message: 'Invalid headers' });
@@ -10,7 +10,7 @@ exports.validateHeaders = (req, res) => {
   res.json({ missing });
 };
 
-exports.validateRow = (req, res) => {
+export const validateRow = (req, res) => {
   const row = req.body;
   if (!row || typeof row !== 'object') {
     return res.status(400).json({ message: 'Invalid row data' });
@@ -20,11 +20,11 @@ exports.validateRow = (req, res) => {
   res.json({ errors });
 };
 
-exports.listRules = (_req, res) => {
+export const listRules = (_req, res) => {
   res.json({ rules: getValidationRules() });
 };
 
-exports.addRule = (req, res) => {
+export const addRule = (req, res) => {
   const rule = req.body;
   if (!rule || !rule.field || !rule.type) {
     return res.status(400).json({ message: 'Invalid rule' });

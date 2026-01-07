@@ -1,11 +1,11 @@
-const { trackUsage, checkUsageLimit } = require('../utils/usageTracker');
-const {
+import { trackUsage, checkUsageLimit } from '../utils/usageTracker.js';
+import {
   usageLimitExceededCounter,
   usageTrackingCounter,
   usageRemainingGauge,
-  usagePercentageGauge
-} = require('../metrics');
-const logger = require('../utils/logger');
+  usagePercentageGauge,
+} from '../metrics.js';
+import logger from '../utils/logger.js';
 
 // Define which endpoints should track usage
 const USAGE_TRACKING_ENDPOINTS = {
@@ -206,8 +206,8 @@ function usageLimitCheckMiddleware() {
   };
 }
 
-module.exports = {
+export {
   usageTrackingMiddleware,
   usageLimitCheckMiddleware,
-  USAGE_TRACKING_ENDPOINTS
+  USAGE_TRACKING_ENDPOINTS,
 }; 

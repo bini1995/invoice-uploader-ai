@@ -1,10 +1,10 @@
 // backend/utils/csvParser.js
 
-const fs = require('fs');
-const csv = require('csv-parser');
-const { normalizeRow } = require('./rowNormalizer');
 
-exports.parseCSV = (filePath) => {
+import fs from 'fs';
+import csv from 'csv-parser';
+import { normalizeRow } from './rowNormalizer.js';
+export const parseCSV = (filePath) => {
   return new Promise((resolve, reject) => {
     const results = [];
 

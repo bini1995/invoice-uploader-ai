@@ -1,10 +1,10 @@
 // backend/config/db.js
 
-const { Pool } = require('pg');
-const { AsyncLocalStorage } = require('async_hooks');
-require('dotenv').config(); // so we can read from .env
-const logger = require('../utils/logger');
 
+import { Pool } from 'pg';
+import { AsyncLocalStorage } from 'async_hooks';
+import 'dotenv/config';
+import logger from '../utils/logger.js';
 logger.info('🔎 Using DATABASE_URL:', process.env.DATABASE_URL);
 
 // Create a connection pool using info from your .env file
@@ -91,4 +91,4 @@ pool.on('connect', () => {
 
 pool.als = als;
 
-module.exports = pool;
+export default pool;

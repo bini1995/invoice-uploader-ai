@@ -1,7 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const Ajv = require('ajv');
+import fs from 'fs';
+import path from 'path';
+import Ajv from 'ajv';
+import { fileURLToPath } from 'url';
 const ajv = new Ajv({ allErrors: true });
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function loadSchema(docType) {
   const p = path.join(__dirname, '../schemas', `${docType}.json`);
@@ -18,4 +21,4 @@ function validate(docType, data) {
   return (validate.errors || []).map(e => ({ field: e.instancePath.replace('/', ''), message: e.message }));
 }
 
-module.exports = { validate };
+export { validate };

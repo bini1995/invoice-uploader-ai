@@ -1,8 +1,8 @@
-const crypto = require('crypto');
-const pool = require('../config/db');
-const { logActivityDetailed } = require('../utils/activityLogger');
 
-exports.createKey = async (req, res) => {
+import crypto from 'crypto';
+import pool from '../config/db.js';
+import { logActivityDetailed } from '../utils/activityLogger.js';
+export const createKey = async (req, res) => {
   const key = crypto.randomBytes(24).toString('hex');
   const { label } = req.body;
   try {
@@ -24,7 +24,7 @@ exports.createKey = async (req, res) => {
   }
 };
 
-exports.listKeys = async (req, res) => {
+export const listKeys = async (req, res) => {
   try {
     const { rows } = await pool.query(
       'SELECT id, api_key, label, created_at FROM api_keys WHERE user_id = $1',
@@ -37,7 +37,7 @@ exports.listKeys = async (req, res) => {
   }
 };
 
-exports.deleteKey = async (req, res) => {
+export const deleteKey = async (req, res) => {
   const { id } = req.params;
   try {
     const { rowCount } = await pool.query(
@@ -59,7 +59,7 @@ exports.deleteKey = async (req, res) => {
   }
 };
 
-exports.updateLabel = async (req, res) => {
+export const updateLabel = async (req, res) => {
   const { id } = req.params;
   const { label } = req.body;
   try {

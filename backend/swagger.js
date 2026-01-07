@@ -1,8 +1,9 @@
-const swaggerJsdoc = require('swagger-jsdoc');
 
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerDefinition from './docs/swagger.json' assert { type: 'json' };
 const options = {
-  definition: require('./docs/swagger.json'),
+  definition: swaggerDefinition,
   apis: [],
 };
 
-module.exports = swaggerJsdoc(options);
+export default swaggerJsdoc(options);

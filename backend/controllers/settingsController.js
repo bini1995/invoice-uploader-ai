@@ -1,13 +1,13 @@
-const settings = require('../config/settings');
-const { validateSettings } = require('../validation/settingsSchema');
-const { logActivity } = require('../utils/activityLogger');
-const { trackEvent } = require('../utils/eventTracker');
 
-exports.getSettings = (_req, res) => {
+import settings from '../config/settings.js';
+import { validateSettings } from '../validation/settingsSchema.js';
+import { logActivity } from '../utils/activityLogger.js';
+import { trackEvent } from '../utils/eventTracker.js';
+export const getSettings = (_req, res) => {
   res.json(settings);
 };
 
-exports.updateSettings = (req, res) => {
+export const updateSettings = (req, res) => {
   const allowed = ['autoArchive', 'emailTone', 'csvSizeLimitMB', 'pdfSizeLimitMB', 'defaultRetention', 'showRoleEmojis'];
   let emojisChanged = false;
   for (const key of allowed) {

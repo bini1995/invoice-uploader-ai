@@ -1,6 +1,6 @@
-const { logActivityDetailed, logActivity } = require('../utils/activityLogger');
-const { maskSensitive } = require('../utils/sanitize');
 
+import { logActivityDetailed, logActivity } from '../utils/activityLogger.js';
+import { maskSensitive } from '../utils/sanitize.js';
 function auditLog(req, res, next) {
   res.on('finish', () => {
     if (!req.originalUrl.startsWith('/api')) return;
@@ -17,4 +17,4 @@ function auditLog(req, res, next) {
   next();
 }
 
-module.exports = { auditLog };
+export { auditLog };

@@ -1,5 +1,5 @@
-const openai = require('../config/openrouter');
 
+import openai from '../config/openrouter.js';
 async function selfHealInvoices(invoices) {
   if (!process.env.OPENROUTER_API_KEY) return invoices;
   const healed = [];
@@ -31,4 +31,4 @@ async function selfHealInvoices(invoices) {
   return healed;
 }
 
-module.exports = { selfHealInvoices };
+export { selfHealInvoices };

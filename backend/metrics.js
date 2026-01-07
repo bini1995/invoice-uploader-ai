@@ -1,6 +1,6 @@
-const client = require('prom-client');
 
-const collectDefaultMetrics = client.collectDefaultMetrics;
+import client from 'prom-client';
+const { collectDefaultMetrics, register } = client;
 collectDefaultMetrics();
 
 const claimUploadCounter = new client.Counter({
@@ -83,8 +83,8 @@ const usagePercentageGauge = new client.Gauge({
   labelNames: ['action', 'plan_type'],
 });
 
-module.exports = {
-  register: client.register,
+export {
+  register,
   claimUploadCounter,
   fieldExtractCounter,
   exportAttemptCounter,
@@ -100,4 +100,3 @@ module.exports = {
   usageRemainingGauge,
   usagePercentageGauge,
 };
-

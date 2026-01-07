@@ -1,7 +1,7 @@
-const ExcelJS = require('exceljs');
-const { normalizeRow } = require('./rowNormalizer');
 
-exports.parseExcel = async (filePath) => {
+import ExcelJS from 'exceljs';
+import { normalizeRow } from './rowNormalizer.js';
+export const parseExcel = async (filePath) => {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
   const worksheet = workbook.worksheets[0];

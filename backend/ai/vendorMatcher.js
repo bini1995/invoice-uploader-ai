@@ -1,5 +1,5 @@
-const levenshtein = require('fast-levenshtein');
 
+import levenshtein from 'fast-levenshtein';
 function matchVendor(name, vendors) {
   let best = null;
   let score = 0;
@@ -14,4 +14,4 @@ function matchVendor(name, vendors) {
   return { vendor: best, score };
 }
 
-module.exports = { matchVendor };
+export { matchVendor };

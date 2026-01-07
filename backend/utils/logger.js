@@ -1,5 +1,8 @@
-const { createLogger, format, transports } = require('winston');
-const path = require('path');
+
+import { createLogger, format, transports } from 'winston';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Custom format for better readability
 const customFormat = format.combine(
@@ -71,4 +74,4 @@ const logger = createLogger({
   ] : []
 });
 
-module.exports = logger;
+export default logger;

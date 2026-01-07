@@ -1,19 +1,19 @@
-const express = require('express');
-const router = express.Router({ mergeParams: true });
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-const {
+import express from 'express';
+import multer from 'multer';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
+import { uploadLimiter } from '../middleware/rateLimit.js';
+import {
   uploadLogo,
   getLogo,
   setAccentColor,
   getAccentColor,
-} = require('../controllers/brandingController');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
-const { uploadLimiter } = require('../middleware/rateLimit');
+} from '../controllers/brandingController.js';
 
+const router = express.Router({ mergeParams: true });
+const upload = multer({ dest: 'uploads/' });
 router.get('/', getLogo);
 router.post('/', uploadLimiter, authMiddleware, authorizeRoles('admin'), upload.single('logo'), uploadLogo);
 router.get('/color', getAccentColor);
 router.post('/color', authMiddleware, authorizeRoles('admin'), setAccentColor);
 
-module.exports = router;
+export default router;

@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { recordEvent } from '../controllers/eventController.js';
+import { authMiddleware } from '../controllers/userController.js';
 const router = express.Router();
-const { recordEvent } = require('../controllers/eventController');
-const { authMiddleware } = require('../controllers/userController');
 
 router.post('/', authMiddleware, recordEvent);
 
-module.exports = router;
+export default router;

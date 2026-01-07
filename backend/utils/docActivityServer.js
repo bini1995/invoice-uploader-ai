@@ -1,5 +1,5 @@
-const { WebSocketServer } = require('ws');
-const { parse } = require('url');
+import { WebSocketServer } from 'ws';
+import { parse } from 'url';
 let wss;
 
 function initDocActivity(server) {
@@ -22,4 +22,4 @@ function broadcastDocActivity(data) {
   }
 }
 
-module.exports = { initDocActivity, broadcastDocActivity };
+export { initDocActivity, broadcastDocActivity };

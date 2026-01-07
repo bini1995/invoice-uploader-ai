@@ -1,6 +1,6 @@
-const helmet = require('helmet');
 
 // Security headers middleware
+import helmet from 'helmet';
 const securityHeaders = (req, res, next) => {
   // Basic security headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -111,9 +111,9 @@ const errorHandler = (err, req, res, next) => {
   });
 };
 
-module.exports = {
+export {
   securityHeaders,
   corsOptions,
   requestLogger,
-  errorHandler
+  errorHandler,
 }; 

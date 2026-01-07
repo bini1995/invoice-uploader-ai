@@ -1,5 +1,5 @@
-const pool = require('../config/db');
 
+import pool from '../config/db.js';
 let rules = [
   { vendor: 'X', amountGreaterThan: 500, flagReason: 'Vendor X amount > $500' },
   { amountGreaterThan: 5000, flagReason: 'Amount exceeds $5000' },
@@ -116,4 +116,4 @@ function deleteRule(index) {
   }
 }
 
-module.exports = { applyRules, getRules, addRule, setRules, updateRule, deleteRule };
+export { applyRules, getRules, addRule, setRules, updateRule, deleteRule };

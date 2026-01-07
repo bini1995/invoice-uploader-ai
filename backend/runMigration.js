@@ -1,6 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const { Pool } = require('pg');
+
+import fs from 'fs';
+import path from 'path';
+import { Pool } from 'pg';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Create a direct connection to localhost for migration
 const pool = new Pool({

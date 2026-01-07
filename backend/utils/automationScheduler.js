@@ -1,7 +1,7 @@
-const cron = require('node-cron');
-const pool = require('../config/db');
-const { triggerAutomations } = require('./automationEngine');
 
+import cron from 'node-cron';
+import pool from '../config/db.js';
+import { triggerAutomations } from './automationEngine.js';
 async function loadSchedules() {
   try {
     const { rows } = await pool.query(
@@ -19,4 +19,4 @@ async function loadSchedules() {
   }
 }
 
-module.exports = { loadSchedules };
+export { loadSchedules };

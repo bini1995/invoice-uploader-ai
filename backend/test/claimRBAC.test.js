@@ -1,13 +1,15 @@
+import { jest } from '@jest/globals';
+import request from 'supertest';
+import express from 'express';
+import jwt from 'jsonwebtoken';
+
 process.env.JWT_SECRET = 'testsecret-1234567890123456789012';
 
-const request = require('supertest');
-const express = require('express');
-const jwt = require('jsonwebtoken');
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
+jest.unstable_mockModule('../utils/fileToText.js', () => ({ default: jest.fn() }));
 
-jest.mock('../config/db', () => ({ query: jest.fn() }));
-const db = require('../config/db');
-
-const claimRoutes = require('../routes/claimRoutes');
+const { default: db } = await import('../config/db.js');
+const { default: claimRoutes } = await import('../routes/claimRoutes.js');
 
 const app = express();
 app.use(express.json());

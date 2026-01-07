@@ -1,5 +1,5 @@
-const openrouter = require('../config/openrouter');
 
+import openrouter from '../config/openrouter.js';
 async function summarize(text, type = 'document') {
   let prefix = 'Summarize';
   if (type === 'invoice') prefix = 'Summarize this invoice';
@@ -44,4 +44,4 @@ async function suggest(prompt) {
   return resp.choices?.[0]?.message?.content?.trim();
 }
 
-module.exports = { summarize, extractEntities, compare, suggest };
+export { summarize, extractEntities, compare, suggest };

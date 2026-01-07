@@ -1,15 +1,16 @@
-const pool = require('../config/db');
-const { logActivity } = require('../utils/activityLogger');
-const { encryptSensitive, decryptSensitive } = require('../utils/encryption');
-const axios = require('axios');
-const { parse } = require('json2csv');
-const { parseCSV } = require('../utils/csvParser');
+import pool from '../config/db.js';
+import { logActivity } from '../utils/activityLogger.js';
+import { encryptSensitive, decryptSensitive } from '../utils/encryption.js';
+import axios from 'axios';
+import { parse } from 'json2csv';
+import { parseCSV } from '../utils/csvParser.js';
+import levenshtein from 'fast-levenshtein';
 const countryRisk = {
   high: ['Russia', 'Iran', 'North Korea'],
   medium: ['Mexico', 'Brazil', 'India'],
 };
 
-exports.listVendors = async (_req, res) => {
+export const listVendors = async (_req, res) => {
   try {
     const invoiceRes = await pool.query(
       'SELECT vendor, MAX(date) AS last_invoice, SUM(amount) AS total_spend FROM invoices GROUP BY vendor'
@@ -68,7 +69,7 @@ exports.listVendors = async (_req, res) => {
   }
 };
 
-exports.updateVendorNotes = async (req, res) => {
+export const updateVendorNotes = async (req, res) => {
   const { vendor } = req.params;
   const { notes } = req.body;
   try {
@@ -86,7 +87,7 @@ exports.updateVendorNotes = async (req, res) => {
   }
 };
 
-exports.getVendorInfo = async (req, res) => {
+export const getVendorInfo = async (req, res) => {
   const { vendor } = req.params;
   try {
     const wiki = await axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(vendor)}`);
@@ -103,9 +104,8 @@ exports.getVendorInfo = async (req, res) => {
   }
 };
 
-const levenshtein = require('fast-levenshtein');
 
-exports.matchVendors = async (req, res) => {
+export const matchVendors = async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ message: 'Query parameter q required' });
   try {
@@ -124,7 +124,7 @@ exports.matchVendors = async (req, res) => {
   }
 };
 
-exports.aiVendorMatch = async (req, res) => {
+export const aiVendorMatch = async (req, res) => {
   const { vendor, invoice_id, invoice_number, amount } = req.body || {};
   if (!vendor)
     return res.status(400).json({ message: 'Missing vendor text.' });
@@ -186,7 +186,7 @@ exports.aiVendorMatch = async (req, res) => {
   }
 };
 
-exports.vendorMatchFeedback = async (req, res) => {
+export const vendorMatchFeedback = async (req, res) => {
   const { id } = req.params;
   const { accepted } = req.body || {};
   if (!id || typeof accepted === 'undefined') {
@@ -201,7 +201,7 @@ exports.vendorMatchFeedback = async (req, res) => {
   }
 };
 
-exports.predictVendorBehavior = async (req, res) => {
+export const predictVendorBehavior = async (req, res) => {
   const { vendor } = req.params;
   try {
     const result = await pool.query(
@@ -233,7 +233,7 @@ exports.predictVendorBehavior = async (req, res) => {
   }
 };
 
-exports.exportVendorsCSV = async (_req, res) => {
+export const exportVendorsCSV = async (_req, res) => {
   try {
     const result = await pool.query('SELECT vendor, notes FROM vendor_notes');
     const csv = parse(result.rows, { fields: ['vendor', 'notes'] });
@@ -246,7 +246,7 @@ exports.exportVendorsCSV = async (_req, res) => {
   }
 };
 
-exports.importVendorsCSV = async (req, res) => {
+export const importVendorsCSV = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -270,7 +270,7 @@ exports.importVendorsCSV = async (req, res) => {
 };
 
 // Deep vendor behavior analytics
-exports.getBehaviorFlags = async (_req, res) => {
+export const getBehaviorFlags = async (_req, res) => {
   try {
     const now = new Date();
     const budgetRes = await pool.query(
@@ -329,7 +329,7 @@ exports.getBehaviorFlags = async (_req, res) => {
 };
 
 // Detailed vendor profile with invoices and analytics
-exports.getVendorAnalytics = async (req, res) => {
+export const getVendorAnalytics = async (req, res) => {
   const { vendor } = req.params;
   try {
     const invoicesRes = await pool.query(
@@ -378,7 +378,7 @@ exports.getVendorAnalytics = async (req, res) => {
   }
 };
 
-exports.updateVendorCountry = async (req, res) => {
+export const updateVendorCountry = async (req, res) => {
   const { vendor } = req.params;
   const { country } = req.body || {};
   if (!country) return res.status(400).json({ message: 'country required' });
@@ -396,7 +396,7 @@ exports.updateVendorCountry = async (req, res) => {
   }
 };
 
-exports.updateVendorProfile = async (req, res) => {
+export const updateVendorProfile = async (req, res) => {
   const { vendor } = req.params;
   const { contact_email, category, contact_name } = req.body || {};
   if (!contact_email && !category && !contact_name) {
@@ -419,7 +419,7 @@ exports.updateVendorProfile = async (req, res) => {
   }
 };
 
-exports.deleteVendor = async (req, res) => {
+export const deleteVendor = async (req, res) => {
   const { vendor } = req.params;
   try {
     await pool.query('DELETE FROM vendor_notes WHERE vendor=$1', [vendor]);
@@ -431,7 +431,7 @@ exports.deleteVendor = async (req, res) => {
   }
 };
 
-exports.getVendorRiskProfile = async (req, res) => {
+export const getVendorRiskProfile = async (req, res) => {
   const { vendor } = req.params;
   try {
     const invoicesRes = await pool.query(
@@ -469,7 +469,7 @@ exports.getVendorRiskProfile = async (req, res) => {
   }
 };
 
-exports.getDuplicateVendors = async (_req, res) => {
+export const getDuplicateVendors = async (_req, res) => {
   try {
     const result = await pool.query('SELECT DISTINCT vendor FROM invoices');
     const vendors = result.rows.map((r) => r.vendor);
@@ -491,7 +491,7 @@ exports.getDuplicateVendors = async (_req, res) => {
   }
 };
 
-exports.getVendorAnomalies = async (req, res) => {
+export const getVendorAnomalies = async (req, res) => {
   const { vendor } = req.params;
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth() - 6, 1);

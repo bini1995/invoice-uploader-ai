@@ -7,4 +7,4 @@ function maskSensitive(text) {
   return out;
 }
 
-module.exports = { maskSensitive };
+export { maskSensitive };

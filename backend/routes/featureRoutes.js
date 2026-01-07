@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
+import { submitFeature, listFeatures } from '../controllers/featureController.js';
+import { authMiddleware } from '../controllers/userController.js';
 const router = express.Router();
-const { submitFeature, listFeatures } = require('../controllers/featureController');
-const { authMiddleware } = require('../controllers/userController');
 
 router.post('/', authMiddleware, submitFeature);
 router.get('/', authMiddleware, listFeatures);
 
-module.exports = router;
+export default router;

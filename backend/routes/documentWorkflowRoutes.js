@@ -1,12 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
+import {
   getWorkflows,
   setWorkflow,
   evaluateWorkflow,
   getInsuranceWorkflow,
-} = require('../controllers/workflowController');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
+} from '../controllers/workflowController.js';
+
+const router = express.Router();
 
 router.get('/', authMiddleware, authorizeRoles('admin'), (req, res) => {
   if (req.query.type === 'insurance') {
@@ -23,4 +24,4 @@ router.get(
   getInsuranceWorkflow,
 );
 
-module.exports = router;
+export default router;

@@ -1,9 +1,9 @@
-const { sendMail } = require('../utils/email');
-const pool = require('../config/db');
-const { sendSlackNotification, sendTeamsNotification } = require('../utils/notify');
-const { broadcastNotification } = require('../utils/chatServer');
-require('dotenv').config();
 
+import { sendMail } from '../utils/email.js';
+import pool from '../config/db.js';
+import { sendSlackNotification, sendTeamsNotification } from '../utils/notify.js';
+import { broadcastNotification } from '../utils/chatServer.js';
+import 'dotenv/config';
 async function sendApprovalReminders() {
   const days = parseInt(process.env.APPROVAL_REMINDER_DAYS || '2', 10);
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
@@ -37,4 +37,4 @@ async function sendApprovalReminders() {
   }
 }
 
-module.exports = { sendApprovalReminders };
+export { sendApprovalReminders };

@@ -1,7 +1,7 @@
-const pool = require('../config/db');
-const { logFeedback } = require('./aiController');
 
-exports.submitFeedback = async (req, res) => {
+import pool from '../config/db.js';
+import { logFeedback } from './aiController.js';
+export const submitFeedback = async (req, res) => {
   const { endpoint, rating } = req.body;
   if (!endpoint || typeof rating !== 'number') {
     return res.status(400).json({ message: 'endpoint and numeric rating required' });
@@ -15,7 +15,7 @@ exports.submitFeedback = async (req, res) => {
   }
 };
 
-exports.getFeedback = async (req, res) => {
+export const getFeedback = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit, 10) || 50;
     const offset = parseInt(req.query.offset, 10) || 0;

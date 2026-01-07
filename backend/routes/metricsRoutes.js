@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
+import { register } from '../metrics.js';
 const router = express.Router();
-const { register } = require('../metrics');
 const METRICS_KEY = process.env.METRICS_API_KEY;
 router.use((req, res, next) => {
   if (!METRICS_KEY) return next();
@@ -13,4 +13,4 @@ router.get('/', async (_req, res) => {
   res.end(await register.metrics());
 });
 
-module.exports = router;
+export default router;

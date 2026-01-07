@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
+import { getSettings, updateSettings } from '../controllers/settingsController.js';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
 const router = express.Router();
-const { getSettings, updateSettings } = require('../controllers/settingsController');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 router.get('/', authMiddleware, authorizeRoles('admin'), getSettings);
 router.patch('/', authMiddleware, authorizeRoles('admin'), updateSettings);
 
-module.exports = router;
+export default router;

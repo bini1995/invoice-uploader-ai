@@ -1,7 +1,7 @@
-const pool = require('../config/db');
-const { broadcastNotification } = require('../utils/chatServer');
 
-exports.listNotifications = async (req, res) => {
+import pool from '../config/db.js';
+import { broadcastNotification } from '../utils/chatServer.js';
+export const listNotifications = async (req, res) => {
   const userId = req.user?.userId;
   if (!userId) return res.status(401).json({ message: 'Unauthorized' });
   try {
@@ -16,7 +16,7 @@ exports.listNotifications = async (req, res) => {
   }
 };
 
-exports.createNotification = async (req, res) => {
+export const createNotification = async (req, res) => {
   const { user_id, message, type } = req.body || {};
   if (!user_id || !message) {
     return res.status(400).json({ message: 'Missing user_id or message' });
@@ -34,7 +34,7 @@ exports.createNotification = async (req, res) => {
   }
 };
 
-exports.markRead = async (req, res) => {
+export const markRead = async (req, res) => {
   const { id } = req.params;
   try {
     await pool.query('UPDATE notifications SET read = TRUE WHERE id = $1', [id]);

@@ -1,7 +1,8 @@
-const pool = require('../config/db');
 
 // Return invoice info for a payment request form
-exports.paymentRequest = async (req, res) => {
+import PDFDocument from 'pdfkit';
+import pool from '../config/db.js';
+export const paymentRequest = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
@@ -30,7 +31,7 @@ exports.paymentRequest = async (req, res) => {
 };
 
 // Generate a simple PDF payment request
-exports.paymentRequestPDF = async (req, res) => {
+export const paymentRequestPDF = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
@@ -41,7 +42,6 @@ exports.paymentRequestPDF = async (req, res) => {
       return res.status(404).json({ message: 'Invoice not found' });
     }
     const inv = result.rows[0];
-    const PDFDocument = require('pdfkit');
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=payment-request-${id}.pdf`);

@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
-const pdfParse = require('pdf-parse');
-const { fromPath } = require('pdf2pic');
-const { createWorker } = require('tesseract.js');
-const mammoth = require('mammoth');
-const logger = require('./logger');
 
 // Simple in-memory cache for OCR results (consider Redis for production)
+import fs from 'fs';
+import path from 'path';
+import pdfParse from 'pdf-parse';
+import { fromPath } from 'pdf2pic';
+import { createWorker } from 'tesseract.js';
+import mammoth from 'mammoth';
+import logger from './logger.js';
 const ocrCache = new Map();
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -85,10 +85,10 @@ async function extractDocx(filePath) {
   }
 }
 
-module.exports = async function fileToText(filePath) {
+export default async function fileToText(filePath) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
-  }
+}
 
   const ext = path.extname(filePath).toLowerCase();
   const fileHash = getFileHash(filePath);

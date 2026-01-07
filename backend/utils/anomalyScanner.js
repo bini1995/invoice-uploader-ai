@@ -1,8 +1,8 @@
-const cron = require('node-cron');
-const pool = require('../config/db');
-const { sendSlackNotification } = require('./notify');
-const { broadcastNotification } = require('./chatServer');
 
+import cron from 'node-cron';
+import pool from '../config/db.js';
+import { sendSlackNotification } from './notify.js';
+import { broadcastNotification } from './chatServer.js';
 async function scanAnomalies(months = 3) {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth() - months, 1);
@@ -53,4 +53,4 @@ function scheduleAnomalyScan() {
   cron.schedule('0 * * * *', () => scanAnomalies().catch(() => {}));
 }
 
-module.exports = { scheduleAnomalyScan, scanAnomalies };
+export { scheduleAnomalyScan, scanAnomalies };

@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 router.head('/', (req, res) => {
@@ -12,4 +12,4 @@ router.get('/', (req, res) => {
     .json({ ok: true, service: 'clarifyops-api', time: new Date().toISOString() });
 });
 
-module.exports = router;
+export default router;

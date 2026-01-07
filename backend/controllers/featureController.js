@@ -1,6 +1,6 @@
-const pool = require('../config/db');
 
-exports.submitFeature = async (req, res) => {
+import pool from '../config/db.js';
+export const submitFeature = async (req, res) => {
   const { text } = req.body;
   if (!text) return res.status(400).json({ message: 'text required' });
   try {
@@ -12,7 +12,7 @@ exports.submitFeature = async (req, res) => {
   }
 };
 
-exports.listFeatures = async (_req, res) => {
+export const listFeatures = async (_req, res) => {
   try {
     const result = await pool.query('SELECT * FROM feature_requests ORDER BY created_at DESC');
     res.json(result.rows);

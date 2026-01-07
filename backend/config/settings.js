@@ -1,4 +1,5 @@
-module.exports = {
+import { validateSettings } from '../validation/settingsSchema.js';
+const settings = {
   autoArchive: true,
   emailTone: 'professional',
   csvSizeLimitMB: 5,
@@ -10,5 +11,6 @@ module.exports = {
   showRoleEmojis: false,
 };
 
-const { validateSettings } = require('../validation/settingsSchema');
-validateSettings(module.exports);
+validateSettings(settings);
+
+export default settings;

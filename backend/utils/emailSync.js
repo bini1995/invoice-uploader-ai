@@ -1,13 +1,15 @@
-const cron = require('node-cron');
-const fs = require('fs');
-const path = require('path');
-const { google } = require('googleapis');
-const { sendMail } = require('./email');
 // Use the generic claim upload
-const { uploadDocument } = require('../controllers/claimController');
 
 // Gmail ingestion temporarily disabled
 
+import cron from 'node-cron';
+import fs from 'fs';
+import path from 'path';
+import { google } from 'googleapis';
+import logger from './logger.js';
+import { sendMail } from './email.js';
+import { uploadDocument } from '../controllers/claimController.js';
+import { schedule } from './cronManager.js';
 const inbox = process.env.EMAIL_INBOX || 'invoices@company.com';
 
 async function processMessage(gmail, message) {
@@ -41,7 +43,6 @@ async function processMessage(gmail, message) {
     try {
       await uploadDocument(req, res);
     } catch (err) {
-      const logger = require('./logger');
       logger.error({ err }, 'Email attachment processing failed');
     }
     fs.unlinkSync(tmp);
@@ -59,7 +60,6 @@ async function processMessage(gmail, message) {
         text: 'Your forwarded invoice was processed successfully.',
       });
     } catch (err) {
-      const logger = require('./logger');
       logger.error({ err }, 'Confirmation email error');
     }
   }
@@ -68,7 +68,6 @@ async function processMessage(gmail, message) {
 async function fetchEmailAttachments() {
   try {
     if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY || !process.env.EMAIL_INBOX) {
-      const logger = require('./logger');
       logger.warn('Skipping email sync: missing GOOGLE_SERVICE_ACCOUNT_KEY or EMAIL_INBOX');
       return;
     }
@@ -83,21 +82,18 @@ async function fetchEmailAttachments() {
     });
     const messages = res.data.messages || [];
     if (messages.length) {
-      const logger = require('./logger');
       logger.info(`📥 Found ${messages.length} invoice emails`);
     }
     for (const m of messages) {
       await processMessage(gmail, m);
     }
   } catch (err) {
-    const logger = require('./logger');
     logger.error({ err }, 'Email sync error');
   }
 }
 
 function startEmailSync() {
-  const { schedule } = require('./cronManager');
   // schedule('emailSync', '*/5 * * * *', fetchEmailAttachments);
 }
 
-module.exports = { startEmailSync };
+export { startEmailSync };

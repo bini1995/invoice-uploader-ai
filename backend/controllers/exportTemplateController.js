@@ -1,9 +1,9 @@
-const { Parser } = require('json2csv');
-const pool = require('../config/db');
-const logger = require('../utils/logger');
-const { exportAttemptCounter } = require('../metrics');
 
-exports.getTemplates = async (req, res) => {
+import { Parser } from 'json2csv';
+import pool from '../config/db.js';
+import logger from '../utils/logger.js';
+import { exportAttemptCounter } from '../metrics.js';
+export const getTemplates = async (req, res) => {
   const userId = req.user?.userId;
   const tenantId = req.tenantId;
   try {
@@ -18,7 +18,7 @@ exports.getTemplates = async (req, res) => {
   }
 };
 
-exports.createTemplate = async (req, res) => {
+export const createTemplate = async (req, res) => {
   const userId = req.user?.userId;
   const tenantId = req.tenantId;
   const { name, columns } = req.body || {};
@@ -37,7 +37,7 @@ exports.createTemplate = async (req, res) => {
   }
 };
 
-exports.deleteTemplate = async (req, res) => {
+export const deleteTemplate = async (req, res) => {
   const userId = req.user?.userId;
   const id = parseInt(req.params.id, 10);
   try {
@@ -49,7 +49,7 @@ exports.deleteTemplate = async (req, res) => {
   }
 };
 
-exports.exportWithTemplate = async (req, res) => {
+export const exportWithTemplate = async (req, res) => {
   const userId = req.user?.userId;
   const tenantId = req.tenantId;
   const id = parseInt(req.params.id, 10);

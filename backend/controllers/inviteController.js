@@ -1,10 +1,10 @@
-const crypto = require('crypto');
-const pool = require('../config/db');
-const { logActivity } = require('../utils/activityLogger');
-const { createUser, userExists } = require('./userController');
-const { trackEvent } = require('../utils/eventTracker');
 
-exports.createInvite = async (req, res) => {
+import crypto from 'crypto';
+import pool from '../config/db.js';
+import { logActivity } from '../utils/activityLogger.js';
+import { createUser, userExists } from './userController.js';
+import { trackEvent } from '../utils/eventTracker.js';
+export const createInvite = async (req, res) => {
   const { role = 'viewer', expiresInHours = 24 } = req.body || {};
   if (!['viewer', 'editor', 'broker', 'adjuster', 'medical_reviewer', 'auditor', 'internal_ops'].includes(role)) {
     await trackEvent('default', req.user?.userId, 'invite_create_failed', { reason: 'invalid_role' });
@@ -27,7 +27,7 @@ exports.createInvite = async (req, res) => {
   }
 };
 
-exports.acceptInvite = async (req, res) => {
+export const acceptInvite = async (req, res) => {
   const { token } = req.params;
   const { username, password } = req.body || {};
   if (!username || !password) {

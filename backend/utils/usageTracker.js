@@ -1,7 +1,7 @@
-const pool = require('../config/db');
-const logger = require('./logger');
 
 // Usage limits by plan type
+import pool from '../config/db.js';
+import logger from './logger.js';
 const USAGE_LIMITS = {
   free: {
     claims_uploads: 50,
@@ -305,12 +305,12 @@ async function resetUsage(tenantId, month = null) {
   }
 }
 
-module.exports = {
+export {
   trackUsage,
   checkUsageLimit,
   getUsageStats,
   getUsageLogs,
   getUsageTrends,
   resetUsage,
-  USAGE_LIMITS
+  USAGE_LIMITS,
 }; 

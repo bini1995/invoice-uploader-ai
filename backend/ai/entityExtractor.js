@@ -1,6 +1,6 @@
-const openrouter = require('../config/openrouter');
-const logger = require('../utils/logger');
 
+import openrouter from '../config/openrouter.js';
+import logger from '../utils/logger.js';
 async function extractEntities(text) {
   const start = Date.now();
   try {
@@ -24,4 +24,4 @@ async function extractEntities(text) {
   }
 }
 
-module.exports = { extractEntities };
+export { extractEntities };

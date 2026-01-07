@@ -1,12 +1,16 @@
-const pool = require('../config/db');
-const { recordInvoiceVersion } = require('../utils/versionLogger');
-const { triggerAutomations } = require('../utils/automationEngine');
-const logger = require('../utils/logger');
+import pool from '../config/db.js';
+import { recordInvoiceVersion } from '../utils/versionLogger.js';
+import { triggerAutomations } from '../utils/automationEngine.js';
+import logger from '../utils/logger.js';
+import {
+  getAssigneeFromVendorHistory,
+  getAssigneeFromTags,
+  getAssigneeFromVendorProfile,
+} from '../utils/assignment.js';
 
 async function autoAssignInvoice(invoiceId, vendor, tags = []) {
   let assignee;
   try {
-    const { getAssigneeFromVendorHistory, getAssigneeFromTags, getAssigneeFromVendorProfile } = require('../utils/assignment');
     let reason = null;
     const hist = await pool.query(
       `SELECT assignee, COUNT(*) AS cnt FROM invoices WHERE LOWER(vendor)=LOWER($1) AND assignee IS NOT NULL GROUP BY assignee ORDER BY cnt DESC LIMIT 1`,
@@ -47,7 +51,6 @@ async function autoAssignDocument(docId, vendor, tags = []) {
   let assignee;
   let reason = null;
   try {
-    const { getAssigneeFromVendorHistory, getAssigneeFromTags, getAssigneeFromVendorProfile } = require('../utils/assignment');
     const res = await pool.query(
       `SELECT assignee, COUNT(*) AS cnt FROM documents WHERE LOWER(party_name)=LOWER($1) AND assignee IS NOT NULL GROUP BY assignee ORDER BY cnt DESC LIMIT 1`,
       [vendor]
@@ -98,4 +101,4 @@ async function insertInvoice(inv, tenantId) {
   return newId;
 }
 
-module.exports = { autoAssignInvoice, insertInvoice, autoAssignDocument };
+export { autoAssignInvoice, insertInvoice, autoAssignDocument };
