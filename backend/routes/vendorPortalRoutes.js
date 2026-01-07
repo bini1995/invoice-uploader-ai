@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import portal from '../controllers/vendorPortalController.js';
+import { uploadLimiter } from '../middleware/rateLimit.js';
 const router = express.Router();
-const portal = require('../controllers/vendorPortalController');
-const { uploadLimiter } = require('../middleware/rateLimit');
 
 router.post('/login', portal.login);
 router.use(portal.auth);
@@ -11,4 +11,4 @@ router.get('/bank', portal.getBankInfo);
 router.patch('/bank', portal.updateBankInfo);
 router.get('/payments', portal.paymentStatus);
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
-const pool = require('../config/db');
-const logger = require('./logger');
 
+import pool from '../config/db.js';
+import logger from './logger.js';
 (async function seedDummy() {
   const client = await pool.connect();
   try {

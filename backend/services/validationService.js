@@ -1,6 +1,7 @@
-const levenshtein = require('fast-levenshtein');
-const pool = require('../config/db');
 
+import crypto from 'crypto';
+import levenshtein from 'fast-levenshtein';
+import pool from '../config/db.js';
 async function validateInvoiceRow(inv, rowNum) {
   const errors = [];
   if (!inv.invoice_number || !inv.date || !inv.amount || !inv.vendor) {
@@ -12,7 +13,7 @@ async function validateInvoiceRow(inv, rowNum) {
   if (inv.date && isNaN(Date.parse(inv.date))) {
     errors.push(`Row ${rowNum}: Date is not valid`);
   }
-  const contentHash = require('crypto')
+  const contentHash = crypto
     .createHash('sha256')
     .update(`${inv.invoice_number}|${inv.amount}|${inv.vendor}`)
     .digest('hex');
@@ -64,4 +65,4 @@ async function validateDocumentRow(doc, rowNum, type = 'document') {
   return errors;
 }
 
-module.exports = { validateInvoiceRow, checkSimilarity, validateDocumentRow };
+export { validateInvoiceRow, checkSimilarity, validateDocumentRow };

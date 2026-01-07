@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { importYaml } from '../controllers/pluginController.js';
+import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
 const router = express.Router();
-const { importYaml } = require('../controllers/pluginController');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 router.post('/yaml', authMiddleware, authorizeRoles('admin'), importYaml);
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
-const pool = require('../config/db');
 
-exports.getAnomalies = async (req, res) => {
+import pool from '../config/db.js';
+export const getAnomalies = async (req, res) => {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth() - 6, 1);
   try {

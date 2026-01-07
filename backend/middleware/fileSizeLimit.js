@@ -1,6 +1,6 @@
-const path = require('path');
 
-module.exports = function fileSizeLimit(req, res, next) {
+import path from 'path';
+export default function fileSizeLimit(req, res, next) {
   if (!req.file) return next();
   const ext = path.extname(req.file.originalname).toLowerCase();
   const limit = ext === '.csv' ? 1 * 1024 * 1024 : 10 * 1024 * 1024; // 1MB for CSV, 10MB otherwise
@@ -8,4 +8,4 @@ module.exports = function fileSizeLimit(req, res, next) {
     return res.status(413).json({ message: 'File too large' });
   }
   next();
-};
+}

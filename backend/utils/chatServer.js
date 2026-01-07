@@ -1,4 +1,4 @@
-const { Server } = require('socket.io');
+import { Server } from 'socket.io';
 let io;
 
 function initChat(server) {
@@ -32,4 +32,4 @@ function broadcastDiff(invoiceId, diff) {
   }
 }
 
-module.exports = { initChat, broadcastMessage, broadcastNotification, broadcastActivity, broadcastDiff };
+export { initChat, broadcastMessage, broadcastNotification, broadcastActivity, broadcastDiff };

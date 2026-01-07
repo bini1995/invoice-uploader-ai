@@ -1,8 +1,8 @@
-const pool = require('../config/db');
-const axios = require('axios');
-const { exportToErpA, exportToErpB } = require('./erpExport');
-const logger = require('./logger');
 
+import pool from '../config/db.js';
+import axios from 'axios';
+import { exportToErpA, exportToErpB } from './erpExport.js';
+import logger from './logger.js';
 function evalCondition(condition, payload) {
   try {
     return Function('payload', `return (${condition})`)(payload);
@@ -44,4 +44,4 @@ async function triggerAutomations(event, payload, attempt = 0) {
   }
 }
 
-module.exports = { triggerAutomations };
+export { triggerAutomations };

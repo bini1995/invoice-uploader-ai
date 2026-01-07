@@ -1,6 +1,6 @@
-const openai = require('../config/openrouter');
-const logger = require('../utils/logger');
 
+import openai from '../config/openrouter.js';
+import logger from '../utils/logger.js';
 async function chatAgent(messages) {
   const start = Date.now();
   try {
@@ -16,4 +16,4 @@ async function chatAgent(messages) {
   }
 }
 
-module.exports = { chatAgent };
+export { chatAgent };

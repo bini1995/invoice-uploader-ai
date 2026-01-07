@@ -1,8 +1,10 @@
-const { sendMail } = require('../utils/email');
-require('dotenv').config();
-const settings = require('../config/settings');
 
-exports.sendSummaryEmail = async (req, res) => {
+import { sendMail } from '../utils/email.js';
+import 'dotenv/config';
+import settings from '../config/settings.js';
+import openai from '../config/openrouter.js';
+import { getTrainingSamples } from '../utils/emailTrainer.js';
+export const sendSummaryEmail = async (req, res) => {
   const { aiSummary, invoices } = req.body;
   const tone = (req.body.tone || settings.emailTone || 'professional').toLowerCase();
 
@@ -30,10 +32,8 @@ exports.sendSummaryEmail = async (req, res) => {
   }
 };
 
-const openai = require('../config/openrouter');
-const { getTrainingSamples } = require('../utils/emailTrainer');
 
-exports.smartDraftEmail = async (req, res) => {
+export const smartDraftEmail = async (req, res) => {
   const { prompt } = req.body || {};
   if (!prompt) return res.status(400).json({ message: 'Prompt is required' });
   try {

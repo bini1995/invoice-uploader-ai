@@ -1,6 +1,6 @@
-const rulesController = require('../controllers/rulesController');
-const { getRules, setRules } = require('../utils/rulesEngine');
 
+import rulesController from '../controllers/rulesController.js';
+import { getRules, setRules } from '../utils/rulesEngine.js';
 function mockRes() {
   const res = {};
   res.statusCode = 200;

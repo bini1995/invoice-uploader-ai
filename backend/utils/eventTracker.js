@@ -1,5 +1,5 @@
-const pool = require('../config/db');
 
+import pool from '../config/db.js';
 async function trackEvent(tenantId, userId, eventName, details = null) {
   try {
     await pool.query(
@@ -11,4 +11,4 @@ async function trackEvent(tenantId, userId, eventName, details = null) {
   }
 }
 
-module.exports = { trackEvent };
+export { trackEvent };

@@ -42,4 +42,4 @@ function addValidationRule(rule){
   customRules.push(rule);
 }
 
-module.exports = { validateHeaders, validateRow, getValidationRules, addValidationRule };
+export { validateHeaders, validateRow, getValidationRules, addValidationRule };

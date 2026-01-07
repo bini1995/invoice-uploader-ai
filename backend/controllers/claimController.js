@@ -1,20 +1,24 @@
-const fs = require('fs');
-const path = require('path');
-const pool = require('../config/db');
-const openrouter = require('../config/openrouter');
-const { trainFromCorrections } = require('../utils/ocrAgent');
-const { extractEntities } = require('../ai/entityExtractor');
-const { extractClaimFields: aiExtractClaimFields } = require('../ai/claimFieldExtractor');
-const { recordDocumentVersion } = require('../utils/documentVersionLogger');
-const crypto = require('crypto');
-const { DocumentType } = require('../enums/documentType');
-const PDFDocument = require('pdfkit');
-const fileToText = require('../utils/fileToText');
-const { triggerClaimWebhook } = require('../utils/claimWebhook');
-const logger = require('../utils/logger');
-const { logActivity } = require('../utils/activityLogger');
-const sanitizeHtml = require('sanitize-html');
-const {
+import fs from 'fs';
+import path from 'path';
+import pool from '../config/db.js';
+import openrouter from '../config/openrouter.js';
+import { trainFromCorrections } from '../utils/ocrAgent.js';
+import { extractEntities } from '../ai/entityExtractor.js';
+import { extractClaimFields as aiExtractClaimFields } from '../ai/claimFieldExtractor.js';
+import { recordDocumentVersion } from '../utils/documentVersionLogger.js';
+import crypto from 'crypto';
+import { DocumentType } from '../enums/documentType.js';
+import PDFDocument from 'pdfkit';
+import fileToText from '../utils/fileToText.js';
+import { triggerClaimWebhook } from '../utils/claimWebhook.js';
+import logger from '../utils/logger.js';
+import { logActivity } from '../utils/activityLogger.js';
+import sanitizeHtml from 'sanitize-html';
+import { Parser } from 'json2csv';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { summarize } from './aiAgent.js';
+import { autoAssignDocument } from '../services/invoiceService.js';
+import {
   claimUploadCounter,
   fieldExtractCounter,
   exportAttemptCounter,
@@ -22,7 +26,9 @@ const {
   extractDuration,
   claimMetricsDuration,
   claimMetricsErrorCounter
-} = require('../metrics');
+} from '../metrics.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function refreshSearchable(id) {
   await pool.query(
@@ -31,7 +37,7 @@ async function refreshSearchable(id) {
   );
 }
 
-exports.listDocuments = async (req, res) => {
+export const listDocuments = async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT id, doc_title, doc_type, file_name, fields, status
@@ -45,7 +51,7 @@ exports.listDocuments = async (req, res) => {
   }
 };
 
-exports.getDocument = async (req, res) => {
+export const getDocument = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query(
@@ -59,7 +65,7 @@ exports.getDocument = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch document' });
   }
 };
-exports.uploadDocument = async (req, res) => {
+export const uploadDocument = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
     const allowedTypes = [
@@ -132,7 +138,6 @@ exports.uploadDocument = async (req, res) => {
     );
     logger.info('Claim uploaded', { id: rows[0].id, docType });
     claimUploadCounter.labels(docType).inc();
-    const { autoAssignDocument } = require('../services/invoiceService');
     const vendorName = meta.vendor || '';
     const { assignee, reason } = await autoAssignDocument(rows[0].id, vendorName, meta.tags || []);
     res.json({ id: rows[0].id, status: 'pending', doc_type: docType, assignee, assignment_reason: reason });
@@ -142,7 +147,7 @@ exports.uploadDocument = async (req, res) => {
   }
 };
 
-exports.extractDocument = async (req, res) => {
+export const extractDocument = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
@@ -168,8 +173,8 @@ exports.extractDocument = async (req, res) => {
         .slice(0, 4000);
       result = await aiExtractClaimFields(content);
     } else if (fs.existsSync(pipelinePath)) {
-      const pipeline = require(pipelinePath);
-      result = await pipeline(doc.path);
+      const pipeline = await import(pathToFileURL(pipelinePath).href);
+      result = await pipeline.default(doc.path);
     } else {
       const content = fs
         .readFileSync(doc.path, 'utf8')
@@ -225,7 +230,7 @@ exports.extractDocument = async (req, res) => {
   }
 };
 
-exports.extractClaimFields = async (req, res) => {
+export const extractClaimFields = async (req, res) => {
   const { id } = req.params;
   let timer;
   try {
@@ -256,7 +261,7 @@ exports.extractClaimFields = async (req, res) => {
 };
 
 
-exports.saveCorrections = async (req, res) => {
+export const saveCorrections = async (req, res) => {
   const { id } = req.params;
   const corrections = req.body || {};
   if (!corrections || typeof corrections !== 'object') return res.status(400).json({ message: 'Invalid corrections' });
@@ -281,14 +286,14 @@ exports.saveCorrections = async (req, res) => {
   }
 };
 
-exports.summarizeDocument = async (req, res) => {
+export const summarizeDocument = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
     const doc = rows[0];
     const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
-    const summary = await require('./aiAgent').summarize(content, doc.doc_type);
+    const summary = await summarize(content, doc.doc_type);
     res.json({ summary });
   } catch (err) {
     console.error('Document summary error:', err.message);
@@ -296,7 +301,7 @@ exports.summarizeDocument = async (req, res) => {
   }
 };
 
-exports.getDocumentVersions = async (req, res) => {
+export const getDocumentVersions = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query(
@@ -310,7 +315,7 @@ exports.getDocumentVersions = async (req, res) => {
   }
 };
 
-exports.restoreDocumentVersion = async (req, res) => {
+export const restoreDocumentVersion = async (req, res) => {
   const { id, versionId } = req.params;
   try {
     const verRes = await pool.query(
@@ -344,7 +349,7 @@ exports.restoreDocumentVersion = async (req, res) => {
   }
 };
 
-exports.uploadDocumentVersion = async (req, res) => {
+export const uploadDocumentVersion = async (req, res) => {
   const { id } = req.params;
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
@@ -364,7 +369,7 @@ exports.uploadDocumentVersion = async (req, res) => {
   }
 };
 
-exports.updateLifecycle = async (req, res) => {
+export const updateLifecycle = async (req, res) => {
   const { id } = req.params;
   const { retention, expires_at, archived } = req.body || {};
   let deleteAt = null;
@@ -389,7 +394,7 @@ exports.updateLifecycle = async (req, res) => {
   }
 };
 
-exports.checkCompliance = async (req, res) => {
+export const checkCompliance = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
@@ -411,7 +416,7 @@ exports.checkCompliance = async (req, res) => {
   }
 };
 
-exports.getEntityTotals = async (_req, res) => {
+export const getEntityTotals = async (_req, res) => {
   const client = await pool.connect();
   try {
     const result = await client.query(
@@ -431,7 +436,7 @@ exports.getEntityTotals = async (_req, res) => {
   }
 };
 
-exports.exportSummaryPDF = async (_req, res) => {
+export const exportSummaryPDF = async (_req, res) => {
   try {
     const topRes = await pool.query(
       `SELECT vendor, SUM(amount) AS total FROM invoices GROUP BY vendor ORDER BY total DESC LIMIT 5`
@@ -487,7 +492,7 @@ exports.exportSummaryPDF = async (_req, res) => {
   }
 };
 
-exports.searchDocuments = async (req, res) => {
+export const searchDocuments = async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ message: 'Missing query' });
   try {
@@ -506,7 +511,7 @@ exports.searchDocuments = async (req, res) => {
   }
 };
 
-exports.autoDeleteExpiredDocuments = async () => {
+export const autoDeleteExpiredDocuments = async () => {
   try {
     const result = await pool.query(
       `DELETE FROM documents WHERE delete_at IS NOT NULL AND delete_at < NOW()`
@@ -519,7 +524,7 @@ exports.autoDeleteExpiredDocuments = async () => {
   }
 };
 
-exports.submitExtractionFeedback = async (req, res) => {
+export const submitExtractionFeedback = async (req, res) => {
   const { id } = req.params;
   const { status, reason, note, assigned_to } = req.body || {};
   const allowed = ['correct', 'incorrect', 'needs_review'];
@@ -561,7 +566,7 @@ exports.submitExtractionFeedback = async (req, res) => {
   }
 };
 
-exports.getExtractionFeedback = async (req, res) => {
+export const getExtractionFeedback = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query(
@@ -575,7 +580,7 @@ exports.getExtractionFeedback = async (req, res) => {
   }
 };
 
-exports.addReviewNote = async (req, res) => {
+export const addReviewNote = async (req, res) => {
   const { id } = req.params;
   const { note } = req.body || {};
   if (typeof note !== 'string') return res.status(400).json({ message: 'Note required' });
@@ -599,7 +604,7 @@ exports.addReviewNote = async (req, res) => {
   }
 };
 
-exports.getReviewNotes = async (req, res) => {
+export const getReviewNotes = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query(
@@ -617,7 +622,7 @@ exports.getReviewNotes = async (req, res) => {
   }
 };
 
-exports.addComment = async (req, res) => {
+export const addComment = async (req, res) => {
   const { id } = req.params;
   const { text, parent_id } = req.body || {};
   if (typeof text !== 'string') {
@@ -669,7 +674,7 @@ exports.addComment = async (req, res) => {
   }
 };
 
-exports.getComments = async (req, res) => {
+export const getComments = async (req, res) => {
   const { id } = req.params;
   try {
     const docCheck = await pool.query('SELECT id FROM documents WHERE id = $1', [id]);
@@ -710,7 +715,7 @@ exports.getComments = async (req, res) => {
   }
 };
 
-exports.getReviewQueue = async (_req, res) => {
+export const getReviewQueue = async (_req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT d.id, d.doc_title, d.doc_type, f.status, f.reason, f.assigned_to
@@ -726,7 +731,7 @@ exports.getReviewQueue = async (_req, res) => {
   }
 };
 
-exports.updateStatus = async (req, res) => {
+export const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body || {};
   if (!status) return res.status(400).json({ message: 'Status required' });
@@ -766,7 +771,7 @@ exports.updateStatus = async (req, res) => {
   }
 };
 
-exports.exportClaims = async (req, res) => {
+export const exportClaims = async (req, res) => {
   const format = (req.body && req.body.format) || 'csv';
   try {
     const result = await pool.query(
@@ -784,7 +789,6 @@ exports.exportClaims = async (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       return res.send(JSON.stringify({ claims }));
     }
-    const { Parser } = require('json2csv');
     const parser = new Parser({ fields: ['id', 'title', 'type', 'status', 'fields'] });
     const csv = parser.parse(claims.map(c => ({ ...c, fields: JSON.stringify(c.fields || {}) })));
     res.header('Content-Type', 'text/csv');
@@ -796,7 +800,7 @@ exports.exportClaims = async (req, res) => {
   }
 };
 
-exports.getClaimMetrics = async (req, res) => {
+export const getClaimMetrics = async (req, res) => {
   const { from, to } = req.query;
   const params = [];
   let where =
@@ -871,10 +875,10 @@ exports.getClaimMetrics = async (req, res) => {
   }
 };
 
-exports.getUploadHeatmap = async (req, res) => {
+export const getUploadHeatmap = async (req, res) => {
   res.json({ heatmap: [] });
 };
 
-exports.getTopVendors = async (req, res) => {
+export const getTopVendors = async (req, res) => {
   res.json({ topVendors: [] });
 };

@@ -1,8 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const pool = require('../config/db');
 
-exports.uploadLogo = (req, res) => {
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import pool from '../config/db.js';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export const uploadLogo = (req, res) => {
   const tenantId = req.tenantId;
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
@@ -16,7 +19,7 @@ exports.uploadLogo = (req, res) => {
   });
 };
 
-exports.getLogo = (req, res) => {
+export const getLogo = (req, res) => {
   const tenantId = req.tenantId;
   const dir = path.join(__dirname, '../uploads/logos');
   const file = path.join(dir, `${tenantId}.png`);
@@ -30,7 +33,7 @@ exports.getLogo = (req, res) => {
   res.status(404).end();
 };
 
-exports.setAccentColor = async (req, res) => {
+export const setAccentColor = async (req, res) => {
   const tenantId = req.tenantId;
   const { color } = req.body || {};
   if (!color) return res.status(400).json({ message: 'Color required' });
@@ -48,7 +51,7 @@ exports.setAccentColor = async (req, res) => {
   }
 };
 
-exports.getAccentColor = async (req, res) => {
+export const getAccentColor = async (req, res) => {
   const tenantId = req.tenantId;
   try {
     const { rows } = await pool.query(

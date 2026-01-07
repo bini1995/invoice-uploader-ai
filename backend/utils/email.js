@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer');
-require('dotenv').config();
 
+import nodemailer from 'nodemailer';
+import 'dotenv/config';
 function createTransporter() {
   const { EMAIL_USER, EMAIL_PASS } = process.env;
   if (!EMAIL_USER || !EMAIL_PASS) {
@@ -28,4 +28,4 @@ async function sendMail(options) {
   }
 }
 
-module.exports = { createTransporter, sendMail };
+export { createTransporter, sendMail };

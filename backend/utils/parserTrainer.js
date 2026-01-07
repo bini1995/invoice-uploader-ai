@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+import pool from '../config/db.js';
 let vendorCorrections = {};
 let vendorWeights = {};
 
@@ -39,5 +39,5 @@ function getWeight(vendor) {
   return vendorWeights[vendor?.toLowerCase()] || 0;
 }
 
-module.exports = { loadCorrections, applyCorrections, updateWeights, getWeight };
+export { loadCorrections, applyCorrections, updateWeights, getWeight };
 

@@ -1,7 +1,10 @@
-const { getClaimMetrics } = require('../controllers/claimController');
-const pool = require('../config/db');
 
-jest.mock('../config/db', () => ({ query: jest.fn() }));
+import { jest } from '@jest/globals';
+
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
+
+const { default: pool } = await import('../config/db.js');
+const { getClaimMetrics } = await import('../controllers/claimController.js');
 
 describe('getClaimMetrics', () => {
   const res = {

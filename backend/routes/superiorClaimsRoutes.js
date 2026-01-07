@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import SuperiorClaimsController from '../controllers/superiorClaimsController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 const router = express.Router();
-const SuperiorClaimsController = require('../controllers/superiorClaimsController');
-const authMiddleware = require('../middleware/authMiddleware');
 // const tenantMiddleware = require('../middleware/tenantMiddleware'); // Temporarily removed for debugging
 
 const claimsController = new SuperiorClaimsController();
@@ -25,4 +25,4 @@ router.post('/claims/:claimId/comments', claimsController.addComment.bind(claims
 // Analytics and reporting
 router.get('/analytics/fraud-statistics', claimsController.getFraudStatistics.bind(claimsController));
 
-module.exports = router; 
+export default router;

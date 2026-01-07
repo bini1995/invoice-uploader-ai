@@ -14,4 +14,4 @@ function categorizeInvoice({ vendor = '', description = '' }) {
   return 'Other';
 }
 
-module.exports = { categorizeInvoice };
+export { categorizeInvoice };

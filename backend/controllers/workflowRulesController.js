@@ -1,6 +1,6 @@
-const pool = require('../config/db');
 
-exports.listWorkflowRules = async (_req, res) => {
+import pool from '../config/db.js';
+export const listWorkflowRules = async (_req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM workflow_rules ORDER BY priority DESC, id ASC');
     res.json({ rules: rows });
@@ -10,7 +10,7 @@ exports.listWorkflowRules = async (_req, res) => {
   }
 };
 
-exports.addWorkflowRule = async (req, res) => {
+export const addWorkflowRule = async (req, res) => {
   const {
     vendor,
     amount_greater_than,
@@ -54,7 +54,7 @@ exports.addWorkflowRule = async (req, res) => {
   }
 };
 
-exports.updateWorkflowRule = async (req, res) => {
+export const updateWorkflowRule = async (req, res) => {
   const id = parseInt(req.params.id);
   const {
     vendor,
@@ -104,7 +104,7 @@ exports.updateWorkflowRule = async (req, res) => {
   }
 };
 
-exports.deleteWorkflowRule = async (req, res) => {
+export const deleteWorkflowRule = async (req, res) => {
   const id = parseInt(req.params.id);
   try {
     await pool.query('DELETE FROM workflow_rules WHERE id = $1', [id]);

@@ -1,12 +1,12 @@
-const express = require('express');
+import express from 'express';
+import { categorizeDocument, categoryFeedback } from '../controllers/aiController.js';
+import { authMiddleware } from '../controllers/userController.js';
+import { aiLimiter } from '../middleware/rateLimit.js';
 const router = express.Router();
-const { categorizeDocument, categoryFeedback } = require('../controllers/aiController');
-const { authMiddleware } = require('../controllers/userController');
-const { aiLimiter } = require('../middleware/rateLimit');
 
 router.use(aiLimiter);
 
 router.post('/categorize', authMiddleware, categorizeDocument);
 router.post('/categorize/:id/feedback', authMiddleware, categoryFeedback);
 
-module.exports = router;
+export default router;

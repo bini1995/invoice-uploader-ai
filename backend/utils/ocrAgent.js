@@ -1,8 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const pool = require('../config/db');
 
+import fs from 'fs';
+import path from 'path';
+import pool from '../config/db.js';
+import { fileURLToPath } from 'url';
 let model = { corrections: {}, categoryMap: {}, tagMap: {} };
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function loadModel() {
   try {
@@ -93,5 +96,4 @@ function getSuggestions(invoice) {
   return suggestions;
 }
 
-module.exports = { loadModel, trainFromCorrections, applyModel, getSuggestions };
-
+export { loadModel, trainFromCorrections, applyModel, getSuggestions };

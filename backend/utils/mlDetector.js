@@ -5,4 +5,4 @@ function detectAnomalies(rows) {
   return rows.map((r) => ({ id: r.id, score: 0.5 }));
 }
 
-module.exports = { detectAnomalies };
+export { detectAnomalies };

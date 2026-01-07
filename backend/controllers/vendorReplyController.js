@@ -1,15 +1,15 @@
-const openai = require('../config/openrouter');
-const { sendMail } = require('../utils/email');
-const pool = require('../config/db');
-const settings = require('../config/settings');
-require('dotenv').config();
 
+import openai from '../config/openrouter.js';
+import { sendMail } from '../utils/email.js';
+import pool from '../config/db.js';
+import settings from '../config/settings.js';
+import 'dotenv/config';
 /**
  * Generate a polite vendor notification email draft when an invoice is flagged or rejected.
  * If `manualEdit` is provided in the request body the email will be sent directly
  * to the specified vendor email address instead of returning a draft.
  */
-exports.vendorReply = async (req, res) => {
+export const vendorReply = async (req, res) => {
   const { id } = req.params;
   const { status, reason, manualEdit, email } = req.body;
 

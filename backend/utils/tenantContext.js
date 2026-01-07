@@ -1,5 +1,5 @@
-const pool = require('../config/db');
 
+import pool from '../config/db.js';
 async function getTenantContext(tenantId = 'default') {
   const { rows } = await pool.query('SELECT feature, enabled FROM tenant_features WHERE tenant_id = $1', [tenantId]);
   const features = {};
@@ -13,4 +13,4 @@ async function checkTenantInvoiceLimit(tenantId, limit = 500) {
   return parseInt(rows[0].cnt, 10) < limit;
 }
 
-module.exports = { getTenantContext, checkTenantInvoiceLimit };
+export { getTenantContext, checkTenantInvoiceLimit };

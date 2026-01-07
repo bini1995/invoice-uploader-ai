@@ -1,12 +1,12 @@
-const cronManager = require('./cronManager');
-const PDFDocument = require('pdfkit');
-const ExcelJS = require('exceljs');
-const pool = require('../config/db');
-const { sendMail } = require('./email');
-const { sendSlackNotification } = require('./notify');
-const logger = require('./logger');
-const { buildFilterQuery } = require('../controllers/analyticsController');
 
+import cronManager from './cronManager.js';
+import PDFDocument from 'pdfkit';
+import ExcelJS from 'exceljs';
+import pool from '../config/db.js';
+import { sendMail } from './email.js';
+import { sendSlackNotification } from './notify.js';
+import logger from './logger.js';
+import { buildFilterQuery } from '../controllers/analyticsController.js';
 let jobs = [];
 
 async function buildReport(filters = {}) {
@@ -121,4 +121,4 @@ async function loadReportSchedules() {
   }
 }
 
-module.exports = { scheduleReports, loadReportSchedules };
+export { scheduleReports, loadReportSchedules };

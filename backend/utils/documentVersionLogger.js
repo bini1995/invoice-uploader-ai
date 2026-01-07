@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+import pool from '../config/db.js';
 let diff;
 
 async function getDiff() {
@@ -21,4 +21,4 @@ async function recordDocumentVersion(documentId, oldDoc, newDoc, userId, usernam
   }
 }
 
-module.exports = { recordDocumentVersion };
+export { recordDocumentVersion };

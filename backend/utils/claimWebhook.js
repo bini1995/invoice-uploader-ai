@@ -1,5 +1,5 @@
-const fetch = require('node-fetch');
 
+import fetch from 'node-fetch';
 const url = process.env.CLAIM_STATUS_WEBHOOK_URL;
 const headersEnv = process.env.CLAIM_WEBHOOK_HEADERS || '{}';
 const templateEnv = process.env.CLAIM_WEBHOOK_TEMPLATE || '{}';
@@ -17,7 +17,7 @@ try {
   template = {};
 }
 
-exports.triggerClaimWebhook = async (event, payload = {}) => {
+export const triggerClaimWebhook = async (event, payload = {}) => {
   if (!url) return;
   const body = {
     event,

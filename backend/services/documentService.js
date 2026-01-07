@@ -1,16 +1,19 @@
-const fs = require('fs');
-const path = require('path');
-const pool = require('../config/db');
-const openrouter = require('../config/openrouter');
-const { extractEntities } = require('../ai/entityExtractor');
-const { recordDocumentVersion } = require('../utils/documentVersionLogger');
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+import pool from '../config/db.js';
+import openrouter from '../config/openrouter.js';
+import { extractEntities } from '../ai/entityExtractor.js';
+import { recordDocumentVersion } from '../utils/documentVersionLogger.js';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function parseAndExtract(doc) {
   const pipelinePath = path.join(__dirname, '../pipelines', `${doc.doc_type}.js`);
   let result = { fields: {} };
   if (fs.existsSync(pipelinePath)) {
-    const pipeline = require(pipelinePath);
-    result = await pipeline(doc.path);
+    const pipeline = await import(pathToFileURL(pipelinePath).href);
+    result = await pipeline.default(doc.path);
   } else {
     const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
     result.fields = await extractEntities(content);
@@ -55,4 +58,4 @@ async function parseAndExtract(doc) {
   }
 }
 
-module.exports = { parseAndExtract };
+export { parseAndExtract };

@@ -1,7 +1,7 @@
-const yaml = require('js-yaml');
-const { addAutomation } = require('./automationController');
 
-exports.importYaml = async (req, res) => {
+import yaml from 'js-yaml';
+import { addAutomation } from './automationController.js';
+export const importYaml = async (req, res) => {
   const { text } = req.body || {};
   if (!text) return res.status(400).json({ message: 'yaml text required' });
   try {

@@ -2,8 +2,9 @@
   "name": "invoice-pipeline",
   "version": "1.0.0",
   "engines": {
-    "node": ">=18 <19"
+    "node": ">=20 <23"
   },
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "PORT=3000 node app.js",
@@ -11,9 +12,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "seed-dummy": "node utils/seedDummyData.js",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
   },
   "dependencies": {
     "@sentry/node": "^7.103.0",
@@ -30,7 +31,7 @@
     "csv-stringify": "^6.5.2",
     "dotenv": "^16.3.1",
     "exceljs": "4.4.0",
-    "express": "^4.18.2",
+    "express": "^5.0.0",
     "express-rate-limit": "^6.7.0",
     "fast-levenshtein": "^2.0.6",
     "googleapis": "^125.0.0",

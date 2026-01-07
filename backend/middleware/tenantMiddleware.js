@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
 
+import { Pool } from 'pg';
 class TenantMiddleware {
     constructor() {
         this.pool = new Pool({
@@ -139,5 +139,7 @@ class TenantMiddleware {
 }
 
 // Temporarily disable tenant middleware for login debugging
-module.exports = (req, res, next) => next();
-module.exports.TenantMiddleware = TenantMiddleware;
+const tenantMiddleware = (req, res, next) => next();
+
+export { TenantMiddleware };
+export default tenantMiddleware;

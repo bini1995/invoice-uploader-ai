@@ -1,11 +1,11 @@
-const pool = require('../config/db');
-const { Parser } = require('json2csv');
-const archiver = require('archiver');
-const { maskSensitive } = require('../utils/sanitize');
-const logger = require('../utils/logger');
-const { exportAttemptCounter } = require('../metrics');
 
-exports.getActivityLogs = async (req, res) => {
+import pool from '../config/db.js';
+import { Parser } from 'json2csv';
+import archiver from 'archiver';
+import { maskSensitive } from '../utils/sanitize.js';
+import logger from '../utils/logger.js';
+import { exportAttemptCounter } from '../metrics.js';
+export const getActivityLogs = async (req, res) => {
   try {
     const { start, end, vendor, action, limit } = req.query;
 
@@ -49,7 +49,7 @@ exports.getActivityLogs = async (req, res) => {
   }
 };
 
-exports.getInvoiceTimeline = async (req, res) => {
+export const getInvoiceTimeline = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
@@ -67,7 +67,7 @@ exports.getInvoiceTimeline = async (req, res) => {
   }
 };
 
-exports.exportComplianceReport = async (_req, res) => {
+export const exportComplianceReport = async (_req, res) => {
   try {
     const logRes = await pool.query(
       'SELECT * FROM activity_logs ORDER BY created_at'
@@ -113,7 +113,7 @@ exports.exportComplianceReport = async (_req, res) => {
   }
 };
 
-exports.exportInvoiceHistory = async (req, res) => {
+export const exportInvoiceHistory = async (req, res) => {
   const { id } = req.params;
   try {
     const logs = await pool.query(
@@ -133,7 +133,7 @@ exports.exportInvoiceHistory = async (req, res) => {
   }
 };
 
-exports.exportVendorHistory = async (req, res) => {
+export const exportVendorHistory = async (req, res) => {
   const { vendor } = req.params;
   try {
     const logs = await pool.query(
@@ -154,7 +154,7 @@ exports.exportVendorHistory = async (req, res) => {
   }
 };
 
-exports.exportActivityLogsCSV = async (req, res) => {
+export const exportActivityLogsCSV = async (req, res) => {
   try {
     const { start, end, vendor, action, limit } = req.query;
     let query = 'SELECT a.* FROM activity_logs a';

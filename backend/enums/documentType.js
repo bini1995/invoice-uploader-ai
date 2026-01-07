@@ -10,4 +10,4 @@ const DocumentType = Object.freeze({
   OTHER: 'other'
 });
 
-module.exports = { DocumentType };
+export { DocumentType };

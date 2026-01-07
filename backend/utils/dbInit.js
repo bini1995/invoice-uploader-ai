@@ -1,6 +1,6 @@
-const pool = require('../config/db');
-const bcrypt = require('bcryptjs');
 
+import pool from '../config/db.js';
+import bcrypt from 'bcryptjs';
 async function initDb() {
   try {
     await pool.query(`CREATE TABLE IF NOT EXISTS invoices (
@@ -489,4 +489,4 @@ async function initDb() {
   }
 }
 
-module.exports = { initDb };
+export { initDb };

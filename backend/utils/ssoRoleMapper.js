@@ -11,4 +11,4 @@ function mapSsoGroupsToRole(groups = []) {
   return null; // deny by default
 }
 
-module.exports = { mapSsoGroupsToRole };
+export { mapSsoGroupsToRole };

@@ -1,7 +1,7 @@
-const express = require('express');
-const rateLimit = require('express-rate-limit');
-const { trackEvent } = require('../utils/eventTracker');
 
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import { trackEvent } from '../utils/eventTracker.js';
 const router = express.Router();
 const formLimiter = rateLimit({ windowMs: 60 * 1000, max: 3 });
 
@@ -15,4 +15,4 @@ router.post('/landing', formLimiter, async (req, res) => {
   res.json({ ok: true });
 });
 
-module.exports = router;
+export default router;

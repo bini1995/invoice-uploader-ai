@@ -1,6 +1,6 @@
-const pool = require('../config/db');
 
-exports.getAuditTrail = async (req, res) => {
+import pool from '../config/db.js';
+export const getAuditTrail = async (req, res) => {
   try {
     const { invoiceId } = req.query;
     let result;
@@ -19,7 +19,7 @@ exports.getAuditTrail = async (req, res) => {
   }
 };
 
-exports.updateAuditEntry = async (req, res) => {
+export const updateAuditEntry = async (req, res) => {
   const { id } = req.params;
   const { action } = req.body;
   try {
@@ -37,7 +37,7 @@ exports.updateAuditEntry = async (req, res) => {
   }
 };
 
-exports.deleteAuditEntry = async (req, res) => {
+export const deleteAuditEntry = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('DELETE FROM audit_logs WHERE id = $1', [id]);

@@ -1,15 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import {
   handleZapier,
   listPublicInvoices,
   guidewireTrigger,
   duckCreekTrigger,
-} = require('../controllers/integrationController');
+} from '../controllers/integrationController.js';
+
+const router = express.Router();
 
 router.post('/zapier', handleZapier);
 router.post('/zapier/guidewire', guidewireTrigger);
 router.post('/zapier/duckcreek', duckCreekTrigger);
 router.get('/public/invoices', listPublicInvoices);
 
-module.exports = router;
+export default router;

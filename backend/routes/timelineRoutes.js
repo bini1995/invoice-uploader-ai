@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { authMiddleware } from '../controllers/userController.js';
+import { getOpsTimeline } from '../controllers/timelineController.js';
 const router = express.Router();
-const { authMiddleware } = require('../controllers/userController');
-const { getOpsTimeline } = require('../controllers/timelineController');
 
 router.get('/', authMiddleware, getOpsTimeline);
 
-module.exports = router;
+export default router;

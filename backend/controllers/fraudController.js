@@ -1,7 +1,7 @@
-const pool = require('../config/db');
-const { detectAnomalies } = require('../utils/mlDetector');
 
-exports.detectPatterns = async (req, res) => {
+import pool from '../config/db.js';
+import { detectAnomalies } from '../utils/mlDetector.js';
+export const detectPatterns = async (req, res) => {
   try {
     const repeatedRes = await pool.query(`
       SELECT vendor, amount, COUNT(*) AS count, MIN(created_at) AS first_seen
@@ -45,7 +45,7 @@ exports.detectPatterns = async (req, res) => {
   }
 };
 
-exports.fraudHeatmap = async (_req, res) => {
+export const fraudHeatmap = async (_req, res) => {
   try {
     const result = await pool.query(`
       SELECT EXTRACT(DOW FROM created_at) AS dow,
@@ -66,7 +66,7 @@ exports.fraudHeatmap = async (_req, res) => {
   }
 };
 
-exports.flaggedInvoices = async (_req, res) => {
+export const flaggedInvoices = async (_req, res) => {
   try {
     const result = await pool.query(
       'SELECT id, invoice_number, vendor, amount, date, flag_reason FROM invoices WHERE flagged = true ORDER BY id DESC'
@@ -78,7 +78,7 @@ exports.flaggedInvoices = async (_req, res) => {
   }
 };
 
-exports.mlDetect = async (_req, res) => {
+export const mlDetect = async (_req, res) => {
   try {
     const { rows } = await pool.query(
       'SELECT id, vendor, amount, created_at FROM invoices'
@@ -91,7 +91,7 @@ exports.mlDetect = async (_req, res) => {
   }
 };
 
-exports.labelFraud = async (req, res) => {
+export const labelFraud = async (req, res) => {
   const { id } = req.params;
   const { label } = req.body || {};
   try {

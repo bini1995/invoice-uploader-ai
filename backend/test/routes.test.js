@@ -1,15 +1,17 @@
+import { jest } from '@jest/globals';
+import request from 'supertest';
+import express from 'express';
+import bcrypt from 'bcryptjs';
 process.env.JWT_SECRET = 'testsecret-1234567890123456789012';
 process.env.JWT_REFRESH_SECRET = 'refreshsecret-12345678901234567890';
 process.env.OPS_TOKEN = 'secret';
 
-const request = require('supertest');
-const express = require('express');
-const bcrypt = require('bcryptjs');
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
 
-jest.mock('../config/db', () => ({ query: jest.fn() }));
+const { default: db } = await import('../config/db.js');
+const { default: authRoutes } = await import('../routes/authRoutes.js');
+const { authMiddleware, authorizeRoles } = await import('../controllers/userController.js');
 
-const authRoutes = require('../routes/authRoutes');
-const { authMiddleware, authorizeRoles } = require('../controllers/userController');
 
 const uploadRouter = express.Router();
 uploadRouter.post('/api/claims/upload', authMiddleware, (req, res) => res.json({ ok: true }));
@@ -118,7 +120,6 @@ app.get('/ops/legacy-invoices', (req, res) => {
   res.json({ hits: paginated, page, per_page: perPage, total: hits.length, alert });
 });
 
-const db = require('../config/db');
 
 beforeAll(() => {
   jest.useFakeTimers().setSystemTime(new Date('2024-06-01'));

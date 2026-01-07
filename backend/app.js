@@ -1,79 +1,79 @@
 // backend/app.js
 
-const express = require('express');         // web server framework
-const cors = require('cors');
-const http = require('http');
-const helmet = require('helmet');
-require('dotenv').config();                 // load environment variables
-const logger = require('./utils/logger');
-const Sentry = require('@sentry/node');
-const errorHandler = require('./middleware/errorHandler');
-const { apiLimiter } = require('./middleware/rateLimit');
 
 // Route imports
-const authRoutes = require('./routes/authRoutes');
-const exportTemplateRoutes = require('./routes/exportTemplateRoutes');
-const brandingRoutes = require('./routes/brandingRoutes');
-const feedbackRoutes = require('./routes/feedbackRoutes');
-const analyticsRoutes = require('./routes/analyticsRoutes');
-const userRoutes = require('./routes/userRoutes');
-const apiKeyRoutes = require('./routes/apiKeyRoutes');
-const vendorRoutes = require('./routes/vendorRoutes');
-const vendorPortalRoutes = require('./routes/vendorPortalRoutes');
-const workflowRoutes = require('./routes/documentWorkflowRoutes');
-const aiRoutes = require('./routes/aiRoutes');
-const workflowRuleRoutes = require('./routes/workflowRuleRoutes');
-const settingsRoutes = require('./routes/settingsRoutes');
-const integrationRoutes = require('./routes/integrationRoutes');
-const featureRoutes = require('./routes/featureRoutes');
-const notificationRoutes = require('./routes/notificationRoutes');
-const reminderRoutes = require('./routes/reminderRoutes');
-const automationRoutes = require('./routes/automationRoutes');
-const tenantRoutes = require('./routes/tenantRoutes');
-const agentRoutes = require('./routes/agentRoutes');
-const claimRoutes = require('./routes/claimRoutes');
-const superiorClaimsRoutes = require('./routes/superiorClaimsRoutes');
-const timelineRoutes = require('./routes/timelineRoutes');
-const pluginRoutes = require('./routes/pluginRoutes');
-const complianceRoutes = require('./routes/complianceRoutes');
-const signingRoutes = require('./routes/signingRoutes');
-const workspaceRoutes = require('./routes/workspaceRoutes');
-const inviteRoutes = require('./routes/inviteRoutes');
-const landingRoutes = require('./routes/landingRoutes');
-const crypto = require('crypto');
-const validationRoutes = require('./routes/validationRoutes');
-const metricsRoutes = require('./routes/metricsRoutes');
-const eventRoutes = require('./routes/eventRoutes');
-const healthRoutes = require('./routes/healthRoutes');
-const logRoutes = require('./routes/logRoutes');
-const usageRoutes = require('./routes/usageRoutes');
-const { legacyInvoiceApiHitCounter } = require('./metrics');
-const auditRoutes = require('./routes/auditRoutes');
 
 // Middleware imports
-const { auditLog } = require('./middleware/auditMiddleware');
-const piiMask = require('./middleware/piiMask');
-// const tenantContext = require('./middleware/tenantMiddleware');
+// import tenantContext from './middleware/tenantMiddleware.js';
 
 // Service imports
-const { sendApprovalReminders } = require('./controllers/reminderController');
-const { autoDeleteExpiredDocuments } = require('./controllers/claimController');
-const { initDb } = require('./utils/dbInit');
-const { initChat } = require('./utils/chatServer');
-const { loadCorrections } = require('./utils/parserTrainer');
-const { loadModel, trainFromCorrections } = require('./utils/ocrAgent');
-const { loadSchedules } = require('./utils/automationScheduler');
-const { scheduleReports } = require('./utils/reportScheduler');
-const { scheduleAnomalyScan } = require('./utils/anomalyScanner');
 
 // Swagger and WebSocket setup
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./swagger');
-const { WebSocketServer } = require('ws');
-const { setupWSConnection } = require('@y/websocket-server/utils');
-const { parse } = require('url');
-const { initDocActivity } = require('./utils/docActivityServer');
 
+import express from 'express'; // web server framework
+import cors from 'cors';
+import http from 'http';
+import helmet from 'helmet';
+import 'dotenv/config';
+import logger from './utils/logger.js';
+import * as Sentry from '@sentry/node';
+import errorHandler from './middleware/errorHandler.js';
+import { apiLimiter } from './middleware/rateLimit.js';
+import authRoutes from './routes/authRoutes.js';
+import exportTemplateRoutes from './routes/exportTemplateRoutes.js';
+import brandingRoutes from './routes/brandingRoutes.js';
+import feedbackRoutes from './routes/feedbackRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import apiKeyRoutes from './routes/apiKeyRoutes.js';
+import vendorRoutes from './routes/vendorRoutes.js';
+import vendorPortalRoutes from './routes/vendorPortalRoutes.js';
+import workflowRoutes from './routes/documentWorkflowRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+import workflowRuleRoutes from './routes/workflowRuleRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
+import integrationRoutes from './routes/integrationRoutes.js';
+import featureRoutes from './routes/featureRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import reminderRoutes from './routes/reminderRoutes.js';
+import automationRoutes from './routes/automationRoutes.js';
+import tenantRoutes from './routes/tenantRoutes.js';
+import agentRoutes from './routes/agentRoutes.js';
+import claimRoutes from './routes/claimRoutes.js';
+import superiorClaimsRoutes from './routes/superiorClaimsRoutes.js';
+import timelineRoutes from './routes/timelineRoutes.js';
+import pluginRoutes from './routes/pluginRoutes.js';
+import complianceRoutes from './routes/complianceRoutes.js';
+import signingRoutes from './routes/signingRoutes.js';
+import workspaceRoutes from './routes/workspaceRoutes.js';
+import inviteRoutes from './routes/inviteRoutes.js';
+import landingRoutes from './routes/landingRoutes.js';
+import crypto from 'crypto';
+import validationRoutes from './routes/validationRoutes.js';
+import metricsRoutes from './routes/metricsRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
+import healthRoutes from './routes/healthRoutes.js';
+import logRoutes from './routes/logRoutes.js';
+import usageRoutes from './routes/usageRoutes.js';
+import { legacyInvoiceApiHitCounter } from './metrics.js';
+import auditRoutes from './routes/auditRoutes.js';
+import { auditLog } from './middleware/auditMiddleware.js';
+import piiMask from './middleware/piiMask.js';
+import { autoDeleteExpiredDocuments } from './controllers/claimController.js';
+import { initDb } from './utils/dbInit.js';
+import { initChat } from './utils/chatServer.js';
+import { loadCorrections } from './utils/parserTrainer.js';
+import { loadModel, trainFromCorrections } from './utils/ocrAgent.js';
+import { loadSchedules } from './utils/automationScheduler.js';
+import { scheduleReports } from './utils/reportScheduler.js';
+import { scheduleAnomalyScan } from './utils/anomalyScanner.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
+import { WebSocketServer } from 'ws';
+import { setupWSConnection } from '@y/websocket-server/utils';
+import { parse } from 'url';
+import { initDocActivity } from './utils/docActivityServer.js';
+import { securityHeaders, corsOptions, requestLogger, errorHandler as securityErrorHandler } from './middleware/security.js';
 const app = express();                      // create the app
 const server = http.createServer(app);
 
@@ -83,7 +83,6 @@ logger.info('🟡 Starting server...');
 Sentry.init({ dsn: process.env.SENTRY_DSN || undefined });
 
 // Security middleware (order matters!)
-const { securityHeaders, corsOptions, requestLogger, errorHandler: securityErrorHandler } = require('./middleware/security');
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -129,7 +128,7 @@ app.use(
     exposedHeaders: ['Deprecation', 'Sunset', 'Warning', 'Link', 'X-Request-Id'],
   })
 );
-app.options('*', cors());
+app.options(/.*/, cors());
 
 // Request parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -320,7 +319,7 @@ app.use(Sentry.Handlers.errorHandler());
 app.use(errorHandler);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 

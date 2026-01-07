@@ -1,6 +1,6 @@
-const pool = require('../config/db');
 
-exports.getTenantFeatures = async (req, res) => {
+import pool from '../config/db.js';
+export const getTenantFeatures = async (req, res) => {
   const { tenantId } = req.params;
   try {
     const { rows } = await pool.query(
@@ -14,7 +14,7 @@ exports.getTenantFeatures = async (req, res) => {
   }
 };
 
-exports.updateTenantFeature = async (req, res) => {
+export const updateTenantFeature = async (req, res) => {
   const { tenantId } = req.params;
   const { feature, enabled } = req.body;
   if (!feature) return res.status(400).json({ message: 'feature required' });
@@ -32,7 +32,7 @@ exports.updateTenantFeature = async (req, res) => {
   }
 };
 
-exports.getTenantInfo = async (req, res) => {
+export const getTenantInfo = async (req, res) => {
   const { tenantId } = req.params;
   try {
     const { rows } = await pool.query('SELECT name FROM tenants WHERE tenant_id = $1', [tenantId]);
@@ -43,7 +43,7 @@ exports.getTenantInfo = async (req, res) => {
   }
 };
 
-exports.setTenantInfo = async (req, res) => {
+export const setTenantInfo = async (req, res) => {
   const { tenantId } = req.params;
   const { name } = req.body || {};
   if (!name) return res.status(400).json({ message: 'name required' });

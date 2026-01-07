@@ -1,6 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import { authMiddleware } from '../controllers/userController.js';
+import {
   getUsageStats,
   getUsageLogs,
   getUsageTrends,
@@ -8,10 +8,10 @@ const {
   trackUsageAction,
   getUsageLimits,
   resetUsage,
-  getUsageAnalytics
-} = require('../controllers/usageController');
-const { authMiddleware } = require('../controllers/userController');
+  getUsageAnalytics,
+} from '../controllers/usageController.js';
 
+const router = express.Router();
 // Apply authentication middleware to all routes
 router.use(authMiddleware);
 
@@ -39,4 +39,4 @@ router.get('/analytics', getUsageAnalytics);
 // Admin endpoint to reset usage (for testing/development)
 router.post('/reset', resetUsage);
 
-module.exports = router; 
+export default router;

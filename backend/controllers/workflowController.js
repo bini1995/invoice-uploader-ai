@@ -1,7 +1,7 @@
-const pool = require('../config/db');
-const { evaluateWorkflowRules } = require('../utils/workflowRulesEngine');
 
-exports.getWorkflows = async (req, res) => {
+import pool from '../config/db.js';
+import { evaluateWorkflowRules } from '../utils/workflowRulesEngine.js';
+export const getWorkflows = async (req, res) => {
   try {
     const result = await pool.query('SELECT id, department, doc_type, conditions, approval_chain FROM document_workflows');
     res.json({ workflows: result.rows });
@@ -11,7 +11,7 @@ exports.getWorkflows = async (req, res) => {
   }
 };
 
-exports.setWorkflow = async (req, res) => {
+export const setWorkflow = async (req, res) => {
   const { department, doc_type, conditions, approval_chain } = req.body;
   if (!department || !doc_type || !Array.isArray(approval_chain)) {
     return res.status(400).json({ message: 'Missing department, doc_type or approval_chain' });
@@ -30,7 +30,7 @@ exports.setWorkflow = async (req, res) => {
   }
 };
 
-exports.evaluateWorkflow = async (req, res) => {
+export const evaluateWorkflow = async (req, res) => {
   const payload = req.body || {};
   try {
     const result = await evaluateWorkflowRules(payload);
@@ -45,7 +45,7 @@ exports.evaluateWorkflow = async (req, res) => {
   }
 };
 
-exports.getInsuranceWorkflow = (_req, res) => {
+export const getInsuranceWorkflow = (_req, res) => {
   res.json({
     workflow: {
       doc_type: 'claim',

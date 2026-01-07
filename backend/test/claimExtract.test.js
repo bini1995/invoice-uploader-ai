@@ -1,18 +1,18 @@
+import { jest } from '@jest/globals';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import request from 'supertest';
+import express from 'express';
+
 process.env.JWT_SECRET = 'testsecret';
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const request = require('supertest');
-const express = require('express');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-jest.mock('../config/db', () => ({ query: jest.fn() }));
-const db = require('../config/db');
-
-jest.mock('../ai/claimFieldExtractor', () => ({ extractClaimFields: jest.fn() }));
-const { extractClaimFields } = require('../ai/claimFieldExtractor');
-
-jest.mock('../controllers/userController', () => ({
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
+jest.unstable_mockModule('../ai/claimFieldExtractor.js', () => ({ extractClaimFields: jest.fn() }));
+jest.unstable_mockModule('../controllers/userController.js', () => ({
   authMiddleware: (req, res, next) => {
     req.user = { userId: 1 };
     next();
@@ -20,7 +20,7 @@ jest.mock('../controllers/userController', () => ({
   authorizeRoles: () => (req, res, next) => next()
 }));
 
-jest.mock('../metrics', () => ({
+jest.unstable_mockModule('../metrics.js', () => ({
   claimUploadCounter: { labels: () => ({ inc: jest.fn() }) },
   fieldExtractCounter: { labels: () => ({ inc: jest.fn() }) },
   exportAttemptCounter: { labels: () => ({ inc: jest.fn() }) },
@@ -28,10 +28,12 @@ jest.mock('../metrics', () => ({
   extractDuration: { startTimer: () => jest.fn() }
 }));
 
-jest.mock('../utils/documentVersionLogger', () => ({ recordDocumentVersion: jest.fn() }));
-jest.mock('../utils/logger', () => ({ info: jest.fn(), warn: jest.fn(), error: jest.fn() }));
+jest.unstable_mockModule('../utils/documentVersionLogger.js', () => ({ recordDocumentVersion: jest.fn() }));
+jest.unstable_mockModule('../utils/logger.js', () => ({ info: jest.fn(), warn: jest.fn(), error: jest.fn() }));
 
-const claimRoutes = require('../routes/claimRoutes');
+const { default: db } = await import('../config/db.js');
+const { extractClaimFields } = await import('../ai/claimFieldExtractor.js');
+const { default: claimRoutes } = await import('../routes/claimRoutes.js');
 
 const app = express();
 app.use(express.json());
@@ -92,4 +94,3 @@ describe('POST /api/claims/:id/extract', () => {
     expect(res.body.schema).toBeNull();
   });
 });
-

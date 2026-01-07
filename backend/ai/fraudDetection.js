@@ -1,5 +1,5 @@
-const { IsolationForest } = require('ml-isolation-forest');
 
+import { IsolationForest } from 'ml-isolation-forest';
 function detectFraud(data) {
   const model = new IsolationForest();
   model.fit(data);
@@ -7,4 +7,4 @@ function detectFraud(data) {
   return scores.map((s) => s < -0.5);
 }
 
-module.exports = { detectFraud };
+export { detectFraud };

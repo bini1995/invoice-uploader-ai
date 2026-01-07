@@ -1,10 +1,10 @@
-const pool = require('../config/db');
-const {
+import pool from '../config/db.js';
+import {
   sendSlackNotification,
   sendTeamsNotification,
   sendEmailNotification,
   sendSmsNotification,
-} = require('./notify');
+} from './notify.js';
 
 async function evaluateWorkflowRules(invoice) {
   try {
@@ -37,4 +37,4 @@ async function evaluateWorkflowRules(invoice) {
   }
 }
 
-module.exports = { evaluateWorkflowRules };
+export { evaluateWorkflowRules };

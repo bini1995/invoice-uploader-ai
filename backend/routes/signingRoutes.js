@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { authMiddleware } from '../controllers/userController.js';
+import { createSigningRequest } from '../controllers/signingController.js';
 const router = express.Router();
-const { authMiddleware } = require('../controllers/userController');
-const { createSigningRequest } = require('../controllers/signingController');
 
 router.post('/:id/start', authMiddleware, createSigningRequest);
 
-module.exports = router;
+export default router;

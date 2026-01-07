@@ -1,15 +1,12 @@
+import { jest } from '@jest/globals';
+import request from 'supertest';
+import express from 'express';
+
 process.env.JWT_SECRET = 'testsecret';
 
-const request = require('supertest');
-const express = require('express');
-
-jest.mock('../config/db', () => ({ query: jest.fn() }));
-const db = require('../config/db');
-
-jest.mock('../ai/fraudDetection', () => ({ detectFraud: jest.fn() }));
-const { detectFraud } = require('../ai/fraudDetection');
-
-jest.mock('../controllers/userController', () => ({
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
+jest.unstable_mockModule('../ai/fraudDetection.js', () => ({ detectFraud: jest.fn() }));
+jest.unstable_mockModule('../controllers/userController.js', () => ({
   authMiddleware: (req, res, next) => {
     if (req.headers.authorization === 'Bearer validtoken') {
       req.user = { userId: 1 };
@@ -19,7 +16,9 @@ jest.mock('../controllers/userController', () => ({
   }
 }));
 
-const analyticsRoutes = require('../routes/analyticsRoutes');
+const { default: db } = await import('../config/db.js');
+const { detectFraud } = await import('../ai/fraudDetection.js');
+const { default: analyticsRoutes } = await import('../routes/analyticsRoutes.js');
 
 const app = express();
 app.use(express.json());
@@ -100,4 +99,3 @@ describe('GET /api/analytics/claims/fraud', () => {
     expect(res.body).toEqual({ suspicious: [2] });
   });
 });
-

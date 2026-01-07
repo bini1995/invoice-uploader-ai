@@ -1,7 +1,7 @@
 // backend/config/openrouter.js
-require('dotenv').config();
-const { OpenAI } = require('openai');
 
+import 'dotenv/config';
+import { OpenAI } from 'openai';
 const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
 
 let openrouter;
@@ -24,4 +24,4 @@ if (apiKey) {
   };
 }
 
-module.exports = openrouter;
+export default openrouter;

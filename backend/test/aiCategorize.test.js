@@ -1,26 +1,25 @@
+import { jest } from '@jest/globals';
+import request from 'supertest';
+import express from 'express';
+
 process.env.JWT_SECRET = 'testsecret';
 
-const request = require('supertest');
-const express = require('express');
-
-jest.mock('axios');
-const axios = require('axios');
-
-jest.mock('../config/db', () => ({ query: jest.fn() }));
-const db = require('../config/db');
-
-jest.mock('../controllers/userController', () => ({
+jest.unstable_mockModule('axios', () => ({ default: { post: jest.fn() } }));
+jest.unstable_mockModule('../config/db.js', () => ({ default: { query: jest.fn() } }));
+jest.unstable_mockModule('../controllers/userController.js', () => ({
   authMiddleware: (req, res, next) => {
     req.user = { id: 1 };
     next();
   }
 }));
 
-jest.mock('../middleware/rateLimit', () => ({
+jest.unstable_mockModule('../middleware/rateLimit.js', () => ({
   aiLimiter: (req, res, next) => next()
 }));
 
-const aiRoutes = require('../routes/aiRoutes');
+const { default: axios } = await import('axios');
+const { default: db } = await import('../config/db.js');
+const { default: aiRoutes } = await import('../routes/aiRoutes.js');
 
 const app = express();
 app.use(express.json());

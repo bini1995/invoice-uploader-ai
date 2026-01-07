@@ -1,8 +1,8 @@
-const pool = require('../config/db');
-const { broadcastActivity } = require('./chatServer');
-const { broadcastDocActivity } = require('./docActivityServer');
-const { logAudit } = require('./auditLogger');
 
+import pool from '../config/db.js';
+import { broadcastActivity } from './chatServer.js';
+import { broadcastDocActivity } from './docActivityServer.js';
+import { logAudit } from './auditLogger.js';
 async function logActivity(userId, action, invoiceId = null, username = null) {
   try {
     const { rows } = await pool.query(
@@ -33,4 +33,4 @@ async function logActivityDetailed(tenantId, userId, username, action, details =
   }
 }
 
-module.exports = { logActivity, logActivityDetailed };
+export { logActivity, logActivityDetailed };

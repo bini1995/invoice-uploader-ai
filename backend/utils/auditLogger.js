@@ -1,5 +1,5 @@
-const pool = require('../config/db');
 
+import pool from '../config/db.js';
 async function logAudit(action, invoiceId, userId, username) {
   try {
     await pool.query(
@@ -11,4 +11,4 @@ async function logAudit(action, invoiceId, userId, username) {
   }
 }
 
-module.exports = { logAudit };
+export { logAudit };

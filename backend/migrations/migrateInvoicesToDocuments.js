@@ -1,5 +1,5 @@
-const pool = require('../config/db');
 
+import pool from '../config/db.js';
 (async () => {
   const client = await pool.connect();
   try {

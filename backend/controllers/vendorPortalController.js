@@ -1,11 +1,12 @@
-const jwt = require('jsonwebtoken');
-const multer = require('multer');
+import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import path from 'path';
+import pool from '../config/db.js';
+import { parseCSV } from '../utils/csvParser.js';
+import { parsePDF } from '../utils/pdfParser.js';
+import { parseImage } from '../utils/imageParser.js';
+import { logActivity } from '../utils/activityLogger.js';
 const upload = multer({ dest: 'uploads/' });
-const pool = require('../config/db');
-const { parseCSV } = require('../utils/csvParser');
-const { parsePDF } = require('../utils/pdfParser');
-const { parseImage } = require('../utils/imageParser');
-const { logActivity } = require('../utils/activityLogger');
 
 const VENDORS = [
   { id: 1, name: 'Acme', password: 'acme123' },
@@ -14,7 +15,7 @@ const VENDORS = [
 
 const BANK_INFO = {};
 
-exports.login = (req, res) => {
+export const login = (req, res) => {
   const { vendor, password } = req.body;
   const v = VENDORS.find((vv) => vv.name === vendor && vv.password === password);
   if (!v) return res.status(401).json({ message: 'Invalid credentials' });
@@ -22,7 +23,7 @@ exports.login = (req, res) => {
   res.json({ token });
 };
 
-exports.auth = (req, res, next) => {
+export const auth = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'No token' });
@@ -37,7 +38,7 @@ exports.auth = (req, res, next) => {
   }
 };
 
-exports.listInvoices = async (req, res) => {
+export const listInvoices = async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM invoices WHERE vendor=$1 ORDER BY date DESC', [req.vendor]);
     res.json({ invoices: rows });
@@ -46,7 +47,7 @@ exports.listInvoices = async (req, res) => {
   }
 };
 
-exports.updateBankInfo = async (req, res) => {
+export const updateBankInfo = async (req, res) => {
   BANK_INFO[req.vendor] = req.body.bank || '';
   try {
     await logActivity(null, 'change_bank_info', null, req.vendor);
@@ -56,13 +57,13 @@ exports.updateBankInfo = async (req, res) => {
   res.json({ message: 'Bank info updated' });
 };
 
-exports.getBankInfo = (req, res) => {
+export const getBankInfo = (req, res) => {
   res.json({ bank: BANK_INFO[req.vendor] || '' });
 };
 
-exports.uploadInvoice = [upload.single('invoiceFile'), async (req, res) => {
+export const uploadInvoice = [upload.single('invoiceFile'), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-  const ext = require('path').extname(req.file.originalname).toLowerCase();
+  const ext = path.extname(req.file.originalname).toLowerCase();
   let invoices;
   if (ext === '.csv') invoices = await parseCSV(req.file.path);
   else if (ext === '.pdf') invoices = await parsePDF(req.file.path);
@@ -83,7 +84,7 @@ exports.uploadInvoice = [upload.single('invoiceFile'), async (req, res) => {
   }
 }];
 
-exports.paymentStatus = async (req, res) => {
+export const paymentStatus = async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT invoice_number,payment_status FROM invoices WHERE vendor=$1', [req.vendor]);
     res.json({ payments: rows });

@@ -1,5 +1,5 @@
-const pool = require('../config/db');
 
+import pool from '../config/db.js';
 const tagAssigneeMap = {
   marketing: 'Alice',
   design: 'Design Team',
@@ -62,7 +62,7 @@ async function getAssigneeFromVendorProfile(vendor) {
   }
 }
 
-module.exports = {
+export {
   getAssigneeFromVendorHistory,
   getAssigneeFromTags,
   getAssigneeFromVendorProfile,

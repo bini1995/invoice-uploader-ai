@@ -1,8 +1,8 @@
-const fs = require('fs');
-const pdfParse = require('pdf-parse');
-const { fromPath } = require('pdf2pic');
-const { createWorker } = require('tesseract.js');
-const openai = require('../config/openrouter');
+import fs from 'fs';
+import pdfParse from 'pdf-parse';
+import { fromPath } from 'pdf2pic';
+import { createWorker } from 'tesseract.js';
+import openai from '../config/openrouter.js';
 const MAX_PAGES = 20;
 
 async function ocrImage(path) {
@@ -37,7 +37,7 @@ async function extractText(filePath) {
   return text;
 }
 
-exports.parsePDF = async (filePath) => {
+export const parsePDF = async (filePath) => {
   let text;
   try {
     text = await extractText(filePath);

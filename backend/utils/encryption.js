@@ -1,5 +1,5 @@
-const crypto = require('crypto');
 
+import crypto from 'crypto';
 function encrypt(text, key) {
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv('aes-256-gcm', crypto.createHash('sha256').update(key).digest(), iv);
@@ -28,4 +28,4 @@ function decryptSensitive(text) {
   const key = process.env.DATA_ENCRYPTION_KEY;
   return key ? decrypt(text, key) : text;
 }
-module.exports = { encrypt, decrypt, encryptSensitive, decryptSensitive };
+export { encrypt, decrypt, encryptSensitive, decryptSensitive };
