@@ -70,7 +70,8 @@ function ClaimsPage() {
       
       if (response.ok) {
         const data = await response.json();
-        setClaims(data.claims || []);
+        const normalizedClaims = Array.isArray(data) ? data : (data.claims || []);
+        setClaims(normalizedClaims);
       } else {
         console.error('Failed to fetch claims');
       }
