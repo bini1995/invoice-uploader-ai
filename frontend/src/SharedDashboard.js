@@ -10,7 +10,7 @@ function SharedDashboard() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE}/api/invoices/dashboard/shared/${token}`)
+    fetch(`${API_BASE}/api/claims/dashboard/shared/${token}`)
       .then((r) => r.json())
       .then((d) => setData(d))
       .catch(() => {})

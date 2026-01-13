@@ -28,7 +28,7 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
         cpt: invoice.cpt || '',
       });
       if (token) {
-        fetch(`${API_BASE}/api/invoices/${invoice.id}/timeline`, {
+        fetch(`${API_BASE}/api/claims/${invoice.id}/timeline`, {
           headers: { Authorization: `Bearer ${token}` },
         })
           .then((res) => res.json())
@@ -56,7 +56,7 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
   useEffect(() => {
     if (!token || !form.amount) return;
     const q = encodeURIComponent(form.amount);
-    fetch(`${API_BASE}/api/invoices/amount-suggestions?q=${q}`, {
+    fetch(`${API_BASE}/api/claims/amount-suggestions?q=${q}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
@@ -214,7 +214,7 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
             <TagEditor
               tags={invoice.tags || []}
               onAddTag={async (tag) => {
-                  await fetch(`${API_BASE}/api/invoices/${invoice.id}/tags`, {
+                  await fetch(`${API_BASE}/api/claims/${invoice.id}/tags`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify({ tag }),
@@ -222,7 +222,7 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
               }}
               onRemoveTag={async (tag) => {
                 const newTags = (invoice.tags || []).filter((t) => t !== tag);
-                  await fetch(`${API_BASE}/api/invoices/${invoice.id}/update-tags`, {
+                  await fetch(`${API_BASE}/api/claims/${invoice.id}/update-tags`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify({ tags: newTags }),

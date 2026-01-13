@@ -12,8 +12,8 @@ export default function VendorProfilePanel({ vendor, open, onClose, token }) {
     const headers = { Authorization: `Bearer ${token}` };
     setLoading(true);
     Promise.all([
-      fetch(`${API_BASE}/api/invoices/search?vendor=${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
-      fetch(`${API_BASE}/api/invoices/vendor-profile/${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/claims/search?vendor=${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/claims/vendor-profile/${encodeURIComponent(vendor)}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/vendors`, { headers }).then(r => r.json()),
     ])
       .then(([hist, prof, vendors]) => {

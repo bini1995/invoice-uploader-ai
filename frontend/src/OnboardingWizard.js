@@ -19,7 +19,7 @@ export default function OnboardingWizard() {
     try {
       const headers = {};
       if (token) headers.Authorization = `Bearer ${token}`;
-      const res = await fetch(`${API_BASE}/api/invoices/parse-sample`, {
+      const res = await fetch(`${API_BASE}/api/claims/parse-sample`, {
         method: 'POST',
         headers,
         body: formData,

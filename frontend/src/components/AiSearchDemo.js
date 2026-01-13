@@ -14,7 +14,7 @@ export default function AiSearchDemo() {
     setLoading(true);
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(`${API_BASE}/api/invoices/nl-chart`, {
+    const res = await fetch(`${API_BASE}/api/claims/nl-chart`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ question: query })

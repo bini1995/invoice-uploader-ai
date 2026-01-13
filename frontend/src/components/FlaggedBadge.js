@@ -10,7 +10,7 @@ export default function FlaggedBadge({ id }) {
   const loadInfo = async () => {
     if (!token || info) return;
     try {
-      const res = await fetch(`${API_BASE}/api/invoices/${id}/flag-explanation`, {
+      const res = await fetch(`${API_BASE}/api/claims/${id}/flag-explanation`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

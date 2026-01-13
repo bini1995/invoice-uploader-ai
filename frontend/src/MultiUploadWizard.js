@@ -52,7 +52,7 @@ export default function MultiUploadWizard() {
         let summary='';
         if(messages.length){
           try{
-            const res = await fetch(`${API_BASE}/api/invoices/summarize-errors`,{
+            const res = await fetch(`${API_BASE}/api/claims/summarize-errors`,{
               method:'POST',
               headers:{'Content-Type':'application/json'},
               body: JSON.stringify({ errors: messages })
@@ -96,7 +96,7 @@ export default function MultiUploadWizard() {
       const formData=new FormData();
       formData.append('invoiceFile',blob,f.file.name);
       try{
-        await fetch(`${API_BASE}/api/invoices/upload`,{
+        await fetch(`${API_BASE}/api/claims/upload`,{
           method:'POST',
           headers:{Authorization:`Bearer ${token}`},
           body:formData

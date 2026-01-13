@@ -11,7 +11,7 @@ function FraudReport() {
   const [explanations, setExplanations] = useState({});
 
   const unflagInvoice = async (id) => {
-    await fetch(`${API_BASE}/api/invoices/${id}/flag`, {
+    await fetch(`${API_BASE}/api/claims/${id}/flag`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ function FraudReport() {
   };
 
   const approveInvoice = async (id) => {
-    await fetch(`${API_BASE}/api/invoices/${id}/approve`, {
+    await fetch(`${API_BASE}/api/claims/${id}/approve`, {
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -33,7 +33,7 @@ function FraudReport() {
   const fetchFlagged = useCallback(async () => {
     if (!token) return;
     setLoading(true);
-    const res = await fetch(`${API_BASE}/api/invoices/fraud/flagged`, {
+    const res = await fetch(`${API_BASE}/api/claims/fraud/flagged`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -42,7 +42,7 @@ function FraudReport() {
   }, [token]);
 
   const loadExplanation = async (id) => {
-    const res = await fetch(`${API_BASE}/api/invoices/${id}/flag-explanation`, {
+    const res = await fetch(`${API_BASE}/api/claims/${id}/flag-explanation`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();

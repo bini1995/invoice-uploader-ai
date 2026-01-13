@@ -10,16 +10,12 @@ import logger from '../utils/logger.js';
 // Define which endpoints should track usage
 const USAGE_TRACKING_ENDPOINTS = {
   'POST /api/claims/upload': 'claims_uploads',
-  'POST /api/invoices/upload': 'claims_uploads',
   'POST /api/documents/upload': 'claims_uploads',
   'POST /api/ai/extract': 'extractions',
-  'POST /api/invoices/extract-fields': 'extractions',
   'POST /api/claims/extract-fields': 'extractions',
   'GET /api/analytics/export/csv': 'csv_exports',
-  'GET /api/invoices/export/csv': 'csv_exports',
   'GET /api/claims/export/csv': 'csv_exports',
   'POST /api/analytics/export': 'csv_exports',
-  'POST /api/invoices/export': 'csv_exports',
   'POST /api/claims/export': 'csv_exports'
 };
 

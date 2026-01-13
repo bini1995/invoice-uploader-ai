@@ -40,7 +40,7 @@ export default function InstantTrial() {
     setErrors(errs);
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/invoices/summarize-errors`, {
+      const res = await fetch(`${API_BASE}/api/claims/summarize-errors`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ errors: errs })

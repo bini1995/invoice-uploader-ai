@@ -78,7 +78,7 @@ export default function AdaptiveDashboard() {
     Promise.all([
       fetch(`${API_BASE}/api/analytics/metadata?startDate=${curStart}`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/metadata?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),
-      fetch(`${API_BASE}/api/invoices/top-vendors`, { headers }).then(r => r.json()),
+      fetch(`${API_BASE}/api/claims/top-vendors`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/logs?limit=20`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/vendors`, { headers }).then(r => r.json()),
       fetch(`${API_BASE}/api/analytics/approvals/times?startDate=${prevStart}&endDate=${prevEnd}`, { headers }).then(r => r.json()),

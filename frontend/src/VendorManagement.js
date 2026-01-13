@@ -296,7 +296,7 @@ function VendorManagement() {
                 <td className="p-2">
                   {v.last_invoice ? (
                     <button className="underline" onClick={async () => {
-                      const res = await fetch(`${API_BASE}/api/invoices/search?vendor=${encodeURIComponent(v.vendor)}`, { headers });
+                      const res = await fetch(`${API_BASE}/api/claims/search?vendor=${encodeURIComponent(v.vendor)}`, { headers });
                       const data = await res.json();
                       if (Array.isArray(data) && data.length) setDetailInvoice(data[0]);
                     }}>

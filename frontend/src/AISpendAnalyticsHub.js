@@ -83,7 +83,7 @@ function AISpendAnalyticsHub() {
     const params = new URLSearchParams();
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    const res = await fetch(`${API_BASE}/api/invoices/spending-by-tag?${params.toString()}`, {
+    const res = await fetch(`${API_BASE}/api/claims/spending-by-tag?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
@@ -99,10 +99,10 @@ function AISpendAnalyticsHub() {
     if (selectedTags.length) params.append('tag', selectedTags.join(','));
 
     const [dashRes, quickRes, vendorRes] = await Promise.all([
-      fetch(`${API_BASE}/api/invoices/dashboard?${params.toString()}`, {
+      fetch(`${API_BASE}/api/claims/dashboard?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       }),
-      fetch(`${API_BASE}/api/invoices/quick-stats`, {
+      fetch(`${API_BASE}/api/claims/quick-stats`, {
         headers: { Authorization: `Bearer ${token}` }
       }),
       fetch(`${API_BASE}/api/analytics/spend/vendor?${new URLSearchParams({ startDate, endDate }).toString()}`, {
@@ -168,7 +168,7 @@ function AISpendAnalyticsHub() {
 
   const updateInvoice = async (id, field, value) => {
     try {
-      await fetch(`${API_BASE}/api/invoices/${id}/update`, {
+      await fetch(`${API_BASE}/api/claims/${id}/update`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ field, value })

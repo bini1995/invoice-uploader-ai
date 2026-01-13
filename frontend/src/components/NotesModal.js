@@ -13,7 +13,7 @@ export default function NotesModal({ invoice, open, onClose }) {
 
   useEffect(() => {
     if (open && invoice) {
-      fetch(`${API_BASE}/api/${tenant}/invoices/${invoice.id}/review-notes`, { headers })
+      fetch(`${API_BASE}/api/${tenant}/claims/${invoice.id}/review-notes`, { headers })
         .then((res) => res.json())
         .then((data) => setNotes(data.notes || []))
         .catch(() => setNotes([]));
@@ -22,14 +22,14 @@ export default function NotesModal({ invoice, open, onClose }) {
 
   const addNote = async () => {
     if (!newNote.trim()) return;
-    await fetch(`${API_BASE}/api/${tenant}/invoices/${invoice.id}/review-notes`, {
+    await fetch(`${API_BASE}/api/${tenant}/claims/${invoice.id}/review-notes`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ note: newNote })
     }).catch(() => {});
     setNewNote('');
     try {
-      const res = await fetch(`${API_BASE}/api/${tenant}/invoices/${invoice.id}/review-notes`, { headers });
+      const res = await fetch(`${API_BASE}/api/${tenant}/claims/${invoice.id}/review-notes`, { headers });
       const data = await res.json();
       setNotes(data.notes || []);
     } catch {

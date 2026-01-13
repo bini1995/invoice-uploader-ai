@@ -21,11 +21,6 @@ const exportAttemptCounter = new client.Counter({
   labelNames: ['export_type'],
 });
 
-const legacyInvoiceApiHitCounter = new client.Counter({
-  name: 'legacy_invoice_api_hit_total',
-  help: 'Total number of hits to deprecated invoice API',
-  labelNames: ['tenant', 'user_id'],
-});
 
 const feedbackFlaggedCounter = new client.Counter({
   name: 'feedback_flagged_total',
@@ -88,7 +83,6 @@ export {
   claimUploadCounter,
   fieldExtractCounter,
   exportAttemptCounter,
-  legacyInvoiceApiHitCounter,
   feedbackFlaggedCounter,
   activeUsersGauge,
   extractDuration,
