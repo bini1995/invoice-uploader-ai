@@ -71,7 +71,7 @@ export default function KanbanDashboard() {
     if (!token) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/invoices`, {
+      const res = await fetch(`${API_BASE}/api/claims`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -98,12 +98,12 @@ export default function KanbanDashboard() {
     let url = '';
     let options = { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } };
     if (destinationColumnId === 'approved') {
-      url = `${API_BASE}/api/invoices/${id}/approve`;
+      url = `${API_BASE}/api/claims/${id}/approve`;
     } else if (destinationColumnId === 'flagged') {
-      url = `${API_BASE}/api/invoices/${id}/flag`;
+      url = `${API_BASE}/api/claims/${id}/flag`;
       options.body = JSON.stringify({ flagged: true });
     } else if (destinationColumnId === 'pending') {
-      url = `${API_BASE}/api/invoices/${id}/flag`;
+      url = `${API_BASE}/api/claims/${id}/flag`;
       options.body = JSON.stringify({ flagged: false });
     }
     if (url) {

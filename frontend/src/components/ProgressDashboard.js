@@ -18,7 +18,7 @@ export default function ProgressDashboard({ from, to, role = 'reviewer' }) {
     if (!token) return;
     const headers = { Authorization: `Bearer ${token}` };
     let es;
-    const url = `${API_BASE}/api/invoices/progress?from=${from || ''}&to=${to || ''}`;
+    const url = `${API_BASE}/api/claims/progress?from=${from || ''}&to=${to || ''}`;
     const fetchData = () => {
       fetch(url, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))

@@ -124,27 +124,27 @@ function OperationsDashboard() {
     const headers = { Authorization: `Bearer ${token}` };
     setLoading(true);
     Promise.all([
-      fetch(`${API_BASE}/api/invoices/top-vendors`, { headers })
+      fetch(`${API_BASE}/api/claims/top-vendors`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setVendors(d.topVendors || []);
         }),
-      fetch(`${API_BASE}/api/invoices/spending-by-tag`, { headers })
+      fetch(`${API_BASE}/api/claims/spending-by-tag`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setCategories(d.byTag || []);
         }),
-      fetch(`${API_BASE}/api/invoices/cash-flow?interval=${cashFlowInterval}`, { headers })
+      fetch(`${API_BASE}/api/claims/cash-flow?interval=${cashFlowInterval}`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setCashFlow(d.data || []);
         }),
-      fetch(`${API_BASE}/api/invoices/anomalies`, { headers })
+      fetch(`${API_BASE}/api/claims/anomalies`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setAnomalies(d.anomalies || []);
         }),
-      fetch(`${API_BASE}/api/invoices/budgets/department-report`, { headers })
+      fetch(`${API_BASE}/api/claims/budgets/department-report`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) {
@@ -152,20 +152,20 @@ function OperationsDashboard() {
             setRemainingBudget((d.data || []).map(b => ({ department: b.department, remaining: b.remaining })));
           }
         }),
-      fetch(`${API_BASE}/api/invoices/budgets/forecast`, { headers })
+      fetch(`${API_BASE}/api/claims/budgets/forecast`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => { if (ok) setBudgetForecast(d.forecast || []); }),
-      fetch(`${API_BASE}/api/invoices/upload-heatmap`, { headers })
+      fetch(`${API_BASE}/api/claims/upload-heatmap`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setHeatmap(d.heatmap || []);
         }),
-      fetch(`${API_BASE}/api/invoices/quick-stats`, { headers })
+      fetch(`${API_BASE}/api/claims/quick-stats`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setStats(d);
         }),
-      fetch(`${API_BASE}/api/invoices/monthly-insights`, { headers })
+      fetch(`${API_BASE}/api/claims/monthly-insights`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) setInsights(d.vendorTotals || []);
@@ -180,7 +180,7 @@ function OperationsDashboard() {
         .then(({ ok, d }) => {
           if (ok) setTrends(d.trends || []);
         }),
-      fetch(`${API_BASE}/api/invoices/fraud/flagged`, { headers })
+      fetch(`${API_BASE}/api/claims/fraud/flagged`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (ok) {
@@ -195,7 +195,7 @@ function OperationsDashboard() {
             setFlaggedTrend(arr);
           }
         }),
-      fetch(`${API_BASE}/api/invoices/vendor-scorecards`, { headers })
+      fetch(`${API_BASE}/api/claims/vendor-scorecards`, { headers })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => { if (ok) setScorecards(d.scorecards || []); }),
     ]).finally(() => setLoading(false));
@@ -203,7 +203,7 @@ function OperationsDashboard() {
 
   const handleExportPDF = async () => {
     const headers = { Authorization: `Bearer ${token}` };
-    const res = await fetch(`${API_BASE}/api/invoices/dashboard/pdf`, { headers });
+    const res = await fetch(`${API_BASE}/api/claims/dashboard/pdf`, { headers });
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -215,7 +215,7 @@ function OperationsDashboard() {
 
   const handleShare = async () => {
     const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-    const res = await fetch(`${API_BASE}/api/invoices/dashboard/share`, { method: 'POST', headers, body: JSON.stringify({}) });
+    const res = await fetch(`${API_BASE}/api/claims/dashboard/share`, { method: 'POST', headers, body: JSON.stringify({}) });
     if (res.ok) {
       const { url } = await res.json();
       const full = `http://localhost:3001/dashboard/shared/${url.split('/').pop()}`;

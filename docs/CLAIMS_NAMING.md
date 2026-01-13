@@ -15,4 +15,4 @@ These names can be used for product modules, customer-facing tools, or internal 
 
 ## API naming
 
-The canonical API namespace for this vertical is `/api/claims`. Legacy `/api/invoices` routes remain as backward-compatible aliases but log a deprecation warning. Migrate clients to `/api/:tenant/claims/:id/review-notes` and related endpoints.
+The canonical API namespace for this vertical is `/api/claims`. Migrate clients to `/api/:tenant/claims/:id/review-notes` and related endpoints.

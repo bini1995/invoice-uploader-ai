@@ -9,7 +9,7 @@ This is a full-stack **AI Claims Data Extractor** delivering operational clarity
 The backend no longer relies on Redis queues or background workers. All document
 processing happens directly through the Express API for a simpler deployment.
 
-The API has been consolidated to a single `/api/claims` namespace (with `/api/invoices` kept as an alias) and the old invoice controller has been removed. Experimental features like feedback collection and the automation builder now live under `/api/labs/*`.
+The API has been consolidated to a single `/api/claims` namespace and the old invoice controller has been removed. Experimental features like feedback collection and the automation builder now live under `/api/labs/*`.
 
 Originally this project focused solely on invoice processing. It is now evolving into a general **Document AI Platform** that handles invoices, contracts and more. See [docs/TRANSFORMATION_PLAN.md](docs/TRANSFORMATION_PLAN.md) for the roadmap. A quick feature comparison against other tools is available in [docs/MARKET_POSITIONING.md](docs/MARKET_POSITIONING.md).
 
@@ -548,4 +548,3 @@ docker-compose up --build
 ```
 
 The initialization script also creates an `ivfflat` index on the `embedding` column of the `documents` table so vector similarity queries run quickly.
-

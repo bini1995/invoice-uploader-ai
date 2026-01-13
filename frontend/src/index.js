@@ -30,7 +30,6 @@ import LoginPage from './LoginPage';
 import ClarifyClaims from './ClarifyClaims';
 import ClaimsBrandingPreview from './ClaimsBrandingPreview';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import LegacyClaimsRedirect from './LegacyClaimsRedirect';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
 import './i18n';
@@ -52,16 +51,12 @@ window.fetch = async (url, options = {}) => {
     }
     if (url.startsWith(API_BASE)) {
       let path = url.slice(API_BASE.length);
-      if (path.startsWith('/api/invoices')) {
-        path = path.replace('/api/invoices', '/api/claims');
-      } else if (path.startsWith('/api/export-templates')) {
+      if (path.startsWith('/api/export-templates')) {
         path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }
       url = API_BASE + path;
     } else if (url.startsWith('/')) {
-      if (url.startsWith('/api/invoices')) {
-        url = url.replace('/api/invoices', '/api/claims');
-      } else if (url.startsWith('/api/export-templates')) {
+      if (url.startsWith('/api/export-templates')) {
         url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
       }
       url = `${API_BASE}${url}`;
@@ -137,7 +132,6 @@ function AnimatedRoutes() {
         <Route path="/adaptive" element={<PageWrapper><AdaptiveDashboard /></PageWrapper>} />
         <Route path="/dashboard/shared/:token" element={<PageWrapper><SharedDashboard /></PageWrapper>} />
         <Route path="/claims" element={<PageWrapper><ClaimsPage /></PageWrapper>} />
-        <Route path="/opsclaim/*" element={<LegacyClaimsRedirect />} />
         <Route path="/claims/branding-preview" element={<PageWrapper><ClaimsBrandingPreview /></PageWrapper>} />
         <Route path="/analytics" element={<PageWrapper><AISpendAnalyticsHub /></PageWrapper>} />
         <Route path="/auditflow" element={<PageWrapper><AuditFlow /></PageWrapper>} />
@@ -162,8 +156,6 @@ function AnimatedRoutes() {
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
         <Route path="/app" element={<Navigate to="/claims" replace />} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
-        <Route path="/invoice" element={<Navigate to="/claims" replace />} />
-        <Route path="/invoices/*" element={<Navigate to="/claims" replace />} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>

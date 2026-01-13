@@ -11,7 +11,7 @@ export default function DummyDataButton({ className = 'btn btn-secondary' }) {
   const handleSeed = async () => {
     setLoading(true);
     setDone(false);
-    const res = await fetch(`${API_BASE}/api/invoices/seed-dummy`, {
+    const res = await fetch(`${API_BASE}/api/claims/seed-dummy`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` }
     });

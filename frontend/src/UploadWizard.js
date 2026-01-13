@@ -47,7 +47,7 @@ export default function UploadWizard() {
       const form = new FormData();
       form.append('invoiceFile', fileObj);
       try {
-        const res = await fetch(`${API_BASE}/api/invoices/parse-sample`, {
+        const res = await fetch(`${API_BASE}/api/claims/parse-sample`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
           body: form,
@@ -81,7 +81,7 @@ export default function UploadWizard() {
   const handleSuggest = useCallback(async (rowIdx) => {
     const invoice = rows[rowIdx];
     try {
-      const res = await fetch(`${API_BASE}/api/invoices/suggest-tags`, {
+      const res = await fetch(`${API_BASE}/api/claims/suggest-tags`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ invoice })
@@ -104,7 +104,7 @@ export default function UploadWizard() {
     setUploading(true);
     setUploadStatus(null);
     try {
-      const res = await fetch(`${API_BASE}/api/invoices/upload`, {
+      const res = await fetch(`${API_BASE}/api/claims/upload`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

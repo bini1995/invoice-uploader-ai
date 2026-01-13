@@ -9,7 +9,7 @@ const GraphView = ({ token, tenant }) => {
   useEffect(() => {
     const fetchGraph = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/invoices/graph`, {
+        const res = await fetch(`${API_BASE}/api/claims/graph`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'X-Tenant-Id': tenant,
