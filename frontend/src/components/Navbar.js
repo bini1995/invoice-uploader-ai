@@ -3,10 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
 import LanguageSelector from './LanguageSelector';
-import ThemePicker from './ThemePicker';
 import DarkModeToggle from './DarkModeToggle';
 import HighContrastToggle from './HighContrastToggle';
-import useDarkMode from '../hooks/useDarkMode';
 import useOutsideClick from '../hooks/useOutsideClick';
 import { useTranslation } from 'react-i18next';
 import { ROLE_EMOJI } from '../theme/roles';
@@ -44,7 +42,6 @@ export default function Navbar({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
-  const [darkMode, setDarkMode] = useDarkMode();
   const [tenantName, setTenantName] = useState(tenant);
   const menuRef = useRef(null);
   const userRef = useRef(null);
@@ -124,7 +121,7 @@ export default function Navbar({
           aria-label="Smart search"
           className="input text-gray-800 dark:text-gray-100 h-7 text-sm w-full sm:w-52"
         />
-        <div className="flex items-center space-x-3 relative w-full sm:w-auto justify-end">
+        <div className="flex items-center flex-wrap gap-2 sm:gap-3 relative w-full sm:w-auto justify-end">
           <TenantSwitcher tenant={tenant} onChange={onTenantChange} />
           <LanguageSelector />
           <NotificationBell notifications={notifications} onOpen={onNotificationsOpen} />
@@ -217,10 +214,9 @@ export default function Navbar({
                   </div>
                 )}
               </div>
-            <HelpTooltip term="dashboard" />
-            <HighContrastToggle />
-            <DarkModeToggle />
-            <ThemePicker darkMode={darkMode} setDarkMode={setDarkMode} tenant={tenant} />
+              <HelpTooltip term="dashboard" />
+              <DarkModeToggle />
+              <HighContrastToggle />
               <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setUserOpen((o) => !o)}
