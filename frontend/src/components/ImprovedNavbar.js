@@ -4,7 +4,6 @@ import { API_BASE } from '../api';
 import TenantSwitcher from './TenantSwitcher';
 import NotificationBell from './NotificationBell';
 import LanguageSelector from './LanguageSelector';
-import ThemePicker from './ThemePicker';
 import DarkModeToggle from './DarkModeToggle';
 import HighContrastToggle from './HighContrastToggle';
 import useDarkMode from '../hooks/useDarkMode';
