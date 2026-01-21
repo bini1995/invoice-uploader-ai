@@ -1,0 +1,21 @@
+modules = ["nodejs-20", "bash", "web"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+DB_HOST = "helium"
+DB_PORT = "5432"
+DB_USER = "postgres"
+DB_PASSWORD = "password"
+DB_NAME = "heliumdb"
+ALLOWED_ORIGINS = "https://784bd143-0859-4c2f-ac99-62582548fb21-00-1t2zhr3kv0r7n.janeway.replit.dev,http://localhost:5000,http://0.0.0.0:5000"
+VITE_API_BASE_URL = ""
+REACT_APP_API_BASE_URL = ""
+JWT_SECRET = "replit-jwt-secret-key-2024"
+JWT_REFRESH_SECRET = "replit-jwt-refresh-secret-key-2024"
+PORT = "3000"

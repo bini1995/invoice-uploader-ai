@@ -52,7 +52,7 @@
     "yjs": "^13.6.27"
   },
   "scripts": {
-    "start": "vite --port 3001",
+    "start": "vite --host 0.0.0.0 --port 5000",
     "prebuild": "node scripts/update-sitemap.js",
     "build": "vite build",
     "postbuild": "echo 'Skipping react-snap for Docker build'",
