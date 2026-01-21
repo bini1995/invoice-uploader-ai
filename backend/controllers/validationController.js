@@ -1,12 +1,12 @@
 
-import { validateHeaders, getValidationRules, addValidationRule } from '../utils/validationEngine.js';
+import { validateHeaders as validateHeadersUtil, getValidationRules, addValidationRule } from '../utils/validationEngine.js';
 import { validate } from '../utils/schemaValidator.js';
-export const validateHeaders = (req, res) => {
+export const validateHeadersController = (req, res) => {
   const { headers } = req.body;
   if (!Array.isArray(headers)) {
     return res.status(400).json({ message: 'Invalid headers' });
   }
-  const missing = validateHeaders(headers);
+  const missing = validateHeadersUtil(headers);
   res.json({ missing });
 };
 

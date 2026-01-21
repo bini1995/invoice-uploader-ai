@@ -12,6 +12,17 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  esbuild: {
+    loader: 'jsx',
+    include: /src\/.*\.js$/,
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+      },
+    },
+  },
   server: {
     host: '0.0.0.0',
     port: 5000,
