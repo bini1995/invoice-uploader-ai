@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "bash", "web"]
+modules = ["nodejs-20", "bash", "web", "postgresql-16"]
 [agent]
 expertMode = true
 
@@ -53,6 +53,5 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "autoscale"
-run = ["bash", "-c", "cd backend && node app.js & cd frontend && npm run start"]
-build = ["npm install && cd backend && npm install && cd ../frontend && npm install && npm run build"]
+deploymentTarget = "vm"
+run = ["bash", "-c", "cd backend && node app.js & cd frontend && npm run build && npx serve -s build -l 5000"]
