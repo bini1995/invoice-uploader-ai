@@ -65,6 +65,7 @@ import { loadModel, trainFromCorrections } from './utils/ocrAgent.js';
 import { loadSchedules } from './utils/automationScheduler.js';
 import { scheduleReports } from './utils/reportScheduler.js';
 import { scheduleAnomalyScan } from './utils/anomalyScanner.js';
+import buildProblemDetails from './utils/problemDetails.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger.js';
 import { WebSocketServer } from 'ws';
@@ -204,7 +205,13 @@ app.use(errorHandler);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  const problem = buildProblemDetails({
+    status: 404,
+    title: 'Not Found',
+    detail: 'Route not found',
+    instance: req.originalUrl
+  });
+  res.status(404).type('application/problem+json').json(problem);
 });
 
 // Initialize application
