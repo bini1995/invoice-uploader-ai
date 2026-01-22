@@ -1,9 +1,9 @@
 /* frontend/src/index.css */
+@import './styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './styles/tokens.css';
 
 html {
   scroll-behavior: smooth;

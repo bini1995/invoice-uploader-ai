@@ -8,10 +8,10 @@ function sanitizeNext(raw) {
   try {
     const url = new URL(raw, window.location.origin);
     if (url.origin !== window.location.origin) return '/app';
-    if (!/^\/(app|claims|login|operations|adaptive|dashboard|settings|archive|vendors|workflow|board|kanban|builder|export-builder|upload-wizard|onboarding|sandbox|free-trial|results)/.test(url.pathname)) return '/app';
+    if (!/^\/(app|claims|login|operations|adaptive|dashboard|settings|archive|vendors|workflow|board|kanban|builder|export-builder|upload-wizard|onboarding|sandbox|free-trial|results|claims)/.test(url.pathname)) return '/claims';
     return url.pathname + url.search;
   } catch {
-    return '/app';
+    return '/claims';
   }
 }
 
@@ -51,7 +51,7 @@ export default function LoginPage() {
           // TODO: move token storage to secure, HttpOnly cookies
           localStorage.setItem('token', tok);
           localStorage.setItem('role', role);
-          navigate(next || '/app', { replace: true });
+          navigate(next === '/app' ? '/claims' : next, { replace: true });
         }}
         addToast={addToast}
       />

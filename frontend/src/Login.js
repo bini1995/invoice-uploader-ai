@@ -12,7 +12,7 @@ export default function Login({ onLogin, addToast, next }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const ssoEnabled = localStorage.getItem('sso_enabled') === 'true';
-  const loginUrl = `${API_BASE}/api/claims/login`;
+  const loginUrl = `${API_BASE}/api/auth/login`;
 
   const handleLogin = async () => {
     logEvent('login_click', { source: 'login_form', request_id: getRequestId(), method: 'password' });
@@ -26,9 +26,12 @@ export default function Login({ onLogin, addToast, next }) {
       const data = await res.json();
 
       if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role);
         onLogin(data.token, data.role);
         addToast('Logged in!');
         logEvent('login_success', { source: 'login_form', method: 'password', request_id: getRequestId() });
+        window.location.href = '/claims';
       } else {
         setError(data.message || 'Login failed');
         addToast(data.message || 'Login failed', 'error');

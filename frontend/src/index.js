@@ -67,7 +67,7 @@ window.fetch = async (url, options = {}) => {
   const res = await originalFetch(finalUrl, options);
   
   // Only handle 401 for non-login requests
-  if (res.status === 401 && !finalUrl.includes('/login') && !finalUrl.includes('/api/claims/login')) {
+  if (res.status === 401 && !finalUrl.includes('/login') && !finalUrl.includes('/api/auth/login')) {
     localStorage.removeItem('token');
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     localStorage.setItem('sessionExpired', '1');
