@@ -1,7 +1,7 @@
 // backend/controllers/aiController.js
 
 import axios from 'axios';
-import chrono from 'chrono-node';
+import * as chrono from 'chrono-node';
 import 'dotenv/config';
 import pool from '../config/db.js';
 import { sendSlackNotification, sendTeamsNotification } from '../utils/notify.js';

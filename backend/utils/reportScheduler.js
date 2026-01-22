@@ -1,5 +1,5 @@
 
-import cronManager from './cronManager.js';
+import { schedule as scheduleCron } from './cronManager.js';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
 import pool from '../config/db.js';
@@ -72,7 +72,7 @@ async function sendDailyReport() {
 }
 
 function scheduleReports() {
-  cronManager.schedule('dailyReport', '0 8 * * *', sendDailyReport);
+  scheduleCron('dailyReport', '0 8 * * *', sendDailyReport);
   loadReportSchedules();
 }
 
@@ -106,7 +106,7 @@ async function loadReportSchedules() {
     jobs = [];
     for (const s of rows) {
       try {
-        const job = cronManager.schedule(
+        const job = scheduleCron(
           `schedule_${s.id}`,
           s.cron || '0 8 * * *',
           () => sendScheduledReport(s).catch(() => {})

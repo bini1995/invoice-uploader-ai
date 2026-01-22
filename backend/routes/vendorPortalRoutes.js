@@ -1,5 +1,5 @@
 import express from 'express';
-import portal from '../controllers/vendorPortalController.js';
+import * as portal from '../controllers/vendorPortalController.js';
 import { uploadLimiter } from '../middleware/rateLimit.js';
 const router = express.Router();
 

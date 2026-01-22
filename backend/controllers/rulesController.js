@@ -1,5 +1,5 @@
 
-import { getRules, addRule, updateRule, deleteRule } from '../utils/rulesEngine.js';
+import { getRules, addRule as addRuleUtil, updateRule as updateRuleUtil, deleteRule as deleteRuleUtil } from '../utils/rulesEngine.js';
 export const listRules = (_req, res) => {
   res.json({ rules: getRules() });
 };
@@ -31,7 +31,7 @@ export const addRule = (req, res) => {
     }
     rule.benefitMax = num;
   }
-  addRule(rule);
+  addRuleUtil(rule);
   res.json({ message: 'Rule added', rules: getRules() });
 };
 
@@ -53,13 +53,13 @@ export const updateRule = (req, res) => {
     }
     rule.benefitMax = num;
   }
-  updateRule(idx, rule);
+  updateRuleUtil(idx, rule);
   res.json({ message: 'Rule updated', rules: getRules() });
 };
 
 export const deleteRule = (req, res) => {
   const idx = parseInt(req.params.idx);
   if (isNaN(idx)) return res.status(400).json({ message: 'Invalid request' });
-  deleteRule(idx);
+  deleteRuleUtil(idx);
   res.json({ message: 'Rule deleted', rules: getRules() });
 };

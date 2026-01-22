@@ -1,0 +1,18 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "This is a full-stack **AI Claims Data Extractor** delivering operational clarity for insurance claim files through automated intelligence workflows, built using:",
+  "main": "create-simple-user.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@json2csv/plainjs": "^6.1.3"
+  }
+}

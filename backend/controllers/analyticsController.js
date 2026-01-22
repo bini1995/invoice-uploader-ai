@@ -7,7 +7,8 @@ import levenshtein from 'fast-levenshtein';
 import { loadReportSchedules } from '../utils/reportScheduler.js';
 import openai from '../config/openrouter.js';
 import { detectFraud } from '../ai/fraudDetection.js';
-function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, maxAmount, tag }) {
+export const buildFilterQuery = (query) => {
+  const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = query;
   const params = [];
   const conditions = [];
   if (vendor) {
@@ -52,9 +53,7 @@ function buildFilterQuery({ vendor, department, startDate, endDate, minAmount, m
   }
   const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
   return { where, params };
-}
-
-export const buildFilterQuery = buildFilterQuery;
+};
 
 export const getReport = async (req, res) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = req.query;
