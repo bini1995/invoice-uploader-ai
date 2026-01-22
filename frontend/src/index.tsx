@@ -81,11 +81,17 @@ window.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
 
 const currentTenant = localStorage.getItem('tenant') || 'default';
 const savedTheme = localStorage.getItem(`themeMode_${currentTenant}`) || localStorage.getItem('theme');
+const planType = (localStorage.getItem('planType') || localStorage.getItem('plan') || '').toLowerCase();
+const canUseDarkMode = planType === 'pro';
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-if (savedTheme === 'dark' || ((!savedTheme || savedTheme === 'system') && prefersDark)) {
+const shouldApplyDark =
+  canUseDarkMode && (savedTheme === 'dark' || ((!savedTheme || savedTheme === 'system') && prefersDark));
+
+if (shouldApplyDark) {
   document.documentElement.classList.add('dark');
   document.documentElement.setAttribute('data-theme', 'dark');
 } else {
+  document.documentElement.classList.remove('dark');
   document.documentElement.setAttribute('data-theme', 'light');
 }
 const savedContrast = localStorage.getItem('contrast');

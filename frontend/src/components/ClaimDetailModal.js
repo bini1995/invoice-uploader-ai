@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useButton, useDialog } from 'react-aria';
 import TagEditor from './TagEditor';
 import CTAButton from './ui/CTAButton';
 import { API_BASE } from '../api';
@@ -6,16 +7,25 @@ import DocumentViewer from './DocumentViewer';
 import ICDCPTField from './ICDCPTField';
 import CommentThread from './CommentThread';
 import FlaggedCodeChat from './FlaggedCodeChat';
+import { useTimelineStore } from '../store/useTimelineStore';
 
 export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ invoice_number: '', date: '', amount: '', vendor: '', icd: '', cpt: '' });
-  const [timeline, setTimeline] = useState([]);
+  const { timelineByClaim, statusByClaim, fetchTimeline } = useTimelineStore();
   const [vendorSuggestions, setVendorSuggestions] = useState([]);
   const [amountSuggestions, setAmountSuggestions] = useState([]);
   const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
   const lastFocused = useRef(null);
   const scrollPos = useRef(0);
+  const { dialogProps, titleProps } = useDialog({}, dialogRef);
+  const { buttonProps: closeButtonProps } = useButton(
+    { onPress: onClose, 'aria-label': 'Close details' },
+    closeButtonRef
+  );
+  const timeline = invoice ? timelineByClaim[invoice.id] || [] : [];
+  const timelineStatus = invoice ? statusByClaim[invoice.id] : null;
 
   useEffect(() => {
     if (invoice) {
@@ -28,19 +38,10 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
         cpt: invoice.cpt || '',
       });
       if (token) {
-        fetch(`${API_BASE}/api/claims/${invoice.id}/timeline`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (Array.isArray(data)) setTimeline(data);
-            else if (Array.isArray(data.timeline)) setTimeline(data.timeline);
-            else setTimeline([]);
-          })
-          .catch((err) => console.error('Timeline fetch failed:', err));
+        fetchTimeline({ claimId: invoice.id, token });
       }
     }
-  }, [invoice, token]);
+  }, [fetchTimeline, invoice, token]);
 
   useEffect(() => {
     if (!token || !form.vendor) return;
@@ -124,21 +125,23 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="relative bg-white dark:bg-gray-800 p-4 rounded-t-lg sm:rounded-lg shadow-lg w-full h-full sm:h-auto sm:w-96 overflow-y-auto transition-all ease-in-out"
+        className="relative bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-t-lg sm:rounded-lg shadow-lg w-full h-full sm:h-auto sm:w-96 overflow-y-auto transition-all ease-in-out"
         style={{ transitionDuration: 'var(--motion-modal)' }}
-        role="dialog"
         aria-modal="true"
         ref={dialogRef}
         tabIndex={-1}
+        {...dialogProps}
       >
         <button
-          aria-label="Close"
-          onClick={onClose}
+          {...closeButtonProps}
+          ref={closeButtonRef}
           className="absolute top-2 right-2 w-11 h-11 flex items-center justify-center btn btn-ghost"
         >
           ×
         </button>
-        <h2 className="text-lg font-semibold mb-2">Claim #{invoice.invoice_number}</h2>
+        <h2 className="text-lg font-semibold mb-2" {...titleProps}>
+          Claim #{invoice.invoice_number}
+        </h2>
         <div className="space-y-2 text-sm">
           <div>
             <span className="font-semibold mr-2">ID:</span>{invoice.id}
@@ -254,10 +257,13 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
         </div>
         <div className="mt-3">
           <h3 className="font-semibold text-sm mb-1">Status History</h3>
-          <ul className="text-xs max-h-32 overflow-y-auto space-y-1">
+          <ul className="text-xs max-h-32 sm:max-h-40 overflow-y-auto space-y-1">
             {invoice.approval_history?.map((h, i) => (
               <li key={i}>{new Date(h.date).toLocaleString()} - {h.step} {h.status}</li>
             ))}
+            {timelineStatus === 'loading' && (
+              <li className="text-gray-400">Loading timeline…</li>
+            )}
             {Array.isArray(timeline) &&
               timeline.map((t, i) => (
                 <li key={`tl-${i}`}>{new Date(t.created_at).toLocaleString()} - {t.action}</li>

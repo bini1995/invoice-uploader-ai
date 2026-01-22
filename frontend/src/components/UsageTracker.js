@@ -65,6 +65,9 @@ export default function UsageTracker({ className = '' }) {
       if (limitsRes.ok) {
         const limitsData = await limitsRes.json();
         setUsageLimits(limitsData.data);
+        if (limitsData?.data?.planType) {
+          localStorage.setItem('planType', String(limitsData.data.planType).toLowerCase());
+        }
       }
 
       if (trendsRes.ok) {

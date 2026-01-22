@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DndContext } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -17,6 +17,7 @@ import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
 import PageHeader from './components/PageHeader';
 import { API_BASE } from './api';
+import { useTimelineStore } from './store/useTimelineStore';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1', '#a4de6c'];
 
@@ -67,10 +68,15 @@ export default function DashboardBuilder() {
   });
   const [vendors, setVendors] = useState([]);
   const [heatmap, setHeatmap] = useState([]);
-  const [timeline, setTimeline] = useState([]);
+  const [activeClaimId, setActiveClaimId] = useState(null);
   const [loadingVendors, setLoadingVendors] = useState(true);
   const [loadingHeatmap, setLoadingHeatmap] = useState(true);
-  const [loadingTimeline, setLoadingTimeline] = useState(true);
+  const { timelineByClaim, statusByClaim, fetchTimeline, setTimeline } = useTimelineStore();
+  const timeline = useMemo(() => {
+    if (!activeClaimId) return [];
+    return timelineByClaim[activeClaimId] || [];
+  }, [activeClaimId, timelineByClaim]);
+  const loadingTimeline = activeClaimId ? statusByClaim[activeClaimId] === 'loading' : true;
 
   useEffect(() => {
     const headers = { Authorization: `Bearer ${token}` };
@@ -98,35 +104,23 @@ export default function DashboardBuilder() {
       .catch(() => setHeatmap([]))
       .finally(() => setLoadingHeatmap(false));
 
-    setLoadingTimeline(true);
     fetch(`${API_BASE}/api/claims`)
       .then((r) => r.json())
       .then((list) => {
         if (list && list[0]) {
           const id = list[0].id;
-          fetch(`${API_BASE}/api/claims/${id}/timeline`, { headers })
-            .then((res) => res.json())
-            .then((data) => {
-              if (Array.isArray(data) && data.length) {
-                setTimeline(data);
-              } else if (Array.isArray(data.timeline) && data.timeline.length) {
-                setTimeline(data.timeline);
-              } else {
-                setTimeline(DEMO_TIMELINE);
-              }
-            })
-            .catch(() => setTimeline(DEMO_TIMELINE))
-            .finally(() => setLoadingTimeline(false));
+          setActiveClaimId(id);
+          fetchTimeline({ claimId: id, token, fallbackTimeline: DEMO_TIMELINE });
         } else {
-          setTimeline(DEMO_TIMELINE);
-          setLoadingTimeline(false);
+          setActiveClaimId('demo');
+          setTimeline('demo', DEMO_TIMELINE);
         }
       })
       .catch(() => {
-        setTimeline(DEMO_TIMELINE);
-        setLoadingTimeline(false);
+        setActiveClaimId('demo');
+        setTimeline('demo', DEMO_TIMELINE);
       });
-  }, [token]);
+  }, [fetchTimeline, setTimeline, token]);
 
   const handleDragEnd = ({ active, over }) => {
     if (!over || active.id === over.id) return;
@@ -150,13 +144,13 @@ export default function DashboardBuilder() {
       <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Create Your Dashboard" />
         <DndContext onDragEnd={handleDragEnd}>
           <SortableContext items={widgets} strategy={verticalListSortingStrategy}>
-            <div className="space-y-4">
+            <div className="space-y-4 sm:space-y-6">
               {widgets.map((w) => (
                 <WidgetCard key={w} widgetId={w}>
-                  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-4">
+                  <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl shadow-md mb-4">
                     {w === 'Top Vendors' && (
                       <>
-                        <h2 className="text-lg font-semibold mb-2">Top Vendors</h2>
+                        <h2 className="text-base sm:text-lg font-semibold mb-2">Top Vendors</h2>
                         {loadingVendors ? (
                           <Skeleton rows={1} className="h-40" />
                         ) : vendors.length === 0 ? (
@@ -177,7 +171,7 @@ export default function DashboardBuilder() {
                     )}
                     {w === 'Anomaly Heatmap' && (
                       <>
-                        <h2 className="text-lg font-semibold mb-2">Anomaly Heatmap</h2>
+                        <h2 className="text-base sm:text-lg font-semibold mb-2">Anomaly Heatmap</h2>
                         {loadingHeatmap ? (
                           <Skeleton rows={7} className="h-32" />
                         ) : heatData.length === 0 ? (
@@ -206,13 +200,13 @@ export default function DashboardBuilder() {
                     )}
                     {w === 'Approval Timeline' && (
                       <>
-                        <h2 className="text-lg font-semibold mb-2">Approval Timeline</h2>
+                        <h2 className="text-base sm:text-lg font-semibold mb-2">Approval Timeline</h2>
                         {loadingTimeline ? (
                           <Skeleton rows={3} className="h-32" />
                         ) : !Array.isArray(timeline) || timeline.length === 0 ? (
                           <p className="text-sm text-gray-500">No approval events yet.</p>
                         ) : (
-                          <ul className="relative border-l-2 border-gray-200 dark:border-gray-700 pl-4 text-sm max-h-48 overflow-y-auto">
+                          <ul className="relative border-l-2 border-gray-200 dark:border-gray-700 pl-4 text-sm max-h-48 sm:max-h-56 overflow-y-auto">
                             {timeline.map((t, i) => (
                               <li key={i} className="mb-2 ml-2">
                                 <span className="absolute -left-2 top-1 w-3 h-3 bg-indigo-500 rounded-full"></span>
