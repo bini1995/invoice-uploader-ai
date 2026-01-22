@@ -114,23 +114,12 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean);
-app.use(
-  cors({
-    origin(origin, cb) {
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Tenant-ID'],
-    exposedHeaders: ['Deprecation', 'Sunset', 'Warning', 'Link', 'X-Request-Id'],
-  })
-);
-app.options(/.*/, cors());
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 // Request parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Trust proxy for rate limiting behind nginx
 app.set('trust proxy', 1);

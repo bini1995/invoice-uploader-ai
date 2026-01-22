@@ -93,6 +93,9 @@ export const uploadDocument = async (req, res) => {
     const ai = await openrouter.chat.completions.create({
       model: 'openai/gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }]
+    }).catch(err => {
+      logger.warn('AI Classification failed, falling back to other', { error: err.message });
+      return { choices: [{ message: { content: 'other' } }] };
     });
     let docType = ai.choices?.[0]?.message?.content?.trim().split(/\s/)[0] || 'other';
     docType = docType.toLowerCase();
@@ -140,11 +143,16 @@ export const uploadDocument = async (req, res) => {
     const embRes = await openrouter.embeddings.create({
       model: 'openai/text-embedding-ada-002',
       input: rawText.slice(0, 2000)
+    }).catch(err => {
+      logger.warn('AI Embedding failed, skipping', { error: err.message });
+      return null;
     });
-    await pool.query(
-      'INSERT INTO claim_embeddings (document_id, embedding) VALUES ($1,$2)',
-      [rows[0].id, embRes.data[0].embedding]
-    );
+    if (embRes && embRes.data && embRes.data[0]) {
+      await pool.query(
+        'INSERT INTO claim_embeddings (document_id, embedding) VALUES ($1,$2)',
+        [rows[0].id, embRes.data[0].embedding]
+      );
+    }
     logger.info('Claim uploaded', { id: rows[0].id, docType });
     claimUploadCounter.labels(docType).inc();
     const vendorName = meta.vendor || '';
@@ -248,7 +256,7 @@ export const extractClaimFields = async (req, res) => {
 
     const doc = rows[0];
     timer = extractDuration.startTimer({ doc_type: doc.doc_type });
-    const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
+    const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 10000);
     const { fields, version } = await aiExtractClaimFields(text);
     await pool.query(
       `INSERT INTO claim_fields (document_id, fields, version, extracted_at)
@@ -409,7 +417,7 @@ export const checkCompliance = async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Document not found' });
     const doc = rows[0];
-    const text = fs.readFileSync(doc.path, 'utf8').toLowerCase();
+    const text = fs.readFileSync(doc.path, 'utf8').toLowerCase().slice(0, 10000);
     const clauses = ['governing law', 'termination', 'confidentiality'];
     const issues = [];
     if (doc.doc_type === 'contract') {

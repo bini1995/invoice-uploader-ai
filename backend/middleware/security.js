@@ -29,22 +29,7 @@ const securityHeaders = (req, res, next) => {
 
 // CORS configuration
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'https://clarifyops.com',
-      'http://localhost:3001',
-      'http://localhost:5173'
-    ];
-    
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Allow all origins for Replit development
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'X-Requested-With'],
