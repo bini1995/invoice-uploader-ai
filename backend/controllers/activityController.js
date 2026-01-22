@@ -78,6 +78,12 @@ export const exportComplianceReport = async (_req, res) => {
     const approvalRes = await pool.query(
       'SELECT id, approval_history FROM invoices ORDER BY id'
     );
+    const consentRes = await pool.query(
+      'SELECT * FROM consent_logs ORDER BY created_at'
+    );
+    const anonymizationRes = await pool.query(
+      'SELECT * FROM anonymization_logs ORDER BY created_at'
+    );
 
     const parser = new Parser();
     const logsCsv = parser.parse(logRes.rows);
@@ -88,6 +94,8 @@ export const exportComplianceReport = async (_req, res) => {
         approval_history: JSON.stringify(r.approval_history || [])
       }))
     );
+    const consentCsv = parser.parse(consentRes.rows);
+    const anonymizationCsv = parser.parse(anonymizationRes.rows);
 
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader(
@@ -104,6 +112,8 @@ export const exportComplianceReport = async (_req, res) => {
     archive.append(logsCsv, { name: 'activity_logs.csv' });
     archive.append(invoicesCsv, { name: 'invoice_history.csv' });
     archive.append(approvalCsv, { name: 'approval_trails.csv' });
+    archive.append(consentCsv, { name: 'consent_logs.csv' });
+    archive.append(anonymizationCsv, { name: 'anonymization_logs.csv' });
     archive.finalize();
     logger.info('Compliance report exported');
     exportAttemptCounter.inc();

@@ -67,6 +67,10 @@ async function initDb() {
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS late_fee NUMERIC DEFAULT 0");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'USD'");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS encrypted_payload TEXT");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS contains_phi BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS phi_fields JSONB DEFAULT '[]'");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS phi_encrypted_payload TEXT");
+    await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS anonymized_at TIMESTAMP");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS file_name TEXT");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS original_amount NUMERIC");
     await pool.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS exchange_rate NUMERIC");
@@ -130,6 +134,10 @@ async function initDb() {
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS raw_text TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS assignee TEXT");
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS assignment_reason TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS contains_phi BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS phi_fields JSONB DEFAULT '[]'");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS phi_encrypted_payload TEXT");
+    await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS anonymized_at TIMESTAMP");
 
     await pool.query("ALTER TABLE documents ADD COLUMN IF NOT EXISTS searchable tsvector");
     await pool.query("CREATE INDEX IF NOT EXISTS idx_searchable ON documents USING GIN(searchable)");
@@ -474,6 +482,32 @@ async function initDb() {
       user_id INTEGER,
       event_name TEXT NOT NULL,
       details JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS consent_logs (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT,
+      subject_type TEXT NOT NULL,
+      subject_id INTEGER,
+      consent_type TEXT NOT NULL,
+      consent_granted BOOLEAN DEFAULT TRUE,
+      source TEXT,
+      policy_version TEXT,
+      ip_address TEXT,
+      user_agent TEXT,
+      metadata JSONB DEFAULT '{}'::JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS anonymization_logs (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT,
+      subject_type TEXT NOT NULL,
+      subject_id INTEGER,
+      requested_by INTEGER,
+      reason TEXT,
+      status TEXT DEFAULT 'completed',
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
