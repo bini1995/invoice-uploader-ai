@@ -16,8 +16,19 @@ import {
   ResponsiveContainer,
   Legend,
   LineChart,
-  Line,
+  Line as RechartsLine,
 } from 'recharts';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip as ChartTooltip,
+  Legend as ChartLegend,
+} from 'chart.js';
+import { Line as ChartLine } from 'react-chartjs-2';
 import Skeleton from './components/Skeleton';
 import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
@@ -49,6 +60,16 @@ const METRIC_LABELS = {
   anomalies: '⚠️ Anomalies Found',
   ai: '🤖 AI Suggestions Available',
 };
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  ChartTooltip,
+  ChartLegend
+);
 
 function MetricTile({ metricId, disabled, children }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -273,6 +294,132 @@ function OperationsDashboard() {
     }
     return list;
   }, [stats, anomalies]);
+
+  const fraudForecast = React.useMemo(() => {
+    if (!flaggedTrend.length) {
+      return {
+        labels: [],
+        historical: [],
+        forecast: [],
+        nextRisk: 0,
+        riskDelta: 0,
+        riskIndex: 0,
+        confidence: 'Low',
+        peakMonth: 'N/A',
+        narrative: 'Upload more invoices to unlock AI fraud risk forecasting.',
+      };
+    }
+
+    const history = flaggedTrend.map((entry) => ({
+      date: new Date(entry.month),
+      value: entry.count,
+    }));
+
+    const avg = history.reduce((sum, point) => sum + point.value, 0) / history.length;
+    const slope =
+      history.length > 1
+        ? history.reduce((sum, point, idx) => sum + (idx - (history.length - 1) / 2) * (point.value - avg), 0) /
+          history.reduce((sum, _, idx) => sum + Math.pow(idx - (history.length - 1) / 2, 2), 0)
+        : 0;
+
+    const lastValue = history[history.length - 1].value;
+    const lastDate = history[history.length - 1].date;
+    const forecastHorizon = 3;
+    const forecastPoints = Array.from({ length: forecastHorizon }, (_, i) => {
+      const projected = Math.max(0, Math.round(lastValue + slope * (i + 1)));
+      return projected;
+    });
+
+    const forecastDates = forecastPoints.map((_, i) => {
+      const next = new Date(lastDate);
+      next.setMonth(next.getMonth() + i + 1);
+      return next;
+    });
+
+    const labels = [
+      ...history.map((point) => point.date.toLocaleDateString('en-US', { month: 'short' })),
+      ...forecastDates.map((date) => date.toLocaleDateString('en-US', { month: 'short' })),
+    ];
+
+    const historical = [...history.map((point) => point.value), ...Array(forecastHorizon).fill(null)];
+    const forecast = [
+      ...Array(history.length - 1).fill(null),
+      lastValue,
+      ...forecastPoints,
+    ];
+
+    const nextRisk = forecastPoints[0] ?? lastValue;
+    const riskDelta = nextRisk - lastValue;
+    const riskIndex = Math.min(100, Math.round((nextRisk / Math.max(1, Math.max(...history.map((p) => p.value)))) * 100));
+    const peakValue = Math.max(lastValue, ...forecastPoints);
+    const peakIndex = forecastPoints.indexOf(peakValue);
+    const peakMonth = peakIndex >= 0 ? forecastDates[peakIndex].toLocaleDateString('en-US', { month: 'short' }) : 'N/A';
+    const confidence = history.length >= 6 ? 'High' : history.length >= 3 ? 'Medium' : 'Low';
+
+    return {
+      labels,
+      historical,
+      forecast,
+      nextRisk,
+      riskDelta,
+      riskIndex,
+      confidence,
+      peakMonth,
+      narrative: `AI forecasts a ${riskDelta >= 0 ? 'rise' : 'dip'} in fraud risk over the next 90 days.`,
+    };
+  }, [flaggedTrend]);
+
+  const fraudChartData = React.useMemo(
+    () => ({
+      labels: fraudForecast.labels,
+      datasets: [
+        {
+          label: 'Flagged invoices',
+          data: fraudForecast.historical,
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.15)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+        },
+        {
+          label: 'AI forecast',
+          data: fraudForecast.forecast,
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99, 102, 241, 0.12)',
+          borderDash: [6, 6],
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+        },
+      ],
+    }),
+    [fraudForecast]
+  );
+
+  const fraudChartOptions = React.useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { usePointStyle: true, boxWidth: 8 },
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 },
+        },
+      },
+    }),
+    []
+  );
 
   return (
     <ImprovedMainLayout title="AI Dashboard">
@@ -508,8 +655,8 @@ function OperationsDashboard() {
             ))}
           </ul>
         </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Trends &amp; Insights</h2>
+          <div>
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Trends &amp; Insights</h2>
           <div className="text-right mb-1 text-sm">
             View:
             <select
@@ -532,7 +679,7 @@ function OperationsDashboard() {
                     <XAxis dataKey="month" tickFormatter={(v) => new Date(v).toLocaleDateString('en-US', { month: 'short' })} />
                     <YAxis />
                     <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
-                    <Line type="monotone" dataKey="total" stroke="#3b82f6" />
+                    <RechartsLine type="monotone" dataKey="total" stroke="#3b82f6" />
                   </LineChart>
                 </ResponsiveContainer>
               ) : flaggedTrend.length ? (
@@ -542,7 +689,7 @@ function OperationsDashboard() {
                     <XAxis dataKey="month" tickFormatter={(v) => new Date(v).toLocaleDateString('en-US', { month: 'short' })} />
                     <YAxis />
                     <Tooltip labelFormatter={(v) => new Date(v).toLocaleDateString()} />
-                    <Line type="monotone" dataKey="count" stroke="#ef4444" />
+                    <RechartsLine type="monotone" dataKey="count" stroke="#ef4444" />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
@@ -556,8 +703,51 @@ function OperationsDashboard() {
                 ))}
               </ul>
             </div>
+            </div>
           </div>
-        </div>
+          <div>
+            <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Predictive KPIs</h2>
+            <div className="grid lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2 p-4 bg-white dark:bg-gray-800 rounded shadow h-80">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Fraud Risk Trend</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">AI forecast based on flagged invoices</p>
+                  </div>
+                  <span className="text-xs px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-200">
+                    Forecast horizon: 90 days
+                  </span>
+                </div>
+                {fraudForecast.labels.length ? (
+                  <ChartLine data={fraudChartData} options={fraudChartOptions} />
+                ) : (
+                  <p className="text-sm text-gray-500 mt-24 text-center">{fraudForecast.narrative}</p>
+                )}
+              </div>
+              <div className="space-y-4">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Next 30-day risk</p>
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                    {fraudForecast.nextRisk} flags
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {fraudForecast.riskDelta >= 0 ? '+' : ''}
+                    {fraudForecast.riskDelta} vs last month
+                  </p>
+                </div>
+                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Risk index</p>
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{fraudForecast.riskIndex}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Peak risk expected in {fraudForecast.peakMonth}</p>
+                </div>
+                <div className="p-4 bg-white dark:bg-gray-800 rounded shadow">
+                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">AI confidence</p>
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{fraudForecast.confidence}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{fraudForecast.narrative}</p>
+                </div>
+              </div>
+            </div>
+          </div>
           <div>
             <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Spend by Category</h2>
             {loading ? (
