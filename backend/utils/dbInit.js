@@ -234,6 +234,17 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS anomaly_feedback (
+      id SERIAL PRIMARY KEY,
+      vendor TEXT NOT NULL,
+      period DATE,
+      amount NUMERIC NOT NULL,
+      is_anomaly BOOLEAN NOT NULL,
+      note TEXT,
+      created_by INTEGER REFERENCES users(id),
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+
     await pool.query(`CREATE TABLE IF NOT EXISTS vendor_notes (
       vendor TEXT PRIMARY KEY,
       notes TEXT

@@ -1,9 +1,16 @@
 
 import { getSuggestions } from '../utils/ocrAgent.js';
 import { trainFromCorrections } from '../utils/ocrAgent.js';
+import { trainAnomalyModel } from '../utils/anomalyTrainer.js';
+import {
+  getTrackingUri,
+  getOrCreateExperiment,
+  createRun,
+  logBatch,
+  setRunTerminated,
+} from '../utils/mlflowClient.js';
 import pool from '../config/db.js';
 import openrouter from '../config/openrouter.js';
-import fs from 'fs';
 export const getSmartSuggestions = async (req, res) => {
   const { invoice } = req.body || {};
   if (!invoice) return res.status(400).json({ message: 'invoice required' });
@@ -16,10 +23,44 @@ export const getSmartSuggestions = async (req, res) => {
   }
 };
 
-export const retrain = async (_req, res) => {
+export const retrain = async (req, res) => {
   try {
     await trainFromCorrections();
-    res.json({ message: 'Retraining complete' });
+    const baseThreshold = Number(req.body?.baseThreshold) || 2;
+    const anomalyResult = await trainAnomalyModel({ baseThreshold });
+    let mlflow = null;
+    if (getTrackingUri()) {
+      try {
+        const experiment = await getOrCreateExperiment();
+        const run = await createRun(experiment.experiment_id, {
+          source: 'api',
+          retrain_type: 'anomaly',
+        });
+        await logBatch(run.info.run_id, {
+          params: {
+            baseThreshold,
+            modelPath: anomalyResult.modelPath,
+          },
+          metrics: {
+            vendors: anomalyResult.vendors,
+            feedbackCount: anomalyResult.feedbackCount,
+          },
+        });
+        await setRunTerminated(run.info.run_id);
+        mlflow = {
+          experimentId: experiment.experiment_id,
+          runId: run.info.run_id,
+        };
+      } catch (mlflowError) {
+        console.error('MLflow logging error:', mlflowError.response?.data || mlflowError.message);
+        mlflow = { error: 'MLflow logging failed' };
+      }
+    }
+    res.json({
+      message: 'Retraining complete',
+      anomaly: anomalyResult,
+      mlflow,
+    });
   } catch (err) {
     console.error('Retrain error:', err);
     res.status(500).json({ message: 'Retrain failed' });
@@ -64,4 +105,3 @@ export const askDocument = async (req, res) => {
     res.status(500).json({ message: 'Failed to answer question' });
   }
 };
-
