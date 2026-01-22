@@ -72,6 +72,8 @@ import { setupWSConnection } from '@y/websocket-server/utils';
 import { parse } from 'url';
 import { initDocActivity } from './utils/docActivityServer.js';
 import { securityHeaders, corsOptions, requestLogger, errorHandler as securityErrorHandler } from './middleware/security.js';
+import passport from './middleware/passport.js';
+import tenantContextMiddleware from './middleware/tenantContextMiddleware.js';
 const app = express();                      // create the app
 const server = http.createServer(app);
 
@@ -123,6 +125,10 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Trust proxy for rate limiting behind nginx
 app.set('trust proxy', 1);
+
+// Auth + tenant context
+app.use(passport.initialize());
+app.use(tenantContextMiddleware);
 
 // Health and metrics endpoints (no auth required)
 app.use('/api/health', healthRoutes);
