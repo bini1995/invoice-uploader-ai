@@ -8,7 +8,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('../components/MainLayout', () => ({ children }) => <div>{children}</div>);
-jest.mock('../components/StatCard.jsx', () => ({ title, value, onClick }) => (
+jest.mock('../components/StatCard', () => ({ title, value, onClick }) => (
   <div onClick={onClick}>
     <span>{title}</span>
     <span>{value}</span>

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import MainLayout from './components/MainLayout';
-import StatCard from './components/StatCard.jsx';
+import StatCard from './components/StatCard';
 import { Card } from './components/ui/Card';
 import { API_BASE } from './api';
 import {

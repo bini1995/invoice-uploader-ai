@@ -20,7 +20,7 @@ import KanbanDashboard from './KanbanDashboard';
 import NotFound from './NotFound';
 import ResultsViewer from './ResultsViewer';
 import ErrorBoundary from './ErrorBoundary';
-import LandingPage from './LandingPage.jsx';
+import LandingPage from './LandingPage';
 import SecurityPage from './SecurityPage';
 import OnboardingWizard from './OnboardingWizard';
 import MultiUploadWizard from './MultiUploadWizard';
@@ -42,8 +42,8 @@ import { getRequestId } from './lib/analytics';
  * 401 responses from URLs containing '/login' do NOT cause automatic redirect
  * or token removal; this allows credential errors to surface on the login page.
  */
-const originalFetch = window.fetch;
-window.fetch = async (url, options = {}) => {
+const originalFetch: typeof window.fetch = window.fetch;
+window.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
   if (typeof url === 'string') {
     const tenant = localStorage.getItem('tenant') || 'default';
     if (url.startsWith('http://localhost:3000')) {
@@ -110,7 +110,15 @@ if (API_BASE) {
   });
 }
 const container = document.getElementById('root');
-function PageWrapper({ children }) {
+if (!container) {
+  throw new Error('Root container is missing.');
+}
+
+type PageWrapperProps = {
+  children: React.ReactNode;
+};
+
+function PageWrapper({ children }: PageWrapperProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

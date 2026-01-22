@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import LoginPage from './LoginPage.jsx';
+import LoginPage from './LoginPage';
 
 // Mock graph component which uses ESM build incompatible with jest
 jest.mock('react-force-graph-2d', () => () => null);
