@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import MainLayout from './components/MainLayout';
 import Skeleton from './components/Skeleton';
-import StatCard from './components/StatCard.jsx';
+import StatCard from './components/StatCard';
 import {
   CalendarIcon,
   MagnifyingGlassIcon,

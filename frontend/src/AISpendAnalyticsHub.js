@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
-import StatCard from './components/StatCard.jsx';
+import StatCard from './components/StatCard';
 import RuleModal from './components/RuleModal';
 import ClaimDetailModal from './components/ClaimDetailModal';
 

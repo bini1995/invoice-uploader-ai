@@ -34,7 +34,7 @@ import EmptyState from './components/EmptyState';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import FloatingButton from './components/FloatingButton';
 import ImprovedMainLayout from './components/ImprovedMainLayout';
-import StatCard from './components/StatCard.jsx';
+import StatCard from './components/StatCard';
 import LiveFeed from './components/LiveFeed';
 import OnboardingChecklist from './components/OnboardingChecklist';
 import { useNavigate } from 'react-router-dom';
