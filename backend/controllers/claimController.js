@@ -50,7 +50,10 @@ export const listDocuments = async (req, res) => {
               COALESCE(fields->>'claim_number', doc_title, file_name) AS claim_number,
               fields->>'policyholder_name' AS policyholder_name,
               fields->>'estimated_value' AS estimated_value
-       FROM documents WHERE tenant_id = $1 ORDER BY id DESC LIMIT 100`,
+       FROM documents 
+       WHERE tenant_id = $1 
+       ORDER BY created_at DESC 
+       LIMIT 100`,
       [req.tenantId]
     );
     res.json(rows);
