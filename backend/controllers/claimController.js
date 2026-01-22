@@ -3,7 +3,6 @@ import path from 'path';
 import pool from '../config/db.js';
 import openrouter from '../config/openrouter.js';
 import { trainFromCorrections } from '../utils/ocrAgent.js';
-import { extractEntities } from '../ai/entityExtractor.js';
 import { extractClaimFields as aiExtractClaimFields } from '../ai/claimFieldExtractor.js';
 import { recordDocumentVersion } from '../utils/documentVersionLogger.js';
 import crypto from 'crypto';
@@ -15,9 +14,11 @@ import logger from '../utils/logger.js';
 import { logActivity } from '../utils/activityLogger.js';
 import sanitizeHtml from 'sanitize-html';
 import { Parser } from 'json2csv';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { summarize } from './aiAgent.js';
 import { autoAssignDocument } from '../services/invoiceService.js';
+import { enqueueExtraction, isExtractionQueueEnabled } from '../queues/extractionQueue.js';
+import { processDocumentExtraction } from '../services/documentExtractionService.js';
 import {
   claimUploadCounter,
   fieldExtractCounter,
@@ -170,82 +171,33 @@ export const uploadDocument = async (req, res) => {
 export const extractDocument = async (req, res) => {
   const { id } = req.params;
   try {
-    const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
+    const { rows } = await pool.query('SELECT id FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
 
-    const doc = rows[0];
-    const endTimer = extractDuration.startTimer({ doc_type: doc.doc_type });
-    const pipelinePath = path.join(
-      __dirname,
-      '../pipelines',
-      `${doc.doc_type}.js`
-    );
-    let result = { fields: {} };
-    if (
-      [
-        DocumentType.CLAIM_INVOICE,
-        DocumentType.MEDICAL_BILL,
-        DocumentType.FNOL_FORM,
-      ].includes(doc.doc_type)
-    ) {
-      const content = fs
-        .readFileSync(doc.path, 'utf8')
-        .slice(0, 4000);
-      result = await aiExtractClaimFields(content);
-    } else if (fs.existsSync(pipelinePath)) {
-      const pipeline = await import(pathToFileURL(pipelinePath).href);
-      result = await pipeline.default(doc.path);
-    } else {
-      const content = fs
-        .readFileSync(doc.path, 'utf8')
-        .slice(0, 4000);
-      result.fields = await extractEntities(content);
-    }
-    const fields = [
-      DocumentType.CLAIM_INVOICE,
-      DocumentType.MEDICAL_BILL,
-      DocumentType.FNOL_FORM,
-    ].includes(doc.doc_type)
-      ? result.fields
-      : {
-          party_name: result.fields.vendor || result.fields.party_name,
-          total_amount: result.fields.amount || result.fields.total_amount,
-          doc_date: result.fields.date || result.fields.doc_date,
-          category: result.fields.category,
-        };
-
-    const preset = req.query.schema;
-    let schema;
-    if (preset) {
-      try {
-        const schemaPath = path.join(__dirname, '../schemas', `${preset}.json`);
-        if (fs.existsSync(schemaPath)) {
-          schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
-        } else {
-          schema = null;
-        }
-      } catch (e) {
-        schema = null;
-        logger.warn('Failed to load schema preset', { preset, error: e.message });
-      }
+    const useQueue = isExtractionQueueEnabled() && req.query.mode !== 'sync';
+    if (useQueue) {
+      await pool.query('UPDATE documents SET status = $1 WHERE id = $2', ['queued', id]);
+      const job = await enqueueExtraction({
+        documentId: Number(id),
+        schemaPreset: req.query.schema,
+        user: { userId: req.user?.userId, username: req.user?.username }
+      });
+      res.status(202).json({
+        status: 'queued',
+        job_id: job?.id ?? null,
+        document_id: Number(id)
+      });
+      return;
     }
 
-    await pool.query('UPDATE documents SET fields = $1 WHERE id = $2', [fields, id]);
-    await refreshSearchable(id);
-    await recordDocumentVersion(
-      id,
-      doc,
-      { ...doc, fields },
-      req.user?.userId,
-      req.user?.username
-    );
-    logger.info('Fields extracted', { id });
-
-    endTimer();
-    res.json({ data: fields, schema, confidence: 0.9 });
+    const result = await processDocumentExtraction({
+      documentId: Number(id),
+      schemaPreset: req.query.schema,
+      user: req.user
+    });
+    res.json({ data: result.fields, schema: result.schema, confidence: result.confidence });
   } catch (err) {
     logger.error('Extract error:', err);
-    if (typeof endTimer === 'function') endTimer();
     res.status(500).json({ message: 'Extraction failed' });
   }
 };
