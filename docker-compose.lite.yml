@@ -16,8 +16,30 @@ services:
       DB_NAME: invoices_db_lite
       LITE_MODE: true
       REACT_APP_LITE_MODE: true
+      REDIS_HOST: redis
     depends_on:
       - db
+      - redis
+    restart: always
+
+  worker:
+    build: ./backend
+    container_name: clarifyops-extraction-worker-lite
+    command: npm run worker:extraction
+    env_file:
+      - .env.lite
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: TATA1tata1
+      DB_NAME: invoices_db_lite
+      LITE_MODE: true
+      REACT_APP_LITE_MODE: true
+      REDIS_HOST: redis
+    depends_on:
+      - db
+      - redis
     restart: always
 
   frontend:
@@ -43,6 +65,13 @@ services:
       - "5433:5432"
     volumes:
       - db-data-lite:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: clarifyops-redis-lite
+    ports:
+      - "6379:6379"
     restart: unless-stopped
 
   nginx:
