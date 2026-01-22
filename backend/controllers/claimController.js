@@ -20,6 +20,7 @@ import { autoAssignDocument } from '../services/invoiceService.js';
 import { enqueueExtraction, isExtractionQueueEnabled } from '../queues/extractionQueue.js';
 import { processDocumentExtraction } from '../services/documentExtractionService.js';
 import { anonymizeObject, anonymizeText, buildPhiPayload, encryptPhiPayload } from '../utils/compliance.js';
+import { parseIntegrationPayload } from '../utils/ediHl7Parser.js';
 import {
   claimUploadCounter,
   fieldExtractCounter,
@@ -37,6 +38,41 @@ async function refreshSearchable(id) {
     "UPDATE documents SET searchable = to_tsvector('english', coalesce(fields::text,'') || ' ' || coalesce(raw_text,'')) WHERE id = $1",
     [id]
   );
+}
+
+function collectCptCodes(fields, rawText) {
+  const codes = new Set();
+  const addCode = (value) => {
+    if (!value) return;
+    if (Array.isArray(value)) {
+      value.forEach(addCode);
+      return;
+    }
+    if (typeof value === 'number') {
+      addCode(String(value));
+      return;
+    }
+    if (typeof value === 'string') {
+      value
+        .split(/[\s,;|]+/)
+        .map((code) => code.trim())
+        .filter((code) => /^\d{5}$/.test(code))
+        .forEach((code) => codes.add(code));
+    }
+  };
+
+  Object.entries(fields || {}).forEach(([key, value]) => {
+    if (key.toLowerCase().includes('cpt')) {
+      addCode(value);
+    }
+  });
+
+  if (rawText) {
+    const matches = rawText.match(/\b\d{5}\b/g) || [];
+    matches.slice(0, 50).forEach((match) => codes.add(match));
+  }
+
+  return Array.from(codes);
 }
 
 export const listDocuments = async (req, res) => {
@@ -77,6 +113,80 @@ export const getDocument = async (req, res) => {
   } catch (err) {
     console.error('Get document error:', err);
     res.status(500).json({ message: 'Failed to fetch document' });
+  }
+};
+
+export const getCptExplainability = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query(
+      'SELECT fields, raw_text FROM documents WHERE id = $1 AND tenant_id = $2',
+      [id, req.tenantId]
+    );
+    if (!rows.length) return res.status(404).json({ message: 'Not found' });
+
+    const fields = rows[0].fields || {};
+    const cptCodes = collectCptCodes(fields, rows[0].raw_text);
+
+    if (!cptCodes.length) {
+      return res.json({
+        cpt_codes: [],
+        explanations: [],
+        message: 'No CPT codes found in this claim.',
+      });
+    }
+
+    const prompt = [
+      'You are a medical billing assistant.',
+      'Provide a patient-friendly explanation for each CPT code.',
+      'Return JSON as an array of objects with keys: code, explanation.',
+      'Keep explanations short (1-2 sentences) and avoid jargon.',
+      `CPT codes: ${cptCodes.join(', ')}.`,
+    ].join(' ');
+
+    const aiResponse = await openrouter.chat.completions.create({
+      model: 'openai/gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const content = aiResponse.choices?.[0]?.message?.content || '';
+    let explanations = [];
+    try {
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed)) {
+        explanations = parsed;
+      }
+    } catch (error) {
+      logger.warn('CPT explainability parse error', { error: error.message });
+    }
+
+    if (!explanations.length) {
+      explanations = cptCodes.map((code) => ({
+        code,
+        explanation: 'General medical service or procedure.',
+      }));
+    }
+
+    res.json({ cpt_codes: cptCodes, explanations });
+  } catch (err) {
+    logger.error('CPT explainability error:', err);
+    res.status(500).json({ message: 'Failed to generate CPT explanations' });
+  }
+};
+
+export const parseEdiHl7 = async (req, res) => {
+  try {
+    const payload = req.file?.buffer?.toString('utf-8') || req.body?.payload;
+    if (!payload) {
+      return res.status(400).json({ message: 'Provide a file or payload to parse.' });
+    }
+
+    const format = req.body?.format || req.query?.format;
+    const result = parseIntegrationPayload({ payload, format });
+    res.json(result);
+  } catch (err) {
+    logger.error('EDI/HL7 parse error:', err);
+    res.status(500).json({ message: 'Failed to parse EDI/HL7 payload', error: err.message });
   }
 };
 export const uploadDocument = async (req, res) => {

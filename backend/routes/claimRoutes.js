@@ -32,6 +32,8 @@ import {
   getClaimMetrics,
   getUploadHeatmap,
   getTopVendors,
+  getCptExplainability,
+  parseEdiHl7,
 } from '../controllers/claimController.js';
 
 const router = express.Router();
@@ -43,6 +45,18 @@ const upload = multer({
     const ext = path.extname(file.originalname).toLowerCase();
     if (!allowed.includes(ext)) {
       return cb(new Error('Invalid file type'));
+    }
+    cb(null, true);
+  }
+});
+const integrationUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedExt = ['.edi', '.txt', '.hl7', '.x12'];
+    if (!allowedExt.includes(ext)) {
+      return cb(new Error('Invalid integration file type'));
     }
     cb(null, true);
   }
@@ -64,6 +78,7 @@ router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
 router.get('/review-queue', authMiddleware, getReviewQueue);
+router.post('/edi-hl7/parse', authMiddleware, integrationUpload.single('file'), parseEdiHl7);
 router.get(
   '/metrics',
   authMiddleware,
@@ -73,6 +88,7 @@ router.get(
 router.get('/report/pdf', authMiddleware, exportSummaryPDF);
 router.post('/export', authMiddleware, exportClaims);
 router.patch('/:id/status', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), updateStatus);
+router.get('/:id/cpt-explain', authMiddleware, getCptExplainability);
 router.get('/:id', authMiddleware, getDocument);
 router.get('/:id/feedback', authMiddleware, getExtractionFeedback);
 router.post('/:id/feedback', authMiddleware, submitExtractionFeedback);
