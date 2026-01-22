@@ -91,6 +91,48 @@ export const summarizeVendorData = async (req, res) => {
   }
 };
 
+export const analyzeClaimImage = async (req, res) => {
+  try {
+    const image = req.file;
+    if (!image) {
+      return res.status(400).json({ message: 'Missing claim image.' });
+    }
+
+    if (!process.env.HUGGINGFACE_API_TOKEN) {
+      return res.status(500).json({ message: 'Hugging Face API token not configured.' });
+    }
+
+    const model = process.env.HUGGINGFACE_CLAIM_VISION_MODEL || 'Salesforce/blip-image-captioning-large';
+    const response = await axios.post(
+      `https://api-inference.huggingface.co/models/${model}`,
+      image.buffer,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_TOKEN}`,
+          'Content-Type': image.mimetype,
+        },
+        timeout: 30000,
+      }
+    );
+
+    if (response.data?.error) {
+      return res.status(503).json({ message: response.data.error, estimated_time: response.data.estimated_time });
+    }
+
+    const caption = Array.isArray(response.data)
+      ? response.data[0]?.generated_text || response.data[0]?.label
+      : response.data.generated_text || response.data.label || response.data;
+
+    res.json({
+      model,
+      caption,
+    });
+  } catch (error) {
+    console.error('Claim image analysis error:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to analyze claim image.' });
+  }
+};
+
 export const suggestVendor = async (req, res) => {
   try {
     const { invoice_number, amount } = req.body;

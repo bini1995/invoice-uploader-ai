@@ -3,9 +3,12 @@ import cron from 'node-cron';
 import pool from '../config/db.js';
 import { sendSlackNotification } from './notify.js';
 import { broadcastNotification } from './chatServer.js';
+import { loadAnomalyModel } from './anomalyTrainer.js';
 async function scanAnomalies(months = 3) {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth() - months, 1);
+  const model = loadAnomalyModel();
+  const baseThreshold = model?.baseThreshold || 2;
   try {
     const { rows } = await pool.query(
       `SELECT vendor, DATE_TRUNC('month', date) AS m, SUM(amount) AS total
@@ -31,10 +34,13 @@ async function scanAnomalies(months = 3) {
       if (!sd) continue;
       const diff = last - mean;
       if (diff <= 0) continue;
+      const vendorSettings = model?.vendors?.[vendor];
+      const threshold = vendorSettings?.threshold ?? baseThreshold;
+      const yellowThreshold = Math.max(1, threshold * 0.5);
       let tier = 'green';
-      if (diff > 2 * sd) tier = 'red';
-      else if (diff > sd) tier = 'yellow';
-      if (diff > 0.5 * sd) {
+      if (diff > threshold * sd) tier = 'red';
+      else if (diff > yellowThreshold * sd) tier = 'yellow';
+      if (diff > yellowThreshold * sd) {
         const message = `Anomaly (${tier}) for ${vendor}: $${last.toFixed(2)} vs avg $${mean.toFixed(2)}`;
         await pool.query(
           'INSERT INTO notifications (user_id, message, type) VALUES ($1,$2,$3)',
