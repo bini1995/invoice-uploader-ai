@@ -34,6 +34,9 @@ async function resolveSchema(preset) {
 async function extractFieldsForDocument(doc) {
   const pipelinePath = path.join(__dirname, '../pipelines', `${doc.doc_type}.js`);
   let result = { fields: {} };
+  const safeText = doc.contains_phi && doc.raw_text
+    ? doc.raw_text.slice(0, 4000)
+    : fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
   if (
     [
       DocumentType.CLAIM_INVOICE,
@@ -41,18 +44,12 @@ async function extractFieldsForDocument(doc) {
       DocumentType.FNOL_FORM,
     ].includes(doc.doc_type)
   ) {
-    const content = fs
-      .readFileSync(doc.path, 'utf8')
-      .slice(0, 4000);
-    result = await aiExtractClaimFields(content);
+    result = await aiExtractClaimFields(safeText);
   } else if (fs.existsSync(pipelinePath)) {
     const pipeline = await import(pathToFileURL(pipelinePath).href);
     result = await pipeline.default(doc.path);
   } else {
-    const content = fs
-      .readFileSync(doc.path, 'utf8')
-      .slice(0, 4000);
-    result.fields = await extractEntities(content);
+    result.fields = await extractEntities(safeText);
   }
 
   const fields = [

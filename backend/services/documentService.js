@@ -11,12 +11,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 async function parseAndExtract(doc) {
   const pipelinePath = path.join(__dirname, '../pipelines', `${doc.doc_type}.js`);
   let result = { fields: {} };
+  const safeText = doc.contains_phi && doc.raw_text
+    ? doc.raw_text
+    : fs.readFileSync(doc.path, 'utf8');
   if (fs.existsSync(pipelinePath)) {
     const pipeline = await import(pathToFileURL(pipelinePath).href);
     result = await pipeline.default(doc.path);
   } else {
-    const content = fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
-    result.fields = await extractEntities(content);
+    result.fields = await extractEntities(safeText.slice(0, 4000));
   }
   const norm = {
     party_name: result.fields.vendor || result.fields.party_name,
@@ -32,12 +34,12 @@ async function parseAndExtract(doc) {
 
   const embeddingRes = await openrouter.embeddings.create({
     model: 'openai/text-embedding-ada-002',
-    input: fs.readFileSync(doc.path, 'utf8').slice(0, 2000)
+    input: safeText.slice(0, 2000)
   });
   const embedding = embeddingRes.data[0].embedding;
   await pool.query('UPDATE documents SET embedding = $1 WHERE id = $2', [embedding, doc.id]);
 
-  const text = fs.readFileSync(doc.path, 'utf8');
+  const text = safeText;
   const chunkSize = 1000;
   for (let i = 0; i < text.length; i += chunkSize) {
     const chunk = text.slice(i, i + chunkSize);

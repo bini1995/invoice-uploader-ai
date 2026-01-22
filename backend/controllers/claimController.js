@@ -19,6 +19,7 @@ import { summarize } from './aiAgent.js';
 import { autoAssignDocument } from '../services/invoiceService.js';
 import { enqueueExtraction, isExtractionQueueEnabled } from '../queues/extractionQueue.js';
 import { processDocumentExtraction } from '../services/documentExtractionService.js';
+import { anonymizeObject, anonymizeText, buildPhiPayload, encryptPhiPayload } from '../utils/compliance.js';
 import {
   claimUploadCounter,
   fieldExtractCounter,
@@ -121,8 +122,13 @@ export const uploadDocument = async (req, res) => {
     const expiration = req.body.expiration ? new Date(req.body.expiration) : null;
     const docTitle = req.body.title || req.file.originalname;
     const rawText = await fileToText(destPath);
+    const phiScan = buildPhiPayload({ text: rawText, metadata: meta, fields: {} });
+    const containsPhi = phiScan.fields.length > 0;
+    const phiEncryptedPayload = containsPhi ? encryptPhiPayload(phiScan.payload) : null;
+    const storedRawText = containsPhi ? anonymizeText(rawText) : rawText;
+    const storedMeta = containsPhi ? anonymizeObject(meta) : meta;
     const { rows } = await pool.query(
-      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata, type, content_hash, doc_title, file_type, raw_text) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING id',
+      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, retention_policy, delete_at, expires_at, expiration, status, version, metadata, type, content_hash, doc_title, file_type, raw_text, contains_phi, phi_fields, phi_encrypted_payload, anonymized_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21) RETURNING id',
       [
         req.tenantId,
         req.file.originalname,
@@ -135,18 +141,22 @@ export const uploadDocument = async (req, res) => {
         expiration,
         'pending',
         1,
-        meta,
+        storedMeta,
         docType,
         contentHash,
         docTitle,
         req.file.mimetype,
-        rawText,
+        storedRawText,
+        containsPhi,
+        JSON.stringify(phiScan.fields),
+        phiEncryptedPayload,
+        containsPhi ? new Date() : null,
       ]
     );
     await refreshSearchable(rows[0].id);
     const embRes = await openrouter.embeddings.create({
       model: 'openai/text-embedding-ada-002',
-      input: rawText.slice(0, 2000)
+      input: storedRawText.slice(0, 2000)
     }).catch(err => {
       logger.warn('AI Embedding failed, skipping', { error: err.message });
       return null;
@@ -159,8 +169,8 @@ export const uploadDocument = async (req, res) => {
     }
     logger.info('Claim uploaded', { id: rows[0].id, docType });
     claimUploadCounter.labels(docType).inc();
-    const vendorName = meta.vendor || '';
-    const { assignee, reason } = await autoAssignDocument(rows[0].id, vendorName, meta.tags || []);
+    const vendorName = storedMeta?.vendor || '';
+    const { assignee, reason } = await autoAssignDocument(rows[0].id, vendorName, storedMeta?.tags || []);
     res.json({ id: rows[0].id, status: 'pending', doc_type: docType, assignee, assignment_reason: reason });
   } catch (err) {
     logger.error('Document upload error:', err);
