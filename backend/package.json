@@ -61,6 +61,8 @@
     "swagger-ui-express": "^4.6.3",
     "telnet": "^0.0.1",
     "tesseract.js": "^4.0.2",
+    "sequelize": "^6.37.1",
+    "umzug": "^3.8.2",
     "winston": "^3.17.0",
     "ws": "^8.18.3",
     "y-websocket": "^3.0.0",
