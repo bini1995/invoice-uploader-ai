@@ -54,6 +54,27 @@ const pool = new Pool(dbConfig);
 
 const als = new AsyncLocalStorage();
 
+const TENANT_TABLES = [
+  'invoices',
+  'documents',
+  'export_templates',
+  'tenant_features',
+  'tenant_branding',
+  'event_logs',
+  'activities_log',
+  'tenants',
+];
+
+const hasTenantColumn = (text) => /tenant_id\s*/i.test(text);
+
+const addTenantFilter = (text, paramIndex) => {
+  const insertBefore = text.search(/\b(order\s+by|group\s+by|limit|returning)\b/i);
+  if (insertBefore === -1) {
+    return `${text} WHERE tenant_id = $${paramIndex}`;
+  }
+  return `${text.slice(0, insertBefore)} WHERE tenant_id = $${paramIndex} ${text.slice(insertBefore)}`;
+};
+
 const origQuery = pool.query.bind(pool);
 pool.query = (text, params, callback) => {
   if (typeof params === 'function') {
@@ -63,20 +84,32 @@ pool.query = (text, params, callback) => {
   params = params || [];
   const tenantId = als.getStore()?.tenantId || 'default';
 
-  if (tenantId !== 'all') {
-    const hasTenant = /tenant_id/i.test(text);
-    if (!hasTenant && /FROM\s+invoices/i.test(text)) {
-      if (/WHERE/i.test(text)) {
-        text = text.replace(/WHERE/i, `WHERE tenant_id = $${params.length + 1} AND`);
-      } else {
-        text += ` WHERE tenant_id = $${params.length + 1}`;
-      }
-      params.push(tenantId);
-    } else if (/INSERT\s+INTO\s+invoices/i.test(text) && !hasTenant) {
-      const colMatch = text.match(/\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/i);
-      if (colMatch) {
-        text = text.replace(colMatch[0], `(${colMatch[1]}, tenant_id) VALUES (${colMatch[2]}, $${params.length + 1})`);
+  if (tenantId !== 'all' && !hasTenantColumn(text)) {
+    const tableMatch = TENANT_TABLES.find((table) => new RegExp(`\\b${table}\\b`, 'i').test(text));
+    if (tableMatch) {
+      if (/^\s*select/i.test(text) || /^\s*delete/i.test(text)) {
+        if (/where/i.test(text)) {
+          text = text.replace(/where/i, `WHERE tenant_id = $${params.length + 1} AND`);
+        } else {
+          text = addTenantFilter(text, params.length + 1);
+        }
         params.push(tenantId);
+      } else if (/^\s*update/i.test(text)) {
+        if (/where/i.test(text)) {
+          text = text.replace(/where/i, `WHERE tenant_id = $${params.length + 1} AND`);
+        } else {
+          text = addTenantFilter(text, params.length + 1);
+        }
+        params.push(tenantId);
+      } else if (/^\s*insert/i.test(text)) {
+        const colMatch = text.match(/\(([^)]+)\)\s*values\s*\(([^)]+)\)/i);
+        if (colMatch) {
+          text = text.replace(
+            colMatch[0],
+            `(${colMatch[1]}, tenant_id) VALUES (${colMatch[2]}, $${params.length + 1})`
+          );
+          params.push(tenantId);
+        }
       }
     }
   }

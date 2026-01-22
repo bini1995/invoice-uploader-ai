@@ -1,8 +1,10 @@
 
+import crypto from 'crypto';
 import fetch from 'node-fetch';
 const url = process.env.CLAIM_STATUS_WEBHOOK_URL;
 const headersEnv = process.env.CLAIM_WEBHOOK_HEADERS || '{}';
 const templateEnv = process.env.CLAIM_WEBHOOK_TEMPLATE || '{}';
+const webhookSecret = process.env.CLAIM_WEBHOOK_SECRET;
 
 let extraHeaders = {};
 let template = {};
@@ -25,11 +27,20 @@ export const triggerClaimWebhook = async (event, payload = {}) => {
     ...template,
     ...payload
   };
+  const bodyString = JSON.stringify(body);
+  const signature = webhookSecret
+    ? crypto.createHmac('sha256', webhookSecret).update(bodyString).digest('hex')
+    : null;
+  const headers = {
+    'Content-Type': 'application/json',
+    ...extraHeaders,
+    ...(signature ? { 'X-Webhook-Signature': `sha256=${signature}` } : {})
+  };
   try {
     await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...extraHeaders },
-      body: JSON.stringify(body)
+      headers,
+      body: bodyString
     });
   } catch (err) {
     console.error('Webhook error:', err.message);

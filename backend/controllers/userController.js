@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import pool from '../config/db.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 import { logActivity } from '../utils/activityLogger.js';
 import logger from '../utils/logger.js';
 import { activeUsersGauge } from '../metrics.js';
@@ -101,21 +102,7 @@ export const logout = async (req, res) => {
   res.json({ message: 'Logged out' });
 };
 
-export const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    req.tenantId = req.headers['x-tenant-id'] || req.tenantId || 'default';
-    next();
-  } catch (err) {
-    res.status(401).json({ message: 'Invalid token' });
-  }
-};
+export { authMiddleware };
 
 export const authorizeRoles = (...roles) => (req, res, next) => {
   if (!req.user || !roles.includes(req.user.role)) {
