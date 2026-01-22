@@ -176,8 +176,11 @@ function AnimatedRoutes() {
     createRoot(container).render(app);
   }
 
-// disable service worker to avoid registration errors
-serviceWorkerRegistration.unregister();
+serviceWorkerRegistration.register({
+  onUpdate: () => {
+    console.log('A new version is available. Refresh to update.');
+  }
+});
 
 
 // If you want to start measuring performance in your app, pass a function
