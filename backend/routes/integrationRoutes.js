@@ -18,6 +18,6 @@ router.post('/erp/webhook', handleErpWebhook);
 router.post('/erp/:provider/webhook', handleErpWebhook);
 router.post('/ehr/epic/webhook', handleEpicWebhook);
 router.post('/ehr/:provider/webhook', handleEhrWebhook);
-router.get('/public/invoices', listPublicInvoices);
+router.get('/public/claims', listPublicInvoices);
 
 export default router;
