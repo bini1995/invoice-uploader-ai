@@ -35,6 +35,7 @@ import {
   getTopVendors,
   getCptExplainability,
   parseEdiHl7,
+  transcribeFnolAudio,
   purgeDemoDocuments,
 } from '../controllers/claimController.js';
 import { processClaimWorkflow } from '../controllers/agenticClaimsController.js';
@@ -65,10 +66,29 @@ const integrationUpload = multer({
     cb(null, true);
   }
 });
+const audioUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      'audio/webm',
+      'audio/mpeg',
+      'audio/wav',
+      'audio/mp4',
+      'audio/x-m4a',
+      'audio/ogg',
+    ];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error('Invalid audio file type'));
+    }
+    cb(null, true);
+  }
+});
 
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
 router.post('/status-webhook', verifyClaimWebhookSignature, handleClaimStatusWebhook);
 router.post('/process', authMiddleware, processClaimWorkflow);
+router.post('/fnol/transcribe', authMiddleware, audioUpload.single('audio'), transcribeFnolAudio);
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
 router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/', authMiddleware, listDocuments);

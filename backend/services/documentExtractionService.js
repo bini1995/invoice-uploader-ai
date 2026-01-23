@@ -8,6 +8,7 @@ import { recordDocumentVersion } from '../utils/documentVersionLogger.js';
 import logger from '../utils/logger.js';
 import { DocumentType } from '../enums/documentType.js';
 import { extractDuration } from '../metrics.js';
+import { processImageMultimodal } from './multimodalProcessingService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -80,19 +81,47 @@ export async function processDocumentExtraction({ documentId, schemaPreset, user
     await pool.query('UPDATE documents SET status = $1 WHERE id = $2', ['processing', documentId]);
     const fields = await extractFieldsForDocument(doc);
     const schema = await resolveSchema(schemaPreset);
+    let multimodal = null;
+    const isImage = typeof doc.file_type === 'string' && doc.file_type.startsWith('image/');
+    if (isImage) {
+      multimodal = await processImageMultimodal({ documentId, filePath: doc.path });
+    }
 
-    await pool.query('UPDATE documents SET fields = $1, status = $2 WHERE id = $3', [fields, 'extracted', documentId]);
+    const rawMetadata = doc.metadata;
+    let parsedMetadata = rawMetadata;
+    if (rawMetadata && typeof rawMetadata === 'string') {
+      try {
+        parsedMetadata = JSON.parse(rawMetadata);
+      } catch (error) {
+        parsedMetadata = {};
+      }
+    }
+    const mergedMetadata = multimodal
+      ? { ...(parsedMetadata || {}), multimodal }
+      : parsedMetadata;
+
+    if (multimodal) {
+      await pool.query(
+        'UPDATE documents SET fields = $1, status = $2, metadata = $3 WHERE id = $4',
+        [fields, 'extracted', mergedMetadata, documentId]
+      );
+    } else {
+      await pool.query(
+        'UPDATE documents SET fields = $1, status = $2 WHERE id = $3',
+        [fields, 'extracted', documentId]
+      );
+    }
     await refreshSearchable(documentId);
     await recordDocumentVersion(
       documentId,
       doc,
-      { ...doc, fields },
+      { ...doc, fields, metadata: mergedMetadata },
       user?.userId,
       user?.username
     );
     logger.info('Fields extracted', { id: documentId });
 
-    return { fields, schema, confidence: 0.9 };
+    return { fields, schema, confidence: 0.9, multimodal };
   } catch (err) {
     await pool.query('UPDATE documents SET status = $1 WHERE id = $2', ['failed', documentId]).catch(() => {});
     logger.error('Extract error:', err);
