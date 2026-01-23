@@ -329,6 +329,23 @@ export const extractClaimFields = async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
 
+    const useQueue = isExtractionQueueEnabled() && req.query.mode !== 'sync';
+    if (useQueue) {
+      const job = await enqueueExtraction(
+        {
+          documentId: Number(id),
+          user: { userId: req.user?.userId, username: req.user?.username }
+        },
+        'extract-claim-fields'
+      );
+      res.status(202).json({
+        status: 'queued',
+        job_id: job?.id ?? null,
+        document_id: Number(id)
+      });
+      return;
+    }
+
     const doc = rows[0];
     timer = extractDuration.startTimer({ doc_type: doc.doc_type });
     const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 10000);
