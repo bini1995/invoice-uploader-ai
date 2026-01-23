@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import pool from '../config/db.js';
 import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MODEL_PATH = path.join(__dirname, '..', 'data', 'anomaly_model.json');
@@ -28,7 +29,45 @@ function adjustThreshold(baseThreshold, feedback, stats) {
   return threshold;
 }
 
-async function trainAnomalyModel({ baseThreshold = 2 } = {}) {
+function runPythonIsolationForest(totals, contamination) {
+  return new Promise((resolve, reject) => {
+    const script = path.join(__dirname, 'pythonAnomalyExplain.py');
+    const process = spawn('python3', [script], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: process.env,
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    process.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    process.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    process.on('close', (code) => {
+      if (code !== 0) {
+        return reject(new Error(stderr || `Python exited with ${code}`));
+      }
+      try {
+        resolve(JSON.parse(stdout));
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    process.stdin.write(JSON.stringify({
+      points: totals.map((value) => [value]),
+      contamination,
+    }));
+    process.stdin.end();
+  });
+}
+
+async function trainAnomalyModel({ baseThreshold = 2, contamination = 0.12 } = {}) {
   const { rows } = await pool.query(
     `SELECT vendor, DATE_TRUNC('month', date) AS period, SUM(amount) AS total
      FROM invoices
@@ -60,9 +99,10 @@ async function trainAnomalyModel({ baseThreshold = 2 } = {}) {
   }, {});
 
   const model = {
-    version: 1,
+    version: 2,
     trainedAt: new Date().toISOString(),
     baseThreshold,
+    contamination,
     vendors: {},
   };
 
@@ -71,11 +111,20 @@ async function trainAnomalyModel({ baseThreshold = 2 } = {}) {
     const stats = computeStats(totals);
     const feedback = feedbackByVendor[vendor] || [];
     const threshold = adjustThreshold(baseThreshold, feedback, stats);
+
+    let isolationForest = null;
+    try {
+      isolationForest = await runPythonIsolationForest(totals, contamination);
+    } catch (err) {
+      console.error('Isolation forest training error:', err.message);
+    }
+
     model.vendors[vendor] = {
       mean: stats.mean,
       sd: stats.sd,
       threshold,
       feedbackCount: feedback.length,
+      isolationForest,
     };
   }
 

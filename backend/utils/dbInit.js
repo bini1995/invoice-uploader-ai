@@ -215,8 +215,21 @@ async function initDb() {
       action TEXT NOT NULL,
       user_id INTEGER,
       username TEXT,
+      integrity_hash TEXT,
+      blockchain_tx TEXT,
+      blockchain_network TEXT,
+      docusign_envelope_id TEXT,
+      docusign_status TEXT,
+      docusign_signed_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query("ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS integrity_hash TEXT");
+    await pool.query("ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS blockchain_tx TEXT");
+    await pool.query("ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS blockchain_network TEXT");
+    await pool.query("ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS docusign_envelope_id TEXT");
+    await pool.query("ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS docusign_status TEXT");
+    await pool.query("ALTER TABLE audit_logs ADD COLUMN IF NOT EXISTS docusign_signed_at TIMESTAMP");
 
     await pool.query(`CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,

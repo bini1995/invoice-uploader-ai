@@ -38,6 +38,8 @@ import {
   transcribeFnolAudio,
   purgeDemoDocuments,
 } from '../controllers/claimController.js';
+import { getAnomalyExplainability } from '../controllers/anomalyExplainController.js';
+import { getClaimAuditTrail } from '../controllers/auditController.js';
 import { processClaimWorkflow } from '../controllers/agenticClaimsController.js';
 import { verifyClaimWebhookSignature } from '../middleware/claimWebhookAuth.js';
 
@@ -121,6 +123,8 @@ router.delete(
 );
 router.patch('/:id/status', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), updateStatus);
 router.get('/:id/cpt-explain', authMiddleware, getCptExplainability);
+router.get('/:id/audit', authMiddleware, authorizeRoles('admin', 'internal_ops', 'auditor'), getClaimAuditTrail);
+router.get('/explain', authMiddleware, authorizeRoles('admin', 'internal_ops'), getAnomalyExplainability);
 router.get('/:id', authMiddleware, getDocument);
 router.get('/:id/feedback', authMiddleware, getExtractionFeedback);
 router.post('/:id/feedback', authMiddleware, submitExtractionFeedback);
