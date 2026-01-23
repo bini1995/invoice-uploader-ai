@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Invoice {
+  id             Int       @id @default(autoincrement())
+  invoice_number String?   @db.Text
+  date           DateTime? @db.Date
+  amount         Decimal?  @db.Numeric
+  vendor         String?   @db.Text
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  updated_at     DateTime? @db.Timestamp(6)
+
+  @@map("invoices")
+}
+
+model Document {
+  id           Int       @id @default(autoincrement())
+  tenant_id    String?   @db.Text
+  file_name    String?   @db.Text
+  doc_type     String?   @db.Text
+  path         String?   @db.Text
+  type         String?   @db.Text
+  title        String?   @db.Text
+  entity       String?   @db.Text
+  fileType     String?   @db.Text
+  contentHash  String?   @db.Text
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+
+  @@map("documents")
+}

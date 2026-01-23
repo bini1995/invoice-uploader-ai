@@ -428,7 +428,7 @@ Invites expire automatically and grant the specified role (viewer or editor).
 
 ### Offline Mode (PWA)
 
-Offline sync is currently disabled in the MVP. The service worker is unregistered by default. If you want to experiment with offline capabilities, re-enable the service worker in `frontend/src/index.js` and rebuild the frontend.
+Offline sync is enabled via the service worker registration in `frontend/src/index.tsx`, with offline mutations queued in IndexedDB (Dexie) for replay when the browser reconnects.
 
 ### Demo Chart Data
 
@@ -448,11 +448,11 @@ npm run seed-dummy
 ### Database Migration
 
 If you're upgrading from an earlier version that only had an `documents` table,
-run the migration script to rename it and add the new document fields:
+run the Prisma migration to rename it and add the new document fields:
 
 ```bash
 cd backend
-node migrations/migrateInvoicesToDocuments.js
+npm run prisma:migrate
 ```
 
 This backs up the old table, renames it to `documents` and adds `type`, `title`,
