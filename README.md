@@ -142,7 +142,9 @@ npm install
 cp .env.example .env   # Add your DATABASE_URL and OpenRouter API key
 # Set either OPENROUTER_API_KEY or OPENAI_API_KEY in .env
 # Optional: adjust DUE_REMINDER_DAYS and APPROVAL_REMINDER_DAYS in .env to tweak reminder timing
-# Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields
+# Set DATA_ENCRYPTION_KEY to enable at-rest encryption of sensitive fields.
+# For production, prefer AWS Secrets Manager by setting DATA_ENCRYPTION_SECRET_ID and AWS_REGION.
+# Rotate keys with: npm run rotate-data-key (from backend) to store currentKey/previousKey in Secrets Manager.
 npm start
 ```
 

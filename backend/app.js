@@ -76,10 +76,13 @@ import { securityHeaders, corsOptions, requestLogger, errorHandler as securityEr
 import passport from './middleware/passport.js';
 import tenantContextMiddleware from './middleware/tenantContextMiddleware.js';
 import createSessionMiddleware from './middleware/session.js';
+import { loadSecrets } from './utils/secretsManager.js';
 const app = express();                      // create the app
 const server = http.createServer(app);
 
 logger.info('🟡 Starting server...');
+
+await loadSecrets();
 
 // Initialize Sentry
 Sentry.init({ dsn: process.env.SENTRY_DSN || undefined });

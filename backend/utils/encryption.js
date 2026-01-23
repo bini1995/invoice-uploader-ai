@@ -25,7 +25,20 @@ function encryptSensitive(text) {
 }
 
 function decryptSensitive(text) {
-  const key = process.env.DATA_ENCRYPTION_KEY;
-  return key ? decrypt(text, key) : text;
+  const primaryKey = process.env.DATA_ENCRYPTION_KEY;
+  const previousKey = process.env.DATA_ENCRYPTION_KEY_PREVIOUS;
+  if (!primaryKey && !previousKey) {
+    return text;
+  }
+  if (primaryKey) {
+    try {
+      return decrypt(text, primaryKey);
+    } catch (error) {
+      if (!previousKey) {
+        throw error;
+      }
+    }
+  }
+  return decrypt(text, previousKey);
 }
 export { encrypt, decrypt, encryptSensitive, decryptSensitive };

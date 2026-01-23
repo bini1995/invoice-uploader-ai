@@ -1,7 +1,11 @@
+import 'dotenv/config';
 import { Worker } from 'bullmq';
 import logger from '../utils/logger.js';
 import { getRedisConnection } from '../utils/redis.js';
 import { processDocumentExtraction } from '../services/documentExtractionService.js';
+import { loadSecrets } from '../utils/secretsManager.js';
+
+await loadSecrets();
 
 const connection = getRedisConnection();
 
