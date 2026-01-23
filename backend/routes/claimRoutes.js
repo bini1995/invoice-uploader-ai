@@ -35,6 +35,7 @@ import {
   getTopVendors,
   getCptExplainability,
   parseEdiHl7,
+  purgeDemoDocuments,
 } from '../controllers/claimController.js';
 import { verifyClaimWebhookSignature } from '../middleware/claimWebhookAuth.js';
 
@@ -90,6 +91,12 @@ router.get(
 );
 router.get('/report/pdf', authMiddleware, exportSummaryPDF);
 router.post('/export', authMiddleware, exportClaims);
+router.delete(
+  '/purge-demo',
+  authMiddleware,
+  authorizeRoles('admin', 'internal_ops'),
+  purgeDemoDocuments
+);
 router.patch('/:id/status', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), updateStatus);
 router.get('/:id/cpt-explain', authMiddleware, getCptExplainability);
 router.get('/:id', authMiddleware, getDocument);
