@@ -167,6 +167,19 @@ async function initDb() {
       "CREATE INDEX IF NOT EXISTS idx_claim_embeddings ON claim_embeddings USING ivfflat (embedding vector_cosine_ops)"
     );
 
+    await pool.query(`CREATE TABLE IF NOT EXISTS multimodal_embeddings (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      modality TEXT NOT NULL,
+      embedding VECTOR(512),
+      model TEXT,
+      metadata JSONB,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
+    await pool.query(
+      "CREATE INDEX IF NOT EXISTS idx_multimodal_embeddings ON multimodal_embeddings USING ivfflat (embedding vector_cosine_ops)"
+    );
+
     await pool.query(`CREATE TABLE IF NOT EXISTS document_versions (
       id SERIAL PRIMARY KEY,
       document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,

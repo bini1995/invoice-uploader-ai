@@ -30,6 +30,7 @@ import {
   claimMetricsDuration,
   claimMetricsErrorCounter
 } from '../metrics.js';
+import { toFile } from 'openai';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -189,6 +190,28 @@ export const parseEdiHl7 = async (req, res) => {
     res.status(500).json({ message: 'Failed to parse EDI/HL7 payload', error: err.message });
   }
 };
+
+export const transcribeFnolAudio = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No audio file provided.' });
+    }
+    if (!openrouter.audio?.transcriptions?.create) {
+      return res.status(503).json({ message: 'Audio transcription is not configured.' });
+    }
+    const audioFile = await toFile(req.file.buffer, req.file.originalname || 'fnol.webm', {
+      type: req.file.mimetype || 'audio/webm',
+    });
+    const transcription = await openrouter.audio.transcriptions.create({
+      file: audioFile,
+      model: 'openai/whisper-1',
+    });
+    res.json({ transcript: transcription.text || '' });
+  } catch (err) {
+    logger.error('FNOL transcription error:', err);
+    res.status(500).json({ message: 'Failed to transcribe audio.' });
+  }
+};
 export const uploadDocument = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
@@ -315,7 +338,12 @@ export const extractDocument = async (req, res) => {
       schemaPreset: req.query.schema,
       user: req.user
     });
-    res.json({ data: result.fields, schema: result.schema, confidence: result.confidence });
+    res.json({
+      data: result.fields,
+      schema: result.schema,
+      confidence: result.confidence,
+      multimodal: result.multimodal
+    });
   } catch (err) {
     logger.error('Extract error:', err);
     res.status(500).json({ message: 'Extraction failed' });

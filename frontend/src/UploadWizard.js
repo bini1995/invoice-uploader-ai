@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +28,15 @@ export default function UploadWizard() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(null); // 'success' | 'error'
+  const [voiceAvailable, setVoiceAvailable] = useState(false);
+  const [voiceListening, setVoiceListening] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState(null);
+  const [voiceLiveTranscript, setVoiceLiveTranscript] = useState('');
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [voiceError, setVoiceError] = useState(null);
+  const speechRecognitionRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
   const [fieldMap, setFieldMap] = useState({
     invoice_number: '',
     date: '',
@@ -35,6 +44,41 @@ export default function UploadWizard() {
     vendor: '',
   });
   const required = ['invoice_number', 'date', 'amount', 'vendor'];
+
+  const setupSpeechRecognition = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceAvailable(false);
+      return;
+    }
+    setVoiceAvailable(true);
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.onresult = (event) => {
+      let interim = '';
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          final += transcript;
+        } else {
+          interim += transcript;
+        }
+      }
+      if (interim) setVoiceLiveTranscript(interim);
+      if (final) {
+        setVoiceTranscript((prev) => `${prev} ${final}`.trim());
+        setVoiceLiveTranscript('');
+      }
+    };
+    recognition.onerror = (event) => {
+      setVoiceError(event.error || 'Speech recognition error');
+    };
+    speechRecognitionRef.current = recognition;
+  }, []);
 
   const parseFile = async (fileObj) => {
     const ext = fileObj.name.split('.').pop().toLowerCase();
@@ -67,6 +111,67 @@ export default function UploadWizard() {
       const data = XLSX.utils.sheet_to_json(sheet);
       setHeaders(Object.keys(data[0] || {}));
       setRows(data);
+    }
+  };
+
+  const startVoiceIntake = async () => {
+    setVoiceError(null);
+    setVoiceStatus('listening');
+    setVoiceListening(true);
+    setVoiceLiveTranscript('');
+    try {
+      if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+        throw new Error('Audio recording is not supported in this browser.');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunks.push(event.data);
+      };
+      recorder.onstop = async () => {
+        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+        const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+        await transcribeFnolAudio(blob);
+      };
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      speechRecognitionRef.current?.start();
+    } catch (error) {
+      setVoiceError(error?.message || 'Microphone access denied or unavailable.');
+      setVoiceListening(false);
+      setVoiceStatus(null);
+    }
+  };
+
+  const stopVoiceIntake = () => {
+    setVoiceListening(false);
+    setVoiceStatus('transcribing');
+    speechRecognitionRef.current?.stop();
+    mediaRecorderRef.current?.stop();
+  };
+
+  const transcribeFnolAudio = async (audioBlob) => {
+    setVoiceStatus('transcribing');
+    try {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'fnol.webm');
+      const res = await fetch(`${API_BASE}/api/claims/fnol/transcribe`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setVoiceTranscript(data.transcript || '');
+      } else {
+        setVoiceError(data.message || 'Transcription failed.');
+      }
+    } catch (error) {
+      setVoiceError('Transcription failed.');
+    } finally {
+      setVoiceStatus(null);
     }
   };
 
@@ -135,6 +240,14 @@ export default function UploadWizard() {
     }
   }, [step, rows, handleSuggest]);
 
+  useEffect(() => {
+    setupSpeechRecognition();
+    return () => {
+      speechRecognitionRef.current?.stop?.();
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+    };
+  }, [setupSpeechRecognition]);
+
   return (
     <MainLayout title="Upload Wizard">
       <div className="max-w-3xl mx-auto space-y-6">
@@ -149,6 +262,63 @@ export default function UploadWizard() {
               className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
             >
               <h2 className="text-lg font-semibold">1. Select File</h2>
+              <div className="space-y-3 rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/40 dark:text-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold">Voice FNOL Intake</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Capture first notice of loss details with live speech and Whisper transcription.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={startVoiceIntake}
+                      disabled={!voiceAvailable || voiceListening}
+                      variant="secondary"
+                    >
+                      {voiceListening ? 'Listening...' : 'Start'}
+                    </Button>
+                    <Button
+                      onClick={stopVoiceIntake}
+                      disabled={!voiceListening}
+                      variant="outline"
+                    >
+                      Stop
+                    </Button>
+                  </div>
+                </div>
+                {!voiceAvailable && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Web Speech API is unavailable in this browser. You can still upload files below.
+                  </p>
+                )}
+                {voiceLiveTranscript && (
+                  <p className="text-xs text-blue-600 dark:text-blue-300">
+                    Live: {voiceLiveTranscript}
+                  </p>
+                )}
+                {voiceStatus && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Status: {voiceStatus}
+                  </p>
+                )}
+                {voiceError && (
+                  <Alert type="error">
+                    {voiceError}
+                  </Alert>
+                )}
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+                    FNOL Transcript (editable)
+                  </label>
+                  <textarea
+                    className="input w-full h-24 text-xs"
+                    value={voiceTranscript}
+                    onChange={(e) => setVoiceTranscript(e.target.value)}
+                    placeholder="Transcribed FNOL details will appear here."
+                  />
+                </div>
+              </div>
               <Input type="file" accept=".csv,.xls,.xlsx,.pdf" onChange={e => handleFile(e.target.files[0])} />
               {file && (
                 <Button onClick={() => setPreviewModal(true)} variant="secondary">Preview</Button>
