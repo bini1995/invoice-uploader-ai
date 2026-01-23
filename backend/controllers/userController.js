@@ -55,8 +55,9 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    const tenantId = user.tenant_id || user.tenantId || 'default';
     const token = jwt.sign(
-      { userId: user.id, role: user.role, username: user.username },
+      { userId: user.id, role: user.role, username: user.username, tenantId },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -96,8 +97,9 @@ export const refreshToken = async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.userId]);
     const user = rows[0];
     if (!user) return res.status(401).json({ message: 'Invalid user' });
+    const tenantId = user.tenant_id || user.tenantId || 'default';
     const token = jwt.sign(
-      { userId: user.id, role: user.role, username: user.username },
+      { userId: user.id, role: user.role, username: user.username, tenantId },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
