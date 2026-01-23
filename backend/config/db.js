@@ -7,10 +7,13 @@ import 'dotenv/config';
 import logger from '../utils/logger.js';
 logger.info('🔎 Using DATABASE_URL:', process.env.DATABASE_URL);
 
+const defaultDbHost = process.env.DB_HOST || 'db';
+const defaultDbPort = process.env.DB_PORT || '5432';
+
 // Create a connection pool using info from your .env file
 const dbConfig = {
-  host: process.env.DB_HOST || 'db',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
+  host: defaultDbHost,
+  port: parseInt(defaultDbPort, 10),
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'TATA1tata1',
   database: process.env.DB_NAME || 'invoices_db',
@@ -31,8 +34,8 @@ if (process.env.DATABASE_URL) {
     const badHosts = ['localhost', '127.0.0.1', '::1'];
     const needsOverride = badHosts.includes(url.hostname) || url.port === '5433';
     if (needsOverride) {
-      url.hostname = process.env.DB_HOST || 'db';
-      url.port = process.env.DB_PORT || '5432';
+      url.hostname = defaultDbHost;
+      url.port = defaultDbPort;
     }
     // Add SSL disable parameter for local development
     url.searchParams.set('sslmode', 'disable');
