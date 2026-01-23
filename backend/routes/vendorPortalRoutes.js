@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/login', portal.login);
 router.use(portal.auth);
-router.get('/invoices', portal.listInvoices);
+router.get('/claims', portal.listInvoices);
 router.post('/upload', uploadLimiter, portal.uploadInvoice);
 router.get('/bank', portal.getBankInfo);
 router.patch('/bank', portal.updateBankInfo);
