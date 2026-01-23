@@ -60,11 +60,20 @@ export const login = async (req, res) => {
       JWT_SECRET,
       { expiresIn: '24h' }
     );
+    const refreshTokenId = crypto.randomUUID();
     const refreshToken = jwt.sign(
-      { userId: user.id },
+      { userId: user.id, tokenId: refreshTokenId },
       JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
+    if (req.session) {
+      req.session.userId = user.id;
+      req.session.refreshTokenId = refreshTokenId;
+      req.session.username = user.username;
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => (err ? reject(err) : resolve()));
+      });
+    }
     activeUsersGauge.inc();
     logger.info('User logged in', { userId: user.id });
     res.json({ token, refreshToken, role: user.role, username: user.username });
@@ -76,11 +85,14 @@ export const login = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
-  if (!refreshToken) {
+  if (!refreshToken || !req.session?.refreshTokenId) {
     return res.status(401).json({ message: 'Invalid refresh token' });
   }
   try {
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+    if (decoded.tokenId !== req.session.refreshTokenId || decoded.userId !== req.session.userId) {
+      return res.status(401).json({ message: 'Invalid refresh token' });
+    }
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.userId]);
     const user = rows[0];
     if (!user) return res.status(401).json({ message: 'Invalid user' });
@@ -89,16 +101,30 @@ export const refreshToken = async (req, res) => {
       JWT_SECRET,
       { expiresIn: '24h' }
     );
-    res.json({ token, role: user.role, username: user.username });
+    const newRefreshTokenId = crypto.randomUUID();
+    const newRefreshToken = jwt.sign(
+      { userId: user.id, tokenId: newRefreshTokenId },
+      JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+    req.session.refreshTokenId = newRefreshTokenId;
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => (err ? reject(err) : resolve()));
+    });
+    res.json({ token, refreshToken: newRefreshToken, role: user.role, username: user.username });
   } catch (err) {
     res.status(401).json({ message: 'Invalid refresh token' });
   }
 };
 
 export const logout = async (req, res) => {
-  const { refreshToken } = req.body;
   activeUsersGauge.dec();
   logger.info('User logged out');
+  if (req.session) {
+    await new Promise((resolve) => {
+      req.session.destroy(() => resolve());
+    });
+  }
   res.json({ message: 'Logged out' });
 };
 
