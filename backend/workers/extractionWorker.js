@@ -3,6 +3,7 @@ import { Worker } from 'bullmq';
 import logger from '../utils/logger.js';
 import { getRedisConnection } from '../utils/redis.js';
 import { processDocumentExtraction } from '../services/documentExtractionService.js';
+import { processClaimFieldExtraction } from '../services/claimFieldExtractionService.js';
 import { loadSecrets } from '../utils/secretsManager.js';
 
 await loadSecrets();
@@ -20,6 +21,10 @@ const worker = new Worker(
     const { documentId, schemaPreset, user } = job.data || {};
     if (!documentId) {
       throw new Error('Missing documentId');
+    }
+    if (job.name === 'extract-claim-fields') {
+      await processClaimFieldExtraction({ documentId, user });
+      return;
     }
     await processDocumentExtraction({ documentId, schemaPreset, user });
   },

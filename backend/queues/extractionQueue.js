@@ -18,10 +18,10 @@ export const extractionQueue = connection
 
 export const isExtractionQueueEnabled = () => Boolean(extractionQueue);
 
-export const enqueueExtraction = async (payload) => {
+export const enqueueExtraction = async (payload, jobName = 'extract') => {
   if (!extractionQueue) {
     logger.warn('Extraction queue unavailable; skipping enqueue');
     return null;
   }
-  return extractionQueue.add('extract', payload);
+  return extractionQueue.add(jobName, payload);
 };
