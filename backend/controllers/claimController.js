@@ -633,6 +633,25 @@ export const autoDeleteExpiredDocuments = async () => {
   }
 };
 
+export const purgeDemoDocuments = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM documents
+       WHERE tenant_id = $1
+         AND (
+           (metadata->>'demo') = 'true'
+           OR doc_title ILIKE 'DEMO-%'
+           OR file_name ILIKE 'DEMO-%'
+         )`,
+      [req.tenantId]
+    );
+    res.json({ deleted: result.rowCount });
+  } catch (err) {
+    logger.error('Purge demo documents error:', err);
+    res.status(500).json({ message: 'Failed to purge demo documents' });
+  }
+};
+
 export const submitExtractionFeedback = async (req, res) => {
   const { id } = req.params;
   const { status, reason, note, assigned_to } = req.body || {};
