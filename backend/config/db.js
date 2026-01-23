@@ -117,7 +117,24 @@ pool.query = (text, params, callback) => {
     }
   }
 
-  return origQuery(text, params, callback);
+  const executeQuery = async () => {
+    const client = await pool.connect();
+    try {
+      await client.query("SELECT set_config('app.tenant_id', $1, false)", [tenantId]);
+      return await client.query(text, params);
+    } finally {
+      client.release();
+    }
+  };
+
+  if (callback) {
+    executeQuery()
+      .then((result) => callback(null, result))
+      .catch((error) => callback(error));
+    return undefined;
+  }
+
+  return executeQuery();
 };
 
 // Log when it connects
