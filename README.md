@@ -117,7 +117,9 @@ Swagger documentation is available at [`/api/docs`](http://localhost:3000/api/do
 
 ### Webhook Integration
 
-Set `CLAIM_STATUS_WEBHOOK_URL` in `.env` to receive a POST request whenever a claim's status is updated. Optional JSON strings `CLAIM_WEBHOOK_HEADERS` and `CLAIM_WEBHOOK_TEMPLATE` allow custom headers and extra payload fields.
+Set `CLAIM_STATUS_WEBHOOK_URL` in `.env` to receive a POST request whenever a claim's status is updated. `CLAIM_WEBHOOK_SECRET` is required to sign webhook payloads with an HMAC signature (`X-Webhook-Signature: sha256=...`). Optional JSON strings `CLAIM_WEBHOOK_HEADERS` and `CLAIM_WEBHOOK_TEMPLATE` allow custom headers and extra payload fields.
+
+Inbound status webhooks can be sent to `POST /api/claims/status-webhook` with the same signature header and payload shape.
 
 Sample webhook payload:
 
