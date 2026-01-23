@@ -2,6 +2,7 @@
 import { getSuggestions } from '../utils/ocrAgent.js';
 import { trainFromCorrections } from '../utils/ocrAgent.js';
 import { trainAnomalyModel } from '../utils/anomalyTrainer.js';
+import { trainHfAnomalyClassifier } from '../utils/anomalyClassifierTrainer.js';
 import {
   getTrackingUri,
   getOrCreateExperiment,
@@ -28,6 +29,7 @@ export const retrain = async (req, res) => {
     await trainFromCorrections();
     const baseThreshold = Number(req.body?.baseThreshold) || 2;
     const anomalyResult = await trainAnomalyModel({ baseThreshold });
+    const hfResult = await trainHfAnomalyClassifier({ minSamples: 25 });
     let mlflow = null;
     if (getTrackingUri()) {
       try {
@@ -59,6 +61,7 @@ export const retrain = async (req, res) => {
     res.json({
       message: 'Retraining complete',
       anomaly: anomalyResult,
+      transformer: hfResult,
       mlflow,
     });
   } catch (err) {
