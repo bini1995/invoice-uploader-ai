@@ -55,6 +55,8 @@ jobs:
         run: cd frontend && npm test src/components/__tests__/visual.pr.test.jsx
       - name: Build frontend
         run: cd frontend && npm run build
+      - name: VPS swap build script (CI mode)
+        run: CI=true bash build-on-vps-with-swap.sh --ci
       - name: Lighthouse CI
         run: cd frontend && npx lhci autorun --config=lighthouserc.js
       - name: Verify deployed health
