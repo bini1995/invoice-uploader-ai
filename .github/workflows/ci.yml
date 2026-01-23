@@ -24,9 +24,11 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version-file: .nvmrc
+      - name: Verify Node.js version
+        run: node -e "const major=parseInt(process.versions.node.split('.')[0],10); if (major < 20) { console.error(`Node.js 20+ required, found ${process.versions.node}`); process.exit(1); }"
       - name: Check for deprecated invoice routes
         run: node scripts/check-deprecated-invoices.js
       - name: Install backend deps
