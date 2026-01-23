@@ -28,6 +28,7 @@ import {
   getComments,
   getReviewQueue,
   updateStatus,
+  handleClaimStatusWebhook,
   exportClaims,
   getClaimMetrics,
   getUploadHeatmap,
@@ -35,6 +36,7 @@ import {
   getCptExplainability,
   parseEdiHl7,
 } from '../controllers/claimController.js';
+import { verifyClaimWebhookSignature } from '../middleware/claimWebhookAuth.js';
 
 const router = express.Router();
 const allowed = ['.pdf', '.docx', '.png', '.jpg', '.jpeg', '.txt', '.eml', '.csv'];
@@ -63,6 +65,7 @@ const integrationUpload = multer({
 });
 
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
+router.post('/status-webhook', verifyClaimWebhookSignature, handleClaimStatusWebhook);
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
 router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/', authMiddleware, listDocuments);

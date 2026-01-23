@@ -7,6 +7,7 @@ This phase focuses on getting data out of the platform and into existing systems
 - **CSV & JSON export** of all claims and their parsed fields via `/api/claims/export`.
 - **ERP / Claims system integration** endpoint to push claim data.
 - **Webhook triggers** fire on claim status changes using `CLAIM_STATUS_WEBHOOK_URL`.
+  - Signed with `CLAIM_WEBHOOK_SECRET` (`X-Webhook-Signature: sha256=...`)
   - Custom headers via `CLAIM_WEBHOOK_HEADERS`
   - Additional payload fields via `CLAIM_WEBHOOK_TEMPLATE`
 

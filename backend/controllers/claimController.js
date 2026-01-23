@@ -823,43 +823,73 @@ export const getReviewQueue = async (_req, res) => {
   }
 };
 
+const allowedStatusTransitions = {
+  extracted: ['needs_review'],
+  needs_review: ['approved', 'escalated', 'needs_info'],
+  needs_info: ['needs_review'],
+  approved: [],
+  escalated: []
+};
+
+const updateClaimStatus = async (id, status) => {
+  const before = await pool.query('SELECT status FROM documents WHERE id = $1', [id]);
+  const current = before.rows[0]?.status;
+  if (!current) return { error: { status: 404, message: 'Document not found' } };
+  if (!(allowedStatusTransitions[current] || []).includes(status)) {
+    return { error: { status: 400, message: 'Invalid status transition' }, current };
+  }
+  const { rows } = await pool.query(
+    'UPDATE documents SET status = $1 WHERE id = $2 RETURNING id, status',
+    [status, id]
+  );
+  return { rows, previous: current };
+};
+
+const resolveStatusAction = (status) => {
+  if (status === 'approved') return 'approve_claim';
+  if (status === 'needs_info') return 'request_info_claim';
+  if (status === 'escalated') return 'escalate_claim';
+  return 'update_claim_status';
+};
+
 export const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body || {};
   if (!status) return res.status(400).json({ message: 'Status required' });
   try {
-    const allowedTransitions = {
-      extracted: ['needs_review'],
-      needs_review: ['approved', 'escalated', 'needs_info'],
-      needs_info: ['needs_review'],
-      approved: [],
-      escalated: []
-    };
-    const before = await pool.query('SELECT status FROM documents WHERE id = $1', [id]);
-    const current = before.rows[0]?.status;
-    if (!current) return res.status(404).json({ message: 'Document not found' });
-    if (!(allowedTransitions[current] || []).includes(status)) {
-      return res.status(400).json({ message: 'Invalid status transition' });
+    const result = await updateClaimStatus(id, status);
+    if (result.error) {
+      return res.status(result.error.status).json({ message: result.error.message });
     }
-    const { rows } = await pool.query(
-      'UPDATE documents SET status = $1 WHERE id = $2 RETURNING id, status',
-      [status, id]
-    );
-    const previous = current;
     triggerClaimWebhook('status_changed', {
       claim_id: id,
-      previous_status: previous,
+      previous_status: result.previous,
       new_status: status
     });
-    let action = 'update_claim_status';
-    if (status === 'approved') action = 'approve_claim';
-    else if (status === 'needs_info') action = 'request_info_claim';
-    else if (status === 'escalated') action = 'escalate_claim';
-    await logActivity(req.user?.userId, action, id, req.user?.username);
-    res.json({ message: 'Status updated', document: rows[0] });
+    await logActivity(req.user?.userId, resolveStatusAction(status), id, req.user?.username);
+    return res.json({ message: 'Status updated', document: result.rows[0] });
   } catch (err) {
     console.error('Status update error:', err);
-    res.status(500).json({ message: 'Failed to update status' });
+    return res.status(500).json({ message: 'Failed to update status' });
+  }
+};
+
+export const handleClaimStatusWebhook = async (req, res) => {
+  const { claim_id: claimId, status, new_status: newStatus } = req.body || {};
+  const resolvedStatus = newStatus || status;
+  if (!claimId || !resolvedStatus) {
+    return res.status(400).json({ message: 'claim_id and status are required' });
+  }
+  try {
+    const result = await updateClaimStatus(claimId, resolvedStatus);
+    if (result.error) {
+      return res.status(result.error.status).json({ message: result.error.message });
+    }
+    await logActivity(null, resolveStatusAction(resolvedStatus), claimId, 'webhook');
+    return res.json({ message: 'Webhook status processed', document: result.rows[0] });
+  } catch (err) {
+    console.error('Claim status webhook error:', err);
+    return res.status(500).json({ message: 'Failed to process webhook' });
   }
 };
 

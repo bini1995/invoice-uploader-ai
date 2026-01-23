@@ -21,6 +21,10 @@ try {
 
 export const triggerClaimWebhook = async (event, payload = {}) => {
   if (!url) return;
+  if (!webhookSecret) {
+    console.warn('CLAIM_WEBHOOK_SECRET is required to send claim webhooks securely.');
+    return;
+  }
   const body = {
     event,
     updated_at: new Date().toISOString(),
@@ -28,13 +32,11 @@ export const triggerClaimWebhook = async (event, payload = {}) => {
     ...payload
   };
   const bodyString = JSON.stringify(body);
-  const signature = webhookSecret
-    ? crypto.createHmac('sha256', webhookSecret).update(bodyString).digest('hex')
-    : null;
+  const signature = crypto.createHmac('sha256', webhookSecret).update(bodyString).digest('hex');
   const headers = {
     'Content-Type': 'application/json',
     ...extraHeaders,
-    ...(signature ? { 'X-Webhook-Signature': `sha256=${signature}` } : {})
+    'X-Webhook-Signature': `sha256=${signature}`
   };
   try {
     await fetch(url, {
