@@ -37,6 +37,7 @@ import {
   parseEdiHl7,
   purgeDemoDocuments,
 } from '../controllers/claimController.js';
+import { processClaimWorkflow } from '../controllers/agenticClaimsController.js';
 import { verifyClaimWebhookSignature } from '../middleware/claimWebhookAuth.js';
 
 const router = express.Router();
@@ -67,6 +68,7 @@ const integrationUpload = multer({
 
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
 router.post('/status-webhook', verifyClaimWebhookSignature, handleClaimStatusWebhook);
+router.post('/process', authMiddleware, processClaimWorkflow);
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
 router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/', authMiddleware, listDocuments);

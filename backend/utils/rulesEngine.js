@@ -1,5 +1,82 @@
 
 import pool from '../config/db.js';
+import { RunnableSequence } from '@langchain/core/runnables';
+
+class ExtractionAgent {
+  constructor({ name = 'ExtractionAgent' } = {}) {
+    this.name = name;
+  }
+
+  async run(input) {
+    const claim = input.claim || {};
+    return {
+      ...input,
+      extracted: {
+        vendor: claim.vendor || claim.provider || null,
+        amount: Number(claim.amount ?? claim.total_amount ?? 0),
+        description: claim.description || claim.notes || '',
+        date: claim.date || claim.service_date || null,
+        deductible: claim.deductible ?? null,
+        benefit_amount: claim.benefit_amount ?? claim.benefit ?? null,
+      },
+      agentTrace: [...(input.agentTrace || []), this.name],
+    };
+  }
+}
+
+class ValidationAgent {
+  constructor({ name = 'ValidationAgent' } = {}) {
+    this.name = name;
+  }
+
+  async run(input) {
+    const extracted = input.extracted || {};
+    const errors = [];
+    if (!extracted.vendor) errors.push('Missing vendor/provider name');
+    if (!Number.isFinite(extracted.amount) || extracted.amount <= 0) {
+      errors.push('Invalid or missing claim amount');
+    }
+    if (!extracted.date) errors.push('Missing service date');
+    return {
+      ...input,
+      validation: {
+        isValid: errors.length === 0,
+        errors,
+      },
+      agentTrace: [...(input.agentTrace || []), this.name],
+    };
+  }
+}
+
+class FraudAgent {
+  constructor({ name = 'FraudAgent' } = {}) {
+    this.name = name;
+  }
+
+  async run(input) {
+    const claim = { ...input.claim, ...(input.extracted || {}) };
+    const flagged = await applyRules(claim);
+    return {
+      ...input,
+      fraud: {
+        flagged: flagged.flagged,
+        reason: flagged.flag_reason,
+        tags: flagged.tags,
+      },
+      agentTrace: [...(input.agentTrace || []), this.name],
+    };
+  }
+}
+
+const extractionAgent = new ExtractionAgent();
+const validationAgent = new ValidationAgent();
+const fraudAgent = new FraudAgent();
+
+const agentSequence = RunnableSequence.from([
+  (input) => extractionAgent.run(input),
+  (input) => validationAgent.run(input),
+  (input) => fraudAgent.run(input),
+]);
 let rules = [
   { vendor: 'X', amountGreaterThan: 500, flagReason: 'Vendor X amount > $500' },
   { amountGreaterThan: 5000, flagReason: 'Amount exceeds $5000' },
@@ -116,4 +193,19 @@ function deleteRule(index) {
   }
 }
 
-export { applyRules, getRules, addRule, setRules, updateRule, deleteRule };
+async function runAgentSequence(payload) {
+  return agentSequence.invoke(payload);
+}
+
+export {
+  applyRules,
+  getRules,
+  addRule,
+  setRules,
+  updateRule,
+  deleteRule,
+  runAgentSequence,
+  ExtractionAgent,
+  ValidationAgent,
+  FraudAgent,
+};
