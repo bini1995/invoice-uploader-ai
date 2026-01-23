@@ -2,6 +2,11 @@
 
 echo "🚀 Building Frontend on VPS with Swap Space"
 
+CI_MODE=false
+if [ "$1" = "--ci" ] || [ "${CI:-}" = "true" ]; then
+    CI_MODE=true
+fi
+
 # Check if we're in the right directory
 if [ ! -f "docker-compose.yml" ]; then
     echo "❌ Error: Please run this script from the invoice-uploader-ai directory"
@@ -11,6 +16,11 @@ fi
 # Check swap space
 echo "📊 Checking memory and swap..."
 free -h
+
+if [ "$CI_MODE" = true ]; then
+    echo "🧪 CI mode enabled. Skipping swap activation, Docker builds, and service startup."
+    exit 0
+fi
 
 # Check if swap is active
 if ! swapon --show | grep -q "swapfile"; then

@@ -1,12 +1,25 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import compression from 'vite-plugin-compression';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    compression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 10240,
+    }),
+    compression({
+      algorithm: 'brotliCompress',
+      ext: '.br',
+      threshold: 10240,
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -43,6 +56,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    reportCompressedSize: false,
   },
   test: {
     environment: 'jsdom',
