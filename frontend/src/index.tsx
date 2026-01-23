@@ -36,6 +36,7 @@ import './i18n';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { API_BASE } from './api';
 import { getRequestId } from './lib/analytics';
+import { queueOfflineRequest, startOfflineSync } from './lib/offlineSync';
 
 /**
  * Global fetch wrapper to route API requests to configured backend.
@@ -44,6 +45,7 @@ import { getRequestId } from './lib/analytics';
  */
 const originalFetch: typeof window.fetch = window.fetch;
 window.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
+  const method = (options.method || 'GET').toUpperCase();
   if (typeof url === 'string') {
     const tenant = localStorage.getItem('tenant') || 'default';
     if (url.startsWith('http://localhost:3000')) {
@@ -64,7 +66,32 @@ window.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
   }
   const finalUrl = url;
   options.headers = { ...(options.headers || {}), 'X-Request-Id': getRequestId() };
-  const res = await originalFetch(finalUrl, options);
+
+  if (method !== 'GET' && !navigator.onLine) {
+    const queued = await queueOfflineRequest(finalUrl.toString(), options);
+    if (queued) {
+      return new Response(JSON.stringify({ queued: true, offline: true }), {
+        status: 202,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
+  let res: Response;
+  try {
+    res = await originalFetch(finalUrl, options);
+  } catch (error) {
+    if (method !== 'GET') {
+      const queued = await queueOfflineRequest(finalUrl.toString(), options);
+      if (queued) {
+        return new Response(JSON.stringify({ queued: true, offline: true }), {
+          status: 202,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+    throw error;
+  }
   
   // Only handle 401 for non-login requests
   if (res.status === 401 && !finalUrl.includes('/login') && !finalUrl.includes('/api/auth/login')) {
@@ -196,6 +223,7 @@ serviceWorkerRegistration.register({
   }
 });
 
+startOfflineSync(originalFetch);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
