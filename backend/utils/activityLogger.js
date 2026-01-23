@@ -3,6 +3,7 @@ import pool from '../config/db.js';
 import { broadcastActivity } from './chatServer.js';
 import { broadcastDocActivity } from './docActivityServer.js';
 import { logAudit } from './auditLogger.js';
+import { requestSignature } from './docusignService.js';
 async function logActivity(userId, action, invoiceId = null, username = null) {
   try {
     const { rows } = await pool.query(
@@ -15,7 +16,19 @@ async function logActivity(userId, action, invoiceId = null, username = null) {
     }
     await logActivityDetailed('default', userId, username, action, { invoiceId });
     if (['upload_invoice', 'approve_invoice', 'flag_invoice', 'unflag_invoice'].includes(action)) {
-      await logAudit(action, invoiceId, userId, username);
+      let docusign = null;
+      if (action === 'approve_invoice') {
+        docusign = await requestSignature({
+          auditLogId: null,
+          invoiceId,
+          approverEmail: username ? `${username}@example.com` : null,
+        });
+      }
+      await logAudit(action, invoiceId, userId, username, {
+        docusignEnvelopeId: docusign?.envelopeId || null,
+        docusignStatus: docusign?.status || null,
+        docusignSignedAt: docusign?.signedAt || null,
+      });
     }
   } catch (err) {
     console.error('Activity log error:', err);

@@ -24,9 +24,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.974.0",
+    "@huggingface/inference": "^2.8.1",
     "@prisma/client": "^7.3.0",
     "@sentry/node": "^7.103.0",
-    "@huggingface/inference": "^2.8.1",
     "@xenova/transformers": "^2.17.2",
     "@y/websocket-server": "^0.1.1",
     "ajv": "^8.17.1",
@@ -80,6 +80,7 @@
     "telnet": "^0.0.1",
     "tesseract.js": "^4.0.2",
     "umzug": "^3.8.2",
+    "web3": "^4.16.0",
     "winston": "^3.17.0",
     "ws": "^8.18.3",
     "y-websocket": "^3.0.0",
