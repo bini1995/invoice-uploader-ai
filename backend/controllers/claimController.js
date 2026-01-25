@@ -20,7 +20,7 @@ import { autoAssignDocument } from '../services/invoiceService.js';
 import { enqueueExtraction, isExtractionQueueEnabled } from '../queues/extractionQueue.js';
 import { processDocumentExtraction } from '../services/documentExtractionService.js';
 import { anonymizeObject, anonymizeText, buildPhiPayload, encryptPhiPayload } from '../utils/compliance.js';
-import { parseIntegrationPayload } from '../utils/ediHl7Parser.js';
+import { detectEdiTransaction, parseIntegrationPayload } from '../utils/ediHl7Parser.js';
 import {
   claimUploadCounter,
   fieldExtractCounter,
@@ -183,11 +183,34 @@ export const parseEdiHl7 = async (req, res) => {
     }
 
     const format = req.body?.format || req.query?.format;
-    const result = parseIntegrationPayload({ payload, format });
+    const result = await parseIntegrationPayload({ payload, format });
     res.json(result);
   } catch (err) {
     logger.error('EDI/HL7 parse error:', err);
     res.status(500).json({ message: 'Failed to parse EDI/HL7 payload', error: err.message });
+  }
+};
+
+export const ingestClaimIntegration = async (req, res) => {
+  try {
+    const payload = req.file?.buffer?.toString('utf-8') || req.body?.payload;
+    if (!payload) {
+      return res.status(400).json({ message: 'Provide a file or payload to ingest.' });
+    }
+
+    const format = req.body?.format || req.query?.format;
+    const result = await parseIntegrationPayload({ payload, format });
+    const transactionSet = result.format === 'edi' ? detectEdiTransaction(payload) : null;
+    const summary = {
+      format: result.format,
+      transaction_set: transactionSet,
+      payload_bytes: Buffer.byteLength(payload, 'utf-8'),
+      received_at: new Date().toISOString(),
+    };
+    res.json({ ...result, summary });
+  } catch (err) {
+    logger.error('EDI/HL7 ingest error:', err);
+    res.status(500).json({ message: 'Failed to ingest EDI/HL7 payload', error: err.message });
   }
 };
 

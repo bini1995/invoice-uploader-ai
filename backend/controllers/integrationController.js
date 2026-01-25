@@ -1,5 +1,7 @@
 
+import crypto from 'crypto';
 import pool from '../config/db.js';
+import { buildAuthorizationUrl, exchangeAuthorizationCode, fetchFhirResource, getFhirConfig } from '../services/fhirService.js';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -118,6 +120,100 @@ export const handleEhrWebhook = async (req, res) => {
     console.error('EHR webhook error:', err.message);
   }
   res.json({ message: 'EHR webhook received', provider });
+};
+
+const ensureFhirConfig = (provider) => {
+  const config = getFhirConfig(provider);
+  const missing = ['clientId', 'clientSecret', 'authUrl', 'tokenUrl', 'baseUrl', 'redirectUri'].filter(
+    (key) => !config[key]
+  );
+  if (missing.length) {
+    const error = new Error(`Missing FHIR configuration: ${missing.join(', ')}`);
+    error.status = 400;
+    throw error;
+  }
+  return config;
+};
+
+export const startFhirOAuth = async (req, res) => {
+  try {
+    const provider = req.params.provider || 'epic';
+    const config = ensureFhirConfig(provider);
+    const state = req.query?.state || crypto.randomBytes(16).toString('hex');
+    const authorizationUrl = buildAuthorizationUrl(config, { state });
+    res.json({ provider, authorization_url: authorizationUrl, state });
+  } catch (err) {
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
+
+export const handleFhirOAuthCallback = async (req, res) => {
+  try {
+    const provider = req.params.provider || 'epic';
+    const config = ensureFhirConfig(provider);
+    const code = req.query?.code;
+    if (!code) {
+      return res.status(400).json({ message: 'Missing authorization code.' });
+    }
+    const tokenResponse = await exchangeAuthorizationCode(config, code);
+    const { integrationId, tenantId } = await upsertIntegration(req.tenantId, {
+      name: `${provider} FHIR OAuth`,
+      type: 'ehr',
+      provider,
+      webhookUrl: null,
+      environment: req.query?.environment,
+    });
+    await logIntegrationEvent(tenantId, integrationId, 'fhir_oauth_exchange', {
+      scope: tokenResponse.scope,
+      token_type: tokenResponse.token_type,
+      expires_in: tokenResponse.expires_in,
+    });
+    res.json({ provider, token: tokenResponse });
+  } catch (err) {
+    console.error('FHIR OAuth callback error:', err.message);
+    res.status(err.status || 500).json({ message: 'Failed to exchange OAuth code.' });
+  }
+};
+
+export const pullFhirClaims = async (req, res) => {
+  try {
+    const provider = req.params.provider || 'epic';
+    const config = ensureFhirConfig(provider);
+    const authHeader = req.headers.authorization || '';
+    const accessToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : req.body?.access_token;
+    if (!accessToken) {
+      return res.status(401).json({ message: 'Bearer access token required.' });
+    }
+    const params = {
+      patient: req.query?.patient,
+      status: req.query?.status,
+      _count: req.query?._count || 50,
+      _since: req.query?._since,
+    };
+    const claims = await fetchFhirResource(config, 'ExplanationOfBenefit', accessToken, params);
+    res.json({ provider, resource: 'ExplanationOfBenefit', bundle: claims });
+  } catch (err) {
+    console.error('FHIR claims pull error:', err.message);
+    res.status(500).json({ message: 'Failed to pull FHIR claims.' });
+  }
+};
+
+export const handleFhirWebhook = async (req, res) => {
+  const provider = req.params.provider || req.body?.provider || req.headers['x-fhir-provider'] || 'fhir';
+  const activity = req.body?.event || req.body?.event_type || 'fhir_subscription_event';
+  try {
+    const { integrationId, tenantId } = await upsertIntegration(req.tenantId, {
+      name: `${provider} FHIR Subscription`,
+      type: 'ehr',
+      provider,
+      webhookUrl: req.body?.webhook_url || req.headers['x-webhook-url'],
+      environment: req.body?.environment,
+    });
+    await logIntegrationEvent(tenantId, integrationId, activity, req.body);
+  } catch (err) {
+    console.error('FHIR webhook error:', err.message);
+  }
+  res.json({ message: 'FHIR webhook received', provider });
 };
 
 export const listPublicInvoices = async (req, res) => {
