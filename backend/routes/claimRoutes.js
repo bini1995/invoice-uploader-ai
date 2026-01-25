@@ -35,6 +35,7 @@ import {
   getTopVendors,
   getCptExplainability,
   parseEdiHl7,
+  ingestClaimIntegration,
   transcribeFnolAudio,
   purgeDemoDocuments,
 } from '../controllers/claimController.js';
@@ -107,6 +108,7 @@ router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
 router.get('/review-queue', authMiddleware, getReviewQueue);
 router.post('/edi-hl7/parse', authMiddleware, integrationUpload.single('file'), parseEdiHl7);
+router.post('/ingest', authMiddleware, integrationUpload.single('file'), ingestClaimIntegration);
 router.get(
   '/metrics',
   authMiddleware,
