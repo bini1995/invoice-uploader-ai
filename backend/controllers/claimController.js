@@ -263,6 +263,17 @@ export const uploadDocument = async (req, res) => {
     if (!Object.values(DocumentType).includes(docType)) docType = DocumentType.OTHER;
     const fileBuffer = fs.readFileSync(req.file.path);
     const contentHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+
+    // Check for duplicate documents based on content hash
+    const duplicateRes = await pool.query(
+      'SELECT id FROM documents WHERE content_hash = $1 AND tenant_id = $2',
+      [contentHash, req.tenantId]
+    );
+    if (duplicateRes.rows.length > 0) {
+      fs.unlinkSync(req.file.path);
+      return res.status(409).json({ message: 'Document with this content already exists', id: duplicateRes.rows[0].id });
+    }
+
     const destDir = path.join('uploads', 'documents', docType);
     fs.mkdirSync(destDir, { recursive: true });
     const destPath = path.join(destDir, req.file.filename);
@@ -400,7 +411,10 @@ export const extractClaimFields = async (req, res) => {
     const doc = rows[0];
     timer = extractDuration.startTimer({ doc_type: doc.doc_type });
     const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 10000);
-    const { fields, version } = await aiExtractClaimFields(text);
+    const { fields, version } = await aiExtractClaimFields(text).catch(err => {
+      logger.error('AI Extraction failed in extractClaimFields', { error: err.message, docId: id });
+      throw new Error('AI processing service temporarily unavailable');
+    });
     await pool.query(
       `INSERT INTO claim_fields (document_id, fields, version, extracted_at)
        VALUES ($1, $2, $3, now())
