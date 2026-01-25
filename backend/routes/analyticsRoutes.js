@@ -9,6 +9,7 @@ import {
   getTrends,
   getAgingReport,
   getDashboardMetadata,
+  getDashboardInsights,
   getApprovalStats,
   getApprovalTimeChart,
   getVendorSpend,
@@ -50,6 +51,7 @@ router.get('/spend/heatmap', authMiddleware, getSpendHeatmap);
 router.get('/kpi/approval-time-vendor', authMiddleware, getApprovalTimeByVendor);
 router.get('/kpi/late-payments-trend', authMiddleware, getLatePaymentTrend);
 router.get('/metadata', authMiddleware, getDashboardMetadata);
+router.get('/dashboard', authMiddleware, getDashboardInsights);
 router.get('/outliers', authMiddleware, detectOutliers);
 router.get('/dashboard/realtime', authMiddleware, getRealTimeDashboard);
 router.get('/dashboard/recommendations', authMiddleware, getDashboardRecommendations);

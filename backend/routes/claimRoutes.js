@@ -28,6 +28,7 @@ import {
   getComments,
   getReviewQueue,
   updateStatus,
+  escalateClaim,
   handleClaimStatusWebhook,
   exportClaims,
   getClaimMetrics,
@@ -107,6 +108,12 @@ router.post('/:id/compliance', authMiddleware, checkCompliance);
 router.get('/totals-by-entity', authMiddleware, getEntityTotals);
 router.get('/search', authMiddleware, searchDocuments);
 router.get('/review-queue', authMiddleware, getReviewQueue);
+router.post(
+  '/escalate',
+  authMiddleware,
+  authorizeRoles('admin', 'internal_ops', 'adjuster'),
+  escalateClaim
+);
 router.post('/edi-hl7/parse', authMiddleware, integrationUpload.single('file'), parseEdiHl7);
 router.post('/ingest', authMiddleware, integrationUpload.single('file'), ingestClaimIntegration);
 router.get(

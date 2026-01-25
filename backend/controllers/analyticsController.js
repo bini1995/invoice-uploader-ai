@@ -7,6 +7,8 @@ import levenshtein from 'fast-levenshtein';
 import { loadReportSchedules } from '../utils/reportScheduler.js';
 import openai from '../config/openrouter.js';
 import { detectFraud } from '../ai/fraudDetection.js';
+import insuranceModelRegistry from '../utils/insuranceModelRegistry.js';
+import { buildProphetForecast } from '../utils/forecasting.js';
 export const buildFilterQuery = (query) => {
   const { vendor, department, startDate, endDate, minAmount, maxAmount, tag } = query;
   const params = [];
@@ -259,6 +261,94 @@ export const getDashboardMetadata = async (req, res) => {
   } catch (err) {
     console.error('Dashboard metadata error:', err);
     res.status(500).json({ message: 'Failed to fetch dashboard metadata' });
+  }
+};
+
+const formatMonthKey = (date) => date.toISOString().slice(0, 7);
+
+const toPercent = (value) => Math.round(value * 100);
+
+export const getDashboardInsights = async (_req, res) => {
+  try {
+    const trendRes = await pool.query(
+      `SELECT DATE_TRUNC('month', date) AS month, SUM(amount) AS total
+       FROM invoices
+       WHERE date >= NOW() - INTERVAL '9 months'
+       GROUP BY month
+       ORDER BY month`
+    );
+    const history = trendRes.rows.map((row) => ({
+      month: formatMonthKey(row.month),
+      total: parseFloat(row.total)
+    }));
+    const forecast = buildProphetForecast(history, 3);
+    const series = [
+      ...history.map((item) => ({
+        month: item.month,
+        actual: item.total,
+        forecast: null,
+      })),
+      ...forecast.map((item) => ({
+        month: item.month,
+        actual: null,
+        forecast: item.total,
+      })),
+    ];
+
+    const claimRes = await pool.query(
+      `SELECT COUNT(*)::int AS total,
+              COUNT(*) FILTER (WHERE status = 'escalated')::int AS escalated
+       FROM documents
+       WHERE doc_type IN ('claim_invoice','medical_bill','fnol_form')`
+    );
+    const hitlQueueRes = await pool.query(
+      `SELECT COUNT(*)::int AS queue
+       FROM extraction_feedback
+       WHERE status IN ('needs_review','escalated')`
+    );
+    const assigneeRes = await pool.query(
+      `SELECT u.id, u.username, COUNT(*)::int AS count
+       FROM extraction_feedback f
+       LEFT JOIN users u ON f.assigned_to = u.id
+       WHERE f.status = 'escalated'
+       GROUP BY u.id, u.username
+       ORDER BY count DESC`
+    );
+    const totalClaims = claimRes.rows[0]?.total || 0;
+    const escalatedClaims = claimRes.rows[0]?.escalated || 0;
+    const manualMinutes = 45;
+    const aiMinutes = 12;
+    const timeSavedMinutes = Math.max(0, manualMinutes - aiMinutes) * totalClaims;
+    const automationRate = totalClaims
+      ? (totalClaims - escalatedClaims) / totalClaims
+      : 0;
+
+    res.json({
+      forecast: {
+        method: 'prophet-lite',
+        series,
+      },
+      hitl: {
+        queueCount: hitlQueueRes.rows[0]?.queue || 0,
+        escalatedCount: escalatedClaims,
+        assignees: assigneeRes.rows.map((row) => ({
+          id: row.id,
+          name: row.username || 'Unassigned',
+          count: row.count,
+        })),
+      },
+      roi: {
+        totalClaims,
+        automationRate: toPercent(automationRate),
+        timeSavedHours: Number((timeSavedMinutes / 60).toFixed(1)),
+        manualMinutes,
+        aiMinutes,
+      },
+      models: insuranceModelRegistry,
+    });
+  } catch (err) {
+    console.error('Dashboard insights error:', err);
+    res.status(500).json({ message: 'Failed to fetch dashboard insights' });
   }
 };
 
