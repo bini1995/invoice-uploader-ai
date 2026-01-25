@@ -961,6 +961,69 @@ export const updateStatus = async (req, res) => {
   }
 };
 
+export const escalateClaim = async (req, res) => {
+  const { id, assigneeId, reason, note } = req.body || {};
+  if (!id || !assigneeId || typeof reason !== 'string') {
+    return res.status(400).json({ message: 'id, assigneeId, and reason are required' });
+  }
+  const trimmedReason = reason.trim();
+  const sanitizedReason = sanitizeHtml(trimmedReason, { allowedTags: [], allowedAttributes: {} });
+  if (sanitizedReason.length < 3 || sanitizedReason.length > 500) {
+    return res.status(400).json({ message: 'Reason must be 3-500 characters' });
+  }
+  let sanitizedNote = null;
+  if (note) {
+    const trimmedNote = String(note).trim();
+    sanitizedNote = sanitizeHtml(trimmedNote, { allowedTags: [], allowedAttributes: {} });
+  }
+  try {
+    const docCheck = await pool.query('SELECT id, status FROM documents WHERE id = $1', [id]);
+    if (!docCheck.rows.length) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+    const result = await updateClaimStatus(id, 'escalated');
+    if (result.error && result.current !== 'escalated') {
+      return res.status(result.error.status).json({ message: result.error.message });
+    }
+    await pool.query(
+      `INSERT INTO extraction_feedback (document_id, status, reason, note, assigned_to)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (document_id) DO UPDATE
+       SET status = EXCLUDED.status,
+           reason = EXCLUDED.reason,
+           note = EXCLUDED.note,
+           assigned_to = EXCLUDED.assigned_to,
+           created_at = NOW()`,
+      [id, 'escalated', sanitizedReason, sanitizedNote, assigneeId]
+    );
+    const copilotChannel = `claim-${id}`;
+    await pool.query(
+      `INSERT INTO event_logs (tenant_id, user_id, event_name, details)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        req.tenantId || null,
+        req.user?.userId || null,
+        'hitl_escalation',
+        JSON.stringify({
+          claimId: id,
+          assigneeId,
+          reason: sanitizedReason,
+          copilotChannel,
+        }),
+      ]
+    );
+    await logActivity(req.user?.userId, 'escalate_claim', id, req.user?.username);
+    return res.status(201).json({
+      message: 'Claim escalated',
+      claim: result.rows?.[0] || { id, status: 'escalated' },
+      copilot: { channel: copilotChannel, assigneeId },
+    });
+  } catch (err) {
+    console.error('Escalate claim error:', err);
+    return res.status(500).json({ message: 'Failed to escalate claim' });
+  }
+};
+
 export const handleClaimStatusWebhook = async (req, res) => {
   const { claim_id: claimId, status, new_status: newStatus } = req.body || {};
   const resolvedStatus = newStatus || status;

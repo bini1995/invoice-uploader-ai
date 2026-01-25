@@ -1,4 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import {
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts';
 import Skeleton from './components/Skeleton';
 import MainLayout from './components/MainLayout';
 import { API_BASE } from './api';
@@ -34,6 +43,8 @@ function AISpendAnalyticsHub() {
     topVendor: '',
   });
   const [detailInvoice, setDetailInvoice] = useState(null);
+  const [dashboardInsights, setDashboardInsights] = useState(null);
+  const [loadingInsights, setLoadingInsights] = useState(false);
 
   const fetchHeatmap = useCallback(async () => {
     setLoadingHeatmap(true);
@@ -128,6 +139,22 @@ function AISpendAnalyticsHub() {
       });
     }
   }, [token, vendors, startDate, endDate, selectedTags]);
+
+  const fetchDashboardInsights = useCallback(async () => {
+    if (!token) return;
+    setLoadingInsights(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/analytics/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setDashboardInsights(data);
+    } catch (e) {
+      console.error('Dashboard insights fetch failed:', e);
+    } finally {
+      setLoadingInsights(false);
+    }
+  }, [token]);
 
   const exportPDF = async () => {
     const params = new URLSearchParams();
@@ -283,6 +310,12 @@ function AISpendAnalyticsHub() {
 
   useEffect(() => {
     if (token) {
+      fetchDashboardInsights();
+    }
+  }, [fetchDashboardInsights, token]);
+
+  useEffect(() => {
+    if (token) {
       fetchTags();
     }
   }, [fetchTags, token, startDate, endDate]);
@@ -297,6 +330,11 @@ function AISpendAnalyticsHub() {
     setEndDate(day);
     fetchReport(day, day);
   };
+
+  const forecastSeries = dashboardInsights?.forecast?.series || [];
+  const roi = dashboardInsights?.roi || {};
+  const hitl = dashboardInsights?.hitl || {};
+  const modelRegistry = dashboardInsights?.models || [];
 
   return (
     <MainLayout title="AI Spend Analytics Hub" helpTopic="reports">
@@ -354,6 +392,80 @@ function AISpendAnalyticsHub() {
           <StatCard title="Total $ Spent" value={`$${summary.totalAmount.toFixed(2)}`} />
           <StatCard title="Avg Spend per Vendor" value={`$${summary.avgPerVendor.toFixed(2)}`} />
           <StatCard title="Top Spending Vendor" value={summary.topVendor || 'N/A'} />
+        </div>
+        <div className="rounded-lg border bg-white dark:bg-gray-800 p-4 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                HITL & Predictive Insights
+              </h2>
+              <p className="text-xs text-gray-500">
+                Copilot-driven escalations with Prophet-style trend forecasting.
+              </p>
+            </div>
+            {loadingInsights && <span className="text-xs text-gray-500">Refreshing insights…</span>}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="rounded border p-3">
+              <p className="text-xs text-gray-500">HITL Queue</p>
+              <p className="text-xl font-semibold">{hitl.queueCount ?? 0}</p>
+              <p className="text-xs text-gray-500">Escalated: {hitl.escalatedCount ?? 0}</p>
+            </div>
+            <div className="rounded border p-3">
+              <p className="text-xs text-gray-500">Automation Rate</p>
+              <p className="text-xl font-semibold">{roi.automationRate ?? 0}%</p>
+              <p className="text-xs text-gray-500">Target: 92%+</p>
+            </div>
+            <div className="rounded border p-3">
+              <p className="text-xs text-gray-500">Time Saved</p>
+              <p className="text-xl font-semibold">{roi.timeSavedHours ?? 0} hrs</p>
+              <p className="text-xs text-gray-500">
+                Baseline: {roi.manualMinutes ?? 45}m → {roi.aiMinutes ?? 12}m
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="rounded border p-3">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                Claims Volume Forecast
+              </h3>
+              <div className="h-48">
+                {forecastSeries.length ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={forecastSeries}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="actual" stroke="#2563eb" strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="forecast" stroke="#f97316" strokeWidth={2} strokeDasharray="4 4" dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="text-xs text-gray-500">No forecast data yet.</div>
+                )}
+              </div>
+            </div>
+            <div className="rounded border p-3 space-y-2">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                Domain-Tuned Models (Hugging Face)
+              </h3>
+              <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-300">
+                {modelRegistry.length ? (
+                  modelRegistry.map((model) => (
+                    <li key={model.id} className="border rounded p-2">
+                      <div className="font-semibold text-gray-800 dark:text-gray-100">{model.name}</div>
+                      <div className="text-[11px] text-gray-500">{model.task} • {model.version}</div>
+                      <div className="text-[11px] text-gray-500">{model.fineTunedOn}</div>
+                      <div className="text-[11px] text-gray-500">Status: {model.status}</div>
+                    </li>
+                  ))
+                ) : (
+                  <li>No registered models yet.</li>
+                )}
+              </ul>
+            </div>
+          </div>
         </div>
         <div>
           <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">AI Threshold Rules</h2>
