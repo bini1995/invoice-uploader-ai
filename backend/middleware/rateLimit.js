@@ -4,7 +4,7 @@ import rateLimit from 'express-rate-limit';
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
+  message: { status: 429, message: 'Too many requests from this IP, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => req.path.startsWith('/api/health') || req.path.startsWith('/metrics'),
@@ -14,7 +14,7 @@ const apiLimiter = rateLimit({
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 30,
-  message: 'Too many uploads from this IP, please try again later.',
+  message: { status: 429, message: 'Too many uploads from this IP, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: false,

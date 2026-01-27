@@ -415,6 +415,13 @@ export const extractClaimFields = async (req, res) => {
       logger.error('AI Extraction failed in extractClaimFields', { error: err.message, docId: id });
       throw new Error('AI processing service temporarily unavailable');
     });
+
+    // Enforcement of tenant isolation check before update
+    if (doc.tenant_id !== req.tenantId) {
+       logger.warn('Tenant mismatch attempt during extraction', { docId: id, reqTenant: req.tenantId, docTenant: doc.tenant_id });
+       return res.status(403).json({ message: 'Forbidden: Tenant mismatch' });
+    }
+
     await pool.query(
       `INSERT INTO claim_fields (document_id, fields, version, extracted_at)
        VALUES ($1, $2, $3, now())
@@ -577,6 +584,12 @@ export const checkCompliance = async (req, res) => {
     const text = fs.readFileSync(doc.path, 'utf8').toLowerCase().slice(0, 10000);
     const clauses = ['governing law', 'termination', 'confidentiality'];
     const issues = [];
+    
+    // Enforcement of tenant isolation check
+    if (doc.tenant_id !== req.tenantId) {
+      return res.status(403).json({ message: 'Forbidden: Tenant mismatch' });
+    }
+
     if (doc.doc_type === 'contract') {
       for (const c of clauses) {
         if (!text.includes(c)) issues.push(`Missing clause: ${c}`);

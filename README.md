@@ -38,15 +38,14 @@ The stack focuses on claim processing and routing:
 - AuditFlow: Risk and audit review for flagged claims [See more](docs/AuditFlow.md)
 
 ## Requirements
-- Node.js 18.x LTS
 
-The project relies on Node 18. Using newer versions (e.g. Node 20) can lead to runtime errors such as `TypeError: memorize is not a function` when starting the frontend.
+- **Node.js**: v20 or higher is required. Using older versions (e.g. Node 18) may cause compatibility issues with modern dependencies.
 
 If you use [nvm](https://github.com/nvm-sh/nvm) you can run:
 
 ```bash
-nvm install 18
-nvm use 18
+nvm install 20
+nvm use 20
 ```
 
 After switching Node versions, reinstall the dependencies inside the `frontend` folder:
