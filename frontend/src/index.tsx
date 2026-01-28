@@ -85,21 +85,7 @@ window.fetch = async (url, options = {}) => {
     }
   }
 
-  let res: Response;
-  try {
-    res = await originalFetch(finalUrl, options);
-  } catch (error) {
-    if (method !== 'GET') {
-      const queued = await queueOfflineRequest(finalUrl, options);
-      if (queued) {
-        return new Response(JSON.stringify({ queued: true, offline: true }), {
-          status: 202,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-    }
-    throw error;
-  }
+  const res = await originalFetch(finalUrl, options);
   
   // Only handle 401 for non-login requests
   const finalUrlStr = String(finalUrl);
