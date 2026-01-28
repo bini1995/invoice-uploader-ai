@@ -1,4 +1,5 @@
-import Web3 from 'web3';
+// import Web3 from 'web3';
+const Web3 = null; // Stubbed for now to avoid dependency hell
 import crypto from 'crypto';
 
 const NETWORK_LABEL = process.env.BLOCKCHAIN_NETWORK || 'polygon';

@@ -271,8 +271,8 @@ app.use((req, res) => {
 
     // Start server
     const port = process.env.PORT || 3000;
-    server.listen(port, () => {
-      logger.info(`🚀 Server running on http://localhost:${port}`);
+    server.listen(port, '0.0.0.0', () => {
+      logger.info(`🚀 Server running on http://0.0.0.0:${port}`);
     });
 
   } catch (error) {

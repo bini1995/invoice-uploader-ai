@@ -2,7 +2,7 @@ import { execFile } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import hl7 from 'hl7';
+import hl7 from 'hl7-standard';
 import { X12Parser } from 'node-x12';
 import logger from './logger.js';
 

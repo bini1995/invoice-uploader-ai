@@ -110,7 +110,8 @@ window.fetch = async (url, options = {}) => {
     localStorage.setItem('sessionExpired', '1');
     window.location.href = `/login?next=${next}`;
   } else if (res.status === 403 && !isLoginRequest) {
-    alert(`No access to tenant ${tenant}`);
+    // alert(`No access to tenant ${tenant}`);
+    console.warn(`No access to tenant ${tenant}`);
   }
   return res;
 };

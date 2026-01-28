@@ -97,7 +97,7 @@ export default function LandingPage() {
   ];
 
   const metrics = [
-    { value: "<24", unit: "hr", label: "Average Processing Time", description: "Faster than industry standard" },
+    { value: "24", unit: "hr", label: "Average Processing Time", description: "Faster than industry standard" },
     { value: "99.9", unit: "%", label: "Uptime SLA", description: "Enterprise-grade reliability" },
     { value: "90", unit: "+", label: "NPS Score", description: "Industry-leading satisfaction" },
     { value: "0.1", unit: "%", label: "System Error Rate", description: "Highly reliable infrastructure" }
@@ -281,7 +281,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
-                {["HIPAA Compliant", "SOC 2 Type II", "99.9% Uptime", "GDPR Ready"].map(item => (
+                {["HIPAA Compliant", "99.9% Uptime", "GDPR Ready"].map(item => (
                   <div key={item} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
                     <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
                     <span>{item}</span>
