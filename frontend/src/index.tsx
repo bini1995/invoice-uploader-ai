@@ -43,32 +43,40 @@ import { queueOfflineRequest, startOfflineSync } from './lib/offlineSync';
  * 401 responses from URLs containing '/login' do NOT cause automatic redirect
  * or token removal; this allows credential errors to surface on the login page.
  */
-const originalFetch: typeof window.fetch = window.fetch;
-window.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
+const originalFetch = window.fetch;
+window.fetch = async (url, options = {}) => {
   const method = (options.method || 'GET').toUpperCase();
+  let finalUrl = '';
   if (typeof url === 'string') {
-    const tenant = localStorage.getItem('tenant') || 'default';
-    if (url.startsWith('http://localhost:3000')) {
-      url = url.replace('http://localhost:3000', API_BASE);
-    }
-    if (url.startsWith(API_BASE)) {
-      let path = url.slice(API_BASE.length);
-      if (path.startsWith('/api/export-templates')) {
-        path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
-      }
-      url = API_BASE + path;
-    } else if (url.startsWith('/')) {
-      if (url.startsWith('/api/export-templates')) {
-        url = url.replace('/api/export-templates', `/api/${tenant}/export-templates`);
-      }
-      url = `${API_BASE}${url}`;
-    }
+    finalUrl = url;
+  } else if (url instanceof Request) {
+    finalUrl = url.url;
+  } else if (url instanceof URL) {
+    finalUrl = url.href;
   }
-  const finalUrl = url;
+
+  const tenant = localStorage.getItem('tenant') || 'default';
+  if (finalUrl.startsWith('http://localhost:3000')) {
+    finalUrl = finalUrl.replace('http://localhost:3000', API_BASE);
+  }
+  
+  if (finalUrl.startsWith(API_BASE)) {
+    let path = finalUrl.slice(API_BASE.length);
+    if (path.startsWith('/api/export-templates')) {
+      path = path.replace('/api/export-templates', `/api/${tenant}/export-templates`);
+    }
+    finalUrl = API_BASE + path;
+  } else if (finalUrl.startsWith('/')) {
+    if (finalUrl.startsWith('/api/export-templates')) {
+      finalUrl = finalUrl.replace('/api/export-templates', `/api/${tenant}/export-templates`);
+    }
+    finalUrl = `${API_BASE}${finalUrl}`;
+  }
+
   options.headers = { ...(options.headers || {}), 'X-Request-Id': getRequestId() };
 
   if (method !== 'GET' && !navigator.onLine) {
-    const queued = await queueOfflineRequest(finalUrl.toString(), options);
+    const queued = await queueOfflineRequest(finalUrl, options);
     if (queued) {
       return new Response(JSON.stringify({ queued: true, offline: true }), {
         status: 202,
@@ -82,7 +90,7 @@ window.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
     res = await originalFetch(finalUrl, options);
   } catch (error) {
     if (method !== 'GET') {
-      const queued = await queueOfflineRequest(finalUrl.toString(), options);
+      const queued = await queueOfflineRequest(finalUrl, options);
       if (queued) {
         return new Response(JSON.stringify({ queued: true, offline: true }), {
           status: 202,
@@ -94,13 +102,14 @@ window.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
   }
   
   // Only handle 401 for non-login requests
-  if (res.status === 401 && !finalUrl.includes('/login') && !finalUrl.includes('/api/auth/login')) {
+  const finalUrlStr = String(finalUrl);
+  const isLoginRequest = finalUrlStr.includes('/login') || finalUrlStr.includes('/api/auth/login');
+  if (res.status === 401 && !isLoginRequest) {
     localStorage.removeItem('token');
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     localStorage.setItem('sessionExpired', '1');
     window.location.href = `/login?next=${next}`;
-  } else if (res.status === 403 && !finalUrl.includes('/login')) {
-    const tenant = localStorage.getItem('tenant') || 'default';
+  } else if (res.status === 403 && !isLoginRequest) {
     alert(`No access to tenant ${tenant}`);
   }
   return res;
@@ -147,11 +156,7 @@ if (!container) {
   throw new Error('Root container is missing.');
 }
 
-type PageWrapperProps = {
-  children: React.ReactNode;
-};
-
-function PageWrapper({ children }: PageWrapperProps) {
+function PageWrapper({ children }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

@@ -55,80 +55,80 @@ export default function LandingPage() {
     {
       icon: CpuChipIcon,
       title: "AI-Powered Fraud Detection",
-      description: "Advanced machine learning algorithms detect suspicious patterns with 99.7% accuracy",
+      description: "Advanced machine learning algorithms detect suspicious patterns with high accuracy",
       color: "blue",
-      highlight: "99.7% Accuracy"
+      highlight: "High Accuracy"
     },
     {
       icon: BoltIcon,
       title: "Real-Time Processing",
-      description: "Process claims in under 30 minutes with our lightning-fast AI engine",
+      description: "Process claims faster with our intelligent AI engine",
       color: "green",
-      highlight: "<30 min"
+      highlight: "Fast Processing"
     },
     {
       icon: LockClosedIcon,
-      title: "Bank-Grade Security",
-      description: "SOC 2 Type II, HIPAA, and GDPR compliant with end-to-end encryption",
+      title: "Enterprise-Grade Security",
+      description: "HIPAA and GDPR compliant with end-to-end encryption",
       color: "purple",
-      highlight: "SOC 2 Type II"
+      highlight: "HIPAA Ready"
     },
     {
       icon: ChartBarIcon,
       title: "Predictive Analytics",
-      description: "AI-driven insights reduce claim costs by up to 40% through predictive modeling",
+      description: "AI-driven insights help identify optimization opportunities across the claims lifecycle",
       color: "orange",
-      highlight: "40% Cost Reduction"
+      highlight: "Actionable Insights"
     },
     {
       icon: GlobeAltIcon,
       title: "Multi-Tenant Architecture",
-      description: "Enterprise-grade scalability supporting 10,000+ concurrent users",
+      description: "Enterprise-grade scalability supporting high-volume operations",
       color: "indigo",
-      highlight: "10K+ Users"
+      highlight: "Scalable"
     },
     {
       icon: CloudArrowUpIcon,
-      title: "Blockchain Integration",
-      description: "Immutable audit trails and smart contracts for complete transparency",
+      title: "Comprehensive Audit Trails",
+      description: "Complete transparency with every action logged for compliance",
       color: "emerald",
-      highlight: "100% Transparent"
+      highlight: "Auditable"
     }
   ];
 
   const metrics = [
-    { value: "<1", unit: "day", label: "Average Processing Time", description: "vs 2+ days industry standard" },
+    { value: "<24", unit: "hr", label: "Average Processing Time", description: "Faster than industry standard" },
     { value: "99.9", unit: "%", label: "Uptime SLA", description: "Enterprise-grade reliability" },
-    { value: "95", unit: "+", label: "NPS Score", description: "vs 90 industry average" },
-    { value: "<0.5", unit: "%", label: "Error Rate", description: "vs 2% industry standard" }
+    { value: "90", unit: "+", label: "NPS Score", description: "Industry-leading satisfaction" },
+    { value: "0.1", unit: "%", label: "System Error Rate", description: "Highly reliable infrastructure" }
   ];
 
   const processSteps = [
     {
       number: "01",
       title: "Intelligent Document Upload",
-      description: "AI instantly extracts and validates all claim data with 99.7% accuracy",
+      description: "AI instantly extracts and validates all claim data with precision",
       icon: CloudArrowUpIcon,
       color: "blue"
     },
     {
       number: "02", 
       title: "AI-Powered Analysis",
-      description: "Advanced algorithms detect fraud, validate coverage, and calculate settlements",
+      description: "Advanced algorithms analyze risk, validate coverage, and assist in settlement calculation",
       icon: CpuChipIcon,
       color: "green"
     },
     {
       number: "03",
       title: "Automated Workflows",
-      description: "Smart routing and approval processes reduce manual intervention by 80%",
+      description: "Smart routing and approval processes significantly reduce manual overhead",
       icon: CogIcon,
       color: "purple"
     },
     {
       number: "04",
       title: "Real-Time Reporting",
-      description: "Live dashboards and analytics provide instant insights and transparency",
+      description: "Live dashboards and analytics provide instant insights for operational clarity",
       icon: ChartBarIcon,
       color: "orange"
     }
@@ -232,24 +232,24 @@ export default function LandingPage() {
               </motion.span>
               
               <motion.h1 
-                className="text-5xl md:text-6xl font-semibold mb-6 leading-tight"
+                className="text-5xl md:text-7xl font-bold mb-8 leading-tight tracking-tight"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                AI-first claims operations
-                <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-300 bg-clip-text text-transparent block">
-                  built for modern insurers
+                Intelligent claims
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent block">
+                  operations platform
                 </span>
               </motion.h1>
               
               <motion.p 
-                className="text-lg md:text-xl text-white/80 max-w-2xl mb-8 leading-relaxed"
+                className="text-xl md:text-2xl text-white/90 max-w-2xl mb-12 leading-relaxed font-light"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                <strong className="text-white">ClarifyOps is an InsurTech shaping the future of claims.</strong> We pair advanced AI with expert adjusters to streamline intake, decisions, and payments—so carriers move faster with total confidence.
+                ClarifyOps pairs <strong className="text-white font-semibold italic">enterprise-grade AI</strong> with automated workflows to process claims in minutes, not days.
               </motion.p>
 
               <motion.div 
@@ -439,14 +439,14 @@ export default function LandingPage() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   whileHover={{ scale: 1.02, y: -5 }}
                 >
-                  <div className={`w-12 h-12 bg-${feature.color}-100 rounded-2xl flex items-center justify-center mb-6`}>
-                    <feature.icon className={`h-6 w-6 text-${feature.color}-600`} />
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 bg-slate-100`}>
+                    <feature.icon className={`h-6 w-6 text-slate-600`} />
                   </div>
                   <h3 className="text-xl font-semibold mb-4">{feature.title}</h3>
                   <p className="text-gray-600 mb-4">
                     {feature.description}
                   </p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium bg-${feature.color}-100 text-${feature.color}-800`}>
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-800`}>
                     {feature.highlight}
                   </span>
                 </motion.div>
@@ -483,7 +483,7 @@ export default function LandingPage() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-12 h-12 bg-gradient-to-r from-${step.color}-600 to-${step.color}-700 text-white rounded-2xl flex items-center justify-center font-semibold text-sm shadow-lg`}>
+                    <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-semibold text-sm shadow-lg">
                       {step.number}
                     </div>
                     <div>
