@@ -332,11 +332,20 @@ export const uploadDocument = async (req, res) => {
       logger.warn('AI Embedding failed, skipping', { error: err.message });
       return null;
     });
-    if (embRes && embRes.data && embRes.data[0]) {
+    if (embRes && embRes.data && embRes.data[0] && embRes.data[0].embedding) {
+      // Convert embedding to array format for pgvector if needed
+      let embedding = embRes.data[0].embedding;
+      if (!Array.isArray(embedding)) {
+        embedding = Object.values(embedding);
+      }
+      // Format embedding as pgvector string
+      const embeddingStr = `[${embedding.join(',')}]`;
       await pool.query(
         'INSERT INTO claim_embeddings (document_id, embedding) VALUES ($1,$2)',
-        [rows[0].id, embRes.data[0].embedding]
-      );
+        [rows[0].id, embeddingStr]
+      ).catch(err => {
+        logger.warn('Embedding insert failed, skipping', { error: err.message });
+      });
     }
     logger.info('Claim uploaded', { id: rows[0].id, docType });
     claimUploadCounter.labels(docType).inc();
