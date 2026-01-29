@@ -1,0 +1,52 @@
+root@ubuntu-s-1vcpu-1gb-nyc3-01:~# curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && apt install -y nodejs postgresql postgresql-contrib nginx certbot python3-certbot-nginx git && npm install -g pm2
+2026-01-29 22:02:31 - Installing pre-requisites
+Hit:1 http://security.ubuntu.com/ubuntu noble-security InRelease
+Hit:2 http://mirrors.digitalocean.com/ubuntu noble InRelease                                                                             
+Hit:3 http://mirrors.digitalocean.com/ubuntu noble-updates InRelease                                                                     
+Hit:4 http://mirrors.digitalocean.com/ubuntu noble-backports InRelease                                                                   
+Hit:5 https://deb.nodesource.com/node_20.x nodistro InRelease                                                                            
+Hit:6 https://repos-droplet.digitalocean.com/apt/droplet-agent main InRelease                                      
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+2 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+apt-transport-https is already the newest version (2.8.3).
+ca-certificates is already the newest version (20240203).
+curl is already the newest version (8.5.0-2ubuntu10.6).
+gnupg is already the newest version (2.4.4-2ubuntu17.4).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+Hit:1 http://mirrors.digitalocean.com/ubuntu noble InRelease
+Hit:2 http://mirrors.digitalocean.com/ubuntu noble-updates InRelease                                                                                                   
+Hit:3 http://mirrors.digitalocean.com/ubuntu noble-backports InRelease                                                                                                 
+Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease                                                                                                       
+Hit:5 https://deb.nodesource.com/node_20.x nodistro InRelease                                                                           
+Hit:6 https://repos-droplet.digitalocean.com/apt/droplet-agent main InRelease                                     
+Reading package lists... Done                                   
+Building dependency tree... Done
+Reading state information... Done
+2 packages can be upgraded. Run 'apt list --upgradable' to see them.
+2026-01-29 22:02:46 - Repository configured successfully.
+2026-01-29 22:02:46 - To install Node.js, run: apt install nodejs -y
+2026-01-29 22:02:46 - You can use N|solid Runtime as a node.js alternative
+2026-01-29 22:02:46 - To install N|solid Runtime, run: apt install nsolid -y 
+
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+nodejs is already the newest version (20.20.0-1nodesource1).
+postgresql is already the newest version (16+257build1.1).
+postgresql-contrib is already the newest version (16+257build1.1).
+nginx is already the newest version (1.24.0-2ubuntu7.5).
+certbot is already the newest version (2.9.0-1).
+python3-certbot-nginx is already the newest version (2.9.0-1).
+git is already the newest version (1:2.43.0-1ubuntu7.3).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+
+changed 133 packages in 7s
+
+13 packages are looking for funding
+  run `npm fund` for details
+root@ubuntu-s-1vcpu-1gb-nyc3-01:~# 
