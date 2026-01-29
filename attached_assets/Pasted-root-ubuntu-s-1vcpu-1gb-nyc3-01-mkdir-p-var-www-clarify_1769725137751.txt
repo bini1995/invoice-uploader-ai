@@ -1,0 +1,49 @@
+root@ubuntu-s-1vcpu-1gb-nyc3-01:~# mkdir -p /var/www/clarifyops
+root@ubuntu-s-1vcpu-1gb-nyc3-01:~# cd /var/www/clarifyops
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# git clone https://github.com/bini1995/invoice-uploader-ai.git .
+Cloning into '.'...
+remote: Enumerating objects: 8081, done.
+remote: Counting objects: 100% (261/261), done.
+remote: Compressing objects: 100% (219/219), done.
+remote: Total 8081 (delta 115), reused 80 (delta 38), pack-reused 7820 (from 2)
+Receiving objects: 100% (8081/8081), 17.26 MiB | 21.68 MiB/s, done.
+Resolving deltas: 100% (4791/4791), done.
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# cd /var/www/clarifyops/backend
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# npm install --production
+npm warn config production Use `--omit=dev` instead.
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated lodash.isequal@4.5.0: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
+npm warn deprecated lodash.get@4.4.2: This package is deprecated. Use the optional chaining (?.) operator instead.
+npm warn deprecated level-errors@2.0.1: Superseded by abstract-level (https://github.com/Level/community#faq)
+npm warn deprecated level-concat-iterator@2.0.1: Superseded by abstract-level (https://github.com/Level/community#faq)
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated levelup@4.4.0: Superseded by abstract-level (https://github.com/Level/community#faq)
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated level-codec@9.0.2: Superseded by level-transcoder (https://github.com/Level/community#faq)
+npm warn deprecated level-packager@5.1.1: Superseded by abstract-level (https://github.com/Level/community#faq)
+npm warn deprecated level-js@5.0.2: Superseded by browser-level (https://github.com/Level/community#faq)
+npm warn deprecated encoding-down@6.3.0: Superseded by abstract-level (https://github.com/Level/community#faq)
+npm warn deprecated deferred-leveldown@5.3.0: Superseded by abstract-level (https://github.com/Level/community#faq)
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+npm warn deprecated fstream@1.0.12: This package is no longer supported.
+npm warn deprecated gm@1.25.1: The gm module has been sunset. Please migrate to an alternative. https://github.com/aheckmann/gm?tab=readme-ov-file#2025-02-24-this-project-is-not-maintained
+npm warn deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+npm warn deprecated abstract-leveldown@6.2.3: Superseded by abstract-level (https://github.com/Level/community#faq)
+npm warn deprecated leveldown@5.6.0: Superseded by classic-level (https://github.com/Level/community#faq)
+
+added 875 packages, and audited 876 packages in 1m
+
+117 packages are looking for funding
+  run `npm fund` for details
+
+17 vulnerabilities (2 low, 11 moderate, 3 high, 1 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# mkdir -p /var/www/clarifyops/backend/uploads/documents
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# 
