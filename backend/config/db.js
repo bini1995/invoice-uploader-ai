@@ -7,39 +7,38 @@ import 'dotenv/config';
 import logger from '../utils/logger.js';
 logger.info('🔎 Using DATABASE_URL:', process.env.DATABASE_URL);
 
-const defaultDbHost = process.env.DB_HOST || 'db';
-const defaultDbPort = process.env.DB_PORT || '5432';
+const defaultDbHost = process.env.DB_HOST || process.env.PGHOST || 'localhost';
+const defaultDbPort = process.env.DB_PORT || process.env.PGPORT || '5432';
 
 // Create a connection pool using info from your .env file
 const dbConfig = {
   host: defaultDbHost,
   port: parseInt(defaultDbPort, 10),
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'TATA1tata1',
-  database: process.env.DB_NAME || 'invoices_db',
+  user: process.env.DB_USER || process.env.PGUSER || 'postgres',
+  password: process.env.DB_PASSWORD || process.env.PGPASSWORD || 'postgres',
+  database: process.env.DB_NAME || process.env.PGDATABASE || 'clarifyops_db',
   // Connection pool optimization
   max: parseInt(process.env.DB_POOL_MAX || '20', 10),
   min: parseInt(process.env.DB_POOL_MIN || '2', 10),
   idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000', 10),
   connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT || '2000', 10),
   // SSL configuration for production - disabled for local development
-  ssl: false, // process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl: false,
 };
 
-// If a full connection string is provided, use it unless it points to localhost
-// which would fail inside Docker. In that case, rebuild using DB_* settings.
+// If a full connection string is provided, use it directly (no Docker override needed)
 if (process.env.DATABASE_URL) {
   try {
     const url = new URL(process.env.DATABASE_URL);
-    const badHosts = ['localhost', '127.0.0.1', '::1'];
-    const needsOverride = badHosts.includes(url.hostname) || url.port === '5433';
-    if (needsOverride) {
-      url.hostname = defaultDbHost;
-      url.port = defaultDbPort;
-    }
     // Add SSL disable parameter for local development
     url.searchParams.set('sslmode', 'disable');
     dbConfig.connectionString = url.toString();
+    // Also update host/port/user/password/database from URL
+    dbConfig.host = url.hostname;
+    dbConfig.port = parseInt(url.port, 10) || 5432;
+    dbConfig.user = url.username;
+    dbConfig.password = url.password;
+    dbConfig.database = url.pathname.slice(1);
   } catch (err) {
     // Fallback to using it raw if URL parsing fails
     dbConfig.connectionString = process.env.DATABASE_URL;
