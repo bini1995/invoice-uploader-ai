@@ -17,6 +17,7 @@ Preferred communication style: Simple, everyday language.
 - **File Type Support**: Extended support for additional file types (.gif, .bmp, .tiff, .webp for images; .csv, .eml for text).
 - **Error Handling**: Improved OCR error handling with graceful fallbacks to placeholder text for unreadable images.
 - **PHI Detection**: Verified PHI detection and anonymization working correctly (redacting DOB, phone numbers, member IDs).
+- **OpenRouter AI Integration**: Fixed embedding data format conversion for pgvector (Object to Array conversion). AI classification now correctly categorizes claims as medical_bill, invoice, fnol_form, etc.
 
 ## System Architecture
 
