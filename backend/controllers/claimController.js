@@ -242,7 +242,11 @@ export const uploadDocument = async (req, res) => {
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'image/jpeg',
-      'image/png'
+      'image/png',
+      'text/plain',
+      'text/csv',
+      'application/csv',
+      'message/rfc822'
     ];
     if (!allowedTypes.includes(req.file.mimetype)) {
       fs.unlinkSync(req.file.path);
