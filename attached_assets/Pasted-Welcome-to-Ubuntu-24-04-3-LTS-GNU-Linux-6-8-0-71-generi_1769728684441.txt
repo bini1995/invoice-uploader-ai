@@ -1,0 +1,69 @@
+Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.8.0-71-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Thu Jan 29 22:50:19 UTC 2026
+
+  System load:  0.04               Processes:             112
+  Usage of /:   17.6% of 23.17GB   Users logged in:       1
+  Memory usage: 42%                IPv4 address for eth0: 104.131.56.144
+  Swap usage:   0%                 IPv4 address for eth0: 10.17.0.5
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+*** System restart required ***
+Last login: Thu Jan 29 22:36:32 2026 from 162.243.188.66
+root@ubuntu-s-1vcpu-1gb-nyc3-01:~# cd /var/www/clarifyops/frontend
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# npm install
+npm warn skipping integrity check for git dependency ssh://git@github.com/dmarcos/three-bmfont-text.git
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated phin@3.7.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated popper.js@1.16.1: You can find the new Popper v2 at @popperjs/core, this package is dedicated to the legacy v1
+
+added 1259 packages, and audited 1260 packages in 21m
+
+200 packages are looking for funding
+  run `npm fund` for details
+
+40 vulnerabilities (9 low, 13 moderate, 17 high, 1 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# npm run build
+
+> frontend@0.1.0 prebuild
+> node scripts/update-sitemap.js
+
+
+> frontend@0.1.0 build
+> vite build
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+vite v5.4.21 building for production...
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Killed
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# 
