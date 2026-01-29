@@ -1,0 +1,34 @@
+MEDICAL CLAIM FORM
+==================
+
+Patient Information:
+- Name: John Smith
+- Date of Birth: 1985-03-15
+- Insurance ID: INS-2024-001234
+- Member ID: MEM-789456
+
+Provider Information:
+- Provider: City Medical Center
+- NPI: 1234567890
+- Address: 123 Health Street, Medical City, MC 12345
+
+Service Details:
+- Date of Service: 2024-01-15
+- Place of Service: 11 (Office)
+
+Diagnosis Codes (ICD-10):
+- Primary: M54.5 (Low back pain)
+- Secondary: G89.29 (Other chronic pain)
+
+Procedure Codes (CPT):
+- 99213 - Office visit, established patient, level 3 - $150.00
+- 97110 - Therapeutic exercises - $75.00
+- 97140 - Manual therapy techniques - $85.00
+
+Charges:
+- Total Billed: $310.00
+- Copay: $25.00
+- Amount Due: $285.00
+
+Claim ID: CLM-2024-TEST-001
+Submitted: 2024-01-16

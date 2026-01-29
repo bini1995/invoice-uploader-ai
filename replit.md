@@ -10,6 +10,14 @@ The platform processes claims through an Express.js backend with PostgreSQL stor
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (January 2026)
+
+- **Image/OCR Support**: Enhanced `fileToText.js` to handle image uploads (PNG, JPG, etc.) via tesseract.js OCR. Added MIME type detection for files without extensions.
+- **Binary File Handling**: Added null byte detection to prevent binary data from being stored in PostgreSQL text fields.
+- **File Type Support**: Extended support for additional file types (.gif, .bmp, .tiff, .webp for images; .csv, .eml for text).
+- **Error Handling**: Improved OCR error handling with graceful fallbacks to placeholder text for unreadable images.
+- **PHI Detection**: Verified PHI detection and anonymization working correctly (redacting DOB, phone numbers, member IDs).
+
 ## System Architecture
 
 ### Frontend Architecture

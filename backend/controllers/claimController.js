@@ -292,7 +292,7 @@ export const uploadDocument = async (req, res) => {
     const meta = req.body.metadata ? req.body.metadata : {};
     const expiration = req.body.expiration ? new Date(req.body.expiration) : null;
     const docTitle = req.body.title || req.file.originalname;
-    const rawText = await fileToText(destPath);
+    const rawText = await fileToText(destPath, req.file.mimetype);
     const phiScan = buildPhiPayload({ text: rawText, metadata: meta, fields: {} });
     const containsPhi = phiScan.fields.length > 0;
     const phiEncryptedPayload = containsPhi ? encryptPhiPayload(phiScan.payload) : null;

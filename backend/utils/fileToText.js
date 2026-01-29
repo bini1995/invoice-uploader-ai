@@ -85,12 +85,32 @@ async function extractDocx(filePath) {
   }
 }
 
-export default async function fileToText(filePath) {
+export default async function fileToText(filePath, mimeType = null) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
 }
 
-  const ext = path.extname(filePath).toLowerCase();
+  let ext = path.extname(filePath).toLowerCase();
+  
+  // If no extension, infer from MIME type
+  if (!ext && mimeType) {
+    const mimeToExt = {
+      'image/png': '.png',
+      'image/jpeg': '.jpg',
+      'image/jpg': '.jpg',
+      'image/gif': '.gif',
+      'image/bmp': '.bmp',
+      'image/tiff': '.tiff',
+      'image/webp': '.webp',
+      'application/pdf': '.pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+      'text/plain': '.txt',
+      'text/csv': '.csv',
+      'message/rfc822': '.eml'
+    };
+    ext = mimeToExt[mimeType] || '';
+  }
+  
   const fileHash = getFileHash(filePath);
   
   // Check cache for OCR results
@@ -112,15 +132,35 @@ export default async function fileToText(filePath) {
       text = await extractPdf(filePath);
     } else if (ext === '.docx') {
       text = await extractDocx(filePath);
-    } else if (['.png', '.jpg', '.jpeg'].includes(ext)) {
-      text = await ocrImage(filePath);
-      // Cache OCR results
-      ocrCache.set(fileHash, {
-        text,
-        timestamp: Date.now()
-      });
-    } else {
+    } else if (['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.webp'].includes(ext)) {
+      try {
+        text = await ocrImage(filePath);
+        // Cache OCR results
+        ocrCache.set(fileHash, {
+          text,
+          timestamp: Date.now()
+        });
+      } catch (ocrError) {
+        logger.warn(`OCR failed for image ${filePath}, returning empty text:`, ocrError.message);
+        text = `[Image file: ${path.basename(filePath)}]`;
+      }
+    } else if (['.txt', '.eml', '.csv'].includes(ext)) {
       text = normalize(fs.readFileSync(filePath, 'utf8'));
+    } else {
+      // For unknown file types, try to read as UTF8, fallback to placeholder
+      try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        // Check for null bytes (indicates binary file)
+        if (content.includes('\0')) {
+          logger.warn(`Binary file detected (null bytes) ${filePath}`);
+          text = `[Binary file: ${path.basename(filePath)}]`;
+        } else {
+          text = normalize(content);
+        }
+      } catch (readError) {
+        logger.warn(`Could not read file as text ${filePath}:`, readError.message);
+        text = `[Binary file: ${path.basename(filePath)}]`;
+      }
     }
 
     const duration = Date.now() - startTime;
