@@ -4,6 +4,10 @@
 - **Droplet IP**: 104.131.56.144
 - **Domain**: clarifyops.com
 - **OS**: Ubuntu 24.04 LTS
+- **RAM**: 2GB (minimum recommended for building frontend)
+
+## Live Site
+**https://clarifyops.com** - Deployed January 29, 2026
 
 ---
 

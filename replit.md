@@ -10,8 +10,38 @@ The platform processes claims through an Express.js backend with PostgreSQL stor
 
 Preferred communication style: Simple, everyday language.
 
+## Production Deployment (January 29, 2026)
+
+**Live Site:** https://clarifyops.com
+
+### Hosting Details
+- **Server**: DigitalOcean Droplet (2GB RAM, Ubuntu 24.04)
+- **IP Address**: 104.131.56.144
+- **Domain**: clarifyops.com (registered via GoDaddy)
+- **SSL**: Let's Encrypt certificate (auto-renews)
+- **Process Manager**: PM2 for Node.js backend
+- **Web Server**: nginx reverse proxy
+
+### Server Commands
+- View backend logs: `pm2 logs clarifyops-backend`
+- Restart backend: `pm2 restart clarifyops-backend`
+- Reload nginx: `systemctl reload nginx`
+- Pull updates: `cd /var/www/clarifyops && git pull origin main`
+- Rebuild frontend: `cd /var/www/clarifyops/frontend && npm run build`
+
+### Configuration Files
+- Backend env: `/var/www/clarifyops/backend/.env`
+- Nginx config: `/etc/nginx/sites-available/clarifyops`
+- PM2 config: Auto-saved via `pm2 save`
+
+### GitHub Repository
+- URL: https://github.com/bini1995/invoice-uploader-ai
+- Push from Replit → Pull on droplet to deploy updates
+
 ## Recent Changes (January 2026)
 
+- **Production Deployment**: Deployed to DigitalOcean droplet with nginx, PM2, and Let's Encrypt SSL.
+- **Database Config Fix**: Updated db.js to properly read DATABASE_URL and avoid Docker-specific hostname overrides.
 - **Image/OCR Support**: Enhanced `fileToText.js` to handle image uploads (PNG, JPG, etc.) via tesseract.js OCR. Added MIME type detection for files without extensions.
 - **Binary File Handling**: Added null byte detection to prevent binary data from being stored in PostgreSQL text fields.
 - **File Type Support**: Extended support for additional file types (.gif, .bmp, .tiff, .webp for images; .csv, .eml for text).
