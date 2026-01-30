@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { API_BASE } from './api';
 import ImprovedNavbar from './components/ImprovedNavbar';
 import ImprovedSidebarNav from './components/ImprovedSidebarNav';
-import Login from './Login';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
@@ -164,7 +163,7 @@ function ClaimsPage() {
   });
 
   if (!token) {
-    return <Login />;
+    return <Navigate to="/login" replace />;
   }
 
   return (
@@ -182,6 +181,11 @@ function ClaimsPage() {
             notifications={notifications}
             role={role}
             token={token}
+            onLogout={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('role');
+              window.location.href = '/login';
+            }}
           />
         </div>
         

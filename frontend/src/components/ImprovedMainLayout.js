@@ -27,6 +27,11 @@ export default function ImprovedMainLayout({ title, helpTopic, children, collaps
             notifications={notifications}
             role={role}
             token={token}
+            onLogout={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('role');
+              window.location.href = '/login';
+            }}
           />
         </div>
         
