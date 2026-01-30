@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { API_BASE } from './api';
-import ImprovedNavbar from './components/ImprovedNavbar';
-import ImprovedSidebarNav from './components/ImprovedSidebarNav';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import Spinner from './components/Spinner';
 import Toast from './components/Toast';
 import Skeleton from './components/Skeleton';
@@ -167,36 +166,12 @@ function ClaimsPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar */}
-      <ImprovedSidebarNav notifications={notifications} />
-      
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col overflow-hidden ml-64 min-w-0">
-        {/* Header */}
-        <div className="flex-shrink-0">
-          <ImprovedNavbar
-            tenant={tenant}
-            onTenantChange={setTenant}
-            notifications={notifications}
-            role={role}
-            token={token}
-            onLogout={() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('role');
-              window.location.href = '/login';
-            }}
-          />
-        </div>
-        
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto min-w-0">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            {/* Header */}
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Claims Management</h1>
-              <p className="text-gray-600 dark:text-gray-400">Manage and process insurance claims efficiently</p>
-            </div>
+    <ImprovedMainLayout title="Claims Management">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Claims Management</h1>
+        <p className="text-gray-600 dark:text-gray-400">Manage and process insurance claims efficiently</p>
+      </div>
 
             {/* Filters and Search */}
             <div className="mb-6 flex flex-col sm:flex-row gap-4">
@@ -338,9 +313,6 @@ function ClaimsPage() {
                 </div>
               )}
             </Card>
-          </div>
-        </main>
-      </div>
 
       {/* Modals */}
       {showDetailModal && selectedClaim && (
@@ -365,7 +337,7 @@ function ClaimsPage() {
           }}
         />
       )}
-    </div>
+    </ImprovedMainLayout>
   );
 }
 
