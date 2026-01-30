@@ -31,7 +31,7 @@ export default function Login({ onLogin, addToast, next }) {
         onLogin(data.token, data.role);
         addToast('Logged in!');
         logEvent('login_success', { source: 'login_form', method: 'password', request_id: getRequestId() });
-        window.location.href = '/claims';
+        window.location.href = '/operations';
       } else {
         setError(data.message || 'Login failed');
         addToast(data.message || 'Login failed', 'error');
