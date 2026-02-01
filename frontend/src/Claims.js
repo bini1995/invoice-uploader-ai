@@ -266,22 +266,22 @@ function ClaimsPage() {
                       {sortedClaims.map((claim) => (
                         <tr key={claim.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                            {claim.claim_number}
+                            {claim.claim_number || claim.invoice_number || 'N/A'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {claim.policyholder_name}
+                            {claim.policyholder_name || claim.vendor || 'Unknown'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             ${claim.estimated_value?.toLocaleString() || '0'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(claim.status)}`}>
-                              {getStatusIcon(claim.status)}
-                              <span className="ml-1 capitalize">{claim.status.replace('_', ' ')}</span>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(claim.status || 'pending')}`}>
+                              {getStatusIcon(claim.status || 'pending')}
+                              <span className="ml-1 capitalize">{(claim.status || 'pending').replace('_', ' ')}</span>
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(claim.created_at).toLocaleDateString()}
+                            {claim.created_at ? new Date(claim.created_at).toLocaleDateString() : 'N/A'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex space-x-2">
@@ -317,7 +317,9 @@ function ClaimsPage() {
       {/* Modals */}
       {showDetailModal && selectedClaim && (
         <ClaimDetailModal
-          claim={selectedClaim}
+          open={showDetailModal}
+          invoice={selectedClaim}
+          token={token}
           onClose={() => {
             setShowDetailModal(false);
             setSelectedClaim(null);
