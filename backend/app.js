@@ -68,6 +68,8 @@ import { scheduleAnomalyScan } from './utils/anomalyScanner.js';
 import buildProblemDetails from './utils/problemDetails.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger.js';
+import requestIdMiddleware from './middleware/requestId.js';
+import inputSanitizer from './middleware/inputSanitizer.js';
 import { WebSocketServer } from 'ws';
 import { setupWSConnection } from '@y/websocket-server/utils';
 import { parse } from 'url';
@@ -137,6 +139,12 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Trust proxy for rate limiting behind nginx
 app.set('trust proxy', 1);
+
+// Request ID tracking for enterprise tracing
+app.use(requestIdMiddleware);
+
+// Input sanitization (SQL injection / XSS prevention)
+app.use(inputSanitizer);
 
 // Session + auth + tenant context
 app.use(createSessionMiddleware());

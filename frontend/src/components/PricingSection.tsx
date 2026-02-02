@@ -6,51 +6,53 @@ import { Button } from './ui/Button';
 export default function PricingSection() {
   const plans = [
     {
-      name: "Starter",
-      price: "$299",
+      name: "Claims Pilot",
+      price: "$499",
       period: "/month",
-      description: "Perfect for small insurance companies",
+      description: "For small TPAs and regional insurers running a pilot",
       features: [
-        "Up to 1,000 claims/month",
-        "AI-powered fraud detection",
-        "Basic analytics dashboard",
+        "Up to 1,000 claim documents",
+        "AI field extraction (CPT, ICD-10, policy)",
+        "Review queue + corrections",
+        "CSV/Excel export",
         "Email support",
-        "Standard security"
+        "HIPAA compliant"
       ],
-      cta: "Start Free Trial",
+      cta: "Start Pilot",
       popular: false
     },
     {
-      name: "Professional",
-      price: "$899",
+      name: "Ops Scale",
+      price: "$2,000",
       period: "/month",
-      description: "Ideal for growing insurance companies",
+      description: "For operations teams processing high volumes",
       features: [
-        "Up to 10,000 claims/month",
-        "Advanced AI fraud detection",
-        "Real-time analytics",
+        "Up to 10,000 documents",
+        "Claim Readiness Score",
+        "Denial Risk Detection",
+        "Automated routing rules",
+        "Webhook integrations",
         "Priority support",
-        "SOC 2 compliance",
-        "Custom workflows",
+        "SOC 2 Type II",
         "API access"
       ],
-      cta: "Start Free Trial",
+      cta: "Get Started",
       popular: true
     },
     {
       name: "Enterprise",
       price: "Custom",
       period: "",
-      description: "For large insurance companies",
+      description: "For carriers and large TPAs",
       features: [
-        "Unlimited claims",
-        "Custom AI models",
-        "White-label solution",
-        "Dedicated support",
+        "Unlimited documents",
+        "SIU fraud modules",
+        "Guidewire/Duck Creek integrations",
+        "Custom AI model training",
+        "Dedicated CSM",
         "On-premise deployment",
-        "Custom integrations",
         "SLA guarantees",
-        "Blockchain integration"
+        "Blockchain audit trail"
       ],
       cta: "Contact Sales",
       popular: false
@@ -129,6 +131,15 @@ export default function PricingSection() {
           ))}
         </div>
 
+        <motion.p 
+          className="text-center text-gray-500 text-sm mt-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          Additional pages: <strong>$0.15/page</strong> • All plans include HIPAA BAA • Volume discounts available
+        </motion.p>
+
         <motion.div 
           className="text-center mt-12 p-8 bg-white rounded-xl border border-gray-200"
           initial={{ opacity: 0, y: 30 }}
@@ -137,28 +148,28 @@ export default function PricingSection() {
           transition={{ delay: 0.4 }}
         >
           <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Why Choose ClarifyOps Over Competitors?
+            Why ClarifyOps Beats Rossum, Affinda & Wisedocs
           </h3>
           <div className="grid md:grid-cols-3 gap-8 text-left">
             <div className="flex items-start gap-3">
               <SparklesIcon className="h-6 w-6 text-blue-600 mt-1" />
               <div>
-                <h4 className="font-semibold text-gray-900">Superior AI Technology</h4>
-                <p className="text-gray-600 text-sm">Our AI is 40% more accurate than industry standard</p>
+                <h4 className="font-semibold text-gray-900">Claims-Native AI</h4>
+                <p className="text-gray-600 text-sm">Purpose-built for CPT, ICD-10, policy numbers — not generic document extraction</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <SparklesIcon className="h-6 w-6 text-blue-600 mt-1" />
               <div>
-                <h4 className="font-semibold text-gray-900">Faster Processing</h4>
-                <p className="text-gray-600 text-sm">Process claims in under 1 day vs 2+ days industry average</p>
+                <h4 className="font-semibold text-gray-900">Claim Readiness Score</h4>
+                <p className="text-gray-600 text-sm">Know instantly if a claim is complete, what's missing, and denial risk</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <SparklesIcon className="h-6 w-6 text-blue-600 mt-1" />
               <div>
-                <h4 className="font-semibold text-gray-900">Better ROI</h4>
-                <p className="text-gray-600 text-sm">Reduce claim costs by up to 40% with predictive analytics</p>
+                <h4 className="font-semibold text-gray-900">Adjuster Workflow Built-In</h4>
+                <p className="text-gray-600 text-sm">Route, review, approve — no separate workflow tool needed</p>
               </div>
             </div>
           </div>

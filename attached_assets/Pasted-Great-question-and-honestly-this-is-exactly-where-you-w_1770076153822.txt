@@ -1,0 +1,327 @@
+Great question — and honestly this is exactly where you win or lose investors:
+
+Pricing + competitor realism + positioning.
+
+Let me be very direct and meticulous.
+
+⸻
+
+1. Your Current Pricing ($49/mo + Pay-as-you-go)
+
+From what you wrote, the landing page currently has:
+	•	$49/month for 500 claims
+	•	Pay-as-you-go option
+
+Is that “wrong”?
+
+Not wrong — but it is not credible for enterprise insurance buyers yet.
+
+Because:
+	•	Claims processing companies pay thousands to millions per year
+	•	Pricing that low signals “small tool,” not “enterprise ops platform”
+	•	Rossum and claims vendors don’t sell at $49/mo
+
+Investor reaction:
+
+“This is nice… but how do you make real money?”
+
+YC investors want:
+	•	a wedge
+	•	a path to $10k–$100k ACV contracts
+
+⸻
+
+2. What Pricing Should Look Like for Claims AI
+
+Your pricing should communicate:
+	•	Operational value
+	•	Serious enterprise potential
+	•	Expansion path
+
+Correct framing:
+
+You are not selling “claims uploads.”
+
+You are selling:
+	•	faster intake
+	•	fewer denials
+	•	fraud detection
+	•	reduced adjuster hours
+	•	compliance automation
+
+So pricing must reflect that.
+
+⸻
+
+3. The Best Early-Stage Pricing Model (Investor-Friendly)
+
+Here is what you should switch to immediately:
+
+⸻
+
+Starter (Pilot)
+
+$499/month
+Up to 1,000 claim documents
+
+For small TPAs and regional insurers running a pilot.
+
+⸻
+
+Growth (Ops Teams)
+
+$2,000/month
+Up to 10,000 documents + workflows + review queue
+
+This feels real.
+
+⸻
+
+Enterprise
+
+Custom
+SOC2, integrations, SIU fraud routing, SLA support
+
+This is what investors want to see.
+
+⸻
+
+Usage-based Add-On (the YC sweet spot)
+
+$0.10–$0.50 per additional page extracted
+
+Because claims cost is page-based.
+
+⸻
+
+4. What NOT to Do
+
+Avoid:
+	•	“$49 for 500 claims”
+	•	“Unlimited extraction”
+	•	Cheap SaaS language like Notion
+
+Claims buyers are not indie creators.
+
+Claims buyers are:
+	•	insurance ops directors
+	•	fraud investigators
+	•	medical billing auditors
+
+They expect enterprise pricing.
+
+⸻
+
+5. Your Competitor List — Quick Truth Check
+
+The competitors you listed are mostly real, but you need to categorize them properly.
+
+Right now your list mixes:
+	•	Fraud companies
+	•	Document extraction APIs
+	•	Medical record review tools
+	•	Auto damage vision startups
+
+That dilutes your positioning.
+
+Let’s clean it:
+
+⸻
+
+Tier 1: Closest Competitors (What Investors Compare You To)
+
+Affinda
+
+Document extraction API for insurance + claims forms
+Closest match to your schema-free extraction + entity parsing.
+
+Sprout.ai
+
+Claims automation + adjudication decision engine
+More enterprise, but similar workflow direction.
+
+Wisedocs
+
+Medical record summarization + HITL review
+Closest overlap to Results Viewer + human review loop.
+
+⸻
+
+Tier 2: Fraud-First Players (Adjacent, Not Direct)
+
+Shift Technology
+
+They sell fraud scoring networks, not extraction tools.
+You can integrate Shift-like scoring later, but they aren’t your wedge.
+
+CLARA Analytics
+
+Outcome prediction + litigation risk optimization.
+They sit above intake, not at document parsing layer.
+
+⸻
+
+Tier 3: Auto-Claims Vision Companies (Different Category)
+
+Claim Genius
+
+Photo damage estimation, computer vision.
+Not competing with your document extractor.
+
+⸻
+
+Tier 4: Workflow Automation Noise
+
+“Damco / Claimity / Cflow”
+These are not widely recognized YC-level AI leaders.
+Don’t anchor to them.
+
+⸻
+
+Your Real Competitive Set Should Be:
+	•	Rossum (horizontal IDP)
+	•	Hyperscience (enterprise gov/claims docs)
+	•	Eigen / Hebbia-style doc intelligence
+	•	Wisedocs (claims review)
+	•	Sprout.ai (claims automation)
+
+That’s the credible group.
+
+⸻
+
+6. The Position You Should Own
+
+Here is the clearest investor-safe positioning:
+
+ClarifyOps is the AI claims intake layer.
+
+Not fraud-first.
+
+Not adjudication engine.
+
+Not invoice tool.
+
+One-liner:
+
+ClarifyOps turns messy claim documents into structured, adjuster-ready claim files — with compliance checks and human-in-the-loop validation.
+
+That is extremely fundable.
+
+⸻
+
+7. Pricing + Competitor Alignment
+
+Once you position as “AI Claims Intake,” your pricing naturally becomes:
+	•	priced per claim volume
+	•	priced per page
+	•	priced per adjuster seat
+
+Example:
+
+$2k/month saves $20k/month in labor.
+
+That makes sense.
+
+$49/month does not.
+
+⸻
+
+8. Landing Page Pricing Fix (Exact Rewrite)
+
+Instead of your current section, do:
+
+⸻
+
+Claims Pilot
+
+$499/month
+Up to 1,000 claim documents
+Extraction + Review Queue + CSV Export
+
+⸻
+
+Ops Scale
+
+$2,000/month
+Up to 10,000 docs
+Routing + Compliance + Webhooks
+
+⸻
+
+Enterprise
+
+Custom
+SOC2 + Integrations + SIU Fraud Modules
+
+⸻
+
+Footnote:
+
+Additional pages: $0.15/page
+
+⸻
+
+9. What Investors Want to See You Beat Competitors On
+
+Rossum and Affinda extract fields.
+
+You need the claims-specific layer.
+
+Your differentiation bullets should be:
+
+✅ Claim Readiness Score
+✅ Missing document detection
+✅ Denial risk flags
+✅ Adjuster workflow routing
+✅ Compliance clause checks
+✅ HITL training feedback loop
+
+That is how you outdo extraction-only tools.
+
+⸻
+
+10. What You Should Add in 2 Weeks (Highest ROI)
+
+If you build only 3 new things, do these:
+
+⸻
+
+1. Claim Completeness Checklist
+
+“Missing: Police Report, ICD Code, Provider Signature”
+
+⸻
+
+2. Denial Risk Flag
+
+AI highlights fields likely to trigger denial.
+
+⸻
+
+3. Export-to-Core System Demo
+
+Zapier → Guidewire CSV → Sheet.
+
+Investors will love that more than 10 extra AI endpoints.
+
+⸻
+
+Final Answer
+
+Your pricing needs to move up immediately to look enterprise-credible.
+
+Your competitor list is mostly correct, but you should focus on:
+	•	Affinda (extraction)
+	•	Wisedocs (review)
+	•	Sprout.ai (claims automation)
+
+And differentiate with:
+	•	readiness + compliance + routing
+
+That is how you become fundable.
+
+⸻
+
+Next Step (Very Useful)
+
+Paste your actual current pricing block from the landing page (text or screenshot), and I will rewrite it into a YC-grade pricing section that looks like Elysian/Sprout-tier companies.

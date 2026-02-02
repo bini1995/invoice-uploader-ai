@@ -31,9 +31,9 @@ const securityHeaders = (req, res, next) => {
 const corsOptions = {
   origin: true, // Allow all origins for Replit development
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'X-Requested-With'],
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'X-Requested-With', 'X-Request-Id'],
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count', 'X-Request-Id', 'X-Response-Time']
 };
 
 // Request logging middleware
