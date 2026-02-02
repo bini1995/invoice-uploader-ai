@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import StatCard from './components/StatCard';
 import { Card } from './components/ui/Card';
 import { API_BASE } from './api';
@@ -68,7 +68,7 @@ export default function ClarifyClaims() {
   };
 
   return (
-    <MainLayout title="ClarifyClaims">
+    <ImprovedMainLayout title="ClarifyClaims">
       <div className="space-y-6">
         <h1 className="text-2xl font-semibold">ClarifyClaims Summary</h1>
         <div className="flex items-center gap-2 text-sm">
@@ -141,6 +141,6 @@ export default function ClarifyClaims() {
           </ul>
         </Card>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

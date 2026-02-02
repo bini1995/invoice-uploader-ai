@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { DndContext, useDroppable } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import PageHeader from './components/PageHeader';
 import { API_BASE } from './api';
 
@@ -92,7 +92,7 @@ export default function Board() {
   };
 
   return (
-    <MainLayout title="Approval Board">
+    <ImprovedMainLayout title="Approval Board">
       <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Approval Board" />
       <DndContext onDragEnd={onDragEnd}>
         <div className="flex space-x-4 overflow-x-auto">
@@ -101,6 +101,6 @@ export default function Board() {
             <BoardColumn columnId="flagged" title="Flagged" items={columns.flagged} />
         </div>
       </DndContext>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

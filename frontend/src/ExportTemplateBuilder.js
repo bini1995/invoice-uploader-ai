@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import PageHeader from './components/PageHeader';
 
 const FIELDS = ['id','invoice_number','date','amount','vendor','created_at','assignee','tags'];
@@ -36,7 +36,7 @@ export default function ExportTemplateBuilder() {
   };
 
   return (
-    <MainLayout title="ClarifyOps › ClarifyClaims">
+    <ImprovedMainLayout title="Export Templates">
       <div className="space-y-4 max-w-xl">
         <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Export Templates" />
         <p className="text-sm text-gray-500">
@@ -86,6 +86,6 @@ export default function ExportTemplateBuilder() {
           ))}
         </ul>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

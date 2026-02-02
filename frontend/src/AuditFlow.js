@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import Skeleton from './components/Skeleton';
 import StatCard from './components/StatCard';
 import {
@@ -111,7 +111,7 @@ export default function AuditFlow() {
   }
 
   return (
-    <MainLayout title="AuditFlow" helpTopic="auditflow">
+    <ImprovedMainLayout title="AuditFlow" helpTopic="auditflow">
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <StatCard
@@ -192,6 +192,6 @@ export default function AuditFlow() {
         </table>
         </div>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

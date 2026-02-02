@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from './components/Skeleton';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import EmptyState from './components/EmptyState';
 import DummyDataButton from './components/DummyDataButton';
 import VendorProfilePanel from './components/VendorProfilePanel';
@@ -141,7 +141,7 @@ function VendorManagement() {
   }
 
   return (
-    <MainLayout title="Vendor Management" helpTopic="vendors">
+    <ImprovedMainLayout title="Vendor Management" helpTopic="vendors">
       <button
         onClick={() => setShowAdd(true)}
         className="fixed top-24 right-8 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 z-20"
@@ -349,7 +349,7 @@ function VendorManagement() {
       <VendorProfilePanel vendor={profileVendor} open={!!profileVendor} onClose={() => setProfileVendor(null)} token={token} />
       <VendorDetailModal vendor={detailVendor} open={!!detailVendor} onClose={() => setDetailVendor(null)} token={token} />
       <ClaimDetailModal open={!!detailInvoice} invoice={detailInvoice} onClose={() => setDetailInvoice(null)} token={token} onUpdate={() => {}} />
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 

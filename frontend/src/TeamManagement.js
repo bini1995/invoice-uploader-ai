@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Skeleton from './components/Skeleton';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import { API_BASE } from './api';
 import CTAButton from './components/ui/CTAButton';
 import { ROLE_EMOJI } from './theme/roles';
@@ -154,7 +154,7 @@ function TeamManagement() {
   }
 
   return (
-    <MainLayout title="Team Management" helpTopic="team">
+    <ImprovedMainLayout title="Team Management" helpTopic="team">
       <div className="space-y-6 max-w-xl">
         <div className="space-y-2">
           <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" className="input w-full" />
@@ -305,7 +305,7 @@ function TeamManagement() {
           <CTAButton onClick={saveSettings} className="px-3 py-1">Save Settings</CTAButton>
         </div>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 

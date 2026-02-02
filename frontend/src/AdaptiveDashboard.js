@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import Skeleton from './components/Skeleton';
 import VendorProfilePanel from './components/VendorProfilePanel';
 import RuleModal from './components/RuleModal';
@@ -254,7 +254,7 @@ export default function AdaptiveDashboard() {
   };
 
   return (
-    <MainLayout title="Adaptive Dashboard">
+    <ImprovedMainLayout title="Adaptive Dashboard">
       <div className="space-y-8">
         {alerts.map((a, i) => (
           <div key={i} className="p-3 bg-red-100 text-red-700 rounded-md">
@@ -357,6 +357,6 @@ export default function AdaptiveDashboard() {
           initial={ruleForm}
         />
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

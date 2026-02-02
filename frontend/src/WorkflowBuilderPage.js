@@ -3,7 +3,7 @@ import { API_BASE } from './api';
 import WorkflowBuilder from './components/WorkflowBuilder';
 import RuleBuilder from './components/RuleBuilder';
 import ExpressionBuilder from './components/ExpressionBuilder';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 
 export default function WorkflowBuilderPage() {
   const token = localStorage.getItem('token') || '';
@@ -68,7 +68,7 @@ export default function WorkflowBuilderPage() {
   };
 
   return (
-    <MainLayout title="Workflow Builder">
+    <ImprovedMainLayout title="Workflow Builder">
       <div className="space-y-6 max-w-md">
         <div>
           <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Approval Chain</h2>
@@ -84,6 +84,6 @@ export default function WorkflowBuilderPage() {
           <button className="mt-2 px-3 py-1 bg-green-600 text-white rounded" onClick={evaluate}>Evaluate</button>
         </div>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

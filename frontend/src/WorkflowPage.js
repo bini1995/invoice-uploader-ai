@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { API_BASE } from './api';
 import WorkflowBuilder from './components/WorkflowBuilder';
 import RuleBuilder from './components/RuleBuilder';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 
 export default function WorkflowPage() {
   const token = localStorage.getItem('token') || '';
@@ -43,7 +43,7 @@ export default function WorkflowPage() {
   };
 
   return (
-    <MainLayout title="Workflow Builder">
+    <ImprovedMainLayout title="Workflow Builder">
       <div className="space-y-6 max-w-md">
         <div>
           <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Approval Chain</h2>
@@ -54,6 +54,6 @@ export default function WorkflowPage() {
           <RuleBuilder rules={rules} onChange={saveRules} />
         </div>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import TagEditor from './components/TagEditor';
 import SuggestionChips from './components/SuggestionChips';
 import { Button } from './components/ui/Button';
@@ -111,7 +111,7 @@ export default function MultiUploadWizard() {
   };
 
   return (
-    <MainLayout title="Upload Wizard">
+    <ImprovedMainLayout title="Upload Wizard">
       <div className="max-w-3xl mx-auto space-y-6">
         {step===1 && (
           <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow">
@@ -217,6 +217,6 @@ export default function MultiUploadWizard() {
           </div>
         )}
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

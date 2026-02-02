@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import { API_BASE } from './api';
 
 function SharedDashboard() {
@@ -17,11 +17,11 @@ function SharedDashboard() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  if (loading) return <MainLayout title="Shared Dashboard"><p>Loading...</p></MainLayout>;
-  if (!data) return <MainLayout title="Shared Dashboard"><p>Failed to load dashboard.</p></MainLayout>;
+  if (loading) return <ImprovedMainLayout title="Shared Dashboard"><p>Loading...</p></ImprovedMainLayout>;
+  if (!data) return <ImprovedMainLayout title="Shared Dashboard"><p>Failed to load dashboard.</p></ImprovedMainLayout>;
 
   return (
-    <MainLayout title="Shared Dashboard">
+    <ImprovedMainLayout title="Shared Dashboard">
       <div className="space-y-4">
         <div>Total Claim Documents: {data.totalInvoices}</div>
         <div>Total Amount: {data.totalAmount}</div>
@@ -30,7 +30,7 @@ function SharedDashboard() {
         <div>Anomalies Found: {data.anomaliesFound}</div>
         <div>AI Suggestions: {data.aiSuggestions}</div>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 

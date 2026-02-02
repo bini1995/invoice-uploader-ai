@@ -9,7 +9,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import Skeleton from './components/Skeleton';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import { API_BASE } from './api';
 import StatCard from './components/StatCard';
 import RuleModal from './components/RuleModal';
@@ -337,7 +337,7 @@ function AISpendAnalyticsHub() {
   const modelRegistry = dashboardInsights?.models || [];
 
   return (
-    <MainLayout title="AI Spend Analytics Hub" helpTopic="reports">
+    <ImprovedMainLayout title="AI Spend Analytics Hub" helpTopic="reports">
       <div className="space-y-4 max-w-2xl">
         <div className="sticky top-16 z-10 bg-white dark:bg-gray-800 border-b p-2 flex flex-wrap items-end gap-2">
           <select
@@ -599,7 +599,7 @@ function AISpendAnalyticsHub() {
         onUpdate={updateInvoice}
         token={token}
       />
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 

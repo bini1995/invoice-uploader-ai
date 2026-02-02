@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import FraudHeader from './components/FraudHeader';
 import { API_BASE } from './api';
 
@@ -54,7 +54,7 @@ function FraudReport() {
   useEffect(() => { fetchFlagged(); }, [fetchFlagged]);
 
   return (
-    <MainLayout title="Fraud Reports" helpTopic="fraud">
+    <ImprovedMainLayout title="Fraud Reports" helpTopic="fraud">
       <div className="space-y-4">
         <FraudHeader
           title="Fraud Reports"
@@ -105,7 +105,7 @@ function FraudReport() {
           </p>
         )}
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 

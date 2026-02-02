@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import PreviewModal from './components/PreviewModal';
 import TagEditor from './components/TagEditor';
 import SuggestionChips from './components/SuggestionChips';
@@ -249,7 +249,7 @@ export default function UploadWizard() {
   }, [setupSpeechRecognition]);
 
   return (
-    <MainLayout title="Upload Wizard">
+    <ImprovedMainLayout title="Upload Wizard">
       <div className="max-w-3xl mx-auto space-y-6">
         <AnimatePresence mode="wait">
           {step === 1 && (
@@ -485,6 +485,6 @@ export default function UploadWizard() {
           onClose={() => setPreviewModal(false)}
         />
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import { Button } from './components/ui/Button';
 import { API_BASE } from './api';
 
@@ -49,7 +49,7 @@ export default function OnboardingWizard() {
   };
 
   return (
-    <MainLayout title="Getting Started" helpTopic="onboarding">
+    <ImprovedMainLayout title="Getting Started" helpTopic="onboarding">
       <div className="max-w-2xl mx-auto space-y-6">
         {step === 1 && (
           <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded shadow">
@@ -112,6 +112,6 @@ export default function OnboardingWizard() {
           </div>
         )}
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

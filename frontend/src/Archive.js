@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Skeleton from './components/Skeleton';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import ClaimListTable from './components/ClaimListTable';
 import { API_BASE } from './api';
 
@@ -90,7 +90,7 @@ function Archive() {
   );
 
   return (
-    <MainLayout title="Claim Document Archive" helpTopic="archive">
+    <ImprovedMainLayout title="Claim Document Archive" helpTopic="archive">
       <div className="space-y-4">
         <div className="flex flex-wrap items-end space-x-2">
           <input
@@ -122,7 +122,7 @@ function Archive() {
           )}
         </div>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 

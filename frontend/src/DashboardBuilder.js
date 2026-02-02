@@ -13,7 +13,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import Skeleton from './components/Skeleton';
 import PageHeader from './components/PageHeader';
 import { API_BASE } from './api';
@@ -140,7 +140,7 @@ export default function DashboardBuilder() {
   });
 
   return (
-    <MainLayout title="Dashboard Builder">
+    <ImprovedMainLayout title="Dashboard Builder">
       <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Create Your Dashboard" />
         <DndContext onDragEnd={handleDragEnd}>
           <SortableContext items={widgets} strategy={verticalListSortingStrategy}>
@@ -223,6 +223,6 @@ export default function DashboardBuilder() {
             </div>
           </SortableContext>
         </DndContext>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }

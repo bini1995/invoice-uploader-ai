@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import { API_BASE } from './api';
 import { getStatusDetails } from './theme/statuses';
 
@@ -32,7 +32,7 @@ function HumanReview() {
   };
 
   return (
-    <MainLayout title="Human Review" helpTopic="review">
+    <ImprovedMainLayout title="Human Review" helpTopic="review">
       <div className="overflow-x-auto">
         <table className="min-w-full border text-sm">
           <thead className="bg-gray-200 dark:bg-gray-700">
@@ -71,7 +71,7 @@ function HumanReview() {
           </tbody>
         </table>
       </div>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
 

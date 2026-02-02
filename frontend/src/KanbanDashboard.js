@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import MainLayout from './components/MainLayout';
+import ImprovedMainLayout from './components/ImprovedMainLayout';
 import { DndContext, useDroppable } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -117,7 +117,7 @@ export default function KanbanDashboard() {
   };
 
   return (
-    <MainLayout title="Kanban Dashboard">
+    <ImprovedMainLayout title="Kanban Dashboard">
       {loading && <CircularProgress />}
       <DndContext onDragEnd={onDragEnd}>
         <Grid container spacing={2} sx={{ mt: 2 }}>
@@ -139,6 +139,6 @@ export default function KanbanDashboard() {
           )}
         </DialogContent>
       </Dialog>
-    </MainLayout>
+    </ImprovedMainLayout>
   );
 }
