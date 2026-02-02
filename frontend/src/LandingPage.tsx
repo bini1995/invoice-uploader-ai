@@ -97,10 +97,44 @@ export default function LandingPage() {
   ];
 
   const metrics = [
-    { value: "24", unit: "hr", label: "Average Processing Time", description: "Faster than industry standard" },
-    { value: "99.9", unit: "%", label: "Uptime SLA", description: "Enterprise-grade reliability" },
-    { value: "90", unit: "+", label: "NPS Score", description: "Industry-leading satisfaction" },
-    { value: "0.1", unit: "%", label: "System Error Rate", description: "Highly reliable infrastructure" }
+    { value: "85", unit: "%", label: "Faster Processing", description: "vs. manual claim handling" },
+    { value: "$4.6", unit: "M", label: "Fraud Blocked", description: "Average annual savings per enterprise" },
+    { value: "18", unit: "min", label: "Avg Decision Time", description: "From hours to minutes" },
+    { value: "99.9", unit: "%", label: "Accuracy Rate", description: "AI-powered validation" }
+  ];
+
+  const painPoints = [
+    {
+      problem: "Manual data entry takes hours",
+      solution: "AI extracts all fields in seconds",
+      stat: "85% time saved"
+    },
+    {
+      problem: "Missed fraud costs millions",
+      solution: "ML detects anomalies in real-time",
+      stat: "$4.6M avg blocked"
+    },
+    {
+      problem: "Compliance audits are stressful",
+      solution: "Blockchain-verified audit trails",
+      stat: "100% traceable"
+    },
+    {
+      problem: "Adjusters overwhelmed with backlog",
+      solution: "Smart routing & auto-approvals",
+      stat: "3x throughput"
+    }
+  ];
+
+  const competitorComparison = [
+    { feature: "AI-Powered Extraction", clarifyops: true, traditional: false, competitors: "partial" },
+    { feature: "Real-Time Fraud Detection", clarifyops: true, traditional: false, competitors: "partial" },
+    { feature: "Blockchain Audit Trail", clarifyops: true, traditional: false, competitors: false },
+    { feature: "Multi-Tenant Architecture", clarifyops: true, traditional: false, competitors: "partial" },
+    { feature: "HIPAA & GDPR Compliant", clarifyops: true, traditional: "partial", competitors: true },
+    { feature: "No-Code Workflow Builder", clarifyops: true, traditional: false, competitors: false },
+    { feature: "Predictive Analytics", clarifyops: true, traditional: false, competitors: "partial" },
+    { feature: "Free Trial Available", clarifyops: true, traditional: false, competitors: "partial" }
   ];
 
   const processSteps = [
@@ -455,6 +489,135 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Problem/Solution Section */}
+        <section className="py-20 px-6 bg-slate-900 text-white">
+          <div className="max-w-7xl mx-auto">
+            <motion.div 
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-red-500/20 text-red-300 border border-red-500/30 mb-6">
+                The Problem
+              </span>
+              <h2 className="text-4xl font-bold mb-4">
+                Claims processing is <span className="text-red-400">broken</span>
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                Insurance teams waste hours on manual data entry, miss fraud patterns, and struggle with compliance audits. Sound familiar?
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {painPoints.map((item, index) => (
+                <motion.div
+                  key={item.problem}
+                  className="relative bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-emerald-500/50 transition-all duration-300"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <div className="mb-4">
+                    <p className="text-red-400 text-sm font-medium mb-2 line-through opacity-60">{item.problem}</p>
+                    <p className="text-emerald-400 text-lg font-semibold">{item.solution}</p>
+                  </div>
+                  <div className="pt-4 border-t border-white/10">
+                    <span className="text-2xl font-bold text-white">{item.stat}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Comparison Section */}
+        <section className="py-20 px-6 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <motion.div 
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Why choose ClarifyOps?
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                See how we stack up against traditional methods and other solutions
+              </p>
+            </motion.div>
+
+            <motion.div 
+              className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-slate-900 text-white">
+                    <th className="text-left py-4 px-6 font-semibold">Feature</th>
+                    <th className="text-center py-4 px-6 font-semibold bg-emerald-600">ClarifyOps</th>
+                    <th className="text-center py-4 px-6 font-semibold">Traditional</th>
+                    <th className="text-center py-4 px-6 font-semibold">Competitors</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {competitorComparison.map((row, index) => (
+                    <tr key={row.feature} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                      <td className="py-4 px-6 font-medium text-gray-900">{row.feature}</td>
+                      <td className="py-4 px-6 text-center bg-emerald-50">
+                        {row.clarifyops === true ? (
+                          <CheckCircleIcon className="h-6 w-6 text-emerald-600 mx-auto" />
+                        ) : row.clarifyops === 'partial' ? (
+                          <span className="text-yellow-600">Partial</span>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-center">
+                        {row.traditional === true ? (
+                          <CheckCircleIcon className="h-6 w-6 text-emerald-600 mx-auto" />
+                        ) : row.traditional === 'partial' ? (
+                          <span className="text-yellow-600">Partial</span>
+                        ) : (
+                          <span className="text-red-400">-</span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-center">
+                        {row.competitors === true ? (
+                          <CheckCircleIcon className="h-6 w-6 text-emerald-600 mx-auto" />
+                        ) : row.competitors === 'partial' ? (
+                          <span className="text-yellow-600">Partial</span>
+                        ) : (
+                          <span className="text-red-400">-</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </motion.div>
+
+            <motion.div 
+              className="text-center mt-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <button 
+                onClick={() => scheduleDemo('comparison')} 
+                className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg"
+              >
+                <SparklesIcon className="h-5 w-5" />
+                Start Free Trial
+              </button>
+            </motion.div>
+          </div>
+        </section>
+
         {/* How It Works Section */}
         <section id="how-it-works" className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
           <div className="max-w-7xl mx-auto">
@@ -584,7 +747,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 ClarifyOps. All rights reserved.</p>
+            <p>&copy; 2026 ClarifyOps. All rights reserved. | HIPAA Compliant | SOC 2 Type II</p>
           </div>
         </div>
       </footer>
