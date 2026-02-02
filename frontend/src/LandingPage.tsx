@@ -258,69 +258,74 @@ export default function LandingPage() {
               className="text-left"
             >
               <motion.span 
-                className="inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold bg-white/10 text-white/80 border border-white/10 mb-6 backdrop-blur"
+                className="inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-6 backdrop-blur"
                 whileHover={{ scale: 1.05 }}
               >
-                <StarIcon className="h-4 w-4 mr-2 text-amber-300" />
-                YC Alumni • Backed by Microsoft & AWS
+                <CheckCircleIcon className="h-4 w-4 mr-2" />
+                HIPAA Compliant • SOC 2 Type II • Enterprise Ready
               </motion.span>
               
               <motion.h1 
-                className="text-5xl md:text-7xl font-bold mb-8 leading-tight tracking-tight"
+                className="text-5xl md:text-6xl font-bold mb-6 leading-tight tracking-tight"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Intelligent claims
+                AI Claims Data Extraction
                 <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent block">
-                  operations platform
+                  for Insurance Ops Teams
                 </span>
               </motion.h1>
               
               <motion.p 
-                className="text-xl md:text-2xl text-white/90 max-w-2xl mb-12 leading-relaxed font-light"
+                className="text-xl md:text-2xl text-white/90 max-w-2xl mb-8 leading-relaxed"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                ClarifyOps pairs <strong className="text-white font-semibold italic">enterprise-grade AI</strong> with automated workflows to process claims in minutes, not days.
+                Upload claim PDFs → Instantly extract <strong className="text-white">CPT codes, policy details, injury data, payment amounts</strong> → Route claims automatically.
               </motion.p>
 
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4 justify-start mb-10"
+                className="flex flex-wrap gap-4 mb-8 text-sm"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                <div className="flex items-center gap-2 text-white/80">
+                  <ClockIcon className="h-5 w-5 text-emerald-400" />
+                  <span>18 min avg processing</span>
+                </div>
+                <div className="flex items-center gap-2 text-white/80">
+                  <ShieldCheckIcon className="h-5 w-5 text-emerald-400" />
+                  <span>99.9% extraction accuracy</span>
+                </div>
+                <div className="flex items-center gap-2 text-white/80">
+                  <CurrencyDollarIcon className="h-5 w-5 text-emerald-400" />
+                  <span>$4.6M fraud blocked avg</span>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-start"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                <Button 
+                <button 
                   onClick={() => scheduleDemo('hero')} 
-                  className="bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
                 >
-                  <SparklesIcon className="h-5 w-5 mr-2" />
-                  Schedule a Demo
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="border border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
-                  onClick={() => setIsVideoPlaying(true)}
+                  <CloudArrowUpIcon className="h-5 w-5" />
+                  Try Free Demo
+                </button>
+                <button 
+                  onClick={() => scheduleDemo('hero-schedule')} 
+                  className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
                 >
-                  <PlayIcon className="h-5 w-5 mr-2" />
-                  Watch Demo
-                </Button>
-              </motion.div>
-
-              <motion.div 
-                className="flex flex-wrap gap-3 text-xs uppercase tracking-wide text-white/60"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
-                {["HIPAA Compliant", "99.9% Uptime", "GDPR Ready"].map(item => (
-                  <div key={item} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                    <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
-                    <span>{item}</span>
-                  </div>
-                ))}
+                  <SparklesIcon className="h-5 w-5" />
+                  Schedule a Call
+                </button>
               </motion.div>
             </motion.div>
 
@@ -332,44 +337,55 @@ export default function LandingPage() {
             >
               <div className="absolute -inset-6 bg-gradient-to-br from-blue-500/20 to-purple-500/20 blur-2xl" />
               <div className="relative rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/50">Live Command Center</p>
-                    <h3 className="text-xl font-semibold text-white">Claims Intelligence</h3>
+                    <p className="text-xs uppercase tracking-widest text-white/50">Live Extraction Preview</p>
+                    <h3 className="text-lg font-semibold text-white">Medical Claim #CLM-2847</h3>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/10 text-emerald-200 text-xs px-3 py-1 border border-emerald-300/20">
-                    <span className="h-2 w-2 rounded-full bg-emerald-300" />
-                    Real-time
+                    <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
+                    Extracted
                   </span>
                 </div>
-                <div className="space-y-4">
-                  <div className="rounded-2xl bg-white/10 p-4 border border-white/10">
-                    <div className="flex items-center justify-between">
+                <div className="space-y-3">
+                  <div className="rounded-xl bg-white/10 p-3 border border-white/10">
+                    <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <p className="text-sm text-white/70">Auto-approved claims</p>
-                        <p className="text-2xl font-semibold text-white">1,248</p>
+                        <p className="text-white/50 text-xs">Policy Number</p>
+                        <p className="font-medium text-white">POL-2024-847291</p>
                       </div>
-                      <ArrowTrendingUpIcon className="h-8 w-8 text-blue-300" />
-                    </div>
-                    <p className="text-xs text-white/50 mt-3">+32% this month</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="rounded-2xl bg-white/10 p-4 border border-white/10">
-                      <p className="text-xs text-white/50">Avg. decision time</p>
-                      <p className="text-lg font-semibold text-white">18 mins</p>
-                    </div>
-                    <div className="rounded-2xl bg-white/10 p-4 border border-white/10">
-                      <p className="text-xs text-white/50">Fraud blocked</p>
-                      <p className="text-lg font-semibold text-white">$4.6M</p>
-                    </div>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-4">
-                    <div className="flex items-center gap-3">
-                      <ShieldCheckIcon className="h-6 w-6 text-blue-200" />
                       <div>
-                        <p className="text-sm font-medium text-white">AI risk scoring</p>
-                        <p className="text-xs text-white/60">Prioritize highest-impact claims instantly.</p>
+                        <p className="text-white/50 text-xs">Claim Amount</p>
+                        <p className="font-medium text-emerald-300">$12,450.00</p>
                       </div>
+                      <div>
+                        <p className="text-white/50 text-xs">CPT Code</p>
+                        <p className="font-medium text-white">99213, 99214</p>
+                      </div>
+                      <div>
+                        <p className="text-white/50 text-xs">ICD-10</p>
+                        <p className="font-medium text-white">M54.5, S39.012A</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-xl bg-white/10 p-3 border border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-white/50 text-xs">Claim Readiness Score</p>
+                      <span className="text-emerald-300 font-semibold">94%</span>
+                    </div>
+                    <div className="w-full bg-white/20 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-emerald-400 to-emerald-300 h-2 rounded-full" style={{width: '94%'}}></div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="rounded-lg bg-emerald-500/20 p-2 text-center border border-emerald-500/30">
+                      <p className="text-xs text-emerald-300">Auto-Route</p>
+                    </div>
+                    <div className="rounded-lg bg-blue-500/20 p-2 text-center border border-blue-500/30">
+                      <p className="text-xs text-blue-300">Low Risk</p>
+                    </div>
+                    <div className="rounded-lg bg-white/10 p-2 text-center border border-white/20">
+                      <p className="text-xs text-white/70">Complete</p>
                     </div>
                   </div>
                 </div>
