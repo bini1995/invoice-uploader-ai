@@ -26,7 +26,7 @@ import PricingSection from './components/PricingSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import { logEvent, getRequestId } from './lib/analytics';
 
-const DEMO_URL = 'https://calendly.com/taddessebi95/clarifyops-demo';
+const DEMO_URL = 'https://calendly.com/taddessebi95';
 const HEADER_HEIGHT = 72;
 
 export default function LandingPage() {
