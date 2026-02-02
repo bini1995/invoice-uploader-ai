@@ -338,94 +338,98 @@ function AISpendAnalyticsHub() {
 
   return (
     <ImprovedMainLayout title="AI Spend Analytics Hub" helpTopic="reports">
-      <div className="space-y-4 max-w-2xl">
-        <div className="sticky top-16 z-10 bg-white dark:bg-gray-800 border-b p-2 flex flex-wrap items-end gap-2">
-          <select
-            multiple
-            value={vendors}
-            onChange={e => setVendors(Array.from(e.target.selectedOptions).map(o => o.value))}
-            className="input"
-          >
-            {vendorList.map(v => (
-              <option key={v} value={v}>{v}</option>
-            ))}
-          </select>
-          <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="input" />
-          <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="input" />
-          <div className="flex space-x-1">
-            <button onClick={() => applyQuickRange('7d')} className="btn btn-xs">Last 7 Days</button>
-            <button onClick={() => applyQuickRange('lastMonth')} className="btn btn-xs">Last Month</button>
-            <button onClick={() => applyQuickRange('quarter')} className="btn btn-xs">This Quarter</button>
-          </div>
-          <select
-            multiple
-            value={selectedTags}
-            onChange={e => setSelectedTags(Array.from(e.target.selectedOptions).map(o => o.value))}
-            className="input"
-          >
-            {tags.map(t => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-          <button onClick={runReport} className="btn btn-primary ml-auto" title="Apply Filters">Apply</button>
-          <label className="text-sm flex items-center ml-2">
-            <input
-              type="checkbox"
-              className="mr-1"
-              checked={includeAI}
-              onChange={e => setIncludeAI(e.target.checked)}
-            />
-            Include AI Insights?
-          </label>
-          <button onClick={exportPDF} className="btn btn-primary bg-green-700 hover:bg-green-800" title="Export PDF">Export PDF</button>
-          <button onClick={exportCSV} className="btn btn-primary bg-blue-700 hover:bg-blue-800" title="Export CSV">Export CSV</button>
+      <div className="space-y-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI Spend Analytics</h1>
+          <p className="text-gray-600 dark:text-gray-400">Track spending, anomalies, and AI-driven insights</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
-          <StatCard title="Total Invoices" value={summary.totalInvoices} />
-          <div title="% of invoices that triggered AI anomaly detection, fraud suspicion, or policy mismatch.">
-            <StatCard
-              title="% Anomalies"
-              value={`${summary.totalInvoices ? Math.round((summary.anomalies / summary.totalInvoices) * 100) : 0}%`}
-            />
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-white" />
+              <span className="text-gray-500">to</span>
+              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-white" />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => applyQuickRange('7d')} className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white">Last 7 Days</button>
+              <button onClick={() => applyQuickRange('lastMonth')} className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white">Last Month</button>
+              <button onClick={() => applyQuickRange('quarter')} className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white">This Quarter</button>
+            </div>
+            <div className="flex items-center gap-4 ml-auto">
+              <label className="text-sm flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                <input
+                  type="checkbox"
+                  className="rounded"
+                  checked={includeAI}
+                  onChange={e => setIncludeAI(e.target.checked)}
+                />
+                Include AI Insights
+              </label>
+              <button onClick={runReport} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">Apply</button>
+            </div>
           </div>
-          <StatCard title="Total $ Spent" value={`$${summary.totalAmount.toFixed(2)}`} />
-          <StatCard title="Avg Spend per Vendor" value={`$${summary.avgPerVendor.toFixed(2)}`} />
-          <StatCard title="Top Spending Vendor" value={summary.topVendor || 'N/A'} />
+          <div className="flex gap-2 mt-4">
+            <button onClick={exportPDF} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium">Export PDF</button>
+            <button onClick={exportCSV} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Export CSV</button>
+          </div>
         </div>
-        <div className="rounded-lg border bg-white dark:bg-gray-800 p-4 space-y-4">
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Total Invoices</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.totalInvoices}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4" title="% of invoices that triggered AI anomaly detection">
+            <p className="text-sm text-gray-500 dark:text-gray-400">% Anomalies</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.totalInvoices ? Math.round((summary.anomalies / summary.totalInvoices) * 100) : 0}%</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Total $ Spent</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">${summary.totalAmount.toFixed(2)}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Avg Spend per Vendor</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">${summary.avgPerVendor.toFixed(2)}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Top Spending Vendor</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.topVendor || 'N/A'}</p>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 HITL & Predictive Insights
               </h2>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Copilot-driven escalations with Prophet-style trend forecasting.
               </p>
             </div>
-            {loadingInsights && <span className="text-xs text-gray-500">Refreshing insights…</span>}
+            {loadingInsights && <span className="text-sm text-gray-500">Refreshing insights…</span>}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="rounded border p-3">
-              <p className="text-xs text-gray-500">HITL Queue</p>
-              <p className="text-xl font-semibold">{hitl.queueCount ?? 0}</p>
-              <p className="text-xs text-gray-500">Escalated: {hitl.escalatedCount ?? 0}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-700/50">
+              <p className="text-sm text-gray-500 dark:text-gray-400">HITL Queue</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{hitl.queueCount ?? 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Escalated: {hitl.escalatedCount ?? 0}</p>
             </div>
-            <div className="rounded border p-3">
-              <p className="text-xs text-gray-500">Automation Rate</p>
-              <p className="text-xl font-semibold">{roi.automationRate ?? 0}%</p>
-              <p className="text-xs text-gray-500">Target: 92%+</p>
+            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-700/50">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Automation Rate</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{roi.automationRate ?? 0}%</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Target: 92%+</p>
             </div>
-            <div className="rounded border p-3">
-              <p className="text-xs text-gray-500">Time Saved</p>
-              <p className="text-xl font-semibold">{roi.timeSavedHours ?? 0} hrs</p>
-              <p className="text-xs text-gray-500">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-700/50">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Time Saved</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{roi.timeSavedHours ?? 0} hrs</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Baseline: {roi.manualMinutes ?? 45}m → {roi.aiMinutes ?? 12}m
               </p>
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded border p-3">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-700/50">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 Claims Volume Forecast
               </h3>
@@ -446,100 +450,114 @@ function AISpendAnalyticsHub() {
                 )}
               </div>
             </div>
-            <div className="rounded border p-3 space-y-2">
+            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-700/50 space-y-2">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                 Domain-Tuned Models (Hugging Face)
               </h3>
-              <ul className="space-y-2 text-xs text-gray-600 dark:text-gray-300">
+              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                 {modelRegistry.length ? (
                   modelRegistry.map((model) => (
-                    <li key={model.id} className="border rounded p-2">
+                    <li key={model.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800">
                       <div className="font-semibold text-gray-800 dark:text-gray-100">{model.name}</div>
-                      <div className="text-[11px] text-gray-500">{model.task} • {model.version}</div>
-                      <div className="text-[11px] text-gray-500">{model.fineTunedOn}</div>
-                      <div className="text-[11px] text-gray-500">Status: {model.status}</div>
+                      <div className="text-xs text-gray-500">{model.task} • {model.version}</div>
+                      <div className="text-xs text-gray-500">{model.fineTunedOn}</div>
+                      <div className="text-xs text-gray-500">Status: {model.status}</div>
                     </li>
                   ))
                 ) : (
-                  <li>No registered models yet.</li>
+                  <li className="text-gray-500">No registered models yet.</li>
                 )}
               </ul>
             </div>
           </div>
         </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">AI Threshold Rules</h2>
-          <div className="flex justify-between items-center mb-2">
-            <button onClick={openNewRule} className="btn btn-primary" title="Add Rule">+ Add Rule</button>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">AI Threshold Rules</h2>
+            <button onClick={openNewRule} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">+ Add Rule</button>
           </div>
-          <ul className="space-y-1 text-gray-700 dark:text-gray-300">
+          <ul className="space-y-3 text-gray-700 dark:text-gray-300">
             {loadingRules ? (
               <Skeleton rows={2} height="h-4" />
             ) : (
               rules.map((r, i) => (
-                <li key={i} className="flex justify-between items-center">
-                  <span>{r.flagReason}</span>
-                  <span className="text-xs ml-2">Triggered: {r.triggered}</span>
-                  <div className="space-x-1">
-                    <button onClick={() => openEditRule(i)} className="btn btn-xs">Edit</button>
-                    <button onClick={() => deleteRule(i)} className="btn btn-xs">Delete</button>
+                <li key={i} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <span className="font-medium">{r.flagReason}</span>
+                  <span className="text-sm text-gray-500">Triggered: {r.triggered}</span>
+                  <div className="space-x-2">
+                    <button onClick={() => openEditRule(i)} className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">Edit</button>
+                    <button onClick={() => deleteRule(i)} className="px-3 py-1 text-sm border border-red-300 text-red-600 rounded-lg hover:bg-red-50">Delete</button>
                   </div>
                 </li>
               ))
             )}
           </ul>
         </div>
-        <div className="overflow-x-auto rounded-lg">
-          <table className="min-w-full border text-sm rounded-lg overflow-hidden">
-            <thead>
-              <tr className="bg-gray-200 dark:bg-gray-700">
-                <th className="px-2 py-1">Date</th>
-                <th className="px-2 py-1">Vendor</th>
-                <th className="px-2 py-1">Amount</th>
-                <th className="px-2 py-1">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loadingReport ? (
-                <tr>
-                  <td colSpan="6" className="p-4"><Skeleton rows={5} height="h-4" /></td>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Transactions</h2>
+          <div className="overflow-x-auto rounded-lg">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                  <th className="px-4 py-3 text-left font-medium">Date</th>
+                  <th className="px-4 py-3 text-left font-medium">Vendor</th>
+                  <th className="px-4 py-3 text-left font-medium">Amount</th>
+                  <th className="px-4 py-3 text-left font-medium">Status</th>
                 </tr>
-              ) : (
-                invoices.map(inv => (
-                  <tr
-                    key={inv.id}
-                    className="border-t hover:bg-gray-100 cursor-pointer"
-                    onClick={() => setDetailInvoice(inv)}
-                  >
-                    <td className="px-2 py-1">{new Date(inv.date).toLocaleDateString()}</td>
-                    <td className="px-2 py-1">{inv.vendor}</td>
-                    <td className="px-2 py-1">${inv.amount}</td>
-                    <td className="px-2 py-1">{inv.approval_status || 'Pending'}</td>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {loadingReport ? (
+                  <tr>
+                    <td colSpan="4" className="p-4"><Skeleton rows={5} height="h-4" /></td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  invoices.map(inv => (
+                    <tr
+                      key={inv.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
+                      onClick={() => setDetailInvoice(inv)}
+                    >
+                      <td className="px-4 py-3">{new Date(inv.date).toLocaleDateString()}</td>
+                      <td className="px-4 py-3">{inv.vendor}</td>
+                      <td className="px-4 py-3 font-medium">${inv.amount}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          inv.approval_status === 'approved' ? 'bg-green-100 text-green-800' :
+                          inv.approval_status === 'rejected' ? 'bg-red-100 text-red-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {inv.approval_status || 'Pending'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          <div className="flex items-center mb-1">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 flex-1">Spend Heatmap</h2>
-            <label className="text-sm flex items-center">
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Spend Heatmap</h2>
+            <label className="text-sm flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <input
                 type="checkbox"
-                className="mr-1"
+                className="rounded"
                 checked={highlightAnomalies}
                 onChange={(e) => setHighlightAnomalies(e.target.checked)}
               />
               Highlight anomaly days
             </label>
           </div>
-          <div className="overflow-x-auto rounded-lg">
-            <table className="table-fixed border-collapse rounded-lg overflow-hidden text-xs table-striped table-hover w-full">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
               <thead>
-                <tr>
+                <tr className="text-gray-500 dark:text-gray-400">
                   {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
-                    <th key={d} className="px-1 font-normal">{d}</th>
+                    <th key={d} className="px-2 py-2 font-medium text-center">{d}</th>
                   ))}
                 </tr>
               </thead>
