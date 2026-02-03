@@ -40,6 +40,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (February 2026)
 
+- **User Registration & Profile System**: Complete user registration with name/email/password validation, profile page, and sidebar user display
+- **Google SSO Authentication**: OAuth 2.0 integration for Google sign-in (requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+- **Public API (v1)**: REST API endpoints at /api/v1/ for claims access, status updates, and webhooks with API key authentication
+- **AI Assistant "Clari"**: Renamed AI bot to Clari with expanded knowledge base covering platform features, pricing, integrations, and documentation
+- **Documentation Site**: Internal docs at /docs with Getting Started, API Reference, Integrations, Security, and SSO sections
+- **Validation Error Handling**: Improved Zod validation error formatting in backend
+
 - **Competitive Advantage Features**: Added 6 features to establish market position:
   - Self-Service Demo Mode (`TryDocumentDemo.jsx`) - Interactive document upload with simulated AI extraction
   - ROI Calculator (`ROICalculator.jsx`) - Dynamic savings calculator with sliders for claims volume, processing time, hourly rate, and error rate
