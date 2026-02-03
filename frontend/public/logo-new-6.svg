@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="n6a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="100%" style="stop-color:#0284C7"/>
+    </linearGradient>
+    <linearGradient id="n6b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22C55E"/>
+      <stop offset="100%" style="stop-color:#16A34A"/>
+    </linearGradient>
+  </defs>
+  <!-- Circular C shape -->
+  <path d="M32 6C16 6 6 18 6 32C6 46 16 58 32 58" stroke="url(#n6a)" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- Document with data visualization -->
+  <rect x="26" y="16" width="26" height="32" rx="3" fill="url(#n6a)"/>
+  <!-- ECG/pulse line -->
+  <polyline points="30,32 34,32 36,26 38,38 40,30 42,32 48,32" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Document lines -->
+  <rect x="30" y="40" width="18" height="2" rx="1" fill="white" opacity="0.7"/>
+  <rect x="30" y="44" width="12" height="2" rx="1" fill="white" opacity="0.5"/>
+  <!-- Green verified badge -->
+  <circle cx="50" cy="46" r="9" fill="url(#n6b)"/>
+  <path d="M45 46L48 49L55 42" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

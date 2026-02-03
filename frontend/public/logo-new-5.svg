@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="n5a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E40AF"/>
+      <stop offset="100%" style="stop-color:#1E3A8A"/>
+    </linearGradient>
+    <linearGradient id="n5b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="100%" style="stop-color:#0284C7"/>
+    </linearGradient>
+    <linearGradient id="n5c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22C55E"/>
+      <stop offset="100%" style="stop-color:#16A34A"/>
+    </linearGradient>
+  </defs>
+  <!-- Back document -->
+  <rect x="16" y="10" width="26" height="34" rx="2" fill="#93C5FD" transform="rotate(-5 16 10)"/>
+  <!-- Front document -->
+  <rect x="20" y="14" width="26" height="34" rx="2" fill="url(#n5a)"/>
+  <!-- Document lines -->
+  <rect x="26" y="22" width="14" height="2" rx="1" fill="white" opacity="0.9"/>
+  <rect x="26" y="28" width="10" height="2" rx="1" fill="white" opacity="0.7"/>
+  <!-- Chart/graph inside -->
+  <rect x="26" y="34" width="4" height="8" rx="1" fill="url(#n5b)"/>
+  <rect x="32" y="30" width="4" height="12" rx="1" fill="url(#n5c)"/>
+  <rect x="38" y="36" width="4" height="6" rx="1" fill="url(#n5b)"/>
+  <!-- Magnifying glass -->
+  <circle cx="48" cy="20" r="10" fill="white" stroke="url(#n5b)" stroke-width="3"/>
+  <line x1="55" y1="27" x2="60" y2="32" stroke="url(#n5b)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Checkmark inside magnifying -->
+  <path d="M43 20L46 23L53 16" stroke="url(#n5c)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
