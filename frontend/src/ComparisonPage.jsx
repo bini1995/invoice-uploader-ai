@@ -125,7 +125,7 @@ export default function ComparisonPage() {
             <img src="/logo.svg" alt="ClarifyOps" className="h-8 w-auto" />
           </a>
           <a
-            href="https://calendly.com/taddessebi95"
+            href="https://calendly.com/clarifyops-demo"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -272,7 +272,7 @@ export default function ComparisonPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://calendly.com/taddessebi95"
+                href="https://calendly.com/clarifyops-demo"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-600 font-semibold rounded-full hover:bg-white/90 transition-colors"

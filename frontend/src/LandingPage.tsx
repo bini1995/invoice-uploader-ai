@@ -30,7 +30,7 @@ import ComplianceBadges from './components/ComplianceBadges.jsx';
 import { logEvent, getRequestId } from './lib/analytics';
 import { Link } from 'react-router-dom';
 
-const DEMO_URL = 'https://calendly.com/taddessebi95';
+const DEMO_URL = 'https://calendly.com/clarifyops-demo';
 const HEADER_HEIGHT = 72;
 
 export default function LandingPage() {

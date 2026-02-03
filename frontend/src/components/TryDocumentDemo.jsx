@@ -226,7 +226,7 @@ export default function TryDocumentDemo() {
                     Like what you see? Get started with full extraction capabilities.
                   </p>
                   <a
-                    href="https://calendly.com/taddessebi95"
+                    href="https://calendly.com/clarifyops-demo"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-white text-slate-900 font-semibold rounded-xl hover:bg-white/90 transition-colors"
