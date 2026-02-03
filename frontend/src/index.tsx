@@ -30,6 +30,9 @@ import LoginPage from './LoginPage';
 import ForgotPassword from './ForgotPassword';
 import ClarifyClaims from './ClarifyClaims';
 import ClaimsBrandingPreview from './ClaimsBrandingPreview';
+import ComparisonPage from './ComparisonPage.jsx';
+import IntegrationsPage from './IntegrationsPage.jsx';
+import UseCasesPage from './UseCasesPage.jsx';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -189,6 +192,10 @@ function AnimatedRoutes() {
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
+        <Route path="/compare" element={<PageWrapper><ComparisonPage /></PageWrapper>} />
+        <Route path="/integrations" element={<PageWrapper><IntegrationsPage /></PageWrapper>} />
+        <Route path="/use-cases" element={<PageWrapper><UseCasesPage /></PageWrapper>} />
+        <Route path="/use-cases/:caseId" element={<PageWrapper><UseCasesPage /></PageWrapper>} />
         <Route path="/app" element={<Navigate to="/claims" replace />} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />

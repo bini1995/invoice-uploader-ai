@@ -24,7 +24,11 @@ import { Button } from './components/ui/Button';
 import LoginLink from './components/LoginLink';
 import PricingSection from './components/PricingSection';
 import TestimonialsSection from './components/TestimonialsSection';
+import TryDocumentDemo from './components/TryDocumentDemo.jsx';
+import ROICalculator from './components/ROICalculator.jsx';
+import ComplianceBadges from './components/ComplianceBadges.jsx';
 import { logEvent, getRequestId } from './lib/analytics';
+import { Link } from 'react-router-dom';
 
 const DEMO_URL = 'https://calendly.com/taddessebi95';
 const HEADER_HEIGHT = 72;
@@ -677,6 +681,15 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Try Document Demo Section */}
+        <TryDocumentDemo />
+
+        {/* ROI Calculator Section */}
+        <ROICalculator />
+
+        {/* Compliance Badges Section */}
+        <ComplianceBadges />
+
         {/* Testimonials Section */}
         <TestimonialsSection />
 
@@ -742,22 +755,23 @@ export default function LandingPage() {
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
                 <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="/demo" className="hover:text-white transition-colors">Demo</a></li>
+                <li><Link to="/compare" className="hover:text-white transition-colors">Compare</Link></li>
+                <li><Link to="/integrations" className="hover:text-white transition-colors">Integrations</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
+              <h3 className="font-semibold mb-4">Use Cases</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="/about" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="/careers" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
+                <li><Link to="/use-cases/workers-comp" className="hover:text-white transition-colors">Workers Comp</Link></li>
+                <li><Link to="/use-cases/auto-fnol" className="hover:text-white transition-colors">Auto FNOL</Link></li>
+                <li><Link to="/use-cases/medical-billing" className="hover:text-white transition-colors">Medical Billing</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Support</h3>
+              <h3 className="font-semibold mb-4">Resources</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="/help" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="/docs" className="hover:text-white transition-colors">Documentation</a></li>
+                <li><a href="#roi-calculator" className="hover:text-white transition-colors">ROI Calculator</a></li>
+                <li><a href="#compliance" className="hover:text-white transition-colors">Security & Compliance</a></li>
                 <li><a href={supportHref} className="hover:text-white transition-colors">Contact Support</a></li>
               </ul>
             </div>
