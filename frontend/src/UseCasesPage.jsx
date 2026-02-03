@@ -344,8 +344,8 @@ export default function UseCasesPage() {
             <ArrowLeftIcon className="h-5 w-5" />
             <span>{useCase ? "All Use Cases" : "Back to Home"}</span>
           </Link>
-          <a href="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="ClarifyOps" className="h-8 w-auto" />
+          <a href="/" className="font-bold text-xl tracking-tight">
+            <span className="text-slate-800">CLARIFY</span><span className="text-purple-600">OPS</span>
           </a>
           <a
             href="https://calendly.com/clarifyops-demo"

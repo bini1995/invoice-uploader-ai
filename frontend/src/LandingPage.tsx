@@ -177,12 +177,8 @@ export default function LandingPage() {
       {/* Header */}
       <header className="sticky top-0 bg-white/70 backdrop-blur-xl z-50 border-b border-white/40 shadow-sm">
         <nav className="max-w-7xl mx-auto flex items-center justify-between py-4 px-6">
-          <a href="/">
-            <img 
-              src="/logo.png" 
-              alt="ClarifyOps" 
-              className="h-10 w-auto"
-            />
+          <a href="/" className="font-bold text-xl tracking-tight">
+            <span className="text-slate-800">CLARIFY</span><span className="text-purple-600">OPS</span>
           </a>
           
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-700">
@@ -745,8 +741,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="mb-4">
-                <img src="/logo.png" alt="ClarifyOps" className="h-12 w-auto" />
+              <div className="mb-4 font-bold text-2xl tracking-tight">
+                <span className="text-white">CLARIFY</span><span className="text-purple-400">OPS</span>
               </div>
               <p className="text-gray-400">
                 The future of claims management powered by AI.
