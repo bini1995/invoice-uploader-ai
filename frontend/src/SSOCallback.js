@@ -12,11 +12,18 @@ export default function SSOCallback({ onLogin }) {
     const role = searchParams.get('role');
     const name = searchParams.get('name');
     const email = searchParams.get('email');
+    const errorMsg = searchParams.get('error');
+
+    if (errorMsg) {
+      setError(decodeURIComponent(errorMsg));
+      setTimeout(() => window.location.href = '/login', 3000);
+      return;
+    }
 
     if (token) {
       localStorage.setItem('token', token);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('role', role);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      if (role) localStorage.setItem('role', role);
       if (name) localStorage.setItem('userName', name);
       if (email) localStorage.setItem('userEmail', email);
       
@@ -24,12 +31,12 @@ export default function SSOCallback({ onLogin }) {
         onLogin(token, role);
       }
       
-      navigate('/operations');
+      window.location.href = '/operations';
     } else {
       setError('Authentication failed. Please try again.');
-      setTimeout(() => navigate('/login'), 3000);
+      setTimeout(() => window.location.href = '/login', 3000);
     }
-  }, [searchParams, onLogin, navigate]);
+  }, [searchParams, onLogin]);
 
   if (error) {
     return (
