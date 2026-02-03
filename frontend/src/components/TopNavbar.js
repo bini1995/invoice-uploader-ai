@@ -11,9 +11,8 @@ export default function TopNavbar({ title, helpTopic }) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
   return (
     <header className="sticky top-0 z-30 h-12 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow flex items-center justify-between px-4">
-      <div className="text-lg font-semibold flex items-center space-x-2">
-        <img src="/logo.png" alt="ClarifyOps logo" className="h-7 w-auto" />
-        <span>{t('title')}</span>
+      <div className="text-lg font-semibold flex items-center space-x-3">
+        <img src="/logo.png" alt="ClarifyOps" className="h-9 w-auto" />
         <span className="opacity-70">/ {title}</span>
         {helpTopic && <HelpTooltip term={helpTopic} />}
       </div>

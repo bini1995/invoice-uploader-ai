@@ -76,14 +76,13 @@ export default function Navbar({
     <nav className="sticky top-0 z-30 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow h-16">
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
-          <Link to="/claims" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
+          <Link to="/claims" className="flex items-center space-x-2" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img
               src="/logo.png"
-              alt="ClarifyOps logo"
-              className="h-7 w-auto"
+              alt="ClarifyOps"
+              className="h-9 w-auto"
             />
-            <span className="font-semibold text-sm">{t('title')}</span>
-            <span className="ml-1 text-xs opacity-80">{tenantName}</span>
+            <span className="text-xs opacity-80">{tenantName}</span>
           </Link>
           <span className="text-xs opacity-80">›</span>
           <Link

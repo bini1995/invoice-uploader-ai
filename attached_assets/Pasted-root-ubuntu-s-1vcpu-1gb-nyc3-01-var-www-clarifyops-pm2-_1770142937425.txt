@@ -1,0 +1,139 @@
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# pm2 logs clarifyops-backend --lines 20
+[TAILING] Tailing last 20 lines for [clarifyops-backend] process (change the value with --lines option)
+/root/.pm2/logs/clarifyops-backend-error.log last 20 lines:
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:76618) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:76846) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:77077) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'hl7-standard' imported from /var/www/clarifyops/backend/utils/ediHl7Parser.js
+0|clarifyo |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+0|clarifyo |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+0|clarifyo |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+0|clarifyo |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+0|clarifyo |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+0|clarifyo |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+0|clarifyo |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+0|clarifyo |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+0|clarifyo |   code: 'ERR_MODULE_NOT_FOUND'
+0|clarifyo | }
+0|clarifyo | (node:77332) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+
+/root/.pm2/logs/clarifyops-backend-out.log last 20 lines:
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-03T16:35:11.975Z"}
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-03T16:35:11.991Z"}
+0|clarifyo | info: 🟡 Starting server... {"timestamp":"2026-02-03T16:35:12.779Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T16:35:12.951Z"}
+0|clarifyo | info: ✅ Database initialized {"timestamp":"2026-02-03T16:35:13.459Z"}
+0|clarifyo | info: 🟢 Application initialized successfully {"timestamp":"2026-02-03T16:35:13.475Z"}
+0|clarifyo | info: 🚀 Server running on http://0.0.0.0:3000 {"timestamp":"2026-02-03T16:35:13.483Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T16:35:13.500Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T16:41:54.776Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T16:53:34.872Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T17:00:00.967Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T17:13:12.573Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T17:32:54.457Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T17:35:13.481Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T17:50:55.340Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:00:00.170Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:05:26.897Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:15:16.968Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:17:04.961Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:20:02.052Z"}
+
+^C
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# cd /var/www/clarifyops
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# git pull origin main
+remote: Enumerating objects: 60, done.
+remote: Counting objects: 100% (60/60), done.
+remote: Compressing objects: 100% (10/10), done.
+remote: Total 41 (delta 31), reused 41 (delta 31), pack-reused 0 (from 0)
+Unpacking objects: 100% (41/41), 2.11 MiB | 10.67 MiB/s, done.
+From https://github.com/bini1995/invoice-uploader-ai
+ * branch            main       -> FETCH_HEAD
+   0c969c0..5de3135  main       -> origin/main
+Updating 0c969c0..5de3135
+Fast-forward
+ attached_assets/15646-PNzDO0uCyNoefegmnKYmOWpZzTODrhVDxhs4MvsVMss_1770142105243.webp             | Bin 0 -> 3688 bytes
+ attached_assets/Pasted-root-ubuntu-s-1vcpu-1gb-nyc3-01-var-www-clarifyops-fron_1770136911944.txt |  65 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ frontend/public/logo-options/logo-option-1-purple.png                                            | Bin 0 -> 275473 bytes
+ frontend/public/logo-options/logo-option-1.png                                                   | Bin 0 -> 274423 bytes
+ frontend/public/logo-options/logo-option-2.png                                                   | Bin 0 -> 566423 bytes
+ frontend/public/logo-options/logo-option-3.png                                                   | Bin 0 -> 306002 bytes
+ frontend/public/logo-options/logo-option-4.png                                                   | Bin 0 -> 494124 bytes
+ frontend/public/logo-options/logo-option-5.png                                                   | Bin 0 -> 292324 bytes
+ frontend/public/logo.png                                                                         | Bin 0 -> 275473 bytes
+ frontend/src/ComparisonPage.jsx                                                                  |   2 +-
+ frontend/src/DocsPage.jsx                                                                        |   2 +-
+ frontend/src/ForgotPassword.js                                                                   |   2 +-
+ frontend/src/IntegrationsPage.jsx                                                                |   2 +-
+ frontend/src/LandingPage.tsx                                                                     |   4 ++--
+ frontend/src/Login.js                                                                            |   2 +-
+ frontend/src/SignUp.js                                                                           |   2 +-
+ frontend/src/UseCasesPage.jsx                                                                    |   2 +-
+ frontend/src/components/EmptyState.js                                                            |   2 +-
+ frontend/src/components/ImprovedNavbar.js                                                        |   2 +-
+ frontend/src/components/ImprovedSidebarNav.js                                                    |   4 ++--
+ frontend/src/components/Navbar.js                                                                |   2 +-
+ frontend/src/components/TopNavbar.js                                                             |   2 +-
+ 22 files changed, 80 insertions(+), 15 deletions(-)
+ create mode 100644 attached_assets/15646-PNzDO0uCyNoefegmnKYmOWpZzTODrhVDxhs4MvsVMss_1770142105243.webp
+ create mode 100644 attached_assets/Pasted-root-ubuntu-s-1vcpu-1gb-nyc3-01-var-www-clarifyops-fron_1770136911944.txt
+ create mode 100644 frontend/public/logo-options/logo-option-1-purple.png
+ create mode 100644 frontend/public/logo-options/logo-option-1.png
+ create mode 100644 frontend/public/logo-options/logo-option-2.png
+ create mode 100644 frontend/public/logo-options/logo-option-3.png
+ create mode 100644 frontend/public/logo-options/logo-option-4.png
+ create mode 100644 frontend/public/logo-options/logo-option-5.png
+ create mode 100644 frontend/public/logo.png
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# cd frontend && npm run build
+
+> frontend@0.1.0 prebuild
+> node scripts/update-sitemap.js
+
+
+> frontend@0.1.0 build
+> vite build
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+vite v5.4.21 building for production...
+✓ 5451 modules transformed.
+build/index.html                     3.60 kB
+build/assets/index-CgsQEB5U.css     81.16 kB
+build/assets/index-EDwiMjcK.js   1,820.77 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 46.44s
+
+✨ [vite-plugin-compression]:algorithm=gzip - compressed file successfully: 
+build//var/www/clarifyops/frontend/assets/index-CgsQEB5U.css.gz   79.26kb / gzip: 13.41kb
+build//var/www/clarifyops/frontend/assets/index-EDwiMjcK.js.gz    1778.31kb / gzip: 523.99kb
+
+
+
+✨ [vite-plugin-compression]:algorithm=brotliCompress - compressed file successfully: 
+build//var/www/clarifyops/frontend/assets/index-CgsQEB5U.css.br   79.26kb / brotliCompress: 10.52kb
+build//var/www/clarifyops/frontend/assets/index-EDwiMjcK.js.br    1778.31kb / brotliCompress: 430.33kb
+
+
+
+> frontend@0.1.0 postbuild
+> echo 'Skipping react-snap for Docker build'
+
+Skipping react-snap for Docker build
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# pm2 restart clarifyops-backend
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [clarifyops-backend](ids: [ 0 ])
+[PM2] [clarifyops-backend](0) ✓
+┌────┬───────────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name                  │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ clarifyops-backend    │ default     │ 1.0.0   │ fork    │ 79884    │ 0s     │ 45   │ online    │ 0%       │ 18.8mb   │ root     │ disabled │
+└────┴───────────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# 

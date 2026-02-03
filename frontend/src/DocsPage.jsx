@@ -253,13 +253,9 @@ export default function DocsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 z-20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="ClarifyOps" className="h-8 w-8" />
-            <span className="font-bold text-lg">
-              <span className="text-gray-900 dark:text-white">Clarify</span>
-              <span className="text-blue-600">Ops</span>
-              <span className="text-gray-500 dark:text-gray-400 ml-2">Docs</span>
-            </span>
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/logo.png" alt="ClarifyOps" className="h-10 w-auto" />
+            <span className="text-gray-500 dark:text-gray-400 font-medium">Docs</span>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
