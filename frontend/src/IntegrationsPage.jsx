@@ -91,8 +91,8 @@ export default function IntegrationsPage() {
             <ArrowLeftIcon className="h-5 w-5" />
             <span>Back to Home</span>
           </Link>
-          <a href="/" className="font-bold text-xl tracking-tight">
-            <span className="text-slate-800">CLARIFY</span><span className="text-purple-600">OPS</span>
+          <a href="/">
+            <img src="/logo.png" alt="ClarifyOps" className="h-10 w-auto" />
           </a>
           <a
             href="https://calendly.com/clarifyops-demo"

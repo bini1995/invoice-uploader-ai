@@ -1,0 +1,65 @@
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# pm2 logs clarifyops-backend --lines 30
+[TAILING] Tailing last 30 lines for [clarifyops-backend] process (change the value with --lines option)
+/root/.pm2/logs/clarifyops-backend-error.log last 30 lines:
+0|clarifyo | }
+0|clarifyo | (node:76577) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:76618) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:76846) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:77077) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'hl7-standard' imported from /var/www/clarifyops/backend/utils/ediHl7Parser.js
+0|clarifyo |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+0|clarifyo |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+0|clarifyo |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+0|clarifyo |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+0|clarifyo |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+0|clarifyo |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+0|clarifyo |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+0|clarifyo |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+0|clarifyo |   code: 'ERR_MODULE_NOT_FOUND'
+0|clarifyo | }
+0|clarifyo | (node:77332) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:79884) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:80340) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:80439) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:80528) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+
+/root/.pm2/logs/clarifyops-backend-out.log last 30 lines:
+0|clarifyo | info: 🟡 Starting server... {"timestamp":"2026-02-03T18:44:27.191Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:44:27.377Z"}
+0|clarifyo | info: ✅ Database initialized {"timestamp":"2026-02-03T18:44:27.982Z"}
+0|clarifyo | info: 🟢 Application initialized successfully {"timestamp":"2026-02-03T18:44:28.000Z"}
+0|clarifyo | info: 🚀 Server running on http://0.0.0.0:3000 {"timestamp":"2026-02-03T18:44:28.009Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:44:28.028Z"}
+0|clarifyo | info: 🔎 Using DATABASE_URL: {"0":"p","1":"o","10":":","11":"/","12":"/","13":"c","14":"l","15":"a","16":"r","17":"i","18":"f","19":"y","2":"s","20":"o","21":"p","22":"s","23":":","24":"C","25":"l","26":"a","27":"r","28":"i","29":"f","3":"t","30":"y","31":"O","32":"p","33":"s","34":"2","35":"0","36":"2","37":"6","38":"@","39":"l","4":"g","40":"o","41":"c","42":"a","43":"l","44":"h","45":"o","46":"s","47":"t","48":":","49":"5","5":"r","50":"4","51":"3","52":"2","53":"/","54":"c","55":"l","56":"a","57":"r","58":"i","59":"f","6":"e","60":"y","61":"o","62":"p","63":"s","64":"_","65":"d","66":"b","7":"s","8":"q","9":"l","timestamp":"2026-02-03T18:45:51.386Z"}
+0|clarifyo | 🔎 Final dbConfig: {
+0|clarifyo |   host: 'localhost',
+0|clarifyo |   port: 5432,
+0|clarifyo |   user: 'clarifyops',
+0|clarifyo |   password: 'ClarifyOps2026',
+0|clarifyo |   database: 'clarifyops_db',
+0|clarifyo |   max: 20,
+0|clarifyo |   min: 2,
+0|clarifyo |   idleTimeoutMillis: 30000,
+0|clarifyo |   connectionTimeoutMillis: 2000,
+0|clarifyo |   ssl: false,
+0|clarifyo |   connectionString: 'postgresql://clarifyops:ClarifyOps2026@localhost:5432/clarifyops_db?sslmode=disable'
+0|clarifyo | }
+0|clarifyo | info: Postgres config: {"connectionString":"postgresql://clarifyops:ClarifyOps2026@localhost:5432/clarifyops_db?sslmode=disable","connectionTimeoutMillis":2000,"database":"clarifyops_db","host":"localhost","idleTimeoutMillis":30000,"max":20,"min":2,"password":"ClarifyOps2026","port":5432,"ssl":false,"timestamp":"2026-02-03T18:45:51.398Z","user":"clarifyops"}
+0|clarifyo | 🔧 AI Controller loaded
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-03T18:45:53.595Z"}
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-03T18:45:53.611Z"}
+0|clarifyo | info: 🟡 Starting server... {"timestamp":"2026-02-03T18:45:54.415Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:45:54.603Z"}
+0|clarifyo | info: ✅ Database initialized {"timestamp":"2026-02-03T18:45:55.256Z"}
+0|clarifyo | info: 🟢 Application initialized successfully {"timestamp":"2026-02-03T18:45:55.276Z"}
+0|clarifyo | info: 🚀 Server running on http://0.0.0.0:3000 {"timestamp":"2026-02-03T18:45:55.284Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-03T18:45:55.303Z"}

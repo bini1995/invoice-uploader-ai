@@ -12,7 +12,7 @@ export default function TopNavbar({ title, helpTopic }) {
   return (
     <header className="sticky top-0 z-30 h-12 bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur text-white shadow flex items-center justify-between px-4">
       <div className="text-lg font-semibold flex items-center space-x-3">
-        <span className="font-bold tracking-tight"><span className="text-white">CLARIFY</span><span className="text-purple-300">OPS</span></span>
+        <img src="/logo.png" alt="ClarifyOps" className="h-8 w-auto bg-white rounded px-2 py-1" />
         <span className="opacity-70">/ {title}</span>
         {helpTopic && <HelpTooltip term={helpTopic} />}
       </div>

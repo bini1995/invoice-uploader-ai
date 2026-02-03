@@ -77,7 +77,7 @@ export default function Navbar({
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:flex-wrap justify-between items-center gap-4 p-2">
         <div className="flex items-center space-x-2">
           <Link to="/claims" className="flex items-center space-x-2" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
-            <span className="font-bold text-lg tracking-tight"><span className="text-white">CLARIFY</span><span className="text-purple-300">OPS</span></span>
+            <img src="/logo.png" alt="ClarifyOps" className="h-8 w-auto bg-white rounded px-2 py-1" />
             <span className="text-xs opacity-80">{tenantName}</span>
           </Link>
           <span className="text-xs opacity-80">›</span>
