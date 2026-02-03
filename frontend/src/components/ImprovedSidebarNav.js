@@ -87,10 +87,16 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
       <div className="p-4 space-y-4">
         {/* Logo and Toggle */}
         <div className="flex items-center justify-between mb-6">
-          {open && (
+          {open ? (
             <div className="flex items-center gap-2">
-              <img src="/logo.svg" alt="ClarifyOps" className="h-8 w-auto" />
+              <img src="/logo.svg" alt="ClarifyOps" className="h-8 w-8" />
+              <span className="font-bold text-lg">
+                <span className="text-white">Clarify</span>
+                <span className="text-blue-400">Ops</span>
+              </span>
             </div>
+          ) : (
+            <img src="/logo.svg" alt="ClarifyOps" className="h-8 w-8" />
           )}
           <button
             onClick={() => setOpen(!open)}

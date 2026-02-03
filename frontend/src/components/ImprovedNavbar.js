@@ -80,13 +80,16 @@ export default function ImprovedNavbar({
       <div className="h-full flex items-center justify-between px-4">
         {/* Left side - Logo and breadcrumbs */}
         <div className="flex items-center space-x-4 min-w-0 flex-1">
-          <Link to="/claims" className="flex items-center space-x-2 hover:opacity-80 transition-opacity flex-shrink-0">
+          <Link to="/claims" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
             <img
               src="/logo.svg"
               alt="ClarifyOps logo"
-              className="h-8 w-auto"
+              className="h-9 w-9"
             />
-            <span className="font-semibold text-sm hidden sm:block">{t('title')}</span>
+            <span className="font-bold text-lg hidden sm:block">
+              <span className="text-slate-800 dark:text-white">Clarify</span>
+              <span className="text-blue-600 dark:text-blue-400">Ops</span>
+            </span>
           </Link>
           
           <div className="hidden md:flex items-center space-x-2 text-sm min-w-0">
