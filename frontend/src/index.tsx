@@ -27,6 +27,7 @@ import MultiUploadWizard from './MultiUploadWizard';
 import DemoSandbox from './DemoSandbox';
 import InstantTrial from './InstantTrial';
 import LoginPage from './LoginPage';
+import ForgotPassword from './ForgotPassword';
 import ClarifyClaims from './ClarifyClaims';
 import ClaimsBrandingPreview from './ClaimsBrandingPreview';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
@@ -186,6 +187,7 @@ function AnimatedRoutes() {
         <Route path="/claims/summary" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
+        <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
         <Route path="/app" element={<Navigate to="/claims" replace />} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />

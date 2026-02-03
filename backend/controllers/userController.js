@@ -207,4 +207,77 @@ export const updateUserRole = async (req, res) => {
   }
 };
 
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, username FROM users WHERE username = $1 OR email = $1',
+      [email]
+    );
+    
+    if (rows.length > 0) {
+      const user = rows[0];
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const resetExpiry = new Date(Date.now() + 3600000);
+      
+      await pool.query(
+        `UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE id = $3`,
+        [resetToken, resetExpiry, user.id]
+      );
+      
+      logger.info('Password reset requested', { userId: user.id, email });
+    }
+    
+    res.json({ 
+      message: 'If an account exists with that email, password reset instructions have been sent.' 
+    });
+  } catch (err) {
+    logger.error('Forgot password error:', err);
+    res.status(500).json({ message: 'Failed to process request' });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  
+  if (!token || !password) {
+    return res.status(400).json({ message: 'Token and password are required' });
+  }
+  
+  if (password.length < 8) {
+    return res.status(400).json({ message: 'Password must be at least 8 characters' });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, username FROM users WHERE reset_token = $1 AND reset_token_expiry > NOW()',
+      [token]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+    
+    const user = rows[0];
+    const passwordHash = await bcrypt.hash(password, 10);
+    
+    await pool.query(
+      'UPDATE users SET password_hash = $1, reset_token = NULL, reset_token_expiry = NULL WHERE id = $2',
+      [passwordHash, user.id]
+    );
+    
+    logger.info('Password reset successful', { userId: user.id });
+    await logActivity(user.id, 'password_reset', null, user.username);
+    
+    res.json({ message: 'Password has been reset successfully' });
+  } catch (err) {
+    logger.error('Reset password error:', err);
+    res.status(500).json({ message: 'Failed to reset password' });
+  }
+};
+
 export { createUser, userExists };
