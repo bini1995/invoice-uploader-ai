@@ -1,53 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="cGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3B82F6"/>
-      <stop offset="100%" style="stop-color:#1D4ED8"/>
+    <linearGradient id="n6ca" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="100%" style="stop-color:#0284C7"/>
     </linearGradient>
-    <linearGradient id="oGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#60A5FA"/>
-      <stop offset="100%" style="stop-color:#3B82F6"/>
+    <linearGradient id="n6cb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22C55E"/>
+      <stop offset="100%" style="stop-color:#16A34A"/>
     </linearGradient>
-    <linearGradient id="arrowGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" style="stop-color:#10B981"/>
-      <stop offset="100%" style="stop-color:#34D399"/>
-    </linearGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1D4ED8" flood-opacity="0.3"/>
-    </filter>
   </defs>
-  
-  <!-- C shape - stylized arc on the left -->
-  <path d="M28 8C14 8 4 18 4 32s10 24 24 24" 
-        stroke="url(#cGrad)" stroke-width="7" stroke-linecap="round" fill="none" filter="url(#shadow)"/>
-  
-  <!-- O shape - circle on the right that overlaps with C -->
-  <circle cx="40" cy="32" r="18" stroke="url(#oGrad)" stroke-width="7" fill="none" filter="url(#shadow)"/>
-  
-  <!-- Document icon inside the O -->
-  <g transform="translate(30, 22)">
-    <rect x="2" y="0" width="16" height="20" rx="2" fill="white" opacity="0.95"/>
-    <rect x="2" y="0" width="16" height="20" rx="2" stroke="#3B82F6" stroke-width="1" fill="none" opacity="0.5"/>
-    <rect x="5" y="4" width="10" height="1.5" rx="0.75" fill="#94A3B8"/>
-    <rect x="5" y="7.5" width="7" height="1.5" rx="0.75" fill="#94A3B8"/>
-    <rect x="5" y="11" width="9" height="1.5" rx="0.75" fill="#94A3B8"/>
-  </g>
-  
-  <!-- Upload arrow with glow effect -->
-  <g filter="url(#glow)">
-    <path d="M40 52V38" stroke="url(#arrowGrad)" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M34 44L40 38L46 44" stroke="url(#arrowGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-  
-  <!-- Sparkle accents for pop -->
-  <circle cx="58" cy="10" r="2.5" fill="#34D399"/>
-  <circle cx="6" cy="54" r="2" fill="#60A5FA"/>
-  <circle cx="54" cy="54" r="1.5" fill="#F59E0B"/>
+  <!-- C arc on left -->
+  <path d="M28 6C12 6 4 18 4 32C4 46 12 58 28 58" stroke="url(#n6ca)" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- O circle -->
+  <circle cx="40" cy="32" r="18" fill="url(#n6ca)"/>
+  <!-- Document 1 (back) -->
+  <rect x="32" y="24" width="10" height="14" rx="1.5" fill="white" opacity="0.6" transform="rotate(-8 37 31)"/>
+  <!-- Document 2 (front) -->
+  <rect x="36" y="24" width="10" height="14" rx="1.5" fill="white"/>
+  <!-- Document lines -->
+  <rect x="38" y="27" width="6" height="1.5" rx="0.75" fill="#0EA5E9"/>
+  <rect x="38" y="30" width="4" height="1.5" rx="0.75" fill="#0EA5E9" opacity="0.7"/>
+  <rect x="38" y="33" width="5" height="1.5" rx="0.75" fill="#0EA5E9" opacity="0.5"/>
+  <!-- Green verified badge -->
+  <circle cx="52" cy="48" r="9" fill="url(#n6cb)"/>
+  <path d="M47 48L50 51L57 44" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
