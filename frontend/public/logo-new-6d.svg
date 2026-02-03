@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="n6da" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="100%" style="stop-color:#0284C7"/>
+    </linearGradient>
+    <linearGradient id="n6db" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22C55E"/>
+      <stop offset="100%" style="stop-color:#16A34A"/>
+    </linearGradient>
+  </defs>
+  <!-- C arc on left -->
+  <path d="M28 6C12 6 4 18 4 32C4 46 12 58 28 58" stroke="url(#n6da)" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- O circle -->
+  <circle cx="40" cy="32" r="18" fill="url(#n6da)"/>
+  <!-- Car symbol (top) -->
+  <path d="M30 28H50L48 24H32L30 28Z" fill="white"/>
+  <rect x="29" y="28" width="22" height="8" rx="2" fill="white"/>
+  <!-- Car wheels -->
+  <circle cx="34" cy="36" r="2" fill="#0284C7"/>
+  <circle cx="46" cy="36" r="2" fill="#0284C7"/>
+  <!-- Car windows -->
+  <rect x="33" y="25" width="5" height="3" rx="0.5" fill="#0EA5E9" opacity="0.5"/>
+  <rect x="42" y="25" width="5" height="3" rx="0.5" fill="#0EA5E9" opacity="0.5"/>
+  <!-- Pulse line (bottom) -->
+  <polyline points="28,42 34,42 36,38 38,46 40,40 42,42 52,42" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Green verified badge -->
+  <circle cx="52" cy="50" r="8" fill="url(#n6db)"/>
+  <path d="M48 50L50 52L56 46" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
