@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="grad5a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB"/>
+      <stop offset="100%" style="stop-color:#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="grad5b" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#10B981"/>
+      <stop offset="100%" style="stop-color:#6EE7B7"/>
+    </linearGradient>
+    <filter id="shadow5">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1D4ED8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Rounded square base -->
+  <rect x="6" y="6" width="52" height="52" rx="14" fill="url(#grad5a)" filter="url(#shadow5)"/>
+  <!-- Document with folded corner -->
+  <path d="M20 14H36L44 22V50H20V14Z" fill="white"/>
+  <path d="M36 14V22H44" fill="#BFDBFE"/>
+  <path d="M36 14L44 22H36V14Z" fill="#93C5FD"/>
+  <!-- Document lines -->
+  <rect x="24" y="28" width="16" height="2.5" rx="1.25" fill="#BFDBFE"/>
+  <rect x="24" y="34" width="12" height="2.5" rx="1.25" fill="#BFDBFE"/>
+  <rect x="24" y="40" width="14" height="2.5" rx="1.25" fill="#BFDBFE"/>
+  <!-- Magnifying glass / search element -->
+  <circle cx="46" cy="44" r="10" fill="url(#grad5b)" stroke="white" stroke-width="2"/>
+  <circle cx="44" cy="42" r="4" stroke="white" stroke-width="2" fill="none"/>
+  <line x1="47" y1="45" x2="51" y2="49" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <!-- Sparkles -->
+  <circle cx="56" cy="8" r="2" fill="#6EE7B7"/>
+  <circle cx="8" cy="56" r="1.5" fill="#60A5FA"/>
+</svg>

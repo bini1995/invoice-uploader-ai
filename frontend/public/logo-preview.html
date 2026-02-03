@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo Options - ClarifyOps</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: white;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 40px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #60a5fa;
+    }
+    .logo-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+    }
+    .logo-container.dark {
+      background: #1e293b;
+    }
+    .logo-container img {
+      width: 80px;
+      height: 80px;
+    }
+    .preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 15px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .preview-row img {
+      width: 36px;
+      height: 36px;
+    }
+    .preview-row .text {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .preview-row .text span:first-child { color: white; }
+    .preview-row .text span:last-child { color: #60a5fa; }
+    .description {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+    .current-label {
+      background: #10b981;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Choose Your Logo</h1>
+  <p class="subtitle">Click to see each option. All include the sparkle accents and separate text styling.</p>
+  
+  <div class="grid">
+    <!-- Current Logo -->
+    <div class="card">
+      <span class="current-label">CURRENT</span>
+      <h2>Option 0 - C+O Intertwined</h2>
+      <div class="logo-container">
+        <img src="/logo.svg" alt="Current Logo">
+      </div>
+      <div class="preview-row">
+        <img src="/logo.svg" alt="Logo">
+        <div class="text"><span>Clarify</span><span>Ops</span></div>
+      </div>
+      <p class="description">C arc + O circle with document inside and upload arrow. Modern and abstract.</p>
+    </div>
+
+    <!-- Option 1 -->
+    <div class="card">
+      <h2>Option 1 - Hexagon Document</h2>
+      <div class="logo-container">
+        <img src="/logo-option-1.svg" alt="Option 1">
+      </div>
+      <div class="preview-row">
+        <img src="/logo-option-1.svg" alt="Logo">
+        <div class="text"><span>Clarify</span><span>Ops</span></div>
+      </div>
+      <p class="description">Hexagon shape with document and green checkmark. Professional and structured.</p>
+    </div>
+
+    <!-- Option 2 -->
+    <div class="card">
+      <h2>Option 2 - Stacked Documents</h2>
+      <div class="logo-container">
+        <img src="/logo-option-2.svg" alt="Option 2">
+      </div>
+      <div class="preview-row">
+        <img src="/logo-option-2.svg" alt="Logo">
+        <div class="text"><span>Clarify</span><span>Ops</span></div>
+      </div>
+      <p class="description">Stacked papers with cyan upload circle. Shows volume and processing.</p>
+    </div>
+
+    <!-- Option 3 -->
+    <div class="card">
+      <h2>Option 3 - Folder + Lightning</h2>
+      <div class="logo-container">
+        <img src="/logo-option-3.svg" alt="Option 3">
+      </div>
+      <div class="preview-row">
+        <img src="/logo-option-3.svg" alt="Logo">
+        <div class="text"><span>Clarify</span><span>Ops</span></div>
+      </div>
+      <p class="description">Blue circle with folder and orange lightning bolt. Emphasizes speed.</p>
+    </div>
+
+    <!-- Option 4 -->
+    <div class="card">
+      <h2>Option 4 - Purple C+O</h2>
+      <div class="logo-container">
+        <img src="/logo-option-4.svg" alt="Option 4">
+      </div>
+      <div class="preview-row">
+        <img src="/logo-option-4.svg" alt="Logo">
+        <div class="text"><span>Clarify</span><span>Ops</span></div>
+      </div>
+      <p class="description">Purple C arc with O containing document and checkmark. Premium feel.</p>
+    </div>
+
+    <!-- Option 5 -->
+    <div class="card">
+      <h2>Option 5 - App Icon Style</h2>
+      <div class="logo-container">
+        <img src="/logo-option-5.svg" alt="Option 5">
+      </div>
+      <div class="preview-row">
+        <img src="/logo-option-5.svg" alt="Logo">
+        <div class="text"><span>Clarify</span><span>Ops</span></div>
+      </div>
+      <p class="description">Rounded square with document and magnifying glass. App-icon ready.</p>
+    </div>
+  </div>
+</body>
+</html>
