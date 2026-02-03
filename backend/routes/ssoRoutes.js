@@ -1,20 +1,7 @@
 import express from 'express';
-import { login, refreshToken, logout, forgotPassword, resetPassword, register, getProfile, updateProfile, authMiddleware } from '../controllers/userController.js';
-import { authLimiter } from '../middleware/rateLimit.js';
-import validateRequest from '../middleware/validateRequest.js';
-import { loginSchema, refreshTokenSchema, registerSchema } from '../validation/authSchemas.js';
-import passport, { generateTokensForUser } from '../middleware/passport.js';
+import passport, { generateTokensForUser } from '../config/passport.js';
 
 const router = express.Router();
-
-router.post('/login', authLimiter, validateRequest({ body: loginSchema }), login);
-router.post('/register', authLimiter, validateRequest({ body: registerSchema }), register);
-router.post('/refresh', authLimiter, validateRequest({ body: refreshTokenSchema }), refreshToken);
-router.post('/logout', authLimiter, validateRequest({ body: refreshTokenSchema }), logout);
-router.post('/forgot-password', authLimiter, forgotPassword);
-router.post('/reset-password', authLimiter, resetPassword);
-router.get('/profile', authMiddleware, getProfile);
-router.put('/profile', authMiddleware, updateProfile);
 
 router.get('/google', (req, res, next) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -36,11 +23,11 @@ router.get('/google/callback', (req, res, next) => {
       return res.redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
     }
 
-    const { token, refreshToken: refToken } = generateTokensForUser(user);
+    const { token, refreshToken } = generateTokensForUser(user);
 
     const params = new URLSearchParams({
       token,
-      refreshToken: refToken,
+      refreshToken,
       role: user.role,
       name: user.name || '',
       email: user.email || user.username
@@ -50,7 +37,7 @@ router.get('/google/callback', (req, res, next) => {
   })(req, res, next);
 });
 
-router.get('/sso/status', (req, res) => {
+router.get('/status', (req, res) => {
   res.json({
     google: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
     providers: {

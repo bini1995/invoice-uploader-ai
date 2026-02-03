@@ -30,6 +30,8 @@ import LoginPage from './LoginPage';
 import ForgotPassword from './ForgotPassword';
 import SignUp from './SignUp';
 import Profile from './Profile';
+import SSOCallback from './SSOCallback';
+import DocsPage from './DocsPage';
 import ClarifyClaims from './ClarifyClaims';
 import ClaimsBrandingPreview from './ClaimsBrandingPreview';
 import ComparisonPage from './ComparisonPage.jsx';
@@ -193,6 +195,7 @@ function AnimatedRoutes() {
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><SignUp onLogin={() => {}} addToast={(msg) => console.log(msg)} /></PageWrapper>} />
+        <Route path="/sso-callback" element={<PageWrapper><SSOCallback onLogin={() => {}} /></PageWrapper>} />
         <Route path="/profile" element={<PageWrapper><Profile addToast={(msg) => console.log(msg)} /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
@@ -200,6 +203,8 @@ function AnimatedRoutes() {
         <Route path="/integrations" element={<PageWrapper><IntegrationsPage /></PageWrapper>} />
         <Route path="/use-cases" element={<PageWrapper><UseCasesPage /></PageWrapper>} />
         <Route path="/use-cases/:caseId" element={<PageWrapper><UseCasesPage /></PageWrapper>} />
+        <Route path="/docs" element={<PageWrapper><DocsPage /></PageWrapper>} />
+        <Route path="/docs/:section" element={<PageWrapper><DocsPage /></PageWrapper>} />
         <Route path="/app" element={<Navigate to="/claims" replace />} />
         <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
         <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />

@@ -14,29 +14,41 @@ const KNOWLEDGE_BASE = {
     { q: 'how does it work', a: 'Upload any claim document (PDF, image, Word) and our AI extracts key fields like policy numbers, claim amounts, CPT/ICD codes, dates, and patient info. Documents are validated, scored for completeness, and routed to the right workflow automatically.' },
     { q: 'pricing', a: 'We offer flexible pricing: Free tier (50 claims/month), Pro ($299/month for 500 claims), and Enterprise (volume-based pricing). Contact us for a custom quote at clarifyops.com.' },
     { q: 'hipaa compliant', a: 'Yes! ClarifyOps is fully HIPAA compliant with 256-bit encryption, audit logging, PHI redaction, and we sign Business Associate Agreements (BAAs) with all customers.' },
-    { q: 'integrations', a: 'We integrate with Guidewire ClaimCenter, Duck Creek, Salesforce, ServiceNow, and offer REST APIs and Zapier webhooks for custom integrations.' },
+    { q: 'integrations', a: 'We integrate with Guidewire ClaimCenter, Duck Creek, Salesforce, ServiceNow, and offer REST APIs and Zapier webhooks for custom integrations. Visit /integrations to learn more.' },
     { q: 'support', a: 'We offer email support for all tiers, priority support for Pro users, and dedicated account managers for Enterprise customers. You can also schedule a demo at calendly.com/clarifyops-demo.' },
+    { q: 'api', a: 'Our public API (v1) supports claims management, webhooks for status updates, and SSO integration. Check out /docs/api for full documentation.' },
+    { q: 'sso single sign', a: 'We support Google SSO for easy sign-in. Enterprise plans can integrate with custom SAML/OIDC providers.' },
   ],
   features: [
     { q: 'claim readiness score', a: 'Our unique Claim Readiness Score (0-100%) tells you exactly how complete and accurate each claim is before submission, reducing rejections and rework.' },
     { q: 'cpt icd validation', a: 'We validate CPT and ICD-10 codes against the latest CMS databases to catch billing errors before they cause claim denials.' },
     { q: 'fraud detection', a: 'AuditFlow, our fraud detection module, uses AI to flag suspicious patterns, duplicate claims, and anomalies for human review.' },
     { q: 'workflow automation', a: 'OpsClaim automatically routes claims to the right team based on claim type, amount, complexity, and your custom rules.' },
+    { q: 'clarifyclaims', a: 'ClarifyClaims is our main claims processing module. Upload documents, extract data with AI, validate codes, and track everything in one place.' },
+    { q: 'auditflow', a: 'AuditFlow is our fraud detection and audit module. It scores claims for risk, flags anomalies, and creates audit trails for compliance.' },
+    { q: 'opsclaim', a: 'OpsClaim is our workflow automation module. It routes claims to the right teams based on rules you define, automating your operations.' },
+  ],
+  docs: [
+    { q: 'documentation docs', a: 'Our documentation is available at /docs. It covers getting started, API reference, integration guides, and best practices.' },
+    { q: 'getting started', a: 'To get started: 1) Create an account at /signup, 2) Upload your first claim, 3) Review the AI-extracted data, 4) Set up your workflows. Need help? Contact support@clarifyops.com.' },
+    { q: 'upload claim document', a: 'Go to ClarifyClaims, click the upload button, and drop your document (PDF, Word, or image). Our AI will extract the data within seconds.' },
   ],
 };
 
 function findAnswer(message) {
   const lower = message.toLowerCase();
-  const allItems = [...KNOWLEDGE_BASE.general, ...KNOWLEDGE_BASE.features];
+  const allItems = [...KNOWLEDGE_BASE.general, ...KNOWLEDGE_BASE.features, ...KNOWLEDGE_BASE.docs];
   
   for (const item of allItems) {
-    if (lower.includes(item.q.split(' ')[0]) || item.q.split(' ').some(word => lower.includes(word) && word.length > 3)) {
+    const keywords = item.q.split(' ').filter(word => word.length > 3);
+    const matchCount = keywords.filter(word => lower.includes(word)).length;
+    if (matchCount >= 1 || lower.includes(item.q)) {
       return item.a;
     }
   }
   
   if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
-    return "Hello! I'm the ClarifyOps assistant. I can help you with questions about our platform, features, pricing, and more. What would you like to know?";
+    return "Hello! I'm Clari, your ClarifyOps assistant. I can help you with questions about our platform, features, pricing, and more. What would you like to know?";
   }
   
   if (lower.includes('demo') || lower.includes('trial') || lower.includes('start')) {
@@ -52,7 +64,7 @@ export default function AISupportBot() {
     {
       id: 1,
       role: 'assistant',
-      content: "Hi! I'm your ClarifyOps assistant. How can I help you today? Ask me about features, pricing, integrations, or anything else!",
+      content: "Hi! I'm Clari, your ClarifyOps assistant. How can I help you today? Ask me about features, pricing, integrations, or anything else!",
     },
   ]);
   const [input, setInput] = useState('');
@@ -133,7 +145,7 @@ export default function AISupportBot() {
           {
             id: prev.length + 1,
             role: 'assistant',
-            content: "I can help with questions about ClarifyOps features, pricing, integrations, and more. What would you like to know?",
+            content: "I'm not sure about that one. Let me check our knowledge base! In the meantime, you can ask me about features, pricing, integrations, or visit our docs at /docs for detailed information.",
           },
         ]);
       }
@@ -172,7 +184,7 @@ export default function AISupportBot() {
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <SparklesIcon className="h-5 w-5 text-white" />
-                <span className="font-semibold text-white">ClarifyOps Assistant</span>
+                <span className="font-semibold text-white">Clari - AI Assistant</span>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
