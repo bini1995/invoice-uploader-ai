@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="grad4f1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C084FC"/>
+      <stop offset="100%" style="stop-color:#A855F7"/>
+    </linearGradient>
+    <linearGradient id="grad4f2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#38BDF8"/>
+      <stop offset="100%" style="stop-color:#0EA5E9"/>
+    </linearGradient>
+    <filter id="glow4f">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- C arc - brighter purple -->
+  <path d="M30 6C14 6 4 17 4 32C4 47 14 58 30 58" stroke="url(#grad4f1)" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- O circle - brighter purple -->
+  <circle cx="42" cy="32" r="18" fill="url(#grad4f1)"/>
+  <!-- White document -->
+  <rect x="32" y="20" width="20" height="24" rx="3" fill="white"/>
+  <!-- Document lines -->
+  <rect x="36" y="26" width="12" height="2" rx="1" fill="#E9D5FF"/>
+  <rect x="36" y="31" width="8" height="2" rx="1" fill="#E9D5FF"/>
+  <rect x="36" y="36" width="10" height="2" rx="1" fill="#E9D5FF"/>
+  <!-- Blue upload badge with glow -->
+  <circle cx="48" cy="40" r="7" fill="url(#grad4f2)" filter="url(#glow4f)"/>
+  <path d="M48 43V37M48 37L45 40M48 37L51 40" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Processing ring - cyan/blue dashed -->
+  <circle cx="42" cy="32" r="22" stroke="url(#grad4f2)" stroke-width="2" stroke-dasharray="8 4" fill="none" opacity="0.7"/>
+</svg>
