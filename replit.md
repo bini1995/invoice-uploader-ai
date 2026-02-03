@@ -38,6 +38,16 @@ Preferred communication style: Simple, everyday language.
 - URL: https://github.com/bini1995/invoice-uploader-ai
 - Push from Replit → Pull on droplet to deploy updates
 
+## Recent Changes (February 2026)
+
+- **Competitive Advantage Features**: Added 6 features to establish market position:
+  - Self-Service Demo Mode (`TryDocumentDemo.jsx`) - Interactive document upload with simulated AI extraction
+  - ROI Calculator (`ROICalculator.jsx`) - Dynamic savings calculator with sliders for claims volume, processing time, hourly rate, and error rate
+  - Compliance Badges (`ComplianceBadges.jsx`) - HIPAA, SOC 2, audit logging, encryption, PHI redaction, GDPR badges
+  - Benchmark Comparison Page (`/compare`) - Feature-by-feature comparison vs Rossum, Luminai, Affinda, Wisedocs
+  - Integration Showcase (`/integrations`) - Guidewire, Duck Creek, Salesforce, ServiceNow, Zapier integration cards
+  - Use Case Pages (`/use-cases`) - Workers Comp, Auto FNOL, Medical Billing with challenges/solutions breakdowns
+
 ## Recent Changes (January 2026)
 
 - **Production Deployment**: Deployed to DigitalOcean droplet with nginx, PM2, and Let's Encrypt SSL.
