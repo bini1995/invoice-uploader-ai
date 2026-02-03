@@ -19,6 +19,8 @@ REACT_APP_API_BASE_URL = ""
 JWT_SECRET = "replit-jwt-secret-key-2024"
 JWT_REFRESH_SECRET = "replit-jwt-refresh-secret-key-2024"
 PORT = "3000"
+GOOGLE_CLIENT_ID = "357469300759-259tb1sh3a26470qambragdlb7d0uuui.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "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"
 
 [workflows]
 runButton = "Project"
