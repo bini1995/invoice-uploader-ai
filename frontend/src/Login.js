@@ -28,6 +28,8 @@ export default function Login({ onLogin, addToast, next }) {
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
+        if (data.name) localStorage.setItem('userName', data.name);
+        if (data.email) localStorage.setItem('userEmail', data.email);
         onLogin(data.token, data.role);
         addToast('Logged in!');
         logEvent('login_success', { source: 'login_form', method: 'password', request_id: getRequestId() });

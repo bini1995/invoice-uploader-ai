@@ -14,6 +14,8 @@ import {
   FileBarChart2,
   ChevronLeft,
   Menu,
+  User,
+  LogOut,
 } from 'lucide-react';
 
 export default function ImprovedSidebarNav({ notifications = [], collapsed = false }) {
@@ -26,6 +28,21 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
   
   const unread = notifications.filter(n => !n.read).length;
   const role = localStorage.getItem('role') || '';
+  const userName = localStorage.getItem('userName') || '';
+  const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('username') || '';
+  
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    window.location.href = '/login';
+  };
 
   const navItems = [
     {
@@ -147,6 +164,36 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
             </span>
           </div>
         )}
+        
+        {/* User Profile Section */}
+        <div className="mt-auto pt-4 border-t border-slate-700/50">
+          <Link
+            to="/profile"
+            className={`flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-300 hover:bg-slate-700/50 hover:text-white ${
+              location.pathname === '/profile' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25' : ''
+            }`}
+            title={open ? undefined : 'Profile'}
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              {getInitials(userName)}
+            </div>
+            {open && (
+              <div className="ml-3 flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{userName || 'User'}</p>
+                <p className="text-xs text-slate-400 truncate">{userEmail}</p>
+              </div>
+            )}
+          </Link>
+          
+          <button
+            onClick={handleLogout}
+            className={`w-full flex items-center px-3 py-2.5 mt-2 rounded-xl transition-all duration-200 text-slate-400 hover:bg-red-500/20 hover:text-red-400`}
+            title={open ? undefined : 'Log out'}
+          >
+            <LogOut className={`w-5 h-5 flex-shrink-0 ${open ? 'mr-3' : ''}`} />
+            {open && <span className="text-sm font-medium">Log out</span>}
+          </button>
+        </div>
       </div>
     </aside>
   );
