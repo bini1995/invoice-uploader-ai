@@ -1,8 +1,0 @@
-Test claim document
-Patient: John Smith
-DOB: 01/15/1980
-Policy Number: ABC123456
-Claim Type: Medical
-CPT Code: 99213
-ICD-10: J06.9
-Amount: $250.00
