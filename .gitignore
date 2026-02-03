@@ -22,3 +22,8 @@ yarn-debug.log*
 yarn-error.log*
 node_modules/
 .env
+
+# secrets
+attached_assets/client_secret_*.json
+.env
+.replit
