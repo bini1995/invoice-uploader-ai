@@ -80,19 +80,26 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen overflow-y-auto bg-indigo-700/60 dark:bg-indigo-900/60 backdrop-blur shadow-xl border-r border-indigo-600/20 z-30 transition-all duration-300 ${
+      className={`fixed left-0 top-0 h-screen overflow-y-auto bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 shadow-2xl border-r border-slate-700/50 z-30 transition-all duration-300 ${
         open ? 'w-64' : 'w-16'
       }`}
     >
       <div className="p-4 space-y-4">
-        {/* Toggle button */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600/50 hover:bg-indigo-600/70 transition-colors text-white"
-          aria-label="Toggle sidebar"
-        >
-          {open ? <ChevronLeft className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        </button>
+        {/* Logo and Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          {open && (
+            <div className="flex items-center gap-2">
+              <img src="/logo.svg" alt="ClarifyOps" className="h-8 w-auto" />
+            </div>
+          )}
+          <button
+            onClick={() => setOpen(!open)}
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-600/20 hover:bg-blue-600/40 transition-colors text-blue-400"
+            aria-label="Toggle sidebar"
+          >
+            {open ? <ChevronLeft className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
+        </div>
 
         {/* Navigation items */}
         <nav className="space-y-2">
@@ -104,10 +111,10 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
               <Link
                 key={item.to}
                 to={item.to}
-                className={`group flex items-center px-3 py-2 rounded-lg transition-all duration-200 ${
+                className={`group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 ${
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'text-indigo-100 hover:bg-indigo-600/50 hover:text-white'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25'
+                    : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                 }`}
                 title={open ? undefined : item.description}
               >

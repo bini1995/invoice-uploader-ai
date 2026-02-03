@@ -55,6 +55,7 @@ import healthRoutes from './routes/healthRoutes.js';
 import logRoutes from './routes/logRoutes.js';
 import usageRoutes from './routes/usageRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import { auditLog } from './middleware/auditMiddleware.js';
 import piiMask from './middleware/piiMask.js';
 import { autoDeleteExpiredDocuments } from './controllers/claimController.js';
@@ -216,6 +217,7 @@ app.use('/api/validation', validationRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/usage', usageRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Sentry error handler
 app.use(Sentry.Handlers.errorHandler());

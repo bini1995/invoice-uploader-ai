@@ -2,6 +2,7 @@ import React from 'react';
 import ImprovedSidebarNav from './ImprovedSidebarNav';
 import ImprovedNavbar from './ImprovedNavbar';
 import BottomNav from './BottomNav';
+import AISupportBot from './AISupportBot';
 
 export default function ImprovedMainLayout({ title, helpTopic, children, collapseSidebar = false }) {
   const [notifications] = React.useState(() => {
@@ -43,6 +44,7 @@ export default function ImprovedMainLayout({ title, helpTopic, children, collaps
         </main>
       </div>
       <BottomNav />
+      {token && <AISupportBot />}
     </div>
   );
 } 
