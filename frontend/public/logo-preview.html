@@ -17,16 +17,16 @@
     p.subtitle { text-align: center; color: #94a3b8; margin-bottom: 40px; }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-      max-width: 1200px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      max-width: 800px;
       margin: 0 auto;
     }
     .card {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: 20px;
+      padding: 32px;
       text-align: center;
       transition: all 0.3s ease;
     }
@@ -35,138 +35,81 @@
       transform: translateY(-4px);
       box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     }
-    .card h2 { font-size: 1rem; margin-bottom: 16px; color: #60a5fa; }
+    .badge {
+      display: inline-block;
+      background: #22c55e;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .card h2 { font-size: 1.25rem; margin-bottom: 20px; color: #22c55e; }
     .logo-container {
       background: white;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 12px;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100px;
+      min-height: 140px;
     }
     .logo-container.dark { background: #1e293b; }
-    .logo-container img { width: 64px; height: 64px; }
+    .logo-container img { width: 80px; height: 80px; }
     .preview-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 12px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 8px;
+      gap: 12px;
+      padding: 16px;
+      background: #1e293b;
+      border-radius: 12px;
     }
-    .preview-row img { width: 28px; height: 28px; }
-    .preview-row .text { font-weight: 700; font-size: 0.95rem; }
+    .preview-row img { width: 36px; height: 36px; }
+    .preview-row .text { font-weight: 700; font-size: 1.1rem; }
     .preview-row .text span:first-child { color: white; }
     .preview-row .text span:last-child { color: #22c55e; }
-    .description { color: #94a3b8; font-size: 0.8rem; margin-top: 12px; line-height: 1.5; }
+    .description { color: #94a3b8; font-size: 0.9rem; margin-top: 16px; line-height: 1.6; }
+    .feature { 
+      display: inline-block;
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
-  <h1>10 New Logo Options</h1>
-  <p class="subtitle">Inspired by your reference images. Pick your favorite!</p>
+  <h1>Logo 6 Variations</h1>
+  <p class="subtitle">C arc + O shape with different inner symbols</p>
   
   <div class="grid">
     <div class="card">
-      <h2>1 - Doc + Magnifier</h2>
-      <div class="logo-container"><img src="/logo-new-1.svg" alt="Option 1"></div>
+      <span class="badge">NEW</span>
+      <h2>6A - C + O with Pulse Line</h2>
+      <div class="logo-container"><img src="/logo-new-6a.svg" alt="Option 6A"></div>
       <div class="preview-row">
-        <img src="/logo-new-1.svg" alt="Logo">
+        <img src="/logo-new-6a.svg" alt="Logo">
         <div class="text"><span>Clarify</span><span>Ops</span></div>
       </div>
-      <p class="description">Document with magnifying glass and checkmark. Search & verify.</p>
+      <p class="description">C arc + O circle with ECG/pulse line inside. Perfect for medical claims processing.</p>
+      <span class="feature">Medical Focus</span>
     </div>
 
     <div class="card">
-      <h2>2 - Shield + Doc</h2>
-      <div class="logo-container"><img src="/logo-new-2.svg" alt="Option 2"></div>
+      <span class="badge">NEW</span>
+      <h2>6B - C + O with Umbrella</h2>
+      <div class="logo-container"><img src="/logo-new-6b.svg" alt="Option 6B"></div>
       <div class="preview-row">
-        <img src="/logo-new-2.svg" alt="Logo">
+        <img src="/logo-new-6b.svg" alt="Logo">
         <div class="text"><span>Clarify</span><span>Ops</span></div>
       </div>
-      <p class="description">Shield with document inside. Security & protection focus.</p>
-    </div>
-
-    <div class="card">
-      <h2>3 - Hexagon Network</h2>
-      <div class="logo-container"><img src="/logo-new-3.svg" alt="Option 3"></div>
-      <div class="preview-row">
-        <img src="/logo-new-3.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">Hexagonal frame with connection nodes. Tech/network feel.</p>
-    </div>
-
-    <div class="card">
-      <h2>4 - C Bracket + Doc</h2>
-      <div class="logo-container"><img src="/logo-new-4.svg" alt="Option 4"></div>
-      <div class="preview-row">
-        <img src="/logo-new-4.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">Stylized C bracket with document. Clean and modern.</p>
-    </div>
-
-    <div class="card">
-      <h2>5 - Stacked Docs + Chart</h2>
-      <div class="logo-container"><img src="/logo-new-5.svg" alt="Option 5"></div>
-      <div class="preview-row">
-        <img src="/logo-new-5.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">Stacked documents with analytics chart and magnifier.</p>
-    </div>
-
-    <div class="card">
-      <h2>6 - C Arc + Pulse Line</h2>
-      <div class="logo-container"><img src="/logo-new-6.svg" alt="Option 6"></div>
-      <div class="preview-row">
-        <img src="/logo-new-6.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">C shape with document featuring ECG/pulse line. Medical claims.</p>
-    </div>
-
-    <div class="card">
-      <h2>7 - Shield + Circuit</h2>
-      <div class="logo-container"><img src="/logo-new-7.svg" alt="Option 7"></div>
-      <div class="preview-row">
-        <img src="/logo-new-7.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">Shield with circuit patterns. Tech security vibes.</p>
-    </div>
-
-    <div class="card">
-      <h2>8 - Globe + Document</h2>
-      <div class="logo-container"><img src="/logo-new-8.svg" alt="Option 8"></div>
-      <div class="preview-row">
-        <img src="/logo-new-8.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">Globe with document overlay. Global/enterprise scope.</p>
-    </div>
-
-    <div class="card">
-      <h2>9 - L Bracket + Doc</h2>
-      <div class="logo-container"><img src="/logo-new-9.svg" alt="Option 9"></div>
-      <div class="preview-row">
-        <img src="/logo-new-9.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">L-shaped bracket with document. Structured and organized.</p>
-    </div>
-
-    <div class="card">
-      <h2>10 - Doc + Big Check</h2>
-      <div class="logo-container"><img src="/logo-new-10.svg" alt="Option 10"></div>
-      <div class="preview-row">
-        <img src="/logo-new-10.svg" alt="Logo">
-        <div class="text"><span>Clarify</span><span>Ops</span></div>
-      </div>
-      <p class="description">Document with large prominent checkmark. Verified & approved.</p>
+      <p class="description">C arc + O circle with umbrella icon inside. Classic insurance protection symbol.</p>
+      <span class="feature">Insurance Focus</span>
     </div>
   </div>
 </body>
