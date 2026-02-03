@@ -82,7 +82,7 @@ export default function ImprovedNavbar({
         <div className="flex items-center space-x-4 min-w-0 flex-1">
           <Link to="/claims" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
             <img
-              src="/logo.svg"
+              src="/logo.png"
               alt="ClarifyOps logo"
               className="h-9 w-9"
             />

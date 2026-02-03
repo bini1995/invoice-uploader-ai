@@ -78,7 +78,7 @@ export default function Navbar({
         <div className="flex items-center space-x-2">
           <Link to="/claims" className="flex items-center space-x-1" onClick={() => { setMenuOpen(false); setUserOpen(false); }}>
             <img
-              src="/logo.svg"
+              src="/logo.png"
               alt="ClarifyOps logo"
               className="h-7 w-auto"
             />

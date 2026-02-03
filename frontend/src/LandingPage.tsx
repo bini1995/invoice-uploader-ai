@@ -179,7 +179,7 @@ export default function LandingPage() {
         <nav className="max-w-7xl mx-auto flex items-center justify-between py-4 px-6">
           <a href="/" className="flex items-center gap-2">
             <img 
-              src="/logo.svg" 
+              src="/logo.png" 
               alt="ClarifyOps" 
               className="h-9 w-9"
             />
@@ -750,7 +750,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <img src="/logo.svg" alt="ClarifyOps" className="h-9 w-9" />
+                <img src="/logo.png" alt="ClarifyOps" className="h-9 w-9" />
                 <span className="font-bold text-xl">
                   <span className="text-white">Clarify</span>
                   <span className="text-blue-400">Ops</span>

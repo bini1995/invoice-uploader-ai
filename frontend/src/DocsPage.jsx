@@ -254,7 +254,7 @@ export default function DocsPage() {
       <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 z-20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.svg" alt="ClarifyOps" className="h-8 w-8" />
+            <img src="/logo.png" alt="ClarifyOps" className="h-8 w-8" />
             <span className="font-bold text-lg">
               <span className="text-gray-900 dark:text-white">Clarify</span>
               <span className="text-blue-600">Ops</span>

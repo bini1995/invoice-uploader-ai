@@ -14,7 +14,7 @@ export default function EmptyState({
   return (
     <div className="relative">
         <img
-          src="/logo.svg"
+          src="/logo.png"
           alt="ClarifyOps watermark"
           className="hidden sm:block absolute -z-10 bottom-0 right-0 w-32 opacity-10 pointer-events-none select-none"
         />

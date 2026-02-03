@@ -58,7 +58,7 @@ export default function Login({ onLogin, addToast, next }) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-2 z-20 flex justify-between items-center">
         <a href="/" className="text-xl font-bold flex items-center space-x-1 hover:opacity-80 transition-opacity">
-          <img src="/logo.svg" alt="ClarifyOps logo" className="h-7 w-auto" />
+          <img src="/logo.png" alt="ClarifyOps logo" className="h-7 w-auto" />
           <span>ClarifyClaims</span>
         </a>
         <div className="flex items-center gap-2">

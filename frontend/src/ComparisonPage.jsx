@@ -122,7 +122,7 @@ export default function ComparisonPage() {
             <span>Back to Home</span>
           </Link>
           <a href="/" className="flex items-center gap-2">
-            <img src="/logo.svg" alt="ClarifyOps" className="h-8 w-auto" />
+            <img src="/logo.png" alt="ClarifyOps" className="h-8 w-auto" />
           </a>
           <a
             href="https://calendly.com/clarifyops-demo"
