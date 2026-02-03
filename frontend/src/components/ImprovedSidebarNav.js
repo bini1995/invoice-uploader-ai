@@ -105,9 +105,9 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
         {/* Logo and Toggle */}
         <div className="flex items-center justify-between mb-6">
           {open ? (
-            <img src="/logo.png" alt="ClarifyOps" className="h-9 w-auto bg-white rounded px-2 py-1" />
+            <img src="/logo.png" alt="ClarifyOps" className="h-7" style={{ width: 'auto', maxWidth: '140px' }} />
           ) : (
-            <img src="/logo.png" alt="ClarifyOps" className="h-8 w-8 object-contain bg-white rounded p-1" />
+            <span className="font-bold text-sm"><span className="text-white">C</span><span className="text-purple-400">O</span></span>
           )}
           <button
             onClick={() => setOpen(!open)}

@@ -92,7 +92,7 @@ export default function IntegrationsPage() {
             <span>Back to Home</span>
           </Link>
           <a href="/">
-            <img src="/logo.png" alt="ClarifyOps" className="h-10 w-auto" />
+            <img src="/logo.png" alt="ClarifyOps" className="h-7" />
           </a>
           <a
             href="https://calendly.com/clarifyops-demo"
