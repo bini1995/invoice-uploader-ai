@@ -2,11 +2,16 @@ import { ZodError } from 'zod';
 import logger from '../utils/logger.js';
 import buildProblemDetails from '../utils/problemDetails.js';
 
-const formatZodErrors = (error) => error.errors.map((issue) => ({
-  path: issue.path.join('.'),
-  message: issue.message,
-  code: issue.code
-}));
+const formatZodErrors = (error) => {
+  if (!error.errors || !Array.isArray(error.errors)) {
+    return [{ path: '', message: error.message || 'Validation failed', code: 'validation_error' }];
+  }
+  return error.errors.map((issue) => ({
+    path: issue.path.join('.'),
+    message: issue.message,
+    code: issue.code
+  }));
+};
 
 function errorHandler(err, req, res, next) {
   // Log the error with context
@@ -25,14 +30,20 @@ function errorHandler(err, req, res, next) {
 
   const instance = req.originalUrl;
 
-  if (err instanceof ZodError) {
+  if (err instanceof ZodError || err.name === 'ZodError' || (err.issues && Array.isArray(err.issues))) {
+    const issues = err.issues || err.errors || [];
+    const formattedErrors = issues.map((issue) => ({
+      path: issue.path ? issue.path.join('.') : '',
+      message: issue.message,
+      code: issue.code
+    }));
     const problem = buildProblemDetails({
       status: 400,
       title: 'Invalid request',
       detail: 'Request validation failed',
       instance,
       type: 'https://httpstatuses.com/400',
-      errors: formatZodErrors(err)
+      errors: formattedErrors
     });
     return res.status(400).type('application/problem+json').json(problem);
   }
