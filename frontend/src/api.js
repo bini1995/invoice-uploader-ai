@@ -5,7 +5,7 @@ const cleaned = fromEnv.replace(/\/+$/, '').replace(/\/api$/, '');
 export const API_BASE =
   cleaned ||
   (typeof window !== 'undefined' &&
-  (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1'))
+  window.location.origin.includes('localhost')
     ? 'http://localhost:3000'  // Local development
     : 'https://clarifyops.com');  // Production - always use this for clarifyops.com
 
