@@ -1,0 +1,4 @@
+Test CSV claim data
+Claim Number,Policy Number,Amount,Date,Status
+CLM-001,POL-12345,1500.00,2026-01-15,Pending
+CLM-002,POL-67890,2300.50,2026-01-20,Approved
