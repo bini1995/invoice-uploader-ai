@@ -28,6 +28,8 @@ import DemoSandbox from './DemoSandbox';
 import InstantTrial from './InstantTrial';
 import LoginPage from './LoginPage';
 import ForgotPassword from './ForgotPassword';
+import SignUp from './SignUp';
+import Profile from './Profile';
 import ClarifyClaims from './ClarifyClaims';
 import ClaimsBrandingPreview from './ClaimsBrandingPreview';
 import ComparisonPage from './ComparisonPage.jsx';
@@ -190,6 +192,8 @@ function AnimatedRoutes() {
         <Route path="/claims/summary" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
+        <Route path="/signup" element={<PageWrapper><SignUp onLogin={() => {}} addToast={(msg) => console.log(msg)} /></PageWrapper>} />
+        <Route path="/profile" element={<PageWrapper><Profile addToast={(msg) => console.log(msg)} /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
         <Route path="/compare" element={<PageWrapper><ComparisonPage /></PageWrapper>} />

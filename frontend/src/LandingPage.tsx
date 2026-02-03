@@ -207,9 +207,9 @@ export default function LandingPage() {
                 Log in
               </LoginLink>
             )}
-            <Button onClick={() => scheduleDemo('nav')} className="w-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20">
-              Get Started
-            </Button>
+            <a href="/signup" className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
+              Get Started Free
+            </a>
           </div>
 
           {/* Mobile menu button */}
@@ -242,9 +242,9 @@ export default function LandingPage() {
                   Log in
                 </LoginLink>
               )}
-              <Button onClick={() => scheduleDemo('nav')} className="w-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20">
-                Get Started
-              </Button>
+              <a href="/signup" className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
+                Get Started Free
+              </a>
             </div>
           </div>
         )}

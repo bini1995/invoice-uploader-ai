@@ -57,7 +57,7 @@ export const login = async (req, res) => {
 
     const tenantId = user.tenant_id || user.tenantId || 'default';
     const token = jwt.sign(
-      { userId: user.id, role: user.role, username: user.username, tenantId },
+      { userId: user.id, role: user.role, username: user.username, name: user.name, tenantId },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -77,7 +77,7 @@ export const login = async (req, res) => {
     }
     activeUsersGauge.inc();
     logger.info('User logged in', { userId: user.id });
-    res.json({ token, refreshToken, role: user.role, username: user.username });
+    res.json({ token, refreshToken, role: user.role, username: user.username, name: user.name, email: user.email });
   } catch (err) {
     logger.error('Login error:', err);
     res.status(500).json({ message: 'Failed to login' });
@@ -277,6 +277,120 @@ export const resetPassword = async (req, res) => {
   } catch (err) {
     logger.error('Reset password error:', err);
     res.status(500).json({ message: 'Failed to reset password' });
+  }
+};
+
+export const register = async (req, res) => {
+  const { name, email, password } = req.body;
+  
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Name, email, and password are required' });
+  }
+  
+  if (password.length < 8) {
+    return res.status(400).json({ message: 'Password must be at least 8 characters' });
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Please enter a valid email address' });
+  }
+  
+  try {
+    const { rows: existingUsers } = await pool.query(
+      'SELECT id FROM users WHERE email = $1 OR username = $1',
+      [email]
+    );
+    
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ message: 'An account with this email already exists' });
+    }
+    
+    const passwordHash = await bcrypt.hash(password, 10);
+    const { rows } = await pool.query(
+      'INSERT INTO users (username, email, name, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email, name, role',
+      [email, email, name, passwordHash, 'viewer']
+    );
+    
+    const user = rows[0];
+    const tenantId = 'default';
+    
+    const token = jwt.sign(
+      { userId: user.id, role: user.role, username: user.username, name: user.name, tenantId },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+    
+    const refreshTokenId = crypto.randomUUID();
+    const refreshToken = jwt.sign(
+      { userId: user.id, tokenId: refreshTokenId },
+      JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    if (req.session) {
+      req.session.userId = user.id;
+      req.session.refreshTokenId = refreshTokenId;
+      req.session.username = user.username;
+      await new Promise((resolve, reject) => {
+        req.session.save((err) => (err ? reject(err) : resolve()));
+      });
+    }
+    
+    activeUsersGauge.inc();
+    logger.info('User registered', { userId: user.id, email: user.email });
+    await logActivity(user.id, 'user_registered', null, user.username);
+    
+    res.status(201).json({ 
+      token, 
+      refreshToken, 
+      role: user.role, 
+      username: user.username,
+      name: user.name,
+      email: user.email
+    });
+  } catch (err) {
+    logger.error('Registration error:', err);
+    res.status(500).json({ message: 'Failed to create account' });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, username, email, name, role, created_at FROM users WHERE id = $1',
+      [req.user.userId]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.json(rows[0]);
+  } catch (err) {
+    logger.error('Get profile error:', err);
+    res.status(500).json({ message: 'Failed to fetch profile' });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  const { name } = req.body;
+  
+  try {
+    const { rows } = await pool.query(
+      'UPDATE users SET name = $1 WHERE id = $2 RETURNING id, username, email, name, role',
+      [name, req.user.userId]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    logger.info('Profile updated', { userId: req.user.userId });
+    res.json(rows[0]);
+  } catch (err) {
+    logger.error('Update profile error:', err);
+    res.status(500).json({ message: 'Failed to update profile' });
   }
 };
 

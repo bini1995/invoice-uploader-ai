@@ -101,6 +101,7 @@ export default function Login({ onLogin, addToast, next }) {
               Log In
             </button>
             <a href="/forgot-password" className="block text-center text-sm underline mt-2">Forgot password?</a>
+            <a href="/signup" className="block text-center text-sm text-indigo-600 dark:text-indigo-400 hover:underline mt-2 font-medium">Create an account</a>
             {!ssoEnabled && (
               <a
                 href={`/sso-login?next=${encodeURIComponent(next)}`}
