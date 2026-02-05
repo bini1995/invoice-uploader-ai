@@ -12,44 +12,44 @@ import {
 const badges = [
   {
     icon: ShieldCheckIcon,
-    title: 'HIPAA Compliant',
-    description: 'Full compliance with Health Insurance Portability and Accountability Act requirements',
-    status: 'Certified',
+    title: 'HIPAA Committed',
+    description: 'Infrastructure and practices designed for HIPAA compliance with BAA available on request',
+    status: 'Committed',
     color: 'emerald'
   },
   {
     icon: LockClosedIcon,
     title: 'SOC 2 Type II',
-    description: 'Audited controls for security, availability, processing integrity, and confidentiality',
-    status: 'Audited',
+    description: 'Working toward SOC 2 certification with controls for security, availability, and confidentiality',
+    status: 'In Progress',
     color: 'blue'
   },
   {
     icon: DocumentCheckIcon,
     title: 'Audit Logging',
-    description: 'Complete audit trail for every document action, user interaction, and system event',
+    description: 'Activity logging for document actions, user interactions, and system events',
     status: 'Built-in',
     color: 'purple'
   },
   {
     icon: ServerStackIcon,
     title: 'Data Encryption',
-    description: 'AES-256 encryption at rest and TLS 1.3 in transit for all sensitive data',
+    description: 'AES-256 encryption for sensitive data fields and TLS in transit for all connections',
     status: 'Enabled',
     color: 'indigo'
   },
   {
     icon: EyeSlashIcon,
-    title: 'PHI Redaction',
-    description: 'Automatic detection and redaction of protected health information in documents',
+    title: 'PHI Detection',
+    description: 'Automated detection of protected health information patterns in claim documents',
     status: 'Active',
     color: 'orange'
   },
   {
     icon: ClipboardDocumentCheckIcon,
-    title: 'GDPR Ready',
-    description: 'Compliant with European data protection regulations including right to deletion',
-    status: 'Compliant',
+    title: 'GDPR Aware',
+    description: 'Designing for European data protection standards including right to deletion',
+    status: 'In Progress',
     color: 'teal'
   }
 ];
@@ -127,24 +127,24 @@ export default function ComplianceBadges() {
           <div className="flex flex-wrap justify-center items-center gap-8 mb-6">
             <div className="flex items-center gap-2 text-white/80">
               <ShieldCheckIcon className="h-6 w-6 text-emerald-400" />
-              <span className="font-medium">HIPAA</span>
+              <span className="font-medium">HIPAA Committed</span>
             </div>
             <div className="flex items-center gap-2 text-white/80">
               <LockClosedIcon className="h-6 w-6 text-blue-400" />
-              <span className="font-medium">SOC 2</span>
+              <span className="font-medium">SOC 2 In Progress</span>
             </div>
             <div className="flex items-center gap-2 text-white/80">
               <DocumentCheckIcon className="h-6 w-6 text-purple-400" />
-              <span className="font-medium">GDPR</span>
+              <span className="font-medium">GDPR Aware</span>
             </div>
             <div className="flex items-center gap-2 text-white/80">
               <ServerStackIcon className="h-6 w-6 text-indigo-400" />
-              <span className="font-medium">ISO 27001</span>
+              <span className="font-medium">TLS Encrypted</span>
             </div>
           </div>
           <p className="text-white/60 text-sm max-w-2xl mx-auto">
-            Our security practices are regularly audited by third-party assessors. 
-            Request our security documentation and compliance certificates during your evaluation.
+            We are actively building toward formal certifications. 
+            Request our security documentation and compliance roadmap during your evaluation.
           </p>
         </motion.div>
       </div>

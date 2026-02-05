@@ -40,6 +40,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (February 2026)
 
+- **Beta Pilot Program**: Prominent banner on landing page with free tier (50 claims/month) and beta pricing ($99/$199/$299 for first 3 months). Revamped PricingSection with tiered plans.
+- **Compliance Accuracy Fixes**: Updated all compliance language across the site - HIPAA status is "Ready/Committed" (not "Certified"), SOC 2 is "In Progress" (not "Audited"), GDPR is "In Progress" (not "Active"). Removed false trust logos (Y Combinator, Microsoft, etc.), eliminated blockchain claims, and genericized testimonial company names.
+- **Case Studies Page** (`/case-studies`): Three detailed synthetic ROI scenarios - Regional TPA ($316K savings), NYC Medical Billing ($142K recovery), Independent Adjuster ($187K revenue increase). Includes transparency disclaimer.
+- **Internal Testing Script** (`backend/scripts/test-claims-pipeline.js`): Generates 100 dummy claims across 5 categories, processes through API, extracts fields, and validates accuracy with comprehensive reporting.
+- **Prospect Research** (`docs/PROSPECT_LIST.md`): 70+ potential clients across 6 segments (independent adjusters, medical billing companies, NYC clinics, NY TPAs, competitor customers, InsurTech-friendly firms) with contact info and outreach strategy.
 - **User Registration & Profile System**: Complete user registration with name/email/password validation, profile page, and sidebar user display
 - **Google SSO Authentication**: OAuth 2.0 integration for Google sign-in (requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
 - **Public API (v1)**: REST API endpoints at /api/v1/ for claims access, status updates, and webhooks with API key authentication

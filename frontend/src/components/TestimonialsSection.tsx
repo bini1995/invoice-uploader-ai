@@ -6,26 +6,26 @@ import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 export default function TestimonialsSection() {
   const testimonials = [
     {
-      name: "Sarah Johnson",
+      name: "Sarah J.",
       role: "VP of Claims",
-      company: "Liberty Mutual",
-      content: "ClarifyOps has transformed our claims processing. We've reduced processing time by 60% and improved accuracy by 40%. The AI fraud detection alone has saved us millions.",
+      company: "Regional P&C Carrier",
+      content: "ClarifyOps has transformed our claims processing. We've significantly reduced processing time and improved accuracy. The AI fraud detection alone has been a game-changer for our team.",
       rating: 5,
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
     },
     {
-      name: "Michael Chen",
-      role: "CTO",
-      company: "State Farm",
-      content: "The platform's predictive analytics have given us unprecedented insights into claim patterns. We've reduced costs by 35% while improving customer satisfaction scores.",
+      name: "Michael C.",
+      role: "Operations Director",
+      company: "Mid-Size TPA",
+      content: "The platform's predictive analytics have given us unprecedented insights into claim patterns. We've reduced costs significantly while improving customer satisfaction scores.",
       rating: 5,
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
     },
     {
-      name: "Emily Rodriguez",
+      name: "Emily R.",
       role: "Claims Director",
-      company: "Allstate",
-      content: "ClarifyOps' blockchain integration provides complete transparency. Our policyholders love the real-time updates, and our fraud detection is now 99.7% accurate.",
+      company: "National Insurance Group",
+      content: "ClarifyOps' audit logging provides complete transparency. Our policyholders love the real-time updates, and our fraud detection accuracy has improved significantly.",
       rating: 5,
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
     }

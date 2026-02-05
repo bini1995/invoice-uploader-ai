@@ -73,7 +73,7 @@ export default function LandingPage() {
     {
       icon: LockClosedIcon,
       title: "Enterprise-Grade Security",
-      description: "HIPAA and GDPR compliant with end-to-end encryption",
+      description: "HIPAA-ready architecture with encryption and activity logging",
       color: "purple",
       highlight: "HIPAA Ready"
     },
@@ -120,7 +120,7 @@ export default function LandingPage() {
     },
     {
       problem: "Compliance audits are stressful",
-      solution: "Blockchain-verified audit trails",
+      solution: "Comprehensive activity logging for every action",
       stat: "100% traceable"
     },
     {
@@ -133,9 +133,9 @@ export default function LandingPage() {
   const competitorComparison = [
     { feature: "AI-Powered Extraction", clarifyops: true, traditional: false, competitors: "partial" },
     { feature: "Real-Time Fraud Detection", clarifyops: true, traditional: false, competitors: "partial" },
-    { feature: "Blockchain Audit Trail", clarifyops: true, traditional: false, competitors: false },
+    { feature: "Complete Audit Logging", clarifyops: true, traditional: false, competitors: false },
     { feature: "Multi-Tenant Architecture", clarifyops: true, traditional: false, competitors: "partial" },
-    { feature: "HIPAA & GDPR Compliant", clarifyops: true, traditional: "partial", competitors: true },
+    { feature: "HIPAA-Ready Architecture", clarifyops: true, traditional: "partial", competitors: true },
     { feature: "No-Code Workflow Builder", clarifyops: true, traditional: false, competitors: false },
     { feature: "Predictive Analytics", clarifyops: true, traditional: false, competitors: "partial" },
     { feature: "Free Trial Available", clarifyops: true, traditional: false, competitors: "partial" }
@@ -243,6 +243,25 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
+        {/* Beta Pilot Announcement Banner */}
+        <div className="bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-600 text-white py-3 px-6 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,_rgba(255,255,255,0.1),_transparent_60%)]" />
+          <div className="relative flex flex-wrap items-center justify-center gap-3 text-sm">
+            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-white/20 rounded-full text-xs font-bold uppercase tracking-wide backdrop-blur">
+              Beta Pilot
+            </span>
+            <span className="font-medium">
+              Join our Beta Pilot — <strong>Free tier available</strong> (50 claims/mo) | Paid plans from <strong>$99/mo</strong> (normally $499)
+            </span>
+            <a 
+              href="#pricing" 
+              className="inline-flex items-center gap-1 px-4 py-1 bg-white text-indigo-700 rounded-full text-xs font-bold hover:bg-indigo-50 transition-colors"
+            >
+              View Beta Pricing
+            </a>
+          </div>
+        </div>
+
         {/* Hero Section */}
         <section className="relative bg-slate-950 text-white py-24 px-6 overflow-hidden">
           <div className="absolute inset-0">
@@ -262,7 +281,7 @@ export default function LandingPage() {
                 whileHover={{ scale: 1.05 }}
               >
                 <CheckCircleIcon className="h-4 w-4 mr-2" />
-                HIPAA Compliant • SOC 2 Type II • Enterprise Ready
+                HIPAA Ready • SOC 2 In Progress • Enterprise Grade
               </motion.span>
               
               <motion.h1 
@@ -394,7 +413,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Trust Logos Section */}
+        {/* Technology Partners Section */}
         <section className="py-12 bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-6">
             <motion.p 
@@ -403,21 +422,35 @@ export default function LandingPage() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              Trusted by leading teams worldwide
+              Built With Industry-Leading Technology
             </motion.p>
             <motion.div 
-              className="flex flex-wrap justify-center items-center gap-8 opacity-70 text-gray-400"
+              className="flex flex-wrap justify-center items-center gap-10 opacity-70 text-gray-400"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 0.6, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              {/* Add actual company logos here */}
-              <div className="text-2xl font-bold text-gray-400">Y Combinator</div>
-              <div className="text-2xl font-bold text-gray-400">Microsoft</div>
-              <div className="text-2xl font-bold text-gray-400">AWS</div>
-              <div className="text-2xl font-bold text-gray-400">OpenAI</div>
-              <div className="text-2xl font-bold text-gray-400">Anthropic</div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-gray-400">PostgreSQL</div>
+                <div className="text-xs text-gray-300">Database</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-gray-400">React</div>
+                <div className="text-xs text-gray-300">Frontend</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-gray-400">Node.js</div>
+                <div className="text-xs text-gray-300">Backend</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-gray-400">OpenAI</div>
+                <div className="text-xs text-gray-300">AI Models</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-gray-400">DigitalOcean</div>
+                <div className="text-xs text-gray-300">Infrastructure</div>
+              </div>
             </motion.div>
           </div>
         </section>
@@ -768,6 +801,7 @@ export default function LandingPage() {
             <div>
               <h3 className="font-semibold mb-4">Resources</h3>
               <ul className="space-y-2 text-gray-400">
+                <li><Link to="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
                 <li><a href="#roi-calculator" className="hover:text-white transition-colors">ROI Calculator</a></li>
                 <li><Link to="/trust" className="hover:text-white transition-colors">Trust Center</Link></li>
                 <li><a href={supportHref} className="hover:text-white transition-colors">Contact Support</a></li>
