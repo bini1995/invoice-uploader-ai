@@ -49,6 +49,9 @@ Preferred communication style: Simple, everyday language.
 - **Logo Transparency Fix**: Logo now uses transparent background with CSS `brightness-0 invert` filter on dark backgrounds (sidebar, navbars, login/signup). Original colored logo preserved on white/light backgrounds.
 - **HIPAA Compliance Documentation**: Comprehensive `docs/HIPAA_COMPLIANCE.md` with full ePHI data flow diagrams, BA determination, PHI inventory, risk assessment, breach notification plan, and compliance checklist
 - **SOC 2 Scope Document**: New `docs/SOC2_SCOPE.md` with all 5 Trust Service Categories, Common Criteria controls (CC1-CC9), gap analysis, and remediation plan
+- **Trust Center Page** (`/trust`): Professional page showcasing security practices, compliance certifications (HIPAA, SOC 2, GDPR), data handling principles, and subprocessor transparency
+- **Privacy Policy Page** (`/privacy`): Comprehensive privacy policy with HIPAA PHI sections, subprocessor disclosure, data retention, breach notification, and GDPR rights
+- **Terms of Service Page** (`/terms`): Full legal terms covering HIPAA BAA requirements, AI processing disclaimers, data ownership, acceptable use, and liability limitations
 
 - **Competitive Advantage Features**: Added 6 features to establish market position:
   - Self-Service Demo Mode (`TryDocumentDemo.jsx`) - Interactive document upload with simulated AI extraction

@@ -769,13 +769,18 @@ export default function LandingPage() {
               <h3 className="font-semibold mb-4">Resources</h3>
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#roi-calculator" className="hover:text-white transition-colors">ROI Calculator</a></li>
-                <li><a href="#compliance" className="hover:text-white transition-colors">Security & Compliance</a></li>
+                <li><Link to="/trust" className="hover:text-white transition-colors">Trust Center</Link></li>
                 <li><a href={supportHref} className="hover:text-white transition-colors">Contact Support</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2026 ClarifyOps. All rights reserved. | HIPAA Compliant | SOC 2 Type II</p>
+          <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-400 text-sm">
+            <p>&copy; 2026 ClarifyOps. All rights reserved.</p>
+            <div className="flex items-center gap-6">
+              <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+              <Link to="/trust" className="hover:text-white transition-colors">Trust Center</Link>
+            </div>
           </div>
         </div>
       </footer>

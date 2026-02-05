@@ -37,6 +37,9 @@ import ClaimsBrandingPreview from './ClaimsBrandingPreview';
 import ComparisonPage from './ComparisonPage.jsx';
 import IntegrationsPage from './IntegrationsPage.jsx';
 import UseCasesPage from './UseCasesPage.jsx';
+import TrustCenter from './TrustCenter';
+import PrivacyPolicy from './PrivacyPolicy';
+import TermsOfService from './TermsOfService';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -203,6 +206,9 @@ function AnimatedRoutes() {
         <Route path="/integrations" element={<PageWrapper><IntegrationsPage /></PageWrapper>} />
         <Route path="/use-cases" element={<PageWrapper><UseCasesPage /></PageWrapper>} />
         <Route path="/use-cases/:caseId" element={<PageWrapper><UseCasesPage /></PageWrapper>} />
+        <Route path="/trust" element={<PageWrapper><TrustCenter /></PageWrapper>} />
+        <Route path="/privacy" element={<PageWrapper><PrivacyPolicy /></PageWrapper>} />
+        <Route path="/terms" element={<PageWrapper><TermsOfService /></PageWrapper>} />
         <Route path="/docs" element={<PageWrapper><DocsPage /></PageWrapper>} />
         <Route path="/docs/:section" element={<PageWrapper><DocsPage /></PageWrapper>} />
         <Route path="/app" element={<Navigate to="/claims" replace />} />
