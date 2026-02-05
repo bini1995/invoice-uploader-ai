@@ -742,7 +742,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="mb-4">
-                <img src="/logo.png" alt="ClarifyOps" className="h-10" style={{ width: 'auto', maxWidth: '200px' }} />
+                <img src="/logo.png" alt="ClarifyOps" className="h-10 brightness-0 invert" />
               </div>
               <p className="text-gray-400">
                 The future of claims management powered by AI.

@@ -46,6 +46,9 @@ Preferred communication style: Simple, everyday language.
 - **AI Assistant "Clari"**: Renamed AI bot to Clari with expanded knowledge base covering platform features, pricing, integrations, and documentation
 - **Documentation Site**: Internal docs at /docs with Getting Started, API Reference, Integrations, Security, and SSO sections
 - **Validation Error Handling**: Improved Zod validation error formatting in backend
+- **Logo Transparency Fix**: Logo now uses transparent background with CSS `brightness-0 invert` filter on dark backgrounds (sidebar, navbars, login/signup). Original colored logo preserved on white/light backgrounds.
+- **HIPAA Compliance Documentation**: Comprehensive `docs/HIPAA_COMPLIANCE.md` with full ePHI data flow diagrams, BA determination, PHI inventory, risk assessment, breach notification plan, and compliance checklist
+- **SOC 2 Scope Document**: New `docs/SOC2_SCOPE.md` with all 5 Trust Service Categories, Common Criteria controls (CC1-CC9), gap analysis, and remediation plan
 
 - **Competitive Advantage Features**: Added 6 features to establish market position:
   - Self-Service Demo Mode (`TryDocumentDemo.jsx`) - Interactive document upload with simulated AI extraction

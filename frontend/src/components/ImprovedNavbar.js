@@ -84,7 +84,7 @@ export default function ImprovedNavbar({
             <img
               src="/logo.png"
               alt="ClarifyOps logo"
-              className="h-9 w-9"
+              className="h-7 brightness-0 invert"
             />
             <span className="font-bold text-lg hidden sm:block">
               <span className="text-slate-800 dark:text-white">Clarify</span>

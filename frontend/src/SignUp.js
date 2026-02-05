@@ -78,7 +78,7 @@ export default function SignUp({ onLogin, addToast }) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <nav className="fixed top-0 left-0 right-0 bg-indigo-700 dark:bg-indigo-900 text-white shadow p-2 z-20 flex justify-between items-center">
         <a href="/" className="hover:opacity-80 transition-opacity">
-          <img src="/logo.png" alt="ClarifyOps" className="h-7" style={{ width: 'auto', maxWidth: '160px' }} />
+          <img src="/logo.png" alt="ClarifyOps" className="h-7 brightness-0 invert" />
         </a>
         <div className="flex items-center gap-2">
           <HighContrastToggle />
