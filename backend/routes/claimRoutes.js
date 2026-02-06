@@ -6,6 +6,8 @@ import fileSizeLimit from '../middleware/fileSizeLimit.js';
 import { uploadLimiter } from '../middleware/rateLimit.js';
 import {
   uploadDocument,
+  batchUploadDocuments,
+  semanticSearch,
   extractDocument,
   extractClaimFields,
   saveCorrections,
@@ -94,6 +96,8 @@ const audioUpload = multer({
 });
 
 router.post('/upload', uploadLimiter, authMiddleware, upload.single('file'), fileSizeLimit, uploadDocument);
+router.post('/batch-upload', uploadLimiter, authMiddleware, upload.array('files', 50), batchUploadDocuments);
+router.get('/semantic-search', authMiddleware, semanticSearch);
 router.post('/status-webhook', verifyClaimWebhookSignature, handleClaimStatusWebhook);
 router.post('/process', authMiddleware, processClaimWorkflow);
 router.post('/fnol/transcribe', authMiddleware, audioUpload.single('audio'), transcribeFnolAudio);

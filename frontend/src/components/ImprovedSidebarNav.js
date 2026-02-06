@@ -17,6 +17,8 @@ import {
   User,
   LogOut,
   Send,
+  Upload,
+  Search,
 } from 'lucide-react';
 
 export default function ImprovedSidebarNav({ notifications = [], collapsed = false }) {
@@ -57,6 +59,18 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
       icon: FileText,
       label: 'ClarifyClaims',
       description: 'Upload, validate, and summarize claims'
+    },
+    {
+      to: '/batch-upload',
+      icon: Upload,
+      label: 'Batch Upload',
+      description: 'Upload multiple claims at once'
+    },
+    {
+      to: '/search',
+      icon: Search,
+      label: 'Search Claims',
+      description: 'Natural language claim search'
     },
     {
       to: '/analytics',

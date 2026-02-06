@@ -376,6 +376,166 @@ export const uploadDocument = async (req, res) => {
   }
 };
 
+async function processOneFile(file, tenantId, userId, username) {
+  const allowedTypes = [
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/jpeg',
+    'image/png',
+    'text/plain',
+    'text/csv',
+    'application/csv',
+    'message/rfc822'
+  ];
+  if (!allowedTypes.includes(file.mimetype)) {
+    try { if (file.path && fs.existsSync(file.path)) fs.unlinkSync(file.path); } catch (_) {}
+    return { file_name: file.originalname, status: 'error', error: 'Unsupported file type' };
+  }
+  try {
+    const prompt =
+      `Classify this document into one of the following types: claim_invoice, medical_bill, fnol_form, invoice, receipt, bank_statement, w-9, contract. ` +
+      `Return only the type name in lowercase with underscores. File name: ${file.originalname}`;
+    const ai = await openrouter.chat.completions.create({
+      model: 'openai/gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }]
+    }).catch(() => ({ choices: [{ message: { content: 'other' } }] }));
+    let docType = ai.choices?.[0]?.message?.content?.trim().split(/\s/)[0] || 'other';
+    docType = docType.toLowerCase();
+    if (!Object.values(DocumentType).includes(docType)) docType = DocumentType.OTHER;
+
+    const fileBuffer = fs.readFileSync(file.path);
+    const contentHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+    const duplicateRes = await pool.query(
+      'SELECT id FROM documents WHERE content_hash = $1 AND tenant_id = $2',
+      [contentHash, tenantId]
+    );
+    if (duplicateRes.rows.length > 0) {
+      try { if (fs.existsSync(file.path)) fs.unlinkSync(file.path); } catch (_) {}
+      return { file_name: file.originalname, status: 'duplicate', id: duplicateRes.rows[0].id };
+    }
+
+    const destDir = path.join('uploads', 'documents', docType);
+    fs.mkdirSync(destDir, { recursive: true });
+    const destPath = path.join(destDir, file.filename);
+    fs.renameSync(file.path, destPath);
+
+    const docTitle = file.originalname;
+    const rawText = await fileToText(destPath, file.mimetype);
+    const phiScan = buildPhiPayload({ text: rawText, metadata: {}, fields: {} });
+    const containsPhi = phiScan.fields.length > 0;
+    const phiEncryptedPayload = containsPhi ? encryptPhiPayload(phiScan.payload) : null;
+    const storedRawText = containsPhi ? anonymizeText(rawText) : rawText;
+
+    const { rows } = await pool.query(
+      'INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, status, version, metadata, type, content_hash, doc_title, file_type, raw_text, contains_phi, phi_fields, phi_encrypted_payload, anonymized_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING id',
+      [tenantId, file.originalname, docType, docType, destPath, 'pending', 1, {}, docType, contentHash, docTitle, file.mimetype, storedRawText, containsPhi, JSON.stringify(phiScan.fields), phiEncryptedPayload, containsPhi ? new Date() : null]
+    );
+    await refreshSearchable(rows[0].id);
+
+    const embRes = await openrouter.embeddings.create({
+      model: 'openai/text-embedding-ada-002',
+      input: storedRawText.slice(0, 2000)
+    }).catch(() => null);
+    if (embRes?.data?.[0]?.embedding) {
+      let embedding = embRes.data[0].embedding;
+      if (!Array.isArray(embedding)) embedding = Object.values(embedding);
+      const embeddingStr = `[${embedding.join(',')}]`;
+      await pool.query(
+        'INSERT INTO claim_embeddings (document_id, embedding) VALUES ($1,$2)',
+        [rows[0].id, embeddingStr]
+      ).catch(() => {});
+    }
+
+    claimUploadCounter.labels(docType).inc();
+
+    processDocumentExtraction(rows[0].id, tenantId, { userId, username }).catch(err => {
+      logger.warn('Auto-extraction failed for batch file', { id: rows[0].id, error: err.message });
+    });
+
+    return { file_name: file.originalname, status: 'uploaded', id: rows[0].id, doc_type: docType };
+  } catch (err) {
+    try { if (fs.existsSync(file.path)) fs.unlinkSync(file.path); } catch (_) {}
+    logger.error('Batch file processing error:', { file: file.originalname, error: err.message });
+    return { file_name: file.originalname, status: 'error', error: err.message };
+  }
+}
+
+export const batchUploadDocuments = async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'No files uploaded' });
+    }
+    const results = [];
+    for (const file of req.files) {
+      const result = await processOneFile(file, req.tenantId, req.user?.userId, req.user?.username);
+      results.push(result);
+    }
+    const uploaded = results.filter(r => r.status === 'uploaded').length;
+    const duplicates = results.filter(r => r.status === 'duplicate').length;
+    const errors = results.filter(r => r.status === 'error').length;
+    res.json({
+      message: `Processed ${results.length} files: ${uploaded} uploaded, ${duplicates} duplicates, ${errors} errors`,
+      total: results.length,
+      uploaded,
+      duplicates,
+      errors,
+      results
+    });
+  } catch (err) {
+    logger.error('Batch upload error:', err);
+    res.status(500).json({ message: 'Batch upload failed' });
+  }
+};
+
+export const semanticSearch = async (req, res) => {
+  const { q, limit = 20 } = req.query;
+  if (!q || q.trim().length === 0) {
+    return res.status(400).json({ message: 'Missing search query' });
+  }
+  try {
+    const embRes = await openrouter.embeddings.create({
+      model: 'openai/text-embedding-ada-002',
+      input: q.trim().slice(0, 500)
+    });
+    const queryEmbedding = embRes.data[0].embedding;
+    if (!queryEmbedding) {
+      return res.status(500).json({ message: 'Failed to generate search embedding' });
+    }
+    let embedding = Array.isArray(queryEmbedding) ? queryEmbedding : Object.values(queryEmbedding);
+    const embeddingStr = `[${embedding.join(',')}]`;
+    const safeLimit = Math.min(Math.max(parseInt(limit) || 20, 1), 50);
+
+    const { rows } = await pool.query(
+      `SELECT d.id, d.doc_title, d.file_name, d.doc_type, d.status, d.created_at,
+              d.fields,
+              COALESCE(d.fields->>'claim_number', d.doc_title, d.file_name) AS claim_number,
+              d.fields->>'policyholder_name' AS policyholder_name,
+              d.fields->>'estimated_value' AS estimated_value,
+              cf.overall_confidence,
+              1 - (ce.embedding <=> $1::vector) AS similarity
+       FROM claim_embeddings ce
+       JOIN documents d ON d.id = ce.document_id
+       LEFT JOIN claim_fields cf ON cf.document_id = d.id
+       WHERE d.tenant_id = $2
+         AND ce.embedding IS NOT NULL
+       ORDER BY ce.embedding <=> $1::vector ASC
+       LIMIT $3`,
+      [embeddingStr, req.tenantId, safeLimit]
+    );
+
+    const results = rows.map(r => ({
+      ...r,
+      similarity: r.similarity ? parseFloat(parseFloat(r.similarity).toFixed(4)) : 0,
+      overall_confidence: r.overall_confidence ? parseFloat(r.overall_confidence) : null
+    }));
+
+    res.json({ query: q, count: results.length, results });
+  } catch (err) {
+    logger.error('Semantic search error:', err);
+    res.status(500).json({ message: 'Search failed' });
+  }
+};
+
 export const extractDocument = async (req, res) => {
   const { id } = req.params;
   try {

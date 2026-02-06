@@ -40,6 +40,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (February 2026)
 
+- **Batch Upload / Bulk Processing** (`/batch-upload`): Drag-and-drop interface for uploading up to 50 claim documents at once. Files are processed in batches of 5 with per-file status tracking (uploaded/duplicate/error). Auto-triggers AI extraction on each file. Backend endpoint at `POST /api/claims/batch-upload` using `upload.array('files', 50)`. Progress bar with real-time batch progress. Results summary with counts and per-file outcomes.
+- **Natural Language Semantic Search** (`/search`): AI-powered search across all claims using plain English queries. Converts queries to vector embeddings via OpenAI text-embedding-ada-002, then performs cosine similarity search against claim_embeddings table using pgvector. Results show similarity scores, confidence badges, claim metadata. Suggestion chips for common search patterns. Backend endpoint at `GET /api/claims/semantic-search`.
+- **Confidence Scoring**: Per-field AI confidence scores (0-100%) with color-coded indicators, expandable detail view, and overall weighted confidence on claims list.
+- **Duplicate Detection**: Post-extraction semantic similarity matching with Levenshtein distance, pending/confirmed/dismissed workflow, inline badges on claims list.
 - **Complete Delivery System**: Four-pathway data delivery infrastructure:
   - **Webhook Delivery**: Configurable webhook endpoints with HMAC-SHA256 signatures, tenant-scoped configs, auto-trigger after AI extraction, retry logic (exponential backoff, max 3 attempts), delivery logs with response tracking
   - **Zapier Integration**: REST hook polling triggers at `/api/v1/triggers/new-claims` and `/api/v1/triggers/extracted-claims`, compatible with Zapier's polling pattern

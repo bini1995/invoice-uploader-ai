@@ -24,6 +24,8 @@ import LandingPage from './LandingPage';
 import SecurityPage from './SecurityPage';
 import OnboardingWizard from './OnboardingWizard';
 import MultiUploadWizard from './MultiUploadWizard';
+import BatchUpload from './BatchUpload';
+import ClaimSearch from './ClaimSearch';
 import DemoSandbox from './DemoSandbox';
 import InstantTrial from './InstantTrial';
 import LoginPage from './LoginPage';
@@ -194,6 +196,8 @@ function AnimatedRoutes() {
         <Route path="/builder" element={<PageWrapper><DashboardBuilder /></PageWrapper>} />
         <Route path="/export-builder" element={<PageWrapper><ExportTemplateBuilder /></PageWrapper>} />
         <Route path="/upload-wizard" element={<PageWrapper><MultiUploadWizard /></PageWrapper>} />
+        <Route path="/batch-upload" element={<PageWrapper><BatchUpload /></PageWrapper>} />
+        <Route path="/search" element={<PageWrapper><ClaimSearch /></PageWrapper>} />
         <Route path="/onboarding" element={<PageWrapper><OnboardingWizard /></PageWrapper>} />
         <Route path="/sandbox" element={<PageWrapper><DemoSandbox /></PageWrapper>} />
         <Route path="/free-trial" element={<PageWrapper><InstantTrial /></PageWrapper>} />
