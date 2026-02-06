@@ -22,6 +22,9 @@ PORT = "3000"
 GOOGLE_CLIENT_ID = "357469300759-259tb1sh3a26470qambragdlb7d0uuui.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
 
+[userenv.development]
+BASE_URL = "https://784bd143-0859-4c2f-ac99-62582548fb21-00-1t2zhr3kv0r7n.janeway.replit.dev"
+
 [workflows]
 runButton = "Project"
 

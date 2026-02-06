@@ -1,7 +1,13 @@
 import express from 'express';
-import passport, { generateTokensForUser } from '../config/passport.js';
+import passport, { generateTokensForUser } from '../middleware/passport.js';
 
 const router = express.Router();
+
+function getCallbackURL(req) {
+  const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  return `${proto}://${host}/api/sso/google/callback`;
+}
 
 router.get('/google', (req, res, next) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -10,14 +16,17 @@ router.get('/google', (req, res, next) => {
       message: 'Please configure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET' 
     });
   }
+  const callbackURL = getCallbackURL(req);
   passport.authenticate('google', { 
     scope: ['profile', 'email'],
-    prompt: 'select_account'
+    prompt: 'select_account',
+    callbackURL
   })(req, res, next);
 });
 
 router.get('/google/callback', (req, res, next) => {
-  passport.authenticate('google', { session: false }, (err, user) => {
+  const callbackURL = getCallbackURL(req);
+  passport.authenticate('google', { session: false, callbackURL }, (err, user) => {
     if (err || !user) {
       const errorMessage = err?.message || 'Authentication failed';
       return res.redirect(`/login?error=${encodeURIComponent(errorMessage)}`);

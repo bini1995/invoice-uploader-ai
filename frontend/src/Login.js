@@ -73,7 +73,7 @@ export default function Login({ onLogin, addToast, next }) {
             {googleEnabled && (
               <>
                 <a
-                  href={`${API_BASE}/api/auth/google`}
+                  href="/api/auth/google"
                   className="flex items-center justify-center gap-3 w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 font-medium"
                   onClick={() => logEvent('login_click', { source: 'login_page', request_id: getRequestId(), method: 'google' })}
                 >

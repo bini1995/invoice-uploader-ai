@@ -199,7 +199,7 @@ function AnimatedRoutes() {
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><SignUp onLogin={() => {}} addToast={(msg) => console.log(msg)} /></PageWrapper>} />
-        <Route path="/sso-callback" element={<PageWrapper><SSOCallback onLogin={() => {}} /></PageWrapper>} />
+        <Route path="/sso-callback" element={<PageWrapper><SSOCallback /></PageWrapper>} />
         <Route path="/profile" element={<PageWrapper><Profile addToast={(msg) => console.log(msg)} /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />

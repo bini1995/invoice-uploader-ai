@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
-export default function SSOCallback({ onLogin }) {
+export default function SSOCallback() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -27,16 +26,12 @@ export default function SSOCallback({ onLogin }) {
       if (name) localStorage.setItem('userName', name);
       if (email) localStorage.setItem('userEmail', email);
       
-      if (onLogin) {
-        onLogin(token, role);
-      }
-      
       window.location.href = '/operations';
     } else {
       setError('Authentication failed. Please try again.');
       setTimeout(() => window.location.href = '/login', 3000);
     }
-  }, [searchParams, onLogin]);
+  }, [searchParams]);
 
   if (error) {
     return (

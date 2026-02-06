@@ -22,14 +22,14 @@ const jwtStrategy = new JwtStrategy(
 passport.use(jwtStrategy);
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-  
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `${BASE_URL}/api/auth/google/callback`,
+    callbackURL: '/api/auth/google/callback',
+    passReqToCallback: true,
+    proxy: true,
     scope: ['profile', 'email']
-  }, async (accessToken, refreshToken, profile, done) => {
+  }, async (req, accessToken, refreshToken, profile, done) => {
     try {
       const email = profile.emails?.[0]?.value;
       const name = profile.displayName || profile.name?.givenName || 'User';
@@ -57,8 +57,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         }
       } else {
         const result = await pool.query(
-          `INSERT INTO users (username, email, name, google_id, password_hash, role, tenant_id)
-           VALUES ($1, $2, $3, $4, '', 'viewer', 'default')
+          `INSERT INTO users (username, email, name, google_id, password_hash, role)
+           VALUES ($1, $2, $3, $4, '', 'viewer')
            RETURNING *`,
           [email, email, name, googleId]
         );
