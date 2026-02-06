@@ -39,13 +39,14 @@ async function extractFieldsForDocument(doc) {
   const safeText = doc.contains_phi && doc.raw_text
     ? doc.raw_text.slice(0, 4000)
     : fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
-  if (
-    [
-      DocumentType.CLAIM_INVOICE,
-      DocumentType.MEDICAL_BILL,
-      DocumentType.FNOL_FORM,
-    ].includes(doc.doc_type)
-  ) {
+  const claimDocTypes = [
+    DocumentType.CLAIM_INVOICE,
+    DocumentType.MEDICAL_BILL,
+    DocumentType.FNOL_FORM,
+    DocumentType.INVOICE,
+    DocumentType.CLAIM,
+  ];
+  if (claimDocTypes.includes(doc.doc_type)) {
     result = await aiExtractClaimFields(safeText);
   } else if (fs.existsSync(pipelinePath)) {
     const pipeline = await import(pathToFileURL(pipelinePath).href);
@@ -54,11 +55,7 @@ async function extractFieldsForDocument(doc) {
     result.fields = await extractEntities(safeText);
   }
 
-  const isClaimType = [
-    DocumentType.CLAIM_INVOICE,
-    DocumentType.MEDICAL_BILL,
-    DocumentType.FNOL_FORM,
-  ].includes(doc.doc_type);
+  const isClaimType = claimDocTypes.includes(doc.doc_type);
 
   const fields = isClaimType
     ? result.fields
