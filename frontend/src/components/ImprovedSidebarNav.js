@@ -16,6 +16,7 @@ import {
   Menu,
   User,
   LogOut,
+  Send,
 } from 'lucide-react';
 
 export default function ImprovedSidebarNav({ notifications = [], collapsed = false }) {
@@ -86,6 +87,12 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
       icon: Archive,
       label: 'Archive',
       description: 'Archived documents'
+    },
+    {
+      to: '/delivery',
+      icon: Send,
+      label: 'Delivery',
+      description: 'Webhooks, exports, and integrations'
     },
     {
       to: '/settings',

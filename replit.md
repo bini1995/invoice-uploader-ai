@@ -40,6 +40,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (February 2026)
 
+- **Complete Delivery System**: Four-pathway data delivery infrastructure:
+  - **Webhook Delivery**: Configurable webhook endpoints with HMAC-SHA256 signatures, tenant-scoped configs, auto-trigger after AI extraction, retry logic (exponential backoff, max 3 attempts), delivery logs with response tracking
+  - **Zapier Integration**: REST hook polling triggers at `/api/v1/triggers/new-claims` and `/api/v1/triggers/extracted-claims`, compatible with Zapier's polling pattern
+  - **Enhanced Public API v1**: Cursor-based + offset-based pagination, extracted fields from `claim_fields` table, `Last-Modified`/`ETag` headers for conditional requests, filters for doc_type/status/date ranges
+  - **CSV/Excel Exports**: Full field data export with ExcelJS formatting (styled headers, summary sheet), JSON-to-CSV via json2csv, downloadable endpoints
+  - **Auto-Delivery Orchestrator**: Fire-and-forget pattern triggers all configured delivery destinations after extraction completes (non-blocking)
+  - **Delivery Settings UI** (`/delivery`): Frontend page with tabs for webhooks config, delivery logs viewer, export controls, and API documentation
+  - **Database**: `delivery_configs` and `delivery_logs` tables with retry scheduling (runs every 5 minutes)
+- **Round 2 Testing**: 25 diverse claims uploaded with 100% extraction success rate across emergency care, dental, workers' comp, pharmacy, auto, property, behavioral health, travel insurance, dialysis, and urgent care categories
 - **Beta Pilot Program**: Prominent banner on landing page with free tier (50 claims/month) and beta pricing ($99/$199/$299 for first 3 months). Revamped PricingSection with tiered plans.
 - **Compliance Accuracy Fixes**: Updated all compliance language across the site - HIPAA status is "Ready/Committed" (not "Certified"), SOC 2 is "In Progress" (not "Audited"), GDPR is "In Progress" (not "Active"). Removed false trust logos (Y Combinator, Microsoft, etc.), eliminated blockchain claims, and genericized testimonial company names.
 - **Case Studies Page** (`/case-studies`): Three detailed synthetic ROI scenarios - Regional TPA ($316K savings), NYC Medical Billing ($142K recovery), Independent Adjuster ($187K revenue increase). Includes transparency disclaimer.

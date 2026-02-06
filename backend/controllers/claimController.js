@@ -10,6 +10,7 @@ import { DocumentType } from '../enums/documentType.js';
 import PDFDocument from 'pdfkit';
 import fileToText from '../utils/fileToText.js';
 import { triggerClaimWebhook } from '../utils/claimWebhook.js';
+import { triggerDelivery } from '../services/deliveryService.js';
 import logger from '../utils/logger.js';
 import { logActivity } from '../utils/activityLogger.js';
 import sanitizeHtml from 'sanitize-html';
@@ -446,6 +447,11 @@ export const extractClaimFields = async (req, res) => {
     );
     timer();
     logger.info('Claim fields extracted', { id });
+
+    triggerDelivery(req.tenantId, Number(id), 'claim.extracted').catch(err => {
+      logger.warn({ err, docId: id }, 'Auto-delivery after extraction failed');
+    });
+
     res.json({ fields, version });
   } catch (err) {
     logger.error('Claim field extract error:', err);

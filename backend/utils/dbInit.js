@@ -561,6 +561,32 @@ async function initDb() {
       note TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS delivery_configs (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      config JSONB NOT NULL DEFAULT '{}',
+      active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )`);
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS delivery_logs (
+      id SERIAL PRIMARY KEY,
+      tenant_id TEXT NOT NULL,
+      delivery_config_id INTEGER REFERENCES delivery_configs(id),
+      document_id INTEGER REFERENCES documents(id),
+      event_type TEXT NOT NULL,
+      payload JSONB,
+      status TEXT DEFAULT 'pending',
+      response_code INTEGER,
+      response_body TEXT,
+      attempt_count INTEGER DEFAULT 0,
+      next_retry_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

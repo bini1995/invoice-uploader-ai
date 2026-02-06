@@ -34,6 +34,7 @@ import workflowRuleRoutes from './routes/workflowRuleRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import integrationRoutes from './routes/integrationRoutes.js';
 import publicApiRoutes from './routes/publicApiRoutes.js';
+import deliveryRoutes from './routes/deliveryRoutes.js';
 import featureRoutes from './routes/featureRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import reminderRoutes from './routes/reminderRoutes.js';
@@ -67,6 +68,7 @@ import { loadModel, trainFromCorrections } from './utils/ocrAgent.js';
 import { loadSchedules } from './utils/automationScheduler.js';
 import { scheduleReports } from './utils/reportScheduler.js';
 import { scheduleAnomalyScan } from './utils/anomalyScanner.js';
+import { retryFailedDeliveries } from './services/deliveryService.js';
 import buildProblemDetails from './utils/problemDetails.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger.js';
@@ -198,6 +200,7 @@ app.use('/api/workflow-rules', workflowRuleRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/integrations', integrationRoutes);
 app.use('/api/v1', publicApiRoutes);
+app.use('/api/delivery', deliveryRoutes);
 app.use('/api/features', featureRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reminders', reminderRoutes);
@@ -261,7 +264,8 @@ app.use((req, res) => {
     // Setup recurring tasks
     autoDeleteExpiredDocuments();
     setInterval(autoDeleteExpiredDocuments, 24 * 60 * 60 * 1000);
-    
+
+    setInterval(() => retryFailedDeliveries().catch(err => logger.error({ err }, 'Retry scheduler error')), 5 * 60 * 1000);
 
     logger.info('🟢 Application initialized successfully');
 

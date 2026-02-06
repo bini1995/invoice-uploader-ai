@@ -34,6 +34,7 @@ import SSOCallback from './SSOCallback';
 import DocsPage from './DocsPage';
 import ClarifyClaims from './ClarifyClaims';
 import ClaimsBrandingPreview from './ClaimsBrandingPreview';
+import DeliverySettings from './DeliverySettings';
 import ComparisonPage from './ComparisonPage.jsx';
 import IntegrationsPage from './IntegrationsPage.jsx';
 import UseCasesPage from './UseCasesPage.jsx';
@@ -182,6 +183,7 @@ function AnimatedRoutes() {
         <Route path="/auditflow" element={<PageWrapper><AuditFlow /></PageWrapper>} />
         <Route path="/fraud" element={<PageWrapper><FraudReport /></PageWrapper>} />
         <Route path="/review" element={<PageWrapper><HumanReview /></PageWrapper>} />
+        <Route path="/delivery" element={<PageWrapper><DeliverySettings /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />
