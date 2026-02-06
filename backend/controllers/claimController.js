@@ -4,6 +4,7 @@ import pool from '../config/db.js';
 import openrouter from '../config/openrouter.js';
 import { trainFromCorrections } from '../utils/ocrAgent.js';
 import { extractClaimFields as aiExtractClaimFields } from '../ai/claimFieldExtractor.js';
+import { extractChronology as aiExtractChronology } from '../ai/chronologyExtractor.js';
 import { recordDocumentVersion } from '../utils/documentVersionLogger.js';
 import crypto from 'crypto';
 import { DocumentType } from '../enums/documentType.js';
@@ -1464,4 +1465,73 @@ export const getUploadHeatmap = async (req, res) => {
 
 export const getTopVendors = async (req, res) => {
   res.json({ topVendors: [] });
+};
+
+export const generateChronology = async (req, res) => {
+  try {
+    const docId = parseInt(req.params.id, 10);
+    const tenantId = req.tenantId || 'default';
+    if (isNaN(docId)) return res.status(400).json({ message: 'Invalid document ID' });
+
+    const { rows } = await pool.query(
+      'SELECT id, raw_text, path, tenant_id FROM documents WHERE id = $1 AND tenant_id = $2',
+      [docId, tenantId]
+    );
+    if (!rows.length) return res.status(404).json({ message: 'Document not found' });
+
+    const doc = rows[0];
+    let text = doc.raw_text;
+    if (!text && doc.path) {
+      try { text = fs.readFileSync(doc.path, 'utf8'); } catch { text = ''; }
+    }
+    if (!text || text.trim().length < 20) {
+      return res.status(400).json({ message: 'Document has no extractable text' });
+    }
+
+    const { events, model_version } = await aiExtractChronology(text);
+
+    await pool.query(
+      `INSERT INTO claim_chronology (document_id, tenant_id, events, model_version, generated_at)
+       VALUES ($1, $2, $3, $4, NOW())
+       ON CONFLICT (document_id) DO UPDATE SET
+         events = EXCLUDED.events,
+         model_version = EXCLUDED.model_version,
+         generated_at = NOW()`,
+      [docId, tenantId, JSON.stringify(events), model_version]
+    );
+
+    res.json({ document_id: docId, events, model_version, generated_at: new Date().toISOString() });
+  } catch (err) {
+    console.error('Generate chronology error:', err);
+    res.status(500).json({ message: err.message || 'Failed to generate chronology' });
+  }
+};
+
+export const getChronology = async (req, res) => {
+  try {
+    const docId = parseInt(req.params.id, 10);
+    const tenantId = req.tenantId || 'default';
+    if (isNaN(docId)) return res.status(400).json({ message: 'Invalid document ID' });
+
+    const { rows } = await pool.query(
+      'SELECT events, model_version, generated_at FROM claim_chronology WHERE document_id = $1 AND tenant_id = $2',
+      [docId, tenantId]
+    );
+    if (!rows.length) {
+      return res.json({ document_id: docId, events: [], generated_at: null });
+    }
+
+    const row = rows[0];
+    const events = Array.isArray(row.events) ? row.events : [];
+
+    res.json({
+      document_id: docId,
+      events,
+      model_version: row.model_version,
+      generated_at: row.generated_at
+    });
+  } catch (err) {
+    console.error('Get chronology error:', err);
+    res.status(500).json({ message: 'Failed to fetch chronology' });
+  }
 };

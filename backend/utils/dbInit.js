@@ -603,6 +603,15 @@ async function initDb() {
       next_retry_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT NOW()
     )`);
+    await pool.query(`CREATE TABLE IF NOT EXISTS claim_chronology (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      tenant_id TEXT NOT NULL,
+      events JSONB NOT NULL DEFAULT '[]',
+      model_version TEXT,
+      generated_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(document_id)
+    )`);
   } catch (err) {
     console.error('Database init error:', err);
   }

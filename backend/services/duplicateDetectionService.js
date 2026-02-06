@@ -202,7 +202,7 @@ export async function getDuplicatesForDocument(documentId) {
       `SELECT df.*, d.file_name as matched_file_name, d.doc_type as matched_doc_type, d.created_at as matched_created_at
        FROM duplicate_flags df
        JOIN documents d ON d.id = df.matched_document_id
-       WHERE df.document_id = $1
+       WHERE df.document_id = $1 AND df.tenant_id IS NOT NULL
        ORDER BY df.similarity_score DESC`,
       [documentId]
     );

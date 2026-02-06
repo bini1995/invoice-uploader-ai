@@ -10,6 +10,7 @@ import FlaggedCodeChat from './FlaggedCodeChat';
 import { useTimelineStore } from '../store/useTimelineStore';
 import ConfidenceIndicator from './ConfidenceIndicator';
 import DuplicateWarning from './DuplicateWarning';
+import ClaimChronology from './ClaimChronology';
 
 export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
@@ -260,6 +261,7 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
           />
           <FlaggedCodeChat code={invoice.flaggedCode} />
         </div>
+        <ClaimChronology claimId={invoice.id} token={token} />
         </div>
         <div className="mt-3">
           <h3 className="font-semibold text-sm mb-1">Status History</h3>

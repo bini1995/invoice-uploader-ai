@@ -538,6 +538,142 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Platform Capabilities - Competitive Differentiators */}
+        <section className="py-20 px-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 border border-indigo-200 mb-6">
+                What Sets Us Apart
+              </span>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Built-in capabilities your team actually needs
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Six powerful features designed specifically for insurance operations — included at every plan level, not sold as add-ons.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Batch Upload & Bulk Processing",
+                  description: "Upload up to 50 claim documents at once with drag-and-drop. Each file is automatically classified, deduplicated, and extracted — no manual processing needed.",
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                  ),
+                  stat: "50 files per batch",
+                  iconBg: "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
+                  statBg: "bg-blue-50 text-blue-700"
+                },
+                {
+                  title: "Natural Language Search",
+                  description: "Search across all your claims using plain English. Ask questions like 'show me knee surgery claims from January' and get instant, semantically-matched results.",
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  ),
+                  stat: "AI-powered semantic matching",
+                  iconBg: "bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white",
+                  statBg: "bg-purple-50 text-purple-700"
+                },
+                {
+                  title: "Medical Chronology",
+                  description: "Automatically generate visual timelines of treatments, providers, and diagnoses from claim documents. Critical for workers' comp and medical billing review.",
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  ),
+                  stat: "Auto-generated timelines",
+                  iconBg: "bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white",
+                  statBg: "bg-emerald-50 text-emerald-700"
+                },
+                {
+                  title: "Confidence Scoring",
+                  description: "Every extracted field comes with an AI confidence score (0-100%) so reviewers know exactly which fields need manual verification and which are reliable.",
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  ),
+                  stat: "Per-field accuracy scores",
+                  iconBg: "bg-amber-100 text-amber-600 group-hover:bg-amber-600 group-hover:text-white",
+                  statBg: "bg-amber-50 text-amber-700"
+                },
+                {
+                  title: "Duplicate Detection",
+                  description: "AI automatically flags potential duplicate claims using semantic similarity matching and Levenshtein distance analysis. Prevent double payments before they happen.",
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  ),
+                  stat: "Automatic fraud prevention",
+                  iconBg: "bg-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white",
+                  statBg: "bg-rose-50 text-rose-700"
+                },
+                {
+                  title: "Complete Data Delivery",
+                  description: "Export to CSV/Excel, configure webhooks with HMAC signing, connect via Zapier, or pull data through our REST API. Your claims data, delivered how you want it.",
+                  icon: (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                  ),
+                  stat: "4 delivery pathways",
+                  iconBg: "bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white",
+                  statBg: "bg-indigo-50 text-indigo-700"
+                }
+              ].map((cap, index) => (
+                <motion.div
+                  key={cap.title}
+                  className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-300 group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  whileHover={{ y: -4 }}
+                >
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300 ${cap.iconBg}`}>
+                    {cap.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{cap.title}</h3>
+                  <p className="text-sm text-gray-600 mb-3 leading-relaxed">{cap.description}</p>
+                  <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${cap.statBg}`}>
+                    {cap.stat}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+            >
+              <a
+                href="/signup"
+                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-medium hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all duration-300"
+              >
+                Try All Features Free
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </a>
+            </motion.div>
+          </div>
+        </section>
+
         {/* Problem/Solution Section */}
         <section className="py-20 px-6 bg-slate-900 text-white">
           <div className="max-w-7xl mx-auto">

@@ -170,7 +170,7 @@ export default function ClaimSearch() {
                 {results.results.map((claim) => (
                   <button
                     key={claim.id}
-                    onClick={() => navigate(`/claims`)}
+                    onClick={() => navigate(`/claims?highlight=${claim.id}`)}
                     className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-3">

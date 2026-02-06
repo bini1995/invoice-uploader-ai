@@ -45,6 +45,8 @@ import {
   getClaimDuplicates,
   resolveClaimDuplicate,
   getDuplicateOverview,
+  generateChronology,
+  getChronology,
 } from '../controllers/claimController.js';
 import { getAnomalyExplainability } from '../controllers/anomalyExplainController.js';
 import { getClaimAuditTrail } from '../controllers/auditController.js';
@@ -158,5 +160,7 @@ router.post(
   authorizeRoles('admin', 'internal_ops', 'adjuster'),
   addComment
 );
+router.post('/:id/chronology/generate', authMiddleware, generateChronology);
+router.get('/:id/chronology', authMiddleware, getChronology);
 
 export default router;
