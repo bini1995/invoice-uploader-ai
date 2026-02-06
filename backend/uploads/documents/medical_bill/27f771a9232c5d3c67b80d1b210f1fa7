@@ -1,0 +1,64 @@
+EMERGENCY DEPARTMENT MEDICAL BILL
+
+Facility: Mount Sinai Hospital - Emergency Department
+Address: 1 Gustave L. Levy Place, New York, NY 10029
+Tax ID: 13-1624096
+NPI: 1467590432
+
+PATIENT INFORMATION:
+Name: David Michael Thompson
+Date of Birth: 03/27/1978
+Member ID: BCBS-NYS-88421937
+Insurance: Blue Cross Blue Shield of New York
+Group Number: GRP-44821
+Address: 567 Park Avenue South, New York, NY 10016
+Phone: (212) 555-0632
+Emergency Contact: Lisa Thompson (spouse) - (212) 555-0633
+
+DATE OF SERVICE: January 30, 2026
+TIME OF ARRIVAL: 7:22 PM
+TIME OF DISCHARGE: 11:45 PM
+
+CHIEF COMPLAINT: Severe chest pain radiating to left arm with shortness of breath
+
+DIAGNOSIS:
+Primary: I20.0 - Unstable angina
+Secondary: I10 - Essential hypertension
+Tertiary: E78.5 - Hyperlipidemia, unspecified
+Additional: F41.9 - Anxiety disorder, unspecified
+
+PROCEDURES AND CHARGES:
+1. CPT 99285 - Emergency department visit, high complexity - $2,850.00
+2. CPT 93000 - Electrocardiogram, 12-lead with interpretation - $325.00
+3. CPT 71046 - Chest X-ray, 2 views - $485.00
+4. CPT 80053 - Comprehensive metabolic panel - $295.00
+5. CPT 83036 - Hemoglobin A1c - $125.00
+6. CPT 82553 - Creatine kinase MB isoenzyme - $185.00
+7. CPT 84484 - Troponin, quantitative - $210.00
+8. CPT 36415 - Venipuncture for blood draw - $35.00
+9. CPT 96374 - IV push medication administration - $175.00
+
+MEDICATIONS ADMINISTERED:
+- Aspirin 325mg PO x1
+- Nitroglycerin 0.4mg sublingual x2
+- Heparin 5000 units IV
+- Morphine 4mg IV for pain
+
+DISCHARGE MEDICATIONS:
+- Metoprolol 25mg twice daily
+- Atorvastatin 40mg daily
+- Aspirin 81mg daily
+- Nitroglycerin 0.4mg sublingual PRN
+
+TOTAL CHARGES: $4,685.00
+INSURANCE ADJUSTMENT: -$1,892.00
+INSURANCE PAYMENT: $2,234.40
+PATIENT COPAY: $250.00
+PATIENT RESPONSIBILITY: $308.60
+
+FOLLOW-UP: Cardiology consultation within 48 hours
+Referring to: Dr. James Kowalski, Cardiology - (212) 555-7890
+
+Attending Physician: Dr. Maria Gonzalez, MD - Emergency Medicine
+NPI: 1891234567
+Date: January 30, 2026

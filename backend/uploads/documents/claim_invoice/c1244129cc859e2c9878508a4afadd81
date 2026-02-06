@@ -1,0 +1,61 @@
+PHARMACY BENEFIT CLAIM
+
+Pharmacy: CVS Pharmacy #4829
+Address: 332 Lexington Avenue, New York, NY 10016
+NPI: 1892347561
+NCPDP: 3847291
+
+PATIENT: Angela Marie Foster
+DOB: 12/05/1965
+Member ID: AETNA-CVS-77283941
+Insurance: Aetna Pharmacy Benefits
+Group: RX-GRPCVS-8821
+Phone: (646) 555-0473
+
+PRESCRIBER: Dr. William Park, MD - Internal Medicine
+NPI: 1234598760
+DEA: FP1234563
+
+DATE OF SERVICE: February 4, 2026
+
+PRESCRIPTIONS FILLED:
+1. Rx# 847291 - Metformin HCL 1000mg tablets, #60, 30-day supply
+   NDC: 00093-7214-01
+   DAW Code: 0 (No product selection indicated)
+   Ingredient Cost: $12.40
+   Dispensing Fee: $2.50
+   Copay: $10.00
+   Plan Paid: $4.90
+
+2. Rx# 847292 - Lisinopril 20mg tablets, #30, 30-day supply
+   NDC: 00093-1046-01
+   Ingredient Cost: $8.75
+   Dispensing Fee: $2.50
+   Copay: $10.00
+   Plan Paid: $1.25
+
+3. Rx# 847293 - Atorvastatin 40mg tablets, #30, 30-day supply
+   NDC: 00093-5058-01
+   Ingredient Cost: $15.20
+   Dispensing Fee: $2.50
+   Copay: $10.00
+   Plan Paid: $7.70
+
+4. Rx# 847294 - Amlodipine 10mg tablets, #30, 30-day supply
+   NDC: 00093-3171-01
+   Ingredient Cost: $9.85
+   Dispensing Fee: $2.50
+   Copay: $10.00
+   Plan Paid: $2.35
+
+TOTAL CHARGES: $56.20
+TOTAL PLAN PAID: $16.20
+TOTAL PATIENT COPAYS: $40.00
+
+DIAGNOSIS CODES:
+E11.9 - Type 2 diabetes mellitus without complications
+I10 - Essential hypertension
+E78.5 - Hyperlipidemia, unspecified
+
+Pharmacist: RPh Jennifer Walsh, License NY-48291
+Date: February 4, 2026
