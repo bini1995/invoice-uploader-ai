@@ -1,0 +1,52 @@
+CLEVELAND CLINIC FOUNDATION
+9500 Euclid Avenue
+Cleveland, OH 44195
+Tax ID: 34-0714585 | NPI: 1679576722
+
+HOSPITAL INPATIENT STATEMENT
+================================
+Account #: CCF-2026-114587
+Statement Date: 01/25/2026
+
+PATIENT:
+  Name: William David Thompson
+  DOB: 01/30/1955
+  MRN: CC-7789012
+  Admission Date: 01/15/2026
+  Discharge Date: 01/20/2026 (5 days)
+  Room: 4-West, Bed 412A
+  
+INSURANCE:
+  Primary: Medicare Part A
+  Medicare ID: 1EG4-TE5-MK76
+  Secondary: AARP Medigap Plan G
+  Policy #: MG-OH-445201
+
+ATTENDING: Dr. Steven Nissen, MD, FACC
+ADMITTING DX: I21.09 - STEMI, unspecified site
+
+SERVICES & CHARGES:
+Revenue Code  Description                          Days/Units   Total
+0120          Room & Board, Semi-Private           5            $12,500.00
+0250          Pharmacy                             --           $4,875.00
+0260          IV Solutions                         --           $1,200.00
+0300          Laboratory                           --           $3,450.00
+0320          Radiology - Diagnostic               --           $2,100.00
+0360          Operating Room                       1            $8,750.00
+0370          Anesthesia                           1            $3,200.00
+0481          Cardiology - Cardiac Cath Lab        1            $15,600.00
+0636          Drugs/Biologicals                    --           $2,890.00
+0730          EKG/ECG                              3            $450.00
+
+DRG: 247 - Perc Cardiovascular Proc w Drug-Eluting Stent
+
+CPT: 92928 (Percutaneous Coronary Stent)
+CPT: 93458 (Left Heart Cath w/ Ventriculography)
+ICD-10: I21.09, I25.10, E78.5, I10
+
+TOTAL CHARGES:           $55,015.00
+Medicare DRG Payment:    $28,450.00
+Medigap Payment:         $5,200.00
+Patient Responsibility:  $1,556.00
+
+Billing Questions: (216) 444-2200

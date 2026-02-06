@@ -1,0 +1,49 @@
+NATIONAL SEATING & MOBILITY
+DME SUPPLIER CLAIM
+4600 East Paris Ave SE
+Grand Rapids, MI 49512
+NPI: 7890123456 | NSC Supplier #: 2340051
+
+DURABLE MEDICAL EQUIPMENT CLAIM
+==================================
+Claim #: NSM-MI-2026-00234
+Date of Service: 01/15/2026
+
+PATIENT/BENEFICIARY:
+  Name: Gerald Wayne Foster
+  DOB: 10/05/1948
+  Medicare ID: 4HJ9-KL3-PQ56
+  Medicaid: MI-MA-2025-885567
+  Address: 1205 Michigan Ave NE, Grand Rapids, MI 49503
+
+REFERRING PHYSICIAN:
+  Dr. James Wilson, MD
+  NPI: 8901234567
+  Specialty: Physical Medicine & Rehabilitation
+
+MEDICAL NECESSITY: Patient is s/p CVA with left hemiparesis.
+  Requires power wheelchair for community mobility.
+  Unable to propel manual wheelchair independently.
+
+EQUIPMENT ORDERED:
+HCPCS    Description                          Qty   Charge
+K0856    Power Wheelchair, Group 3            1     $6,800.00
+E1028    Swing-away Joystick Mount            1     $425.00
+E1014    Reclining Back w/ Headrest           1     $1,200.00
+E2310    Power Seat Elevation                 1     $2,100.00
+E2377    Expandable Contour Seat Cushion      1     $485.00
+E2611    Custom Back Cushion                  1     $650.00
+K0108    Wheelchair Component/Accessory       3     $375.00
+
+CMN ON FILE: Yes (Certificate of Medical Necessity)
+Prior Authorization: MI-PA-2026-00112
+
+DIAGNOSES:
+  I69.354 - Hemiplegia following cerebral infarction, left
+  G81.94 - Hemiplegia, unspecified, affecting left side
+  Z87.73 - History of TIA and cerebral infarction
+
+TOTAL EQUIPMENT CHARGES: $12,035.00
+Medicare Allowed (80%): $8,450.00
+Medicaid Secondary (20%): $2,112.50
+Patient Responsibility: $0.00

@@ -1,0 +1,9 @@
+TPA_Name,Claim_Number,State,Claimant,DOB,Policy_Number,Carrier,Date_of_Loss,Claim_Type,CPT_Codes,ICD10_Codes,Provider,Total_Billed,Allowed_Amount,Status,Adjuster
+Sedgwick Claims Management,SCM-2026-NY-001,NY,Anthony Russo,03/15/1979,WC-NY-2025-112233,Hartford,12/20/2025,Workers Comp,"99213,97110,97140","M54.5,S39.012A",NY Spine & Wellness,$2450.00,$1890.00,Under Review,Jane Cooper
+Sedgwick Claims Management,SCM-2026-FL-002,FL,Maria Santos,08/22/1985,GL-FL-2025-445566,Zurich,01/02/2026,General Liability,"99283,73610,29515","S82.001A,W01.XXXA",Baptist Hospital Miami,$4875.00,$3200.00,Pending,Mike Brown
+Gallagher Bassett Services,GBS-2026-TX-003,TX,Billy Ray Johnson,11/30/1972,AL-TX-2025-778899,Travelers,01/05/2026,Auto Liability,"99284,72141,72148","S13.4XXA,S33.5XXA",Texas Spine Center,$8920.00,$6100.00,Approved,Sarah Lee
+Gallagher Bassett Services,GBS-2026-CA-004,CA,Lisa Chang-Wu,04/18/1990,PL-CA-2025-990011,CNA Financial,12/15/2025,Product Liability,"99214,20610,73721","M75.110,S43.401A",Cedars-Sinai,$5340.00,$4200.00,Denied - Resubmit,Tom Wilson
+Crawford & Company,CRW-2026-IL-005,IL,Patrick O'Malley,02/28/1965,WC-IL-2025-223344,Liberty Mutual,01/08/2026,Workers Comp,"99233,27447,97530","M17.11,Z96.641",Rush University Medical,$34500.00,$28000.00,Under Review,Pat Kim
+Crawford & Company,CRW-2026-NJ-006,NJ,Fatima Al-Rashid,07/12/1988,PIP-NJ-2025-556677,Plymouth Rock,12/28/2025,PIP/Auto,"99283,97110,97140","M54.2,S13.4XXA",Atlantic Health,$6780.00,$5100.00,Approved,Alex Reyes
+Broadspire Services,BSI-2026-GA-007,GA,Terrell Washington,09/05/1995,WC-GA-2025-889900,Berkshire Hathaway,01/10/2026,Workers Comp,"99284,27752,73592","S82.101A,W17.XXXA",Grady Memorial Hospital,$12450.00,$9800.00,Pending Medical Records,Chris Park
+Broadspire Services,BSI-2026-PA-008,PA,Anna Kowalski-Miller,01/20/1978,HO-PA-2025-112244,Erie Insurance,01/03/2026,Property - Homeowners,--,"--",ServiceMaster Restore,$18900.00,$16500.00,Field Inspection Scheduled,Lisa Chen

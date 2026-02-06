@@ -1,20 +1,20 @@
 {
-  "short_name": "AI Claims Data Extractor",
-  "name": "AI Claims Data Extractor",
+  "short_name": "ClarifyOps",
+  "name": "ClarifyOps — AI-Native Claims Data Extraction",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "favicon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo.png",
+      "src": "favicon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#4338ca",
+  "theme_color": "#1B1B4B",
   "background_color": "#ffffff"
 }

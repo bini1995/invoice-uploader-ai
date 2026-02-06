@@ -26,6 +26,12 @@ async function initDb() {
       created_at TIMESTAMP DEFAULT NOW()
     )`);
 
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR");
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expiry TIMESTAMP");
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR");
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR");
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR");
+
     const adminHash = bcrypt.hashSync('password123', 10);
     await pool.query(
       `INSERT INTO users (username, password_hash, role)

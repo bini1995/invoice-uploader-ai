@@ -1,0 +1,56 @@
+DOCTORS CARE
+A Division of UCI Medical Affiliates
+2701 Devine Street
+Columbia, SC 29205
+NPI: 7890123457 | Tax ID: 57-0678901
+
+URGENT CARE / WALK-IN CLINIC CLAIM
+=====================================
+Encounter #: DC-SC-2026-009234
+Date: 01/19/2026
+
+PATIENT:
+  Name: Taylor Madison Brooks
+  DOB: 01/05/2001
+  Student ID: USC-2023-445566
+  Insurance: Parents' Plan - BCBS of South Carolina
+  Member ID: BCBS-SC-112233
+  Subscriber: James Brooks (Father)
+  Relationship: Dependent
+
+PRESENTING: 24 y/o female, University of South Carolina student.
+  CC: Severe sore throat x3 days, fever 101.8°F, difficulty swallowing.
+
+VITALS:
+  Temp: 101.8°F | HR: 92 | BP: 118/74 | SpO2: 99%
+
+SERVICES:
+CPT     Description                          Charge
+99213   Office Visit, Estab, Low-Moderate     $165.00
+87880   Rapid Strep Test                      $38.00
+87081   Culture, Bacterial, Screen            $55.00
+87635   COVID-19 PCR Test                     $85.00
+87804   Influenza A/B Rapid Test              $42.00
+96372   IM Injection Administration           $65.00
+J0696   Ceftriaxone 250mg Injection           $32.00
+
+RESULTS:
+  Rapid Strep: POSITIVE
+  Influenza: Negative
+  COVID-19: Pending (24-48 hrs)
+
+DIAGNOSIS:
+  J02.0 - Streptococcal pharyngitis
+  R50.9 - Fever, unspecified
+
+TREATMENT:
+  Ceftriaxone 250mg IM x1 (in office)
+  Rx: Amoxicillin 500mg TID x 10 days
+  Return if not improving in 48-72 hours
+
+TOTAL CHARGES: $482.00
+Copay Collected: $45.00
+Balance to Insurance: $437.00
+
+Provider: Dr. Amanda Foster, PA-C
+Supervising: Dr. Keith Robinson, MD

@@ -1,0 +1,50 @@
+VAIL HEALTH HOSPITAL
+181 West Meadow Drive
+Vail, CO 81657
+NPI: 3456789012 | Tax ID: 84-0567890
+
+EMERGENCY DEPARTMENT CLAIM
+============================
+Account #: VH-2026-ED-007812
+Date of Service: 01/11/2026
+
+PATIENT:
+  Name: Jonathan Blake Harrison
+  DOB: 03/17/1995
+  Address: 450 Park Avenue, New York, NY 10022
+  Phone: (212) 555-0931
+  Insurance: Cigna PPO
+  Member ID: CGN-NY-776543
+  Group #: GS-CORP-2025-112
+  Employer: Goldman Sachs
+
+EMERGENCY CONTACT: Laura Harrison (spouse) - (212) 555-0932
+
+PRESENTING COMPLAINT: Ski accident at Vail Mountain, right knee injury
+
+ATTENDING: Dr. Peter Millett, MD
+Specialty: Sports Medicine / Orthopedic Surgery
+
+SERVICES:
+CPT     Description                              Charge
+99284   ED Visit, High Severity                  $2,450.00
+73721   MRI Right Knee w/o Contrast              $1,800.00
+73560   X-Ray Right Knee, 2 Views                $385.00
+29881   Knee Arthroscopy, Meniscectomy            $6,200.00
+27428   Ligament Reconstruction, Knee             $12,500.00
+29888   ACL Reconstruction w/ Autograft           $8,900.00
+20610   Arthrocentesis, Major Joint               $475.00
+
+DIAGNOSIS:
+  S83.511A - Sprain of ACL of right knee, initial
+  S83.211A - Bucket handle tear, medial meniscus, right knee
+  M23.311 - Other meniscus derangement, right knee
+
+ANESTHESIA: General, 2.5 hours
+
+TOTAL CHARGES: $32,710.00
+Estimated Insurance: $26,800.00
+Out-of-Network Adjustment: TBD
+Patient Estimated: $5,910.00
+
+Follow-up: Dr. Millett's office, 01/25/2026

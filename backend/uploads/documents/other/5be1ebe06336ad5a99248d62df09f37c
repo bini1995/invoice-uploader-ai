@@ -1,0 +1,53 @@
+CHILDREN'S HOSPITAL AT MONTEFIORE (CHAM)
+3415 Bainbridge Avenue
+Bronx, NY 10467
+NPI: 6789012346 | Medicaid Provider: NY-MC-0012345
+
+MEDICAID MANAGED CARE CLAIM
+==============================
+Claim #: CHAM-2026-PED-04567
+Date of Service: 01/14/2026
+
+PATIENT:
+  Name: Aaliyah Grace Johnson
+  DOB: 06/22/2019 (Age 6)
+  Medicaid CIN: AB12345C
+  Managed Care Plan: Healthfirst (Medicaid)
+  Plan ID: HF-MC-NY-445566
+  PCP: Dr. Rashida Owens, MD (Pediatrics)
+
+PARENT/GUARDIAN:
+  Name: Keisha Denise Johnson
+  Phone: (718) 555-0345
+  Address: 2350 Grand Concourse, Apt 5F, Bronx, NY 10458
+
+ENCOUNTER TYPE: Well-Child Visit + Sick Visit
+
+SERVICES:
+CPT     Mod   Description                        Charge    Medicaid Fee
+99393   --    Well-Child Visit (3-8 yrs)          $245.00   $124.00
+90460   --    Immunization Admin, 1st             $35.00    $18.50
+90461   --    Immunization Admin, Addtl           $25.00    $12.00
+90707   --    MMR Vaccine                         $85.00    VFC
+90716   --    Varicella Vaccine                   $145.00   VFC
+96110   --    Developmental Screening             $25.00    $15.00
+99213   25    Sick Visit - Ear Pain (separate)    $145.00   $78.00
+69210   --    Cerumen Removal                     $85.00    $42.00
+
+DIAGNOSES:
+  Z00.121 - Well child exam with abnormal findings
+  H66.91 - Otitis media, unspecified, right ear
+  Z23 - Encounter for immunization
+
+REFERRAL GENERATED:
+  Audiology evaluation (pending recurrent OM)
+
+TOTAL CHARGES: $790.00
+MEDICAID ALLOWED: $289.50
+VFC VACCINES: No charge
+PATIENT COPAY: $0.00
+
+EPSDT Screen: Complete
+Lead Level: 1.2 mcg/dL (normal)
+BMI: 50th percentile (normal)
+Vision: 20/25 bilateral (pass)

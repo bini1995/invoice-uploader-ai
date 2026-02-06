@@ -1,0 +1,38 @@
+PACIFIC COAST DENTAL GROUP
+2200 Ocean Park Blvd, Suite 400
+Santa Monica, CA 90405
+Phone: (310) 555-0345 | NPI: 5678901234
+
+ADA DENTAL CLAIM FORM
+======================
+Date: 01/08/2026
+
+SUBSCRIBER/PATIENT:
+  Name: Jennifer Tanaka-Williams
+  DOB: 08/29/1992
+  Member ID: DELT-CA-998874
+  Employer: Netflix Inc.
+  Insurance: Delta Dental of California
+  Group #: NFLX-PPO-2025
+
+TREATING DENTIST:
+  Dr. Robert Kim, DDS
+  License #: CA-DDS-55432
+
+PROCEDURES:
+Date        CDT Code    Tooth#  Surface   Description                    Fee
+01/08/2026  D0120       --      --        Periodic Oral Evaluation       $65.00
+01/08/2026  D0274       --      --        Bitewings - Four Films         $85.00
+01/08/2026  D1110       --      --        Prophylaxis - Adult            $145.00
+01/08/2026  D2391       14      MO        Resin Composite - 2 Surfaces   $285.00
+01/08/2026  D2740       30      --        Crown - Porcelain/Ceramic      $1,350.00
+
+DIAGNOSIS:
+  K02.51 - Dental caries on pit/fissure surface
+  K03.1 - Abrasion of teeth
+
+Total Charges:            $1,930.00
+Insurance Estimate:       $1,250.00
+Patient Responsibility:   $680.00
+
+Dentist Signature: Dr. Robert Kim, DDS

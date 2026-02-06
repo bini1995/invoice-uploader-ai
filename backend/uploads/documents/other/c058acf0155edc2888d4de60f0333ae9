@@ -1,0 +1,49 @@
+CRESCENT CITY FOOT & ANKLE SPECIALISTS
+1514 Jefferson Highway, Suite 300
+New Orleans, LA 70121
+Phone: (504) 555-0234
+NPI: 9012345678 | Tax ID: 72-5678901
+
+PODIATRY CLAIM / SUPERBILL
+============================
+Date of Service: 01/22/2026
+
+PATIENT:
+  Name: Deshawn Marcus Williams
+  DOB: 07/08/1989
+  Insurance: Blue Cross Blue Shield of Louisiana
+  Member ID: BCBS-LA-334567
+  Policy #: LA-PPO-2025-887
+  Group: ENTERGY-2025
+
+PROVIDER: Dr. Nicole Dupree, DPM, FACFAS
+License #: LA-POD-3345
+
+HISTORY: Patient is a 36 y/o male with Type 2 diabetes presenting
+  with non-healing ulcer on right great toe, 3 weeks duration.
+
+PROCEDURES:
+CPT     Mod   Description                          Charge
+99214   25    Office Visit, Estab, Moderate         $175.00
+11042   RT    Debridement, Subcutaneous Tissue      $325.00
+97597   RT    Debridement, Open Wound, 20 sq cm     $275.00
+29580   RT    Strapping, Unna Boot                  $125.00
+A6402   --    Sterile Gauze Pad (lg), Multi-Layer   $35.00
+Q4131   --    Grafix Core Skin Substitute, sq cm    $850.00
+
+DIAGNOSES:
+  E11.621 - T2DM with foot ulcer
+  L97.511 - Non-pressure chronic ulcer, right foot, skin breakdown
+  E11.65 - T2DM with hyperglycemia
+  I70.233 - Atherosclerosis of right leg w/ ulceration
+
+DIABETIC SHOE PROGRAM (Future Order):
+  A5500 x2 - Diabetic Shoes, Custom Molded         $425.00
+  A5512 x6 - Multi-Density Insert                  $300.00
+
+TOTAL TODAY: $1,785.00
+SHOE PROGRAM: $725.00
+
+Insurance Filing: Electronic
+Referral Required: No (PPO)
+Follow-up: 2 weeks

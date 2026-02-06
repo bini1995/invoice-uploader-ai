@@ -1,0 +1,51 @@
+FROEDTERT & MCW REHABILITATION SERVICES
+9200 W Wisconsin Ave
+Milwaukee, WI 53226
+NPI: 5678901235 | Tax ID: 39-4567890
+
+OCCUPATIONAL THERAPY CLAIM
+============================
+Account #: FR-OT-2026-11234
+Billing Period: 01/06/2026 - 01/31/2026
+
+PATIENT:
+  Name: Patricia Ann Nowicki
+  DOB: 12/20/1968
+  Insurance: Quartz Health Solutions
+  Member ID: QTZ-WI-667788
+  Auth #: QTZ-OT-2026-00234 (20 visits authorized)
+  Referral: Dr. Mark Steffen, MD (Hand Surgery)
+
+THERAPIST: Jessica Bauer, OTR/L, CHT
+  License #: WI-OT-8876
+  Specialty: Certified Hand Therapist
+
+DIAGNOSIS:
+  S62.001A - Fracture of navicular (scaphoid) bone, right wrist
+  M24.541 - Contracture, right hand
+  Post-op: ORIF right scaphoid (12/15/2025)
+
+TREATMENT LOG:
+Date        CPT     Units  Description                    Charge
+01/06/2026  97530   2      Therapeutic Activities, 30min   $150.00
+01/06/2026  97110   2      Therapeutic Exercise, 30min     $130.00
+01/06/2026  97140   1      Manual Therapy, 15min           $75.00
+01/08/2026  97530   2      Therapeutic Activities           $150.00
+01/08/2026  97542   1      Wheelchair Mgmt Training         $85.00
+01/10/2026  97110   2      Therapeutic Exercise             $130.00
+01/10/2026  97760   1      Orthotics Mgmt/Training          $95.00
+01/13/2026  97530   2      Therapeutic Activities           $150.00
+01/13/2026  97110   2      Therapeutic Exercise             $130.00
+01/15/2026  97530   2      Therapeutic Activities           $150.00
+01/15/2026  97140   1      Manual Therapy                   $75.00
+01/17/2026  97110   2      Therapeutic Exercise             $130.00
+01/17/2026  97542   1      Wheelchair Mgmt Training         $85.00
+
+VISITS: 6 of 20 authorized
+TOTAL CHARGES: $1,535.00
+Copay ($30/visit x 6): $180.00
+Insurance Est.: $1,180.00
+Patient Balance: $175.00
+
+PROGRESS: ROM improved from 35° to 55° wrist flexion.
+Grip strength 18 lbs (goal: 45 lbs). Progressing well.

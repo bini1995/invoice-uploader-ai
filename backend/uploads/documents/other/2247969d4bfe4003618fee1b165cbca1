@@ -1,0 +1,55 @@
+QUEST DIAGNOSTICS - MINNEAPOLIS
+2655 Hennepin Avenue South
+Minneapolis, MN 55408
+NPI: 0123456789 | CLIA: 24D0404532
+
+LABORATORY CLAIM
+==================
+Requisition #: QD-MN-2026-554312
+Collection Date: 01/16/2026
+Report Date: 01/18/2026
+
+PATIENT:
+  Name: Eric Johansson
+  DOB: 05/21/1970
+  Gender: Male
+  Insurance: HealthPartners
+  Member ID: HP-MN-443256
+  Policy #: HPP-2025-GROUP-882
+  Ordering Provider: Dr. Anne Lindberg, MD (NPI: 2345678901)
+
+TESTS ORDERED AND RESULTS:
+CPT     Test                              Result      Ref Range       Flag
+80053   Comprehensive Metabolic Panel     --          --              --
+        Glucose                           142 mg/dL   70-100          HIGH
+        BUN                               28 mg/dL    7-20            HIGH
+        Creatinine                        1.4 mg/dL   0.7-1.3         HIGH
+        eGFR                              52          >60             LOW
+        Sodium                            139         136-145
+        Potassium                         4.8         3.5-5.0
+        CO2                               24          23-29
+        Calcium                           9.2         8.5-10.5
+83036   Hemoglobin A1C                    7.8%        <5.7%           HIGH
+80061   Lipid Panel                       --          --              --
+        Total Cholesterol                 245 mg/dL   <200            HIGH
+        LDL                               162 mg/dL   <100            HIGH
+        HDL                               38 mg/dL    >40             LOW
+        Triglycerides                     225 mg/dL   <150            HIGH
+84443   TSH                               2.45        0.27-4.20
+85025   CBC w/ Differential               WNL         --
+
+DIAGNOSES:
+  E11.65 - Type 2 diabetes with hyperglycemia
+  E78.5 - Hyperlipidemia, unspecified
+  N18.3 - Chronic kidney disease, stage 3
+
+CHARGES:
+  80053 Comprehensive Metabolic Panel     $185.00
+  83036 Hemoglobin A1C                    $65.00
+  80061 Lipid Panel                       $95.00
+  84443 TSH                               $75.00
+  85025 CBC w/ Diff                       $45.00
+
+TOTAL CHARGES: $465.00
+Contracted Rate: $215.00
+Patient Copay: $25.00

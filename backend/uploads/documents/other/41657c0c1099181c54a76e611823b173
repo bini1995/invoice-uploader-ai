@@ -1,0 +1,49 @@
+BAYADA HOME HEALTH CARE
+CHARLOTTE REGION OFFICE
+4801 E Independence Blvd, Suite 800
+Charlotte, NC 28212
+NPI: 4567890123 | Medicare Provider #: 34-8012
+
+HOME HEALTH CLAIM - UB-04
+============================
+Claim #: BAYADA-NC-2026-005543
+Billing Period: 12/01/2025 - 12/31/2025
+
+PATIENT:
+  Name: Dorothy Mae Patterson
+  DOB: 04/09/1942
+  Medicare ID: 2EJ7-HP4-QW89
+  Secondary: Humana Gold Plus (HMO)
+  Member ID: HGP-NC-112456
+  Address: 1201 Providence Road, Charlotte, NC 28207
+  
+CERTIFICATION PERIOD: 11/15/2025 - 01/14/2026
+REFERRING MD: Dr. Charles Newton, MD (NPI: 5678901234)
+
+HOME HEALTH RESOURCE GROUP (HHRG): 3BFK2
+
+SERVICES PROVIDED:
+Revenue   HCPCS    Description                  Units    Charges
+0551      G0151    PT Evaluation/Re-eval        1        $285.00
+0421      G0151    PT Treatment Visit           8        $1,360.00
+0551      G0152    OT Evaluation                1        $275.00
+0431      G0152    OT Treatment Visit           4        $680.00
+0551      G0299    Skilled Nursing Visit         12       $1,680.00
+0571      G0493    RN Assessment Visit           2        $390.00
+0581      G0156    HHA Services                  20       $1,400.00
+
+DIAGNOSES (Primary): 
+  I69.354 - Hemiplegia following cerebral infarction, left side
+  I63.9 - Cerebral infarction, unspecified
+  R26.89 - Other abnormalities of gait and mobility
+  Z87.73 - Personal history of TIA/cerebral infarction
+
+FUNCTIONAL STATUS:
+  ADL Score: 12/24 (moderate dependence)
+  Fall Risk: High
+  OASIS Start of Care: 11/15/2025
+
+TOTAL CHARGES: $6,070.00
+MEDICARE PPS RATE: $4,225.00
+HUMANA SECONDARY: $845.00
+PATIENT: $0.00

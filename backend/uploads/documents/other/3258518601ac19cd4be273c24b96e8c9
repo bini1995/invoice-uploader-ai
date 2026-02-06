@@ -1,0 +1,52 @@
+JOHNS HOPKINS RADIOLOGY
+600 N Wolfe Street, Phipps Building
+Baltimore, MD 21287
+NPI: 1234567891 | Tax ID: 52-0595110
+
+RADIOLOGY / IMAGING SERVICES CLAIM
+=====================================
+Accession #: JH-RAD-2026-045678
+Date of Exam: 01/17/2026
+
+PATIENT:
+  Name: Sandra Lee Washington
+  DOB: 06/30/1973
+  MRN: JH-2234567
+  Insurance: CareFirst BCBS
+  Member ID: CF-MD-998877
+  Policy #: FED-BCBS-2025-PPO
+  Employer: Federal Government (OPM)
+
+ORDERING PHYSICIAN: Dr. Katherine Berman, MD
+  Specialty: Oncology
+  NPI: 2345678912
+
+EXAMINATIONS:
+CPT     Modifier  Description                              Charge
+77067   --        Screening Mammogram, Bilateral, 3D       $450.00
+77065   --        Diagnostic Mammogram, Right Breast       $375.00
+76641   --        US Breast, Complete, Right                $425.00
+77021   --        MR Guidance for Needle Placement          $650.00
+19083   --        Breast Biopsy w/ MR Guidance, Right       $2,800.00
+
+FINDINGS SUMMARY:
+  BI-RADS 4B suspicious abnormality identified in right breast,
+  2 o'clock position, 6cm from nipple. 1.2cm irregular mass
+  with associated microcalcifications. Core needle biopsy performed.
+  
+  Pathology pending (expected 01/22/2026).
+
+DIAGNOSES:
+  R92.1 - Calcification of breast
+  N63.10 - Unspecified lump in right breast
+  Z12.31 - Encounter for screening mammogram
+  Z80.3 - Family history of malignant neoplasm of breast
+
+TOTAL PROFESSIONAL FEES: $4,700.00
+TECHNICAL FACILITY FEES: $3,200.00
+COMBINED TOTAL: $7,900.00
+Insurance Est.: $6,100.00
+Patient Est.: $1,800.00
+
+STAT PATHOLOGY REQUESTED: Yes
+Results will be sent to ordering physician.

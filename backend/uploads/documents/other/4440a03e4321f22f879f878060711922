@@ -1,0 +1,58 @@
+DELMAR GARDENS SKILLED NURSING FACILITY
+14800 N Outer Forty Road
+Chesterfield, MO 63017
+NPI: 8901234568 | CMS Cert #: 265432
+License: MO-SNF-2019-8812
+
+LONG-TERM CARE / SNF CLAIM - UB-04
+=====================================
+Claim #: DG-MO-2026-002345
+Billing Period: 01/01/2026 - 01/31/2026
+
+RESIDENT:
+  Name: Harold Eugene Schaefer
+  DOB: 03/08/1938
+  Medicare ID: 5KL2-MN7-OP89
+  Medicaid: MO-MA-2025-776655
+  LTC Insurance: Genworth Life
+  Policy #: GLI-LTC-2018-334455
+  
+ADMISSION DATE: 09/15/2025
+PAYER SEQUENCE: Medicare (days 21-100), Medicaid, LTC Insurance
+
+ATTENDING: Dr. Robert Chen, MD (Geriatrics)
+NPI: 9012345679
+
+RUG-IV CLASSIFICATION: RUX (Ultra High Rehab + Extensive)
+
+SERVICES - JANUARY 2026:
+Revenue   Description                    Days   Per Diem    Total
+0191      Subacute/SNF - Semi-Private    31     $425.00     $13,175.00
+0420      Physical Therapy               --     --          $3,450.00
+0430      Occupational Therapy           --     --          $2,800.00
+0440      Speech Therapy                 --     --          $1,200.00
+0250      Pharmacy                       --     --          $2,100.00
+0260      IV Therapy                     --     --          $875.00
+0270      Medical/Surgical Supplies      --     --          $450.00
+0300      Laboratory                     --     --          $680.00
+0350      CT Scan (Head)                 --     --          $1,200.00
+
+CPT Codes: 97110, 97530, 97140, 97535, 92507, 92610
+ICD-10: G30.9, F02.80, I10, E11.65, N39.0
+
+DIAGNOSES:
+  G30.9 - Alzheimer's disease, unspecified
+  F02.80 - Dementia in other diseases, without behavioral disturbance
+  I10 - Essential hypertension
+  E11.65 - Type 2 diabetes with hyperglycemia
+  N39.0 - Urinary tract infection
+  Z74.01 - Bed confinement status
+
+TOTAL CHARGES: $25,930.00
+Medicare SNF (Days 87-100, coinsurance): $3,850.00
+Medicaid: $8,200.00
+LTC Insurance: $12,400.00
+Patient Liability: $1,480.00
+
+MDS Assessment: Quarterly review due 02/15/2026
+Care Conference: Scheduled 02/01/2026

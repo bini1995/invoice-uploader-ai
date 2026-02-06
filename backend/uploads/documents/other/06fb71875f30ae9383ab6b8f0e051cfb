@@ -1,0 +1,14 @@
+Facility,NPI,Address,Patient Name,DOB,Medicare ID,ESRD MBI,Insurance,Session Date,CPT Code,Modifier,Diagnosis,Revenue Code,Units,Charges,Allowed,Paid
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/02/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/04/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/07/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/09/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/11/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/14/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/16/2026,90940,--,"N18.6,E11.65",0821,1,$620.00,$310.00,$248.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/18/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/21/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/23/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/25/2026,90940,--,"N18.6,E11.65",0821,1,$620.00,$310.00,$248.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/28/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00
+DaVita Kidney Care #5512,6789012345,"200 Retreat Ave, Hartford, CT 06106",Frank Joseph Morelli,08/22/1965,3FG8-JK2-MN45,Yes,Medicare ESRD,01/30/2026,90937,--,N18.6,0821,1,$580.00,$285.00,$228.00

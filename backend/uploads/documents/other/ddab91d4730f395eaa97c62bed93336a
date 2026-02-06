@@ -1,0 +1,53 @@
+PORTLAND NATURAL HEALTH CENTER
+2045 NW Lovejoy Street
+Portland, OR 97209
+Phone: (503) 555-0789
+NPI: 3456789013 | Tax ID: 93-2345678
+
+NATUROPATHIC MEDICINE CLAIM
+==============================
+Claim Date: 01/21/2026
+
+PATIENT:
+  Name: Sarah Jane Morrison-Chen
+  DOB: 02/14/1984
+  Insurance: Providence Health Plan
+  Member ID: PVD-OR-223344
+  Policy #: PVD-NAT-2025-PPO
+  
+PROVIDER: Dr. Emily Nakamura, ND, LAc
+License #: OR-ND-1245 | OR-LAC-5567
+Specialty: Naturopathic Family Medicine, Acupuncture
+
+OFFICE VISIT:
+CPT     Description                              Charge
+99214   Office Visit, Estab, Moderate             $175.00
+97810   Acupuncture, 1+ Needles, w/o E-Stim      $95.00
+97811   Acupuncture, Addtl 15 min                 $65.00
+96372   Therapeutic IM Injection                   $45.00
+J3420   Vitamin B12 Injection, up to 1000 mcg     $25.00
+
+LAB WORK (sent to LabCorp):
+CPT     Description                              Charge
+84439   Free Thyroxine (Free T4)                  $65.00
+84443   TSH                                       $55.00
+82306   Vitamin D, 25-Hydroxy                     $95.00
+82728   Ferritin                                  $55.00
+83655   Lead Level, Blood                         $65.00
+
+DIAGNOSES:
+  E03.9 - Hypothyroidism, unspecified
+  D50.9 - Iron deficiency anemia, unspecified
+  G43.909 - Migraine, unspecified, not intractable
+  M79.1 - Myalgia
+
+SUPPLEMENTS DISPENSED (not billed to insurance):
+  Thyroid Support Formula 60ct                    $42.00
+  Iron Bisglycinate 30mg 90ct                     $28.00
+  Magnesium Glycinate 400mg 120ct                 $35.00
+
+TOTAL MEDICAL CHARGES: $740.00
+SUPPLEMENTS (self-pay): $105.00
+Insurance Copay: $35.00
+Est. Insurance Payment: $520.00
+Patient Balance: $185.00

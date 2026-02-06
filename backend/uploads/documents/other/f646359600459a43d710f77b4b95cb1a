@@ -1,0 +1,45 @@
+PEACHTREE CHIROPRACTIC & WELLNESS CENTER
+3350 Peachtree Road NE, Suite 1200
+Atlanta, GA 30326
+Phone: (404) 555-0567 | NPI: 6789012345
+
+CHIROPRACTIC SUPERBILL
+========================
+Date of Service: 01/14/2026
+
+PATIENT:
+  Name: Angela Simone Richardson
+  DOB: 09/18/1975
+  Insurance: United Healthcare
+  Member ID: UHC-GA-889012
+  Policy #: UHC-2025-CORP-771
+  Employer: Coca-Cola Company
+
+PROVIDER: Dr. Marcus Brown, DC
+License #: GA-DC-008834
+
+SUBJECTIVE: Patient reports chronic lower back pain (7/10) radiating to left hip.
+  Duration: 6 months. Aggravated by prolonged sitting.
+
+PROCEDURES:
+[X] 98940  CMT Spinal, 1-2 Regions              $85.00
+[X] 98941  CMT Spinal, 3-4 Regions              $110.00
+[X] 97110  Therapeutic Exercise, 15 min          $65.00
+[X] 97140  Manual Therapy, 15 min                $75.00
+[X] 97014  Electrical Stimulation, Unattended    $45.00
+[ ] 97012  Mechanical Traction
+[ ] 97035  Ultrasound
+
+DIAGNOSES:
+[X] M54.5   Low back pain
+[X] M54.41  Lumbago with sciatica, right side
+[X] M99.03  Segmental dysfunction, lumbar
+
+TOTAL: $380.00
+Copay Collected: $40.00
+Balance to Insurance: $340.00
+
+Visit # 8 of 24 authorized
+Next Visit: 01/21/2026
+
+Provider Signature: Dr. Marcus Brown, DC

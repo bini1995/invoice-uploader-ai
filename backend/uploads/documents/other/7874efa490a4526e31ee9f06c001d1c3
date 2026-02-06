@@ -1,0 +1,36 @@
+NYC ORTHOPEDIC ASSOCIATES, PC
+1245 Park Avenue, Suite 300
+New York, NY 10128
+NPI: 1234567890 | Tax ID: 13-4567890
+
+MEDICAL BILL / STATEMENT OF SERVICES
+========================================
+Statement Date: 01/15/2026
+Account #: NYC-ORT-88412
+
+PATIENT INFORMATION:
+  Name: Margaret Chen
+  DOB: 03/22/1978
+  Member ID: BCBS-NY-445201
+  Insurance: Empire BlueCross BlueShield
+  Policy #: GRP-2024-887654
+  Group #: EMPL-5543
+
+REFERRING PHYSICIAN: Dr. Anthony Russo, MD
+
+SERVICES RENDERED:
+Date        CPT Code    Description                        Charges
+01/10/2026  99214       Office Visit, Estab Patient        $285.00
+01/10/2026  73721       MRI Lower Extremity w/o Contrast   $1,450.00
+01/12/2026  20610       Arthrocentesis, Major Joint        $475.00
+
+DIAGNOSIS CODES:
+  M17.11 - Primary osteoarthritis, right knee
+  M25.561 - Pain in right knee
+
+Total Charges:    $2,210.00
+Insurance Paid:   $1,445.00
+Patient Copay:    $75.00
+Balance Due:      $690.00
+
+Payment due within 30 days. Questions? Call (212) 555-0187

@@ -1,0 +1,44 @@
+PUGET SOUND BEHAVIORAL HEALTH ASSOCIATES
+1400 Madison Street, Suite 200
+Seattle, WA 98104
+NPI: 4567890123 | Tax ID: 91-2345678
+
+MENTAL HEALTH OUTPATIENT CLAIM
+================================
+Claim Date: 01/18/2026
+
+CLIENT INFORMATION:
+  Name: David Nakamura
+  DOB: 04/12/1988
+  Insurance: Premera Blue Cross
+  Member ID: PBC-WA-332145
+  Policy: AMZN-BH-2025
+  Group: Amazon EAP Extended
+
+PROVIDER:
+  Name: Dr. Lisa Hernandez, PhD, LP
+  Specialty: Clinical Psychology
+  License #: WA-PSY-PL-6012
+  Taxonomy: 103T00000X
+
+SERVICES:
+Date        CPT      Modifier  Description                      Rate
+01/04/2026  90837    --        Psychotherapy, 60 min             $225.00
+01/06/2026  90847    --        Family Therapy w/ Patient         $275.00
+01/11/2026  90837    --        Psychotherapy, 60 min             $225.00
+01/13/2026  96130    --        Psychological Testing, 1st hr    $300.00
+01/13/2026  96131    --        Psych Testing, Addtl 30 min      $150.00
+01/18/2026  90837    --        Psychotherapy, 60 min             $225.00
+
+DIAGNOSES:
+  F33.1 - Major depressive disorder, recurrent, moderate
+  F41.1 - Generalized anxiety disorder
+  Z63.0 - Problems in relationship with spouse
+
+Total Charges:          $1,400.00
+Allowed Amount:         $1,120.00
+Copay (6 visits x $30): $180.00
+Plan Pays:              $940.00
+Patient Owes:           $460.00
+
+Sessions Remaining (2026 Plan Year): 18 of 30

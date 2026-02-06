@@ -1,0 +1,50 @@
+VIRGINIA EYE CONSULTANTS
+241 Corporate Blvd
+Norfolk, VA 23502
+NPI: 5678901234 | Tax ID: 54-1234567
+
+OPHTHALMOLOGY / VISION CARE CLAIM
+====================================
+Invoice #: VEC-2026-01234
+Date of Service: 01/20/2026
+
+PATIENT:
+  Name: Catherine Anne Douglas
+  DOB: 11/14/1958
+  Insurance: Anthem Blue Cross (Medical)
+  Member ID: ANT-VA-556677
+  Vision Plan: VSP Choice
+  VSP ID: VSP-441122
+
+PROVIDER: Dr. Elizabeth Yeu, MD, FACS
+Specialty: Cornea & Refractive Surgery
+License: VA-MD-0101-12456
+
+EXAMINATION:
+CPT     Description                          Charge
+92014   Ophthalmologic Exam, Estab, Compr    $295.00
+92134   Scanning Computerized (OCT)          $125.00
+92083   Visual Field Exam                    $175.00
+76519   Ophthalmic Biometry (IOL Power)      $165.00
+
+SURGICAL CONSULTATION (Scheduled 02/10/2026):
+  66984   Cataract Surgery w/ IOL, Left Eye  $3,800.00 (est.)
+  
+DIAGNOSES:
+  H25.11 - Age-related nuclear cataract, right eye
+  H25.12 - Age-related nuclear cataract, left eye
+  H40.10X0 - Open angle glaucoma, unspecified eye
+  H52.4 - Presbyopia
+
+VISION PLAN CHARGES (VSP):
+  92004   Eye Exam                            $65.00
+  V2020   Frame, Progressives                 $185.00
+  V2781   Progressive Lenses                  $295.00
+
+MEDICAL TOTAL: $760.00
+VISION TOTAL: $545.00
+COMBINED: $1,305.00
+
+Medical Insurance Est. Pay: $580.00
+VSP Allowance: $230.00
+Patient Balance: $495.00

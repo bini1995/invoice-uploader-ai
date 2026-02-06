@@ -1,0 +1,50 @@
+CUMBERLAND HEIGHTS TREATMENT CENTER
+8283 River Road Pike
+Nashville, TN 37209
+NPI: 0123456780 | License: TN-SA-2019-4453
+CARF Accredited | Joint Commission Certified
+
+SUBSTANCE ABUSE TREATMENT CLAIM
+==================================
+Admission #: CH-2026-00156
+Patient Account: 2026-TN-884
+
+PATIENT:
+  Name: Ryan Christopher Adams
+  DOB: 11/25/1991
+  Insurance: Anthem Blue Cross Blue Shield of TN
+  Member ID: ANT-TN-778899
+  Policy #: ANTHN-2025-EAP-443
+  Employer: FedEx Corporation
+  EAP Authorization: Yes (30 days inpatient)
+
+ADMISSION: 12/28/2025
+DISCHARGE: 01/25/2026 (28 days)
+LEVEL OF CARE: ASAM 3.5 - Clinically Managed High-Intensity Residential
+
+SERVICES:
+Revenue   CPT/HCPCS  Description                    Days/Units  Per Diem    Total
+0100      --         Room & Board, Residential      28          $850.00     $23,800.00
+0914      H0004      Individual Therapy             12          $175.00     $2,100.00
+0915      H0005      Group Therapy                  25          $85.00      $2,125.00
+0916      90847      Family Therapy                 4           $275.00     $1,100.00
+0918      H0049      Alcohol/Drug Screening         8           $45.00      $360.00
+0250      --         Pharmacy (Vivitrol, etc.)       --          --          $2,800.00
+0300      --         Laboratory                     --          --          $650.00
+0942      H0015      Intensive Outpatient (IOP)     0           $0.00       $0.00
+
+DIAGNOSES:
+  F10.20 - Alcohol dependence, uncomplicated
+  F14.20 - Cocaine dependence, uncomplicated
+  F33.1 - Major depressive disorder, recurrent, moderate
+  F41.1 - Generalized anxiety disorder
+
+TOTAL CHARGES: $32,935.00
+INSURANCE AUTHORIZED: $28,000.00
+EAP SUPPLEMENTAL: $3,200.00
+PATIENT RESPONSIBILITY: $1,735.00
+
+AFTERCARE PLAN: 90 meetings in 90 days, weekly IOP x 12 weeks
+DISCHARGE STATUS: Improved, medically stable
+
+Clinician: Dr. Amanda Foster, MD, FASAM

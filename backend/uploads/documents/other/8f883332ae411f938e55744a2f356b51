@@ -1,0 +1,51 @@
+SOUTHWEST AMBULANCE SERVICE
+4120 N 20th Street
+Phoenix, AZ 85016
+NPI: 8901234567 | Tax ID: 86-1234567
+
+AMBULANCE TRANSPORT CLAIM
+===========================
+Run #: SWA-2026-00823
+Date of Service: 01/08/2026
+
+PATIENT:
+  Name: Rosa Guadalupe Mendoza
+  DOB: 12/03/1968
+  Address: 3421 W Camelback Rd, Phoenix, AZ 85017
+  Insurance: AHCCCS (Arizona Medicaid)
+  Member ID: AHCCCS-A23456789
+  
+TRANSPORT DETAILS:
+  Pick-up: 3421 W Camelback Rd, Phoenix, AZ 85017
+  Destination: Banner University Medical Center
+  Miles: 8.2
+  Level of Service: ALS1 Emergency
+  
+CREW:
+  Paramedic: John Estrada, NRP
+  EMT: Sarah Wright, EMT-B
+
+PROCEDURES:
+HCPCS   Description                        Charge
+A0427   ALS1 Emergency Transport           $1,850.00
+A0425   Mileage (8.2 mi x $12/mi)         $98.40
+99281   ED Assessment by Paramedic         $0.00 (incl.)
+
+SUPPLIES:
+  IV Start Kit                             $45.00
+  Oxygen Administration                    $35.00
+  Cardiac Monitor                          $75.00
+  Medications Administered                 $120.00
+
+CLINICAL NOTES:
+  60 y/o female, chest pain, SOB. Vitals: BP 180/95,
+  HR 110, SpO2 92% on RA. 12-lead: ST elevation V1-V4.
+  STEMI alert called. IV access x1, NTG x3, ASA 324mg.
+
+DIAGNOSIS:
+  I21.09 - Acute STEMI, unspecified site
+  R06.02 - Shortness of breath
+  I10 - Essential hypertension
+
+TOTAL CHARGES: $2,223.40
+AHCCCS Allowed: $1,250.00
