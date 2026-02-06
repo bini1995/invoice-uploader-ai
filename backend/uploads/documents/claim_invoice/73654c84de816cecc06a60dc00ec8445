@@ -1,0 +1,30 @@
+DURABLE MEDICAL EQUIPMENT CLAIM
+Supplier: Gulf Coast Medical Supply Inc.
+  8900 Westheimer Rd, Houston TX 77063
+  NPI: 3344556677  PTAN: TX-DME-44521
+Claim Date: 01/31/2026
+Patient: Harold Washington  DOB: 06/20/1948
+Member ID: HUMANA-TX-90234567  Group: GRP-RETIRE-2200
+Insurance: Humana Medicare Advantage
+Ordering Physician: Dr. Angela Brooks, Pulmonology
+  NPI: 4455667788
+
+Equipment Ordered:
+  E0431 - Portable oxygen concentrator - $2,800.00
+    Rental: $280.00/month x 13 months then purchase
+    HCPCS: E0431  Modifier: RR (rental)
+    CMN: Attached - O2 sat 86% on room air
+  E0601 - CPAP device with humidifier - $1,200.00
+    AHI: 32 events/hour (severe OSA documented)
+  A7030 - CPAP full face mask - $185.00
+  A7038 - CPAP disposable filter (6-pack) - $24.00
+  A7046 - Water chamber for humidifier - $45.00
+
+Diagnosis: J44.1 COPD with acute exacerbation
+  G47.33 Obstructive sleep apnea
+  J96.11 Chronic respiratory failure with hypoxia
+Total Charges: $4,254.00
+Medicare Allowed: $3,410.00
+Patient 20% Coinsurance: $682.00
+Certificate of Medical Necessity: Attached
+ABN: Signed 01/30/2026

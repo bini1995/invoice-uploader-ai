@@ -1,0 +1,9 @@
+claim_id,patient_name,dob,member_id,insurance,state,service_date,provider,cpt_codes,icd10_codes,total_charges,claim_type
+TPA-R2-001,Robert Kim,1975-03-22,BCBS-NY-111234,BCBS,NY,2026-01-20,NYC Orthopedics,27447,M17.11,$42500.00,surgical
+TPA-R2-002,Maria Santos,1988-11-14,UHC-FL-222345,UHC,FL,2026-01-21,Tampa General,99284;72148,S33.5XXA,$3200.00,emergency
+TPA-R2-003,James O'Brien,1962-07-30,AETNA-NJ-333456,Aetna,NJ,2026-01-22,NJ Cardiology,93306;93312,I25.10,$5800.00,diagnostic
+TPA-R2-004,Sarah Williams,2000-05-18,CIGNA-TX-444567,Cigna,TX,2026-01-23,Austin Women's Health,59400,O80,$18500.00,obstetric
+TPA-R2-005,David Chen,1970-12-03,HP-MN-555678,HealthPartners,MN,2026-01-24,Mayo Clinic,43239,K21.0,$4200.00,gastro
+TPA-R2-006,Lisa Nguyen,1995-09-25,KP-CA-666789,Kaiser,CA,2026-01-25,Kaiser Oakland,90837;90785,F33.1,$295.00,behavioral
+TPA-R2-007,Michael Brown,1958-04-11,HUMANA-GA-777890,Humana,GA,2026-01-26,Emory Orthopedics,27130,M16.11,$38900.00,surgical
+TPA-R2-008,Jennifer Taylor,1983-08-07,DELTA-IL-888901,Delta Dental,IL,2026-01-27,Chicago Dental Group,D2740;D2950,K02.62,$1675.00,dental

@@ -1,0 +1,32 @@
+PHILADELPHIA FIRE DEPARTMENT - EMS BILLING
+Ambulance Transport Claim
+Run #: PFD-EMS-2026-004817
+Date of Transport: 01/27/2026  Time: 06:12 EST
+Patient: William Jackson  DOB: 01/03/1960
+Insurance: Medicare Part B  HIC: 1EG4-TE5-MK72
+Secondary: Keystone Blue  ID: KBS-PA-88234567
+Pickup: 1200 Market St, Philadelphia PA 19107
+  (Scene of fall on icy sidewalk)
+Destination: Thomas Jefferson University Hospital
+  111 S 11th St, Philadelphia PA 19107
+
+Level of Service: ALS-1 Emergency (A0427)
+  BLS Assessment + ALS Intervention
+Mileage: 2.3 miles loaded (A0425 x 2.3)
+ALS Supplies Used:
+  - IV access established (A0394)
+  - Cardiac monitoring (continuous)
+  - Cervical collar applied
+  - Splinting: right hip/femur
+Crew: Paramedic Rodriguez (#4412), EMT-B Chen (#5523)
+
+Charges:
+  A0427 - ALS-1 Emergency Base Rate: $1,850.00
+  A0425 - Mileage (2.3 mi x $22.00): $50.60
+  A0394 - ALS Specialized Service: $280.00
+  A0398 - ALS Routine Supplies: $125.00
+  Total: $2,305.60
+Medicare Allowable: $485.00
+Patient: 20% coinsurance = $97.00
+Diagnosis: S72.001A Right femoral neck fracture
+  W01.0XXA Fall on same level from slipping on ice

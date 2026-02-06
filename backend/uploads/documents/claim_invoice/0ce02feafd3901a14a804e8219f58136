@@ -1,0 +1,28 @@
+PHARMACY BENEFIT CLAIM - CVS CAREMARK
+PBM: CVS Caremark
+Claim Date: 01/29/2026
+Patient: Anthony Russo  DOB: 02/14/1955
+Member ID: CVS-NJ-88123456  RxBIN: 004336
+RxGRP: AETNA-RX-900  Carrier: Aetna Rx
+Pharmacy: CVS Pharmacy #3312
+  450 Broad St, Newark NJ 07102  NPI: 1881234567
+Prescribing MD: Dr. Maria Santos, Cardiology
+  NPI: 1991234567
+
+Prescriptions Filled:
+  Rx#: 7712345 - Eliquis 5mg (apixaban) - #60 - 30 day supply
+    NDC: 00003-0893-21  DAW: 0
+    AWP: $548.00  Plan Pays: $498.00  Copay: $50.00
+  Rx#: 7712346 - Metoprolol Succinate ER 50mg - #30 - 30 day supply
+    NDC: 00093-7366-56  DAW: 1 (generic available)
+    AWP: $42.00  Plan Pays: $32.00  Copay: $10.00
+  Rx#: 7712347 - Atorvastatin 40mg - #30 - 30 day supply
+    NDC: 00071-0157-23  DAW: 0
+    AWP: $38.00  Plan Pays: $28.00  Copay: $10.00
+  Rx#: 7712348 - Lisinopril 20mg - #30 - 30 day supply
+    NDC: 00093-1040-01  DAW: 0
+    AWP: $15.00  Plan Pays: $5.00  Copay: $10.00
+
+Total AWP: $643.00  Total Plan Paid: $563.00  Total Copay: $80.00
+Diagnosis: I48.91 Atrial fibrillation  I10 Essential hypertension
+  E78.5 Hyperlipidemia

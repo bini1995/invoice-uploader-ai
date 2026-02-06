@@ -3,7 +3,7 @@
 import rateLimit from 'express-rate-limit';
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 300, // limit each IP to 300 requests per windowMs
   message: { status: 429, message: 'Too many requests from this IP, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -13,7 +13,7 @@ const apiLimiter = rateLimit({
 // Upload rate limiter - more restrictive
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: 200,
   message: { status: 429, message: 'Too many uploads from this IP, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -23,7 +23,7 @@ const uploadLimiter = rateLimit({
 // AI operations rate limiter - very restrictive due to cost
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 20,
+  max: 60,
   message: 'Too many AI requests, please slow down.',
   standardHeaders: true,
   legacyHeaders: false,

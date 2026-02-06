@@ -1,0 +1,174 @@
+{
+  "total": 25,
+  "uploaded": 3,
+  "uploadFailed": 22,
+  "extracted": 2,
+  "extractFailed": 1,
+  "details": [
+    {
+      "file": "r2_bronx_er_visit_1770342826906.txt",
+      "category": "emergency",
+      "upload": "OK",
+      "docId": 41,
+      "docType": "medical_bill",
+      "extraction": "OK",
+      "fieldCount": 1,
+      "fields": {
+        "raw": "```json\n{\n  \"claim_id\": \"AUTH-ER-2026-7741\",\n  \"claimant_name\": \"Marcus Johnson\",\n  \"date_of_incident\": \"2026-01-28\",\n  \"policy_number\": \"Empire BlueCross BlueShield\",\n  \"policy_id\": null,\n  \"total_claimed_amount\": 41790.00,\n  \"loss_description\": \"Emergency appendectomy due to acute appendicitis with peritonitis\",\n  \"cpt_codes\": [\"44970\", \"99285\", \"76700\"],\n  \"icd10_codes\": [\"K35.20\", \"K65.0\"]\n}\n```"
+      }
+    },
+    {
+      "file": "r2_miami_plastic_surgery_1770342826906.txt",
+      "category": "medical_bill",
+      "upload": "OK",
+      "docId": 42,
+      "docType": "medical_bill",
+      "extraction": "OK",
+      "fieldCount": 1,
+      "fields": {
+        "raw": "```json\n{\n  \"claim_id\": \"MCRS-2026-0219\",\n  \"claimant_name\": \"Elena Rodriguez\",\n  \"date_of_incident\": \"2026-02-01\",\n  \"policy_number\": \"UnitedHealthcare\",\n  \"policy_id\": \"PA-UHC-2026-11234\",\n  \"total_claimed_amount\": 24350.00,\n  \"loss_description\": \"Reconstruction of nasal septum with turbinate reduction due to deviated nasal septum with chronic sinusitis.\",\n  \"cpt_codes\": [\"30520\", \"30140\"],\n  \"icd10_codes\": [\"J34.2\", \"J32.9\"]\n}\n```"
+      }
+    },
+    {
+      "file": "r2_dallas_workers_comp_1770342826906.txt",
+      "category": "workers_comp",
+      "upload": "OK",
+      "docId": 43,
+      "docType": "fnol_form",
+      "extraction": "FAILED",
+      "error": "Extract failed (429)"
+    },
+    {
+      "file": "r2_chicago_dental_claim_1770342826906.txt",
+      "category": "dental",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_boston_behavioral_health_1770342826906.txt",
+      "category": "behavioral_health",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_phoenix_auto_pip_1770342826906.txt",
+      "category": "auto_pip",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_seattle_home_insurance_1770342826906.txt",
+      "category": "property",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_atlanta_lab_work_1770342826906.txt",
+      "category": "lab_work",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_denver_ski_injury_1770342826906.txt",
+      "category": "fnol",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_nj_pharmacy_claim_1770342826906.txt",
+      "category": "pharmacy",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_portland_naturopathic_1770342826906.txt",
+      "category": "alternative_medicine",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_houston_dme_claim_1770342826906.txt",
+      "category": "dme",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_san_diego_vision_1770342826906.txt",
+      "category": "vision",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_nashville_substance_abuse_1770342826906.txt",
+      "category": "behavioral_health",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_buffalo_snow_roof_claim_1770342826906.txt",
+      "category": "property",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_la_rideshare_accident_1770342826906.txt",
+      "category": "auto",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_minneapolis_chiro_1770342826906.txt",
+      "category": "chiropractic",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_philly_ambulance_1770342826906.txt",
+      "category": "emergency",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_sacramento_pediatric_1770342826906.txt",
+      "category": "pediatric",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_detroit_auto_total_loss_1770342826906.txt",
+      "category": "auto",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_multistate_tpa_batch_1770342826906.csv",
+      "category": "batch_csv",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_hawaii_travel_insurance_1770342826906.txt",
+      "category": "travel",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_baltimore_dialysis_1770342826906.txt",
+      "category": "medical_bill",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_vegas_cosmetic_denied_1770342826906.txt",
+      "category": "denial",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    },
+    {
+      "file": "r2_charlotte_urgent_care_1770342826906.txt",
+      "category": "urgent_care",
+      "upload": "FAILED",
+      "error": "Upload failed (429): {\"status\":429,\"message\":\"Too many requests from this IP, please try again later.\"}"
+    }
+  ]
+}

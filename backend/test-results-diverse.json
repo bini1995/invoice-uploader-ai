@@ -1,288 +1,195 @@
 {
   "total": 31,
-  "uploaded": 31,
-  "uploadFailed": 0,
+  "uploaded": 0,
+  "uploadFailed": 31,
   "extracted": 0,
-  "extractFailed": 31,
+  "extractFailed": 0,
   "details": [
     {
       "file": "nyc_ortho_medical_bill.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 10,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":10}"
     },
     {
       "file": "florida_urgent_care_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 11,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":11}"
     },
     {
       "file": "texas_workers_comp_fnol.txt",
       "category": "fnol_form",
-      "upload": "OK",
-      "docId": 12,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":12}"
     },
     {
       "file": "nj_auto_insurance_claim.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 13,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":13}"
     },
     {
       "file": "california_dental_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 14,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":14}"
     },
     {
       "file": "ohio_hospital_inpatient_bill.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 15,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":15}"
     },
     {
       "file": "wa_state_behavioral_health.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 16,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":16}"
     },
     {
       "file": "massachusetts_pharmacy_claim.csv",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 17,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":17}"
     },
     {
       "file": "georgia_chiropractic_superbill.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 18,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":18}"
     },
     {
       "file": "ny_workers_comp_c4.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 19,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":19}"
     },
     {
       "file": "il_auto_property_damage.txt",
       "category": "fnol_form",
-      "upload": "OK",
-      "docId": 20,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":20}"
     },
     {
       "file": "pa_homeowners_claim.txt",
       "category": "fnol_form",
-      "upload": "OK",
-      "docId": 21,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":21}"
     },
     {
       "file": "az_ambulance_transport.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 22,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":22}"
     },
     {
       "file": "mn_lab_work_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 23,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":23}"
     },
     {
       "file": "co_ski_injury_er_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 24,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":24}"
     },
     {
       "file": "nc_home_health_claim.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 25,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":25}"
     },
     {
       "file": "va_vision_care_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 26,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":26}"
     },
     {
       "file": "ct_dialysis_center_claim.csv",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 27,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":27}"
     },
     {
       "file": "mi_dme_equipment_claim.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 28,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":28}"
     },
     {
       "file": "la_podiatry_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 29,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":29}"
     },
     {
       "file": "tn_substance_abuse_claim.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 30,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":30}"
     },
     {
       "file": "md_radiology_report_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 31,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":31}"
     },
     {
       "file": "or_naturopathic_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 32,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":32}"
     },
     {
       "file": "nv_plastic_surgery_cosmetic.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 33,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":33}"
     },
     {
       "file": "wi_occupational_therapy.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 34,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":34}"
     },
     {
       "file": "ny_medicaid_pediatric_claim.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 35,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":35}"
     },
     {
       "file": "multi_state_tpa_batch_claims.csv",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 36,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":36}"
     },
     {
       "file": "sc_urgent_care_walk_in.txt",
       "category": "medical_bill",
-      "upload": "OK",
-      "docId": 37,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":37}"
     },
     {
       "file": "ks_veterinary_pet_insurance.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 38,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":38}"
     },
     {
       "file": "hi_travel_insurance_claim.txt",
       "category": "fnol_form",
-      "upload": "OK",
-      "docId": 39,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":39}"
     },
     {
       "file": "mo_nursing_home_ltc_claim.txt",
       "category": "claim_invoice",
-      "upload": "OK",
-      "docId": 40,
-      "docType": "other",
-      "extraction": "FAILED",
-      "error": "Extract failed (500)"
+      "upload": "FAILED",
+      "error": "Upload failed (409): {\"message\":\"Document with this content already exists\",\"id\":40}"
     }
   ]
 }
