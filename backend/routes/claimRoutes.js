@@ -39,6 +39,10 @@ import {
   ingestClaimIntegration,
   transcribeFnolAudio,
   purgeDemoDocuments,
+  getClaimConfidence,
+  getClaimDuplicates,
+  resolveClaimDuplicate,
+  getDuplicateOverview,
 } from '../controllers/claimController.js';
 import { getAnomalyExplainability } from '../controllers/anomalyExplainController.js';
 import { getClaimAuditTrail } from '../controllers/auditController.js';
@@ -134,7 +138,11 @@ router.patch('/:id/status', authMiddleware, authorizeRoles('admin', 'internal_op
 router.get('/:id/cpt-explain', authMiddleware, getCptExplainability);
 router.get('/:id/audit', authMiddleware, authorizeRoles('admin', 'internal_ops', 'auditor'), getClaimAuditTrail);
 router.get('/explain', authMiddleware, authorizeRoles('admin', 'internal_ops'), getAnomalyExplainability);
+router.get('/duplicates/overview', authMiddleware, getDuplicateOverview);
 router.get('/:id', authMiddleware, getDocument);
+router.get('/:id/confidence', authMiddleware, getClaimConfidence);
+router.get('/:id/duplicates', authMiddleware, getClaimDuplicates);
+router.post('/:id/duplicates/:flagId/resolve', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster'), resolveClaimDuplicate);
 router.get('/:id/feedback', authMiddleware, getExtractionFeedback);
 router.post('/:id/feedback', authMiddleware, submitExtractionFeedback);
 router.get('/:id/review-notes', authMiddleware, getReviewNotes);

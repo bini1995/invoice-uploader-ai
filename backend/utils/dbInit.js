@@ -490,6 +490,22 @@ async function initDb() {
     await pool.query(
       "ALTER TABLE claim_fields ADD COLUMN IF NOT EXISTS extracted_at TIMESTAMP DEFAULT NOW()"
     );
+    await pool.query("ALTER TABLE claim_fields ADD COLUMN IF NOT EXISTS confidence_scores JSONB");
+    await pool.query("ALTER TABLE claim_fields ADD COLUMN IF NOT EXISTS overall_confidence NUMERIC");
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS duplicate_flags (
+      id SERIAL PRIMARY KEY,
+      document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      matched_document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+      tenant_id TEXT,
+      similarity_score NUMERIC NOT NULL,
+      matched_fields JSONB,
+      status TEXT DEFAULT 'pending',
+      resolved_by INTEGER,
+      resolved_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(document_id, matched_document_id)
+    )`);
 
     await pool.query(`CREATE TABLE IF NOT EXISTS extraction_feedback (
       id SERIAL PRIMARY KEY,

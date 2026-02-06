@@ -11,6 +11,7 @@ import PDFDocument from 'pdfkit';
 import fileToText from '../utils/fileToText.js';
 import { triggerClaimWebhook } from '../utils/claimWebhook.js';
 import { triggerDelivery } from '../services/deliveryService.js';
+import { checkDuplicates, getDuplicatesForDocument, resolveDuplicate, getDuplicateStats } from '../services/duplicateDetectionService.js';
 import logger from '../utils/logger.js';
 import { logActivity } from '../utils/activityLogger.js';
 import sanitizeHtml from 'sanitize-html';
@@ -80,23 +81,31 @@ function collectCptCodes(fields, rawText) {
 export const listDocuments = async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT id,
-              doc_title,
-              doc_type,
-              file_name,
-              fields,
-              status,
-              created_at,
-              COALESCE(fields->>'claim_number', doc_title, file_name) AS claim_number,
-              fields->>'policyholder_name' AS policyholder_name,
-              fields->>'estimated_value' AS estimated_value
-       FROM documents 
-       WHERE tenant_id = $1 
-       ORDER BY created_at DESC 
+      `SELECT d.id,
+              d.doc_title,
+              d.doc_type,
+              d.file_name,
+              d.fields,
+              d.status,
+              d.created_at,
+              COALESCE(d.fields->>'claim_number', d.doc_title, d.file_name) AS claim_number,
+              d.fields->>'policyholder_name' AS policyholder_name,
+              d.fields->>'estimated_value' AS estimated_value,
+              cf.overall_confidence,
+              (SELECT COUNT(*) FROM duplicate_flags df WHERE df.document_id = d.id AND df.status = 'pending')::int as duplicate_count
+       FROM documents d
+       LEFT JOIN claim_fields cf ON cf.document_id = d.id
+       WHERE d.tenant_id = $1 
+       ORDER BY d.created_at DESC 
        LIMIT 100`,
       [req.tenantId]
     );
-    res.json(rows);
+    const mapped = rows.map(r => ({
+      ...r,
+      overall_confidence: r.overall_confidence ? parseFloat(r.overall_confidence) : null,
+      duplicate_count: parseInt(r.duplicate_count) || 0
+    }));
+    res.json(mapped);
   } catch (err) {
     console.error('List claim documents error:', err);
     res.status(500).json({ message: 'Failed to fetch claim documents' });
@@ -107,11 +116,19 @@ export const getDocument = async (req, res) => {
   const { id } = req.params;
   try {
     const { rows } = await pool.query(
-      'SELECT * FROM documents WHERE id = $1 AND tenant_id = $2',
+      `SELECT d.*, 
+              cf.confidence_scores, cf.overall_confidence,
+              (SELECT COUNT(*) FROM duplicate_flags df WHERE df.document_id = d.id AND df.status = 'pending') as duplicate_count
+       FROM documents d
+       LEFT JOIN claim_fields cf ON cf.document_id = d.id
+       WHERE d.id = $1 AND d.tenant_id = $2`,
       [id, req.tenantId]
     );
     if (!rows.length) return res.status(404).json({ message: 'Not found' });
-    res.json(rows[0]);
+    const doc = rows[0];
+    doc.overall_confidence = doc.overall_confidence ? parseFloat(doc.overall_confidence) : null;
+    doc.duplicate_count = parseInt(doc.duplicate_count) || 0;
+    res.json(doc);
   } catch (err) {
     console.error('Get document error:', err);
     res.status(500).json({ message: 'Failed to fetch document' });
@@ -425,34 +442,39 @@ export const extractClaimFields = async (req, res) => {
     const doc = rows[0];
     timer = extractDuration.startTimer({ doc_type: doc.doc_type });
     const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 10000);
-    const { fields, version } = await aiExtractClaimFields(text).catch(err => {
+    const { fields, confidenceScores, overallConfidence, version } = await aiExtractClaimFields(text).catch(err => {
       logger.error('AI Extraction failed in extractClaimFields', { error: err.message, docId: id });
       throw new Error('AI processing service temporarily unavailable');
     });
 
-    // Enforcement of tenant isolation check before update
     if (doc.tenant_id !== req.tenantId) {
        logger.warn('Tenant mismatch attempt during extraction', { docId: id, reqTenant: req.tenantId, docTenant: doc.tenant_id });
        return res.status(403).json({ message: 'Forbidden: Tenant mismatch' });
     }
 
     await pool.query(
-      `INSERT INTO claim_fields (document_id, fields, version, extracted_at)
-       VALUES ($1, $2, $3, now())
+      `INSERT INTO claim_fields (document_id, fields, version, confidence_scores, overall_confidence, extracted_at)
+       VALUES ($1, $2, $3, $4, $5, now())
        ON CONFLICT (document_id) DO UPDATE SET
          fields = EXCLUDED.fields,
          version = EXCLUDED.version,
+         confidence_scores = EXCLUDED.confidence_scores,
+         overall_confidence = EXCLUDED.overall_confidence,
          extracted_at = EXCLUDED.extracted_at`,
-      [id, fields, version]
+      [id, fields, version, confidenceScores || {}, overallConfidence || 0.9]
     );
     timer();
-    logger.info('Claim fields extracted', { id });
+    logger.info('Claim fields extracted', { id, overallConfidence });
+
+    checkDuplicates(Number(id), req.tenantId, fields).catch(err => {
+      logger.warn({ err, docId: id }, 'Duplicate detection after extraction failed');
+    });
 
     triggerDelivery(req.tenantId, Number(id), 'claim.extracted').catch(err => {
       logger.warn({ err, docId: id }, 'Auto-delivery after extraction failed');
     });
 
-    res.json({ fields, version });
+    res.json({ fields, confidenceScores, overallConfidence, version });
   } catch (err) {
     logger.error('Claim field extract error:', err);
     if (typeof timer === 'function') timer();
@@ -460,6 +482,89 @@ export const extractClaimFields = async (req, res) => {
   }
 };
 
+
+export const getClaimConfidence = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { rows } = await pool.query(
+      `SELECT cf.fields, cf.confidence_scores, cf.overall_confidence, cf.version, cf.extracted_at
+       FROM claim_fields cf
+       JOIN documents d ON d.id = cf.document_id
+       WHERE cf.document_id = $1 AND d.tenant_id = $2`,
+      [id, req.tenantId]
+    );
+    if (!rows.length) {
+      return res.json({ confidence_scores: {}, overall_confidence: null, extracted: false });
+    }
+    const row = rows[0];
+    res.json({
+      confidence_scores: row.confidence_scores || {},
+      overall_confidence: row.overall_confidence ? parseFloat(row.overall_confidence) : null,
+      version: row.version,
+      extracted_at: row.extracted_at,
+      extracted: true
+    });
+  } catch (err) {
+    logger.error('Get confidence error:', err);
+    res.status(500).json({ message: 'Failed to fetch confidence scores' });
+  }
+};
+
+export const getClaimDuplicates = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const ownerCheck = await pool.query(
+      'SELECT id FROM documents WHERE id = $1 AND tenant_id = $2',
+      [Number(id), req.tenantId]
+    );
+    if (ownerCheck.rows.length === 0) {
+      return res.status(404).json({ message: 'Claim not found' });
+    }
+    const duplicates = await getDuplicatesForDocument(Number(id));
+    res.json({ duplicates, count: duplicates.length });
+  } catch (err) {
+    logger.error('Get duplicates error:', err);
+    res.status(500).json({ message: 'Failed to fetch duplicates' });
+  }
+};
+
+export const resolveClaimDuplicate = async (req, res) => {
+  const { id, flagId } = req.params;
+  const { status } = req.body;
+  const validStatuses = ['confirmed', 'dismissed', 'pending'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+  }
+  try {
+    const ownerCheck = await pool.query(
+      `SELECT df.id FROM duplicate_flags df
+       JOIN documents d ON d.id = df.document_id
+       WHERE df.id = $1 AND d.tenant_id = $2`,
+      [Number(flagId), req.tenantId]
+    );
+    if (ownerCheck.rows.length === 0) {
+      return res.status(404).json({ message: 'Duplicate flag not found' });
+    }
+    const result = await resolveDuplicate(Number(flagId), req.user?.userId, status);
+    if (!result) {
+      return res.status(404).json({ message: 'Duplicate flag not found' });
+    }
+    res.json({ message: 'Duplicate flag resolved', status });
+  } catch (err) {
+    logger.error('Resolve duplicate error:', err);
+    res.status(500).json({ message: 'Failed to resolve duplicate' });
+  }
+};
+
+export const getDuplicateOverview = async (req, res) => {
+  try {
+    const stats = await getDuplicateStats(req.tenantId);
+    res.json(stats);
+  } catch (err) {
+    logger.error('Duplicate overview error:', err);
+    res.status(500).json({ message: 'Failed to fetch duplicate overview' });
+  }
+};
 
 export const saveCorrections = async (req, res) => {
   const { id } = req.params;

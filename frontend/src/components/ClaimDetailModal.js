@@ -8,6 +8,8 @@ import ICDCPTField from './ICDCPTField';
 import CommentThread from './CommentThread';
 import FlaggedCodeChat from './FlaggedCodeChat';
 import { useTimelineStore } from '../store/useTimelineStore';
+import ConfidenceIndicator from './ConfidenceIndicator';
+import DuplicateWarning from './DuplicateWarning';
 
 export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, token }) {
   const [editMode, setEditMode] = useState(false);
@@ -233,6 +235,10 @@ export default function ClaimDetailModal({ open, invoice, onClose, onUpdate, tok
               }}
             />
           </div>
+        <div className="mt-3 space-y-2">
+          <ConfidenceIndicator claimId={invoice.id} token={token} />
+          <DuplicateWarning claimId={invoice.id} token={token} />
+        </div>
         <div className="mt-3">
           <h3 className="font-semibold text-sm mb-1">Document</h3>
           <DocumentViewer

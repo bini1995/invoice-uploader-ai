@@ -14,18 +14,20 @@ export async function processClaimFieldExtraction({ documentId }) {
   const timer = extractDuration.startTimer({ doc_type: doc.doc_type });
   try {
     const text = doc.raw_text || fs.readFileSync(doc.path, 'utf8').slice(0, 10000);
-    const { fields, version } = await aiExtractClaimFields(text);
+    const { fields, confidenceScores, overallConfidence, version } = await aiExtractClaimFields(text);
     await pool.query(
-      `INSERT INTO claim_fields (document_id, fields, version, extracted_at)
-       VALUES ($1, $2, $3, now())
+      `INSERT INTO claim_fields (document_id, fields, version, confidence_scores, overall_confidence, extracted_at)
+       VALUES ($1, $2, $3, $4, $5, now())
        ON CONFLICT (document_id) DO UPDATE SET
          fields = EXCLUDED.fields,
          version = EXCLUDED.version,
+         confidence_scores = EXCLUDED.confidence_scores,
+         overall_confidence = EXCLUDED.overall_confidence,
          extracted_at = EXCLUDED.extracted_at`,
-      [documentId, fields, version]
+      [documentId, fields, version, confidenceScores || {}, overallConfidence || 0.9]
     );
-    logger.info('Claim fields extracted', { id: documentId });
-    return { fields, version };
+    logger.info('Claim fields extracted', { id: documentId, overallConfidence });
+    return { fields, confidenceScores, overallConfidence, version };
   } catch (err) {
     logger.error('Claim field extract error:', err);
     throw err;

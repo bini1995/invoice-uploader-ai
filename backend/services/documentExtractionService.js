@@ -9,6 +9,7 @@ import logger from '../utils/logger.js';
 import { DocumentType } from '../enums/documentType.js';
 import { extractDuration } from '../metrics.js';
 import { processImageMultimodal } from './multimodalProcessingService.js';
+import { checkDuplicates } from './duplicateDetectionService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -34,7 +35,7 @@ async function resolveSchema(preset) {
 
 async function extractFieldsForDocument(doc) {
   const pipelinePath = path.join(__dirname, '../pipelines', `${doc.doc_type}.js`);
-  let result = { fields: {} };
+  let result = { fields: {}, confidenceScores: {}, overallConfidence: 0.9 };
   const safeText = doc.contains_phi && doc.raw_text
     ? doc.raw_text.slice(0, 4000)
     : fs.readFileSync(doc.path, 'utf8').slice(0, 4000);
@@ -53,11 +54,13 @@ async function extractFieldsForDocument(doc) {
     result.fields = await extractEntities(safeText);
   }
 
-  const fields = [
+  const isClaimType = [
     DocumentType.CLAIM_INVOICE,
     DocumentType.MEDICAL_BILL,
     DocumentType.FNOL_FORM,
-  ].includes(doc.doc_type)
+  ].includes(doc.doc_type);
+
+  const fields = isClaimType
     ? result.fields
     : {
         party_name: result.fields.vendor || result.fields.party_name,
@@ -66,7 +69,11 @@ async function extractFieldsForDocument(doc) {
         category: result.fields.category,
       };
 
-  return fields;
+  return {
+    fields,
+    confidenceScores: result.confidenceScores || {},
+    overallConfidence: result.overallConfidence || 0.9
+  };
 }
 
 export async function processDocumentExtraction({ documentId, schemaPreset, user }) {
@@ -79,7 +86,8 @@ export async function processDocumentExtraction({ documentId, schemaPreset, user
 
   try {
     await pool.query('UPDATE documents SET status = $1 WHERE id = $2', ['processing', documentId]);
-    const fields = await extractFieldsForDocument(doc);
+    const extraction = await extractFieldsForDocument(doc);
+    const { fields, confidenceScores, overallConfidence } = extraction;
     const schema = await resolveSchema(schemaPreset);
     let multimodal = null;
     const isImage = typeof doc.file_type === 'string' && doc.file_type.startsWith('image/');
@@ -111,6 +119,19 @@ export async function processDocumentExtraction({ documentId, schemaPreset, user
         [fields, 'extracted', documentId]
       );
     }
+
+    await pool.query(
+      `INSERT INTO claim_fields (document_id, fields, version, confidence_scores, overall_confidence, extracted_at)
+       VALUES ($1, $2, $3, $4, $5, now())
+       ON CONFLICT (document_id) DO UPDATE SET
+         fields = EXCLUDED.fields,
+         version = EXCLUDED.version,
+         confidence_scores = EXCLUDED.confidence_scores,
+         overall_confidence = EXCLUDED.overall_confidence,
+         extracted_at = EXCLUDED.extracted_at`,
+      [documentId, fields, 'openai/gpt-4o-mini', confidenceScores || {}, overallConfidence || 0.9]
+    );
+
     await refreshSearchable(documentId);
     await recordDocumentVersion(
       documentId,
@@ -119,9 +140,13 @@ export async function processDocumentExtraction({ documentId, schemaPreset, user
       user?.userId,
       user?.username
     );
-    logger.info('Fields extracted', { id: documentId });
+    logger.info('Fields extracted', { id: documentId, overallConfidence });
 
-    return { fields, schema, confidence: 0.9, multimodal };
+    checkDuplicates(documentId, doc.tenant_id, fields).catch(err => {
+      logger.warn({ err, docId: documentId }, 'Duplicate detection after extraction failed');
+    });
+
+    return { fields, schema, confidence: overallConfidence, confidenceScores, multimodal };
   } catch (err) {
     await pool.query('UPDATE documents SET status = $1 WHERE id = $2', ['failed', documentId]).catch(() => {});
     logger.error('Extract error:', err);

@@ -8,6 +8,8 @@ import ConfirmModal from './components/ConfirmModal';
 import ClaimDetailModal from './components/ClaimDetailModal';
 import { Button } from './components/ui/Button';
 import { Card } from './components/ui/Card';
+import { ConfidenceBadge } from './components/ConfidenceIndicator';
+import { DuplicateBadge } from './components/DuplicateWarning';
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -221,6 +223,9 @@ function ClaimsPage() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Confidence
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Created
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -252,6 +257,12 @@ function ClaimsPage() {
                           {getStatusIcon(status)}
                           <span className="ml-1 capitalize">{String(status).replace('_', ' ')}</span>
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="flex items-center gap-1.5">
+                          <ConfidenceBadge score={claim.overall_confidence} />
+                          <DuplicateBadge count={claim.duplicate_count} />
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {String(createdAt)}
