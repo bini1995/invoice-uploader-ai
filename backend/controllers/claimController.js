@@ -1255,6 +1255,13 @@ export const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body || {};
   if (!status) return res.status(400).json({ message: 'Status required' });
+
+  const viewerSafeStatuses = ['under_review', 'flagged', 'pending'];
+  const role = req.user?.role;
+  if (['viewer', 'broker'].includes(role) && !viewerSafeStatuses.includes(status)) {
+    return res.status(403).json({ message: 'Insufficient permissions to set this status' });
+  }
+
   try {
     const result = await updateClaimStatus(id, status);
     if (result.error) {

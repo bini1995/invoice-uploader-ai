@@ -2,110 +2,27 @@
 
 ## Overview
 
-ClarifyOps is a full-stack AI-powered claims data extraction and review platform built for insurance workflows. The system automates medical and insurance claim intake, validation, and routing with audit-ready accuracy. Core capabilities include AI-powered document parsing, CPT/ICD code validation, workflow triage (OpsClaim), and fraud detection (AuditFlow).
-
-The platform processes claims through an Express.js backend with PostgreSQL storage, using OpenRouter for AI features like field extraction and summarization. The React frontend provides claim management, analytics dashboards, and workflow automation tools.
+ClarifyOps is a full-stack AI-powered platform designed to automate medical and insurance claim intake, validation, and routing with audit-ready accuracy. It streamlines insurance workflows through AI-powered document parsing, CPT/ICD code validation, workflow triage (OpsClaim), and fraud detection (AuditFlow). The platform aims to provide significant savings and revenue recovery for various insurance industry stakeholders by automating complex, manual processes.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 
-## Production Deployment (January 29, 2026)
-
-**Live Site:** https://clarifyops.com
-
-### Hosting Details
-- **Server**: DigitalOcean Droplet (2GB RAM, Ubuntu 24.04)
-- **IP Address**: 104.131.56.144
-- **Domain**: clarifyops.com (registered via GoDaddy)
-- **SSL**: Let's Encrypt certificate (auto-renews)
-- **Process Manager**: PM2 for Node.js backend
-- **Web Server**: nginx reverse proxy
-
-### Server Commands
-- View backend logs: `pm2 logs clarifyops-backend`
-- Restart backend: `pm2 restart clarifyops-backend`
-- Reload nginx: `systemctl reload nginx`
-- Pull updates: `cd /var/www/clarifyops && git pull origin main`
-- Rebuild frontend: `cd /var/www/clarifyops/frontend && npm run build`
-
-### Configuration Files
-- Backend env: `/var/www/clarifyops/backend/.env`
-- Nginx config: `/etc/nginx/sites-available/clarifyops`
-- PM2 config: Auto-saved via `pm2 save`
-
-### GitHub Repository
-- URL: https://github.com/bini1995/invoice-uploader-ai
-- Push from Replit → Pull on droplet to deploy updates
-
-## Recent Changes (February 2026)
-
-- **Batch Upload / Bulk Processing** (`/batch-upload`): Drag-and-drop interface for uploading up to 50 claim documents at once. Files are processed in batches of 5 with per-file status tracking (uploaded/duplicate/error). Auto-triggers AI extraction on each file. Backend endpoint at `POST /api/claims/batch-upload` using `upload.array('files', 50)`. Progress bar with real-time batch progress. Results summary with counts and per-file outcomes.
-- **Natural Language Semantic Search** (`/search`): AI-powered search across all claims using plain English queries. Converts queries to vector embeddings via OpenAI text-embedding-ada-002, then performs cosine similarity search against claim_embeddings table using pgvector. Results show similarity scores, confidence badges, claim metadata. Suggestion chips for common search patterns. Backend endpoint at `GET /api/claims/semantic-search`.
-- **Confidence Scoring**: Per-field AI confidence scores (0-100%) with color-coded indicators, expandable detail view, and overall weighted confidence on claims list.
-- **Duplicate Detection**: Post-extraction semantic similarity matching with Levenshtein distance, pending/confirmed/dismissed workflow, inline badges on claims list.
-- **Complete Delivery System**: Four-pathway data delivery infrastructure:
-  - **Webhook Delivery**: Configurable webhook endpoints with HMAC-SHA256 signatures, tenant-scoped configs, auto-trigger after AI extraction, retry logic (exponential backoff, max 3 attempts), delivery logs with response tracking
-  - **Zapier Integration**: REST hook polling triggers at `/api/v1/triggers/new-claims` and `/api/v1/triggers/extracted-claims`, compatible with Zapier's polling pattern
-  - **Enhanced Public API v1**: Cursor-based + offset-based pagination, extracted fields from `claim_fields` table, `Last-Modified`/`ETag` headers for conditional requests, filters for doc_type/status/date ranges
-  - **CSV/Excel Exports**: Full field data export with ExcelJS formatting (styled headers, summary sheet), JSON-to-CSV via json2csv, downloadable endpoints
-  - **Auto-Delivery Orchestrator**: Fire-and-forget pattern triggers all configured delivery destinations after extraction completes (non-blocking)
-  - **Delivery Settings UI** (`/delivery`): Frontend page with tabs for webhooks config, delivery logs viewer, export controls, and API documentation
-  - **Database**: `delivery_configs` and `delivery_logs` tables with retry scheduling (runs every 5 minutes)
-- **Round 2 Testing**: 25 diverse claims uploaded with 100% extraction success rate across emergency care, dental, workers' comp, pharmacy, auto, property, behavioral health, travel insurance, dialysis, and urgent care categories
-- **Beta Pilot Program**: Prominent banner on landing page with free tier (50 claims/month) and beta pricing ($99/$199/$299 for first 3 months). Revamped PricingSection with tiered plans.
-- **Compliance Accuracy Fixes**: Updated all compliance language across the site - HIPAA status is "Ready/Committed" (not "Certified"), SOC 2 is "In Progress" (not "Audited"), GDPR is "In Progress" (not "Active"). Removed false trust logos (Y Combinator, Microsoft, etc.), eliminated blockchain claims, and genericized testimonial company names.
-- **Case Studies Page** (`/case-studies`): Three detailed synthetic ROI scenarios - Regional TPA ($316K savings), NYC Medical Billing ($142K recovery), Independent Adjuster ($187K revenue increase). Includes transparency disclaimer.
-- **Internal Testing Script** (`backend/scripts/test-claims-pipeline.js`): Generates 100 dummy claims across 5 categories, processes through API, extracts fields, and validates accuracy with comprehensive reporting.
-- **Prospect Research** (`docs/PROSPECT_LIST.md`): 70+ potential clients across 6 segments (independent adjusters, medical billing companies, NYC clinics, NY TPAs, competitor customers, InsurTech-friendly firms) with contact info and outreach strategy.
-- **User Registration & Profile System**: Complete user registration with name/email/password validation, profile page, and sidebar user display
-- **Google SSO Authentication**: OAuth 2.0 integration for Google sign-in (requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
-- **Public API (v1)**: REST API endpoints at /api/v1/ for claims access, status updates, and webhooks with API key authentication
-- **AI Assistant "Clari"**: Renamed AI bot to Clari with expanded knowledge base covering platform features, pricing, integrations, and documentation
-- **Documentation Site**: Internal docs at /docs with Getting Started, API Reference, Integrations, Security, and SSO sections
-- **Validation Error Handling**: Improved Zod validation error formatting in backend
-- **Logo Transparency Fix**: Logo now uses transparent background with CSS `brightness-0 invert` filter on dark backgrounds (sidebar, navbars, login/signup). Original colored logo preserved on white/light backgrounds.
-- **HIPAA Compliance Documentation**: Comprehensive `docs/HIPAA_COMPLIANCE.md` with full ePHI data flow diagrams, BA determination, PHI inventory, risk assessment, breach notification plan, and compliance checklist
-- **SOC 2 Scope Document**: New `docs/SOC2_SCOPE.md` with all 5 Trust Service Categories, Common Criteria controls (CC1-CC9), gap analysis, and remediation plan
-- **Trust Center Page** (`/trust`): Professional page showcasing security practices, compliance certifications (HIPAA, SOC 2, GDPR), data handling principles, and subprocessor transparency
-- **Privacy Policy Page** (`/privacy`): Comprehensive privacy policy with HIPAA PHI sections, subprocessor disclosure, data retention, breach notification, and GDPR rights
-- **Terms of Service Page** (`/terms`): Full legal terms covering HIPAA BAA requirements, AI processing disclaimers, data ownership, acceptable use, and liability limitations
-
-- **Competitive Advantage Features**: Added 6 features to establish market position:
-  - Self-Service Demo Mode (`TryDocumentDemo.jsx`) - Interactive document upload with simulated AI extraction
-  - ROI Calculator (`ROICalculator.jsx`) - Dynamic savings calculator with sliders for claims volume, processing time, hourly rate, and error rate
-  - Compliance Badges (`ComplianceBadges.jsx`) - HIPAA, SOC 2, audit logging, encryption, PHI redaction, GDPR badges
-  - Benchmark Comparison Page (`/compare`) - Feature-by-feature comparison vs Rossum, Luminai, Affinda, Wisedocs
-  - Integration Showcase (`/integrations`) - Guidewire, Duck Creek, Salesforce, ServiceNow, Zapier integration cards
-  - Use Case Pages (`/use-cases`) - Workers Comp, Auto FNOL, Medical Billing with challenges/solutions breakdowns
-
-## Recent Changes (January 2026)
-
-- **Production Deployment**: Deployed to DigitalOcean droplet with nginx, PM2, and Let's Encrypt SSL.
-- **Database Config Fix**: Updated db.js to properly read DATABASE_URL and avoid Docker-specific hostname overrides.
-- **Image/OCR Support**: Enhanced `fileToText.js` to handle image uploads (PNG, JPG, etc.) via tesseract.js OCR. Added MIME type detection for files without extensions.
-- **Binary File Handling**: Added null byte detection to prevent binary data from being stored in PostgreSQL text fields.
-- **File Type Support**: Extended support for additional file types (.gif, .bmp, .tiff, .webp for images; .csv, .eml for text).
-- **Error Handling**: Improved OCR error handling with graceful fallbacks to placeholder text for unreadable images.
-- **PHI Detection**: Verified PHI detection and anonymization working correctly (redacting DOB, phone numbers, member IDs).
-- **OpenRouter AI Integration**: Fixed embedding data format conversion for pgvector (Object to Array conversion). AI classification now correctly categorizes claims as medical_bill, invoice, fnol_form, etc.
-
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React 18 with Vite as the build tool
-- **Styling**: Tailwind CSS with CSS custom properties for theming (dark mode support)
+- **Framework**: React 18 with Vite
+- **Styling**: Tailwind CSS with CSS custom properties (dark mode support)
 - **State Management**: SWR for data fetching, React Context for global state
 - **Routing**: React Router v6
-- **UI Components**: Mix of custom components, Radix UI primitives, and MUI
-- **Testing**: Vitest with React Testing Library, Playwright for E2E
+- **UI Components**: Custom components, Radix UI primitives, and MUI
 
 ### Backend Architecture
 - **Framework**: Express.js v5 with ES modules
-- **Database**: PostgreSQL with pgvector extension for embeddings
+- **Database**: PostgreSQL with pgvector extension
 - **Authentication**: JWT-based with refresh tokens, role-based access control (admin, viewer, broker, adjuster, medical_reviewer, auditor)
-- **API Design**: RESTful endpoints under `/api/claims` namespace (consolidated from legacy `/api/invoices`)
-- **AI Integration**: OpenRouter API for GPT models (field extraction, summarization, entity extraction)
+- **API Design**: RESTful endpoints under `/api/claims`
+- **AI Integration**: OpenRouter API for GPT models
 - **File Processing**: Multer for uploads, pdf-parse and mammoth for document parsing
 
 ### Data Storage
@@ -115,48 +32,55 @@ Preferred communication style: Simple, everyday language.
 - **Multi-tenancy**: Tenant ID isolation across all tables
 
 ### Key Design Patterns
-- **Multi-tenant Architecture**: All operations scoped by tenant ID from request context
-- **Feature Flags**: Environment variables control lite mode vs full features
-- **Activity Logging**: Comprehensive audit trail for all document operations
+- **Multi-tenant Architecture**: All operations scoped by tenant ID
+- **Feature Flags**: Environment variables control feature availability
+- **Activity Logging**: Comprehensive audit trail for document operations
 - **Webhook Integration**: Status change notifications to external systems
 
-### Sub-Brand Structure
-- **ClarifyClaims**: Main claims upload, validation, and summarization
-- **OpsClaim**: Action queue and workflow routing
-- **AuditFlow**: Risk scoring and fraud detection for flagged claims
+### UI/UX and Features
+- **Search Results Action Panel**: Provides immediate actions on search findings (View Details, Export, Flag for Review, Check Duplicates, Medical Timeline).
+- **Enhanced Duplicate Detection Workflow**: Includes options to flag as fraud, side-by-side comparison, and view matched claims.
+- **Medical Chronology Feature**: AI-powered extraction and interactive visualization of chronological medical events from claims.
+- **Batch Upload / Bulk Processing**: Drag-and-drop interface for uploading multiple documents with real-time status tracking.
+- **Natural Language Semantic Search**: AI-powered search across claims using plain English queries via vector embeddings.
+- **Confidence Scoring**: Per-field AI confidence scores and overall weighted confidence.
+- **Complete Delivery System**: Four-pathway data delivery infrastructure including Webhook Delivery, Zapier Integration, Enhanced Public API v1, and CSV/Excel Exports, managed by an Auto-Delivery Orchestrator.
+- **User Registration & Profile System**: Full user management with Google SSO authentication.
+- **AI Assistant "Clari"**: Renamed AI bot with expanded knowledge base.
+- **Compliance Features**: HIPAA, SOC 2, and GDPR considerations with documentation and trust center page.
+- **Competitive Advantage Features**: Self-Service Demo Mode, ROI Calculator, Compliance Badges, Benchmark Comparison, Integration Showcase, and Use Case Pages.
 
 ## External Dependencies
 
 ### AI/ML Services
-- **OpenRouter API**: Primary AI gateway for GPT-3.5/4 models (field extraction, summarization, chat)
-- **OpenAI Embeddings**: text-embedding-ada-002 for document vector search
+- **OpenRouter API**: Primary AI gateway for GPT models (field extraction, summarization, chat).
+- **OpenAI Embeddings**: `text-embedding-ada-002` for document vector search.
 
 ### Database
-- **PostgreSQL**: Primary data store with pgvector extension
-- **Connection pooling**: pg library with configurable pool settings
+- **PostgreSQL**: Primary data store with `pgvector` extension.
 
 ### Monitoring & Observability
-- **Sentry**: Error tracking and performance monitoring
-- **Prometheus**: Metrics collection via prom-client (claim uploads, extraction latency, exports)
+- **Sentry**: Error tracking and performance monitoring.
+- **Prometheus**: Metrics collection.
 
 ### Email & Notifications
-- **Nodemailer**: Email delivery for reminders and summaries
-- **Slack/Teams webhooks**: Optional notification integrations
-- **Socket.IO**: Real-time notifications and updates
+- **Nodemailer**: Email delivery.
+- **Socket.IO**: Real-time notifications.
 
 ### Document Processing
-- **pdf-parse**: PDF text extraction
-- **mammoth**: Word document conversion
-- **ExcelJS**: Spreadsheet generation for exports
-- **PDFKit**: PDF generation for reports
+- **pdf-parse**: PDF text extraction.
+- **mammoth**: Word document conversion.
+- **ExcelJS**: Spreadsheet generation for exports.
+- **PDFKit**: PDF generation for reports.
+- **tesseract.js**: OCR for image uploads.
 
 ### Validation & Security
-- **Ajv**: JSON schema validation
-- **bcryptjs**: Password hashing
-- **jsonwebtoken**: JWT token management
-- **sanitize-html**: Input sanitization
-- **helmet**: Security headers
+- **Ajv**: JSON schema validation.
+- **bcryptjs**: Password hashing.
+- **jsonwebtoken**: JWT token management.
+- **sanitize-html**: Input sanitization.
+- **helmet**: Security headers.
 
-### Third-Party Integrations (Placeholder)
-- **Guidewire/Duck Creek**: Insurance system triggers (stub endpoints)
-- **Zapier**: Webhook receiver for automation workflows
+### Third-Party Integrations
+- **Zapier**: Webhook receiver for automation workflows.
+- **Guidewire/Duck Creek**: Placeholder for future insurance system triggers.
