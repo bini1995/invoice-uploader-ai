@@ -185,7 +185,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.45 }}
               >
-                Built for adjusting firms that process casualty, property, and workers comp claims. ClarifyOps pulls policy numbers, CPT codes, ICD-10, dates, and dollar amounts from PDFs, Word docs, and images automatically.
+                Built for adjusting firms, TPAs, and carriers across every line of business — casualty, property, workers comp, medical, auto, liability, and more. ClarifyOps pulls policy numbers, CPT codes, ICD-10, dates, dollar amounts, and injury details from any document format automatically.
               </motion.p>
 
               <motion.div 
