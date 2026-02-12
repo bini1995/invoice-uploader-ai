@@ -38,7 +38,7 @@ export default function ExportTemplateBuilder() {
   return (
     <ImprovedMainLayout title="Export Templates">
       <div className="space-y-4 max-w-xl">
-        <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Export Templates" />
+        <PageHeader title="ClarifyOps" subtitle="Export Templates" />
         <p className="text-sm text-gray-500">
           Select which fields to include in your export template.
         </p>

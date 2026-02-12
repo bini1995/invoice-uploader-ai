@@ -29,12 +29,14 @@ export default function DemoSandbox() {
     });
     const errs = [];
     rows.forEach((r, i) => {
-      if (!r.invoice_number) errs.push(`Row ${i + 1}: Missing invoice_number`);
-      if (!r.date) errs.push(`Row ${i + 1}: Missing date`);
-      else if (isNaN(Date.parse(r.date))) errs.push(`Row ${i + 1}: Date is not valid`);
-      if (!r.amount) errs.push(`Row ${i + 1}: Missing amount`);
-      else if (isNaN(parseFloat(r.amount))) errs.push(`Row ${i + 1}: Amount is not a number`);
-      if (!r.vendor) errs.push(`Row ${i + 1}: Missing vendor`);
+      if (!r.claim_number) errs.push(`Row ${i + 1}: Missing claim_number`);
+      if (!r.date_of_loss) errs.push(`Row ${i + 1}: Missing date_of_loss`);
+      else if (isNaN(Date.parse(r.date_of_loss))) errs.push(`Row ${i + 1}: Date of loss is not valid`);
+      if (!r.policy_number) errs.push(`Row ${i + 1}: Missing policy_number`);
+      if (!r.amount) errs.push(`Row ${i + 1}: Missing claim amount`);
+      else if (isNaN(parseFloat(r.amount))) errs.push(`Row ${i + 1}: Claim amount is not a number`);
+      if (!r.claimant_name) errs.push(`Row ${i + 1}: Missing claimant_name`);
+      if (!r.status) errs.push(`Row ${i + 1}: Missing claim status`);
     });
     setErrors(errs);
     setLoading(true);
@@ -58,11 +60,11 @@ export default function DemoSandbox() {
     <div className="min-h-screen p-6 flex flex-col items-center bg-gradient-to-br from-purple-50 via-indigo-100 to-indigo-200 dark:from-purple-900 dark:via-indigo-900 dark:to-gray-900 text-gray-900 dark:text-gray-100">
       <div className="max-w-2xl w-full space-y-6">
         <div className="text-center">
-          <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Interactive Demo Sandbox" />
+          <PageHeader title="ClarifyOps" subtitle="Interactive Demo Sandbox" />
         </div>
         {step === 1 && (
           <>
-            <p className="text-sm text-center">Preview of sample invoice CSV:</p>
+            <p className="text-sm text-center">Preview of sample claims data:</p>
             <pre className="bg-white dark:bg-gray-800 p-4 rounded overflow-x-auto text-sm whitespace-pre-wrap">{csvText}</pre>
             <div className="text-center">
               <button className="btn btn-primary" onClick={parseAndSummarize}>See it in Action</button>
@@ -71,7 +73,7 @@ export default function DemoSandbox() {
         )}
         {step === 2 && (
           <div className="space-y-4 text-center">
-            <p className="text-sm">Processing sample CSV...</p>
+            <p className="text-sm">Processing claims data...</p>
             <ProgressBar value={loading ? 60 : 100} />
           </div>
         )}

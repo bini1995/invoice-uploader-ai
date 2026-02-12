@@ -99,7 +99,7 @@ export default function ImprovedNavbar({
               className="flex items-center font-medium hover:text-indigo-200 transition-colors flex-shrink-0"
               title={t('switchProduct')}
             >
-              ClarifyClaims
+              Claims
               <ChevronDownIcon className="h-4 w-4 ml-1 flex-shrink-0" />
             </Link>
             

@@ -93,7 +93,7 @@ export default function Board() {
 
   return (
     <ImprovedMainLayout title="Approval Board">
-      <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Approval Board" />
+      <PageHeader title="ClarifyOps" subtitle="Approval Board" />
       <DndContext onDragEnd={onDragEnd}>
         <div className="flex space-x-4 overflow-x-auto">
             <BoardColumn columnId="pending" title="Pending" items={columns.pending} />

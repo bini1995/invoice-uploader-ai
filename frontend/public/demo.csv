@@ -1,5 +1,5 @@
-invoice_number,date,amount,vendor
-INV-001,2025-05-01,150.00,Acme Corp
-INV-002,INVALID_DATE,200.50,Globex Inc
-INV-003,2025-05-03,abc123,Foo Ltd
-INV-004,2025-05-04,100.00,
+claim_number,date_of_loss,claimant_name,policy_number,claim_type,amount,cpt_code,icd_10,status
+CLM-2024-0847,2024-11-15,Maria Rodriguez,POL-2024-384291,Casualty,12450.00,99213,M54.5,Pending Review
+CLM-2024-0848,INVALID_DATE,James Chen,POL-2024-519003,Property,87200.50,,S39.012A,Under Investigation
+CLM-2024-0849,2024-12-03,Sarah Williams,POL-2024-227614,Workers Comp,abc123,99214,M79.3,Approved
+CLM-2024-0850,2024-12-08,Robert Thompson,,Transportation,34500.00,99215,S82.001A,

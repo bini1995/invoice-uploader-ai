@@ -68,9 +68,9 @@ export default function ClarifyClaims() {
   };
 
   return (
-    <ImprovedMainLayout title="ClarifyClaims">
+    <ImprovedMainLayout title="Claims Summary">
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold">ClarifyClaims Summary</h1>
+        <h1 className="text-2xl font-semibold">Claims Summary</h1>
         <div className="flex items-center gap-2 text-sm">
           <select
             value={range}

@@ -58,7 +58,7 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
     {
       to: '/claims',
       icon: FileText,
-      label: 'ClarifyClaims',
+      label: 'Claims',
       description: 'Upload, validate, and summarize claims'
     },
     {

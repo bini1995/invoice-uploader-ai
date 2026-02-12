@@ -24,14 +24,14 @@ const KNOWLEDGE_BASE = {
     { q: 'cpt icd validation', a: 'We validate CPT and ICD-10 codes against the latest CMS databases to catch billing errors before they cause claim denials.' },
     { q: 'fraud detection', a: 'AuditFlow, our fraud detection module, uses AI to flag suspicious patterns, duplicate claims, and anomalies for human review.' },
     { q: 'workflow automation', a: 'OpsClaim automatically routes claims to the right team based on claim type, amount, complexity, and your custom rules.' },
-    { q: 'clarifyclaims', a: 'ClarifyClaims is our main claims processing module. Upload documents, extract data with AI, validate codes, and track everything in one place.' },
+    { q: 'clarifyclaims', a: 'Claims Processing is our main module. Upload documents, extract data with AI, validate codes, and track everything in one place.' },
     { q: 'auditflow', a: 'AuditFlow is our fraud detection and audit module. It scores claims for risk, flags anomalies, and creates audit trails for compliance.' },
     { q: 'opsclaim', a: 'OpsClaim is our workflow automation module. It routes claims to the right teams based on rules you define, automating your operations.' },
   ],
   docs: [
     { q: 'documentation docs', a: 'Our documentation is available at /docs. It covers getting started, API reference, integration guides, and best practices.' },
     { q: 'getting started', a: 'To get started: 1) Create an account at /signup, 2) Upload your first claim, 3) Review the AI-extracted data, 4) Set up your workflows. Need help? Contact support@clarifyops.com.' },
-    { q: 'upload claim document', a: 'Go to ClarifyClaims, click the upload button, and drop your document (PDF, Word, or image). Our AI will extract the data within seconds.' },
+    { q: 'upload claim document', a: 'Go to Claims, click the upload button, and drop your document (PDF, Word, or image). Our AI will extract the data within seconds.' },
   ],
 };
 

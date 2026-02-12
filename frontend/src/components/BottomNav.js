@@ -14,7 +14,7 @@ export default function BottomNav() {
     {
       to: '/claims',
       icon: DocumentIcon,
-      label: 'ClarifyClaims',
+      label: 'Claims',
       title: 'Upload, validate, and summarize claims.',
     },
     { to: '/review', icon: DocumentIcon, label: 'Review' },

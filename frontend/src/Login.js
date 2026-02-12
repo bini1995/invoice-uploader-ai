@@ -68,7 +68,7 @@ export default function Login({ onLogin, addToast, next }) {
       <div className="flex-1 flex items-center justify-center pt-20">
         <Card className="w-80 space-y-4">
           <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
-            <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Login" />
+            <PageHeader title="ClarifyOps" subtitle="Login" />
 
             {googleEnabled && (
               <>

@@ -141,7 +141,7 @@ export default function DashboardBuilder() {
 
   return (
     <ImprovedMainLayout title="Dashboard Builder">
-      <PageHeader title="ClarifyOps › ClarifyClaims" subtitle="Create Your Dashboard" />
+      <PageHeader title="ClarifyOps" subtitle="Create Your Dashboard" />
         <DndContext onDragEnd={handleDragEnd}>
           <SortableContext items={widgets} strategy={verticalListSortingStrategy}>
             <div className="space-y-4 sm:space-y-6">

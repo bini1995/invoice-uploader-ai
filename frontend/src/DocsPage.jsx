@@ -26,7 +26,7 @@ const DOCS_SECTIONS = [
 
 1. **Create an Account**: Visit /signup to create your free account. You can also sign in with Google SSO.
 
-2. **Upload Your First Claim**: Go to ClarifyClaims and click the upload button. Drag and drop any claim document (PDF, Word, or image).
+2. **Upload Your First Claim**: Go to Claims and click the upload button. Drag and drop any claim document (PDF, Word, or image).
 
 3. **Review Extracted Data**: Our AI will automatically extract key fields like policy numbers, claim amounts, CPT/ICD codes, dates, and patient information.
 
@@ -40,7 +40,7 @@ Need help? Contact support@clarifyops.com or chat with Clari, our AI assistant.`
         title: 'Understanding the Dashboard',
         body: `The Operations Dashboard is your command center. Here's what each section does:
 
-- **ClarifyClaims**: Upload and manage claim documents with AI extraction
+- **Claims**: Upload and manage claim documents with AI extraction
 - **AI Spend Analytics**: Track AI usage and processing costs
 - **Vendors**: Manage your vendor relationships and contracts
 - **AuditFlow**: Review flagged claims and fraud alerts

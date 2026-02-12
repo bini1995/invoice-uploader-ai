@@ -54,11 +54,11 @@ export default function SidebarNav({ notifications = [], collapsed = false }) {
             </Link>
             <Link
               to="/claims"
-              title="ClarifyClaims: upload, validate, and summarize claims."
+              title="Claims: upload, validate, and summarize claims."
               className={`nav-link border-l-4 ${location.pathname === '/claims' ? 'font-semibold bg-indigo-100 dark:bg-indigo-700 border-indigo-500' : 'border-transparent'}`}
             >
               <FileText className="w-5 h-5" />
-              <span>ClarifyClaims</span>
+              <span>Claims</span>
             </Link>
             <Link
               to="/vendors"

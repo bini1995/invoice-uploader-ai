@@ -87,7 +87,7 @@ export default function Navbar({
             title={t('switchProduct')}
             aria-label={t('switchProduct')}
           >
-            ClarifyClaims
+            Claims
             <ChevronDownIcon className="h-4 w-4 ml-1" />
           </Link>
           {crumbs.map((c) => (
