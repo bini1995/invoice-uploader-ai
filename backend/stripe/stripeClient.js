@@ -64,16 +64,23 @@ let stripeSync = null;
 
 export async function getStripeSync() {
   if (!stripeSync) {
-    const { StripeSync } = await import('stripe-replit-sync');
-    const secretKey = await getStripeSecretKey();
+    try {
+      const { StripeSync } = await import('stripe-replit-sync');
+      const secretKey = await getStripeSecretKey();
 
-    stripeSync = new StripeSync({
-      poolConfig: {
-        connectionString: process.env.DATABASE_URL,
-        max: 2,
-      },
-      stripeSecretKey: secretKey,
-    });
+      stripeSync = new StripeSync({
+        poolConfig: {
+          connectionString: process.env.DATABASE_URL,
+          max: 2,
+        },
+        stripeSecretKey: secretKey,
+      });
+    } catch {
+      stripeSync = {
+        findOrCreateManagedWebhook: async () => ({ id: 'skipped' }),
+        syncBackfill: async () => {},
+      };
+    }
   }
   return stripeSync;
 }

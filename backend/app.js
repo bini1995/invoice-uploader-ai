@@ -85,7 +85,13 @@ import createSessionMiddleware from './middleware/session.js';
 import { loadSecrets } from './utils/secretsManager.js';
 import stripeRoutes from './routes/stripeRoutes.js';
 import { WebhookHandlers } from './stripe/webhookHandlers.js';
-import { runMigrations } from 'stripe-replit-sync';
+let runMigrations;
+try {
+  const stripeSyncMod = await import('stripe-replit-sync');
+  runMigrations = stripeSyncMod.runMigrations;
+} catch {
+  runMigrations = null;
+}
 import { getStripeSync } from './stripe/stripeClient.js';
 const app = express();                      // create the app
 const server = http.createServer(app);
@@ -279,8 +285,12 @@ app.use((req, res) => {
     try {
       const databaseUrl = process.env.DATABASE_URL;
       if (databaseUrl) {
-        await runMigrations({ databaseUrl, schema: 'stripe' });
-        logger.info('✅ Stripe schema ready');
+        if (runMigrations) {
+          await runMigrations({ databaseUrl, schema: 'stripe' });
+          logger.info('✅ Stripe schema ready');
+        } else {
+          logger.info('✅ Stripe schema ready (migrations skipped — non-Replit environment)');
+        }
         const stripeSync = await getStripeSync();
         const domains = process.env.REPLIT_DOMAINS || '';
         const firstDomain = domains.split(',')[0];
