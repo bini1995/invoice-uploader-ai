@@ -1,8 +1,21 @@
-import Stripe from 'stripe';
+let Stripe;
+try {
+  const mod = await import('stripe');
+  Stripe = mod.default;
+} catch {
+  Stripe = null;
+}
 
 let connectionSettings = null;
 
 async function getCredentials() {
+  if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PUBLISHABLE_KEY) {
+    return {
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+      secretKey: process.env.STRIPE_SECRET_KEY,
+    };
+  }
+
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY
     ? 'repl ' + process.env.REPL_IDENTITY
@@ -11,7 +24,7 @@ async function getCredentials() {
       : null;
 
   if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+    throw new Error('Stripe credentials not configured. Set STRIPE_SECRET_KEY and STRIPE_PUBLISHABLE_KEY environment variables.');
   }
 
   const connectorName = 'stripe';
@@ -44,6 +57,9 @@ async function getCredentials() {
 }
 
 export async function getUncachableStripeClient() {
+  if (!Stripe) {
+    throw new Error('Stripe package is not installed. Run: npm install stripe');
+  }
   const { secretKey } = await getCredentials();
   return new Stripe(secretKey, {
     apiVersion: '2025-08-27.basil',
@@ -79,6 +95,7 @@ export async function getStripeSync() {
       stripeSync = {
         findOrCreateManagedWebhook: async () => ({ id: 'skipped' }),
         syncBackfill: async () => {},
+        processWebhook: async () => {},
       };
     }
   }
