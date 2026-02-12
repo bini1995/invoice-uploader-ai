@@ -119,9 +119,11 @@ export default function BillingPage() {
       ]);
 
       let loadedProducts = [];
+      let isFallback = false;
       if (productsRes.ok) {
         const pd = await productsRes.json();
         loadedProducts = pd.data || [];
+        isFallback = pd.fallback === true;
       }
 
       if (loadedProducts.length === 0) {
@@ -129,7 +131,7 @@ export default function BillingPage() {
         setUseFallback(true);
       } else {
         setProducts(loadedProducts);
-        setUseFallback(false);
+        setUseFallback(isFallback);
       }
 
       if (subRes.ok) {

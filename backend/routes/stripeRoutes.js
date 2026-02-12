@@ -26,13 +26,53 @@ router.get('/config', async (req, res) => {
   }
 });
 
+const FALLBACK_PRODUCTS = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    description: 'For small teams getting started with AI claims processing.',
+    active: true,
+    metadata: { tier: 'starter' },
+    prices: [
+      { id: 'starter_monthly', unit_amount: 24900, currency: 'usd', recurring: { interval: 'month' }, active: true },
+      { id: 'starter_yearly', unit_amount: 239000, currency: 'usd', recurring: { interval: 'year' }, active: true },
+    ]
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    description: 'For growing teams that need advanced analytics and integrations.',
+    active: true,
+    metadata: { tier: 'professional' },
+    prices: [
+      { id: 'pro_monthly', unit_amount: 49900, currency: 'usd', recurring: { interval: 'month' }, active: true },
+      { id: 'pro_yearly', unit_amount: 479000, currency: 'usd', recurring: { interval: 'year' }, active: true },
+    ]
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    description: 'For large organizations with custom needs and compliance requirements.',
+    active: true,
+    metadata: { tier: 'enterprise' },
+    prices: [
+      { id: 'ent_monthly', unit_amount: 99900, currency: 'usd', recurring: { interval: 'month' }, active: true },
+      { id: 'ent_yearly', unit_amount: 959000, currency: 'usd', recurring: { interval: 'year' }, active: true },
+    ]
+  }
+];
+
 router.get('/products', async (req, res) => {
   try {
     const products = await getProductsWithPrices();
-    res.json({ data: products });
+    if (products && products.length > 0) {
+      res.json({ data: products });
+    } else {
+      res.json({ data: FALLBACK_PRODUCTS, fallback: true });
+    }
   } catch (err) {
-    console.error('Products fetch error:', err);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    console.error('Products fetch error (using fallback):', err.message);
+    res.json({ data: FALLBACK_PRODUCTS, fallback: true });
   }
 });
 
