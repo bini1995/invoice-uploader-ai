@@ -44,6 +44,39 @@ const PLAN_ICONS = {
   Enterprise: Building2,
 };
 
+const FALLBACK_PRODUCTS = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    description: 'For small teams getting started with AI claims processing.',
+    metadata: { tier: 'starter' },
+    prices: [
+      { id: 'starter_monthly', unit_amount: 24900, currency: 'usd', recurring: { interval: 'month' }, active: true },
+      { id: 'starter_yearly', unit_amount: 239000, currency: 'usd', recurring: { interval: 'year' }, active: true },
+    ]
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    description: 'For growing teams that need advanced analytics and integrations.',
+    metadata: { tier: 'professional' },
+    prices: [
+      { id: 'pro_monthly', unit_amount: 49900, currency: 'usd', recurring: { interval: 'month' }, active: true },
+      { id: 'pro_yearly', unit_amount: 479000, currency: 'usd', recurring: { interval: 'year' }, active: true },
+    ]
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    description: 'For large organizations with custom needs and compliance requirements.',
+    metadata: { tier: 'enterprise' },
+    prices: [
+      { id: 'ent_monthly', unit_amount: 99900, currency: 'usd', recurring: { interval: 'month' }, active: true },
+      { id: 'ent_yearly', unit_amount: 959000, currency: 'usd', recurring: { interval: 'year' }, active: true },
+    ]
+  }
+];
+
 export default function BillingPage() {
   const [products, setProducts] = useState([]);
   const [subscription, setSubscription] = useState(null);
@@ -52,6 +85,7 @@ export default function BillingPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(null);
   const [billingPeriod, setBillingPeriod] = useState('monthly');
   const [statusMsg, setStatusMsg] = useState(null);
+  const [useFallback, setUseFallback] = useState(false);
   const token = localStorage.getItem('token');
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -84,10 +118,20 @@ export default function BillingPage() {
         }),
       ]);
 
+      let loadedProducts = [];
       if (productsRes.ok) {
         const pd = await productsRes.json();
-        setProducts(pd.data || []);
+        loadedProducts = pd.data || [];
       }
+
+      if (loadedProducts.length === 0) {
+        setProducts(FALLBACK_PRODUCTS);
+        setUseFallback(true);
+      } else {
+        setProducts(loadedProducts);
+        setUseFallback(false);
+      }
+
       if (subRes.ok) {
         const sd = await subRes.json();
         setSubscription(sd.subscription);
@@ -95,12 +139,18 @@ export default function BillingPage() {
       }
     } catch (err) {
       console.error('Failed to load billing data:', err);
+      setProducts(FALLBACK_PRODUCTS);
+      setUseFallback(true);
     } finally {
       setLoading(false);
     }
   }
 
   async function handleCheckout(priceId) {
+    if (useFallback) {
+      window.location.href = 'mailto:sales@clarifyops.com?subject=ClarifyOps%20Subscription%20Inquiry';
+      return;
+    }
     setCheckoutLoading(priceId);
     try {
       const res = await fetch(`${API_BASE}/api/stripe/checkout`, {
