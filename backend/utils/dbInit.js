@@ -31,6 +31,8 @@ async function initDb() {
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR");
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR");
     await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR");
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR");
+    await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR");
 
     const adminHash = bcrypt.hashSync('password123', 10);
     await pool.query(

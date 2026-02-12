@@ -45,6 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **Natural Language Semantic Search**: AI-powered search across claims using plain English queries via vector embeddings.
 - **Confidence Scoring**: Per-field AI confidence scores and overall weighted confidence.
 - **Complete Delivery System**: Four-pathway data delivery infrastructure including Webhook Delivery, Zapier Integration, Enhanced Public API v1, and CSV/Excel Exports, managed by an Auto-Delivery Orchestrator.
+- **Stripe Payment Integration**: Full billing system with Stripe checkout, subscription management, and billing portal. Three pricing tiers (Starter $99/mo, Professional $199/mo, Enterprise $299/mo) with yearly discounts. Frontend Billing page at `/billing`. Auth middleware protects all billing routes.
 - **User Registration & Profile System**: Full user management with Google SSO authentication.
 - **AI Assistant "Clari"**: Renamed AI bot with expanded knowledge base.
 - **Compliance Features**: HIPAA, SOC 2, and GDPR considerations with documentation and trust center page.

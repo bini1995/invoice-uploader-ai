@@ -19,6 +19,7 @@ import {
   Send,
   Upload,
   Search,
+  CreditCard,
 } from 'lucide-react';
 
 export default function ImprovedSidebarNav({ notifications = [], collapsed = false }) {
@@ -107,6 +108,12 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
       icon: Send,
       label: 'Delivery',
       description: 'Webhooks, exports, and integrations'
+    },
+    {
+      to: '/billing',
+      icon: CreditCard,
+      label: 'Billing',
+      description: 'Plans and payments'
     },
     {
       to: '/settings',

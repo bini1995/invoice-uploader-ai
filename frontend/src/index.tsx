@@ -44,6 +44,7 @@ import TrustCenter from './TrustCenter';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfService from './TermsOfService';
 import CaseStudies from './CaseStudies';
+import BillingPage from './BillingPage';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -186,6 +187,7 @@ function AnimatedRoutes() {
         <Route path="/fraud" element={<PageWrapper><FraudReport /></PageWrapper>} />
         <Route path="/review" element={<PageWrapper><HumanReview /></PageWrapper>} />
         <Route path="/delivery" element={<PageWrapper><DeliverySettings /></PageWrapper>} />
+        <Route path="/billing" element={<PageWrapper><BillingPage /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><TeamManagement /></PageWrapper>} />
         <Route path="/archive" element={<PageWrapper><Archive /></PageWrapper>} />
         <Route path="/vendors" element={<PageWrapper><VendorManagement /></PageWrapper>} />

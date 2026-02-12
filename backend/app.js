@@ -83,6 +83,10 @@ import passport from './middleware/passport.js';
 import tenantContextMiddleware from './middleware/tenantContextMiddleware.js';
 import createSessionMiddleware from './middleware/session.js';
 import { loadSecrets } from './utils/secretsManager.js';
+import stripeRoutes from './routes/stripeRoutes.js';
+import { WebhookHandlers } from './stripe/webhookHandlers.js';
+import { runMigrations } from 'stripe-replit-sync';
+import { getStripeSync } from './stripe/stripeClient.js';
 const app = express();                      // create the app
 const server = http.createServer(app);
 
@@ -92,6 +96,28 @@ await loadSecrets();
 
 // Initialize Sentry
 Sentry.init({ dsn: process.env.SENTRY_DSN || undefined });
+
+// Stripe webhook route - MUST be before express.json() to get raw Buffer
+app.post(
+  '/api/stripe/webhook',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    const signature = req.headers['stripe-signature'];
+    if (!signature) return res.status(400).json({ error: 'Missing stripe-signature' });
+    try {
+      const sig = Array.isArray(signature) ? signature[0] : signature;
+      if (!Buffer.isBuffer(req.body)) {
+        console.error('Stripe webhook: req.body is not a Buffer');
+        return res.status(500).json({ error: 'Webhook processing error' });
+      }
+      await WebhookHandlers.processWebhook(req.body, sig);
+      res.status(200).json({ received: true });
+    } catch (error) {
+      console.error('Webhook error:', error.message);
+      res.status(400).json({ error: 'Webhook processing error' });
+    }
+  }
+);
 
 // Security middleware (order matters!)
 
@@ -104,8 +130,8 @@ app.use(helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
       mediaSrc: ["'self'", "https://sample-videos.com", "https://*.sample-videos.com"],
-      connectSrc: ["'self'", "https://api.openrouter.ai", "https://script.hotjar.com", "https://www.google-analytics.com"],
-      frameSrc: ["'self'", "https://www.google.com"],
+      connectSrc: ["'self'", "https://api.openrouter.ai", "https://script.hotjar.com", "https://www.google-analytics.com", "https://checkout.stripe.com", "https://api.stripe.com"],
+      frameSrc: ["'self'", "https://www.google.com", "https://checkout.stripe.com", "https://js.stripe.com"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"]
@@ -223,6 +249,7 @@ app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/usage', usageRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 // Sentry error handler
 app.use(Sentry.Handlers.errorHandler());
@@ -247,6 +274,33 @@ app.use((req, res) => {
     // Initialize database
     await initDb();
     logger.info('✅ Database initialized');
+
+    // Initialize Stripe schema and sync
+    try {
+      const databaseUrl = process.env.DATABASE_URL;
+      if (databaseUrl) {
+        await runMigrations({ databaseUrl, schema: 'stripe' });
+        logger.info('✅ Stripe schema ready');
+        const stripeSync = await getStripeSync();
+        const domains = process.env.REPLIT_DOMAINS || '';
+        const firstDomain = domains.split(',')[0];
+        if (firstDomain) {
+          try {
+            const webhookResult = await stripeSync.findOrCreateManagedWebhook(
+              `https://${firstDomain}/api/stripe/webhook`
+            );
+            logger.info(`✅ Stripe webhook configured`);
+          } catch (whErr) {
+            logger.warn('Stripe webhook setup skipped:', whErr.message);
+          }
+        }
+        stripeSync.syncBackfill()
+          .then(() => logger.info('✅ Stripe data synced'))
+          .catch(err => logger.error('Stripe sync error:', err));
+      }
+    } catch (stripeErr) {
+      logger.error('Stripe init error (non-fatal):', stripeErr.message);
+    }
 
     // Load AI models and corrections
     await loadCorrections();
