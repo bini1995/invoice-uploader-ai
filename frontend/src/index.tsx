@@ -243,11 +243,7 @@ function AnimatedRoutes() {
     createRoot(container).render(app);
   }
 
-serviceWorkerRegistration.register({
-  onUpdate: () => {
-    console.log('A new version is available. Refresh to update.');
-  }
-});
+serviceWorkerRegistration.unregister();
 
 startOfflineSync();
 

@@ -100,11 +100,11 @@ export default function Login({ onLogin, addToast, next }) {
               <div className="bg-red-100 text-red-700 p-2 mb-4 text-sm rounded" role="alert">{error}</div>
             )}
 
-            <label htmlFor="username" className="sr-only">Username</label>
+            <label htmlFor="username" className="sr-only">Email</label>
             <input
               id="username"
               type="text"
-              placeholder="Username"
+              placeholder="Email address"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="input w-full mb-3"
