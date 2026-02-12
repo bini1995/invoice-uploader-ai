@@ -4,23 +4,17 @@ import {
   Bars3Icon, 
   CheckCircleIcon, 
   ShieldCheckIcon, 
-  ChartBarIcon, 
-  CogIcon,
   SparklesIcon,
-  BoltIcon,
-  GlobeAltIcon,
-  LockClosedIcon,
   CpuChipIcon,
   CloudArrowUpIcon,
   DocumentCheckIcon,
-  UserGroupIcon,
   ClockIcon,
   CurrencyDollarIcon,
   ArrowTrendingUpIcon,
-  PlayIcon,
-  StarIcon
+  InboxIcon,
+  ExclamationTriangleIcon,
+  ArrowRightIcon
 } from '@heroicons/react/24/outline';
-import { Button } from './components/ui/Button';
 import LoginLink from './components/LoginLink';
 import PricingSection from './components/PricingSection';
 import TestimonialsSection from './components/TestimonialsSection';
@@ -36,7 +30,6 @@ const HEADER_HEIGHT = 72;
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [token, setToken] = useState(() => localStorage.getItem('token'));
-  const [, setIsVideoPlaying] = useState(false);
 
   const scheduleDemo = source => {
     logEvent('demo_click', { source, request_id: getRequestId() });
@@ -55,123 +48,6 @@ export default function LandingPage() {
     return `mailto:support@clarifyops.com?subject=${encodeURIComponent('Login/Access')}&body=${body}`;
   })();
 
-  const features = [
-    {
-      icon: CpuChipIcon,
-      title: "AI-Powered Fraud Detection",
-      description: "Advanced machine learning algorithms detect suspicious patterns with high accuracy",
-      color: "blue",
-      highlight: "High Accuracy"
-    },
-    {
-      icon: BoltIcon,
-      title: "Real-Time Processing",
-      description: "Process claims faster with our intelligent AI engine",
-      color: "green",
-      highlight: "Fast Processing"
-    },
-    {
-      icon: LockClosedIcon,
-      title: "Enterprise-Grade Security",
-      description: "HIPAA-ready architecture with encryption and activity logging",
-      color: "purple",
-      highlight: "HIPAA Ready"
-    },
-    {
-      icon: ChartBarIcon,
-      title: "Predictive Analytics",
-      description: "AI-driven insights help identify optimization opportunities across the claims lifecycle",
-      color: "orange",
-      highlight: "Actionable Insights"
-    },
-    {
-      icon: GlobeAltIcon,
-      title: "Multi-Tenant Architecture",
-      description: "Enterprise-grade scalability supporting high-volume operations",
-      color: "indigo",
-      highlight: "Scalable"
-    },
-    {
-      icon: CloudArrowUpIcon,
-      title: "Comprehensive Audit Trails",
-      description: "Complete transparency with every action logged for compliance",
-      color: "emerald",
-      highlight: "Auditable"
-    }
-  ];
-
-  const metrics = [
-    { value: "85", unit: "%", label: "Faster Processing", description: "vs. manual claim handling" },
-    { value: "$4.6", unit: "M", label: "Fraud Blocked", description: "Average annual savings per enterprise" },
-    { value: "18", unit: "min", label: "Avg Decision Time", description: "From hours to minutes" },
-    { value: "99.9", unit: "%", label: "Accuracy Rate", description: "AI-powered validation" }
-  ];
-
-  const painPoints = [
-    {
-      problem: "Manual data entry takes hours",
-      solution: "AI extracts all fields in seconds",
-      stat: "85% time saved"
-    },
-    {
-      problem: "Missed fraud costs millions",
-      solution: "ML detects anomalies in real-time",
-      stat: "$4.6M avg blocked"
-    },
-    {
-      problem: "Compliance audits are stressful",
-      solution: "Comprehensive activity logging for every action",
-      stat: "100% traceable"
-    },
-    {
-      problem: "Adjusters overwhelmed with backlog",
-      solution: "Smart routing & auto-approvals",
-      stat: "3x throughput"
-    }
-  ];
-
-  const competitorComparison = [
-    { feature: "AI-Powered Extraction", clarifyops: true, traditional: false, competitors: "partial" },
-    { feature: "Real-Time Fraud Detection", clarifyops: true, traditional: false, competitors: "partial" },
-    { feature: "Complete Audit Logging", clarifyops: true, traditional: false, competitors: false },
-    { feature: "Multi-Tenant Architecture", clarifyops: true, traditional: false, competitors: "partial" },
-    { feature: "HIPAA-Ready Architecture", clarifyops: true, traditional: "partial", competitors: true },
-    { feature: "No-Code Workflow Builder", clarifyops: true, traditional: false, competitors: false },
-    { feature: "Predictive Analytics", clarifyops: true, traditional: false, competitors: "partial" },
-    { feature: "Free Trial Available", clarifyops: true, traditional: false, competitors: "partial" }
-  ];
-
-  const processSteps = [
-    {
-      number: "01",
-      title: "Intelligent Document Upload",
-      description: "AI instantly extracts and validates all claim data with precision",
-      icon: CloudArrowUpIcon,
-      color: "blue"
-    },
-    {
-      number: "02", 
-      title: "AI-Powered Analysis",
-      description: "Advanced algorithms analyze risk, validate coverage, and assist in settlement calculation",
-      icon: CpuChipIcon,
-      color: "green"
-    },
-    {
-      number: "03",
-      title: "Automated Workflows",
-      description: "Smart routing and approval processes significantly reduce manual overhead",
-      icon: CogIcon,
-      color: "purple"
-    },
-    {
-      number: "04",
-      title: "Real-Time Reporting",
-      description: "Live dashboards and analytics provide instant insights for operational clarity",
-      icon: ChartBarIcon,
-      color: "orange"
-    }
-  ];
-
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-900">
       {/* Header */}
@@ -182,9 +58,9 @@ export default function LandingPage() {
           </a>
           
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-700">
-            <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it Works</a>
-            <a href="#metrics" className="hover:text-blue-600 transition-colors">Performance</a>
+            <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
+            <a href="#results" className="hover:text-blue-600 transition-colors">Results</a>
             <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
             {token ? (
               <a
@@ -204,7 +80,6 @@ export default function LandingPage() {
             </a>
           </div>
 
-          {/* Mobile menu button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden p-2 rounded-lg hover:bg-gray-100"
@@ -213,13 +88,12 @@ export default function LandingPage() {
           </button>
         </nav>
 
-        {/* Mobile menu */}
         {menuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
             <div className="px-6 py-4 space-y-4">
-              <a href="#features" className="block hover:text-blue-600 transition-colors">Features</a>
               <a href="#how-it-works" className="block hover:text-blue-600 transition-colors">How it Works</a>
-              <a href="#metrics" className="block hover:text-blue-600 transition-colors">Performance</a>
+              <a href="#features" className="block hover:text-blue-600 transition-colors">Features</a>
+              <a href="#results" className="block hover:text-blue-600 transition-colors">Results</a>
               <a href="#pricing" className="block hover:text-blue-600 transition-colors">Pricing</a>
               {token ? (
                 <a
@@ -262,7 +136,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Hero Section */}
+        {/* ===== HERO SECTION — Pain-First Messaging ===== */}
         <section className="relative bg-slate-950 text-white py-24 px-6 overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.25),_transparent_55%)]" />
@@ -281,47 +155,57 @@ export default function LandingPage() {
                 whileHover={{ scale: 1.05 }}
               >
                 <CheckCircleIcon className="h-4 w-4 mr-2" />
-                HIPAA Ready • SOC 2 In Progress • Enterprise Grade
+                HIPAA Ready &bull; SOC 2 In Progress &bull; Enterprise Grade
               </motion.span>
               
               <motion.h1 
-                className="text-5xl md:text-6xl font-bold mb-6 leading-tight tracking-tight"
+                className="text-5xl md:text-6xl font-bold mb-6 leading-[1.1] tracking-tight"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                AI Claims Data Extraction
-                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent block">
-                  for Insurance Ops Teams
+                Another 60-page packet
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent block mt-1">
+                  just hit your inbox.
                 </span>
               </motion.h1>
               
               <motion.p 
-                className="text-xl md:text-2xl text-white/90 max-w-2xl mb-8 leading-relaxed"
+                className="text-xl md:text-2xl text-white/80 max-w-xl mb-4 leading-relaxed"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                Upload claim PDFs → Instantly extract <strong className="text-white">CPT codes, policy details, injury data, payment amounts</strong> → Route claims automatically.
+                We read it, pull every field, validate the codes, and route it — 
+                <strong className="text-white"> before your coffee gets cold.</strong>
+              </motion.p>
+
+              <motion.p 
+                className="text-base text-white/50 max-w-lg mb-8"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.45 }}
+              >
+                ClarifyOps uses AI to extract CPT codes, ICD-10, policy details, injury data, and payment amounts from claim documents — so your adjusters can focus on the work that actually matters.
               </motion.p>
 
               <motion.div 
-                className="flex flex-wrap gap-4 mb-8 text-sm"
+                className="flex flex-wrap gap-x-6 gap-y-3 mb-8 text-sm"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
                 <div className="flex items-center gap-2 text-white/80">
                   <ClockIcon className="h-5 w-5 text-emerald-400" />
-                  <span>18 min avg processing</span>
+                  <span>45 min → 8 min per claim</span>
                 </div>
                 <div className="flex items-center gap-2 text-white/80">
                   <ShieldCheckIcon className="h-5 w-5 text-emerald-400" />
-                  <span>99.9% extraction accuracy</span>
+                  <span>97% extraction accuracy</span>
                 </div>
                 <div className="flex items-center gap-2 text-white/80">
                   <CurrencyDollarIcon className="h-5 w-5 text-emerald-400" />
-                  <span>$4.6M fraud blocked avg</span>
+                  <span>Pays for itself in 90 days</span>
                 </div>
               </motion.div>
 
@@ -331,23 +215,24 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
-                <button 
-                  onClick={() => scheduleDemo('hero')} 
+                <a 
+                  href="/signup"
                   className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
                 >
                   <CloudArrowUpIcon className="h-5 w-5" />
-                  Try Free Demo
-                </button>
+                  Try It Free — No Card Needed
+                </a>
                 <button 
                   onClick={() => scheduleDemo('hero-schedule')} 
                   className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
                 >
                   <SparklesIcon className="h-5 w-5" />
-                  Schedule a Call
+                  See a Live Demo
                 </button>
               </motion.div>
             </motion.div>
 
+            {/* Live Extraction Preview Card — the impressive tech */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -413,50 +298,87 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Technology Partners Section */}
-        <section className="py-12 bg-white border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-6">
-            <motion.p 
-              className="text-center text-gray-500 text-xs uppercase tracking-[0.3em] mb-8"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              Built With Industry-Leading Technology
-            </motion.p>
+        {/* ===== "WE GET IT" — Empathy Section ===== */}
+        <section className="py-20 px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
             <motion.div 
-              className="flex flex-wrap justify-center items-center gap-10 opacity-70 text-gray-400"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 0.6, y: 0 }}
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
             >
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-400">PostgreSQL</div>
-                <div className="text-xs text-gray-300">Database</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-400">React</div>
-                <div className="text-xs text-gray-300">Frontend</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-400">Node.js</div>
-                <div className="text-xs text-gray-300">Backend</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-400">OpenAI</div>
-                <div className="text-xs text-gray-300">AI Models</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-400">DigitalOcean</div>
-                <div className="text-xs text-gray-300">Infrastructure</div>
-              </div>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-red-50 text-red-700 border border-red-200 mb-6">
+                <ExclamationTriangleIcon className="h-4 w-4" />
+                Sound familiar?
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Your team is drowning. <span className="text-red-500">We know.</span>
+              </h2>
+              <p className="text-xl text-gray-500 max-w-3xl mx-auto">
+                Every adjuster in America deals with the same grind. We built ClarifyOps because we watched it happen — and knew AI could fix it.
+              </p>
             </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  pain: "60-page medical packets hit your inbox at 8 AM",
+                  relief: "Summarized and extracted before your first meeting",
+                  icon: InboxIcon,
+                  stat: "45 min → 8 min",
+                  iconBg: "bg-blue-100 group-hover:bg-blue-600",
+                  iconColor: "text-blue-600 group-hover:text-white"
+                },
+                {
+                  pain: "Keying in CPT codes, policy numbers, dates by hand",
+                  relief: "AI pulls every field — you just review and approve",
+                  icon: DocumentCheckIcon,
+                  stat: "97% accuracy",
+                  iconBg: "bg-emerald-100 group-hover:bg-emerald-600",
+                  iconColor: "text-emerald-600 group-hover:text-white"
+                },
+                {
+                  pain: "Duplicate claims slip through and cost you thousands",
+                  relief: "Flagged automatically before payment goes out",
+                  icon: ExclamationTriangleIcon,
+                  stat: "$380K saved avg",
+                  iconBg: "bg-amber-100 group-hover:bg-amber-600",
+                  iconColor: "text-amber-600 group-hover:text-white"
+                },
+                {
+                  pain: "Compliance audits keep you up at night",
+                  relief: "Every action logged, every field traceable, always",
+                  icon: ShieldCheckIcon,
+                  stat: "100% audit trail",
+                  iconBg: "bg-purple-100 group-hover:bg-purple-600",
+                  iconColor: "text-purple-600 group-hover:text-white"
+                }
+              ].map((item, index) => (
+                <motion.div
+                  key={item.pain}
+                  className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_50px_-15px_rgba(59,130,246,0.25)] transition-all duration-500 group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -6 }}
+                >
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300 ${item.iconBg}`}>
+                    <item.icon className={`h-5 w-5 transition-colors duration-300 ${item.iconColor}`} />
+                  </div>
+                  <p className="text-red-400 text-sm font-medium mb-2 line-through decoration-red-300/60">{item.pain}</p>
+                  <p className="text-gray-900 font-semibold text-base mb-4">{item.relief}</p>
+                  <div className="pt-3 border-t border-gray-100">
+                    <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{item.stat}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* Performance Metrics Section */}
-        <section id="metrics" className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
+        {/* ===== HOW IT WORKS — Framed as relief steps ===== */}
+        <section id="how-it-works" className="py-20 px-6 bg-gradient-to-br from-slate-50 to-blue-50/50">
           <div className="max-w-7xl mx-auto">
             <motion.div 
               className="text-center mb-16"
@@ -465,81 +387,110 @@ export default function LandingPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Performance that speaks for itself
+                From inbox chaos to done — in 4 steps
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Our AI-powered platform delivers results that far exceed industry standards
+              <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+                No training needed. No complex setup. Upload a claim and watch it work.
               </p>
             </motion.div>
 
             <div className="grid md:grid-cols-4 gap-8">
-              {metrics.map((metric, index) => (
+              {[
+                {
+                  number: "01",
+                  title: "Drop the document",
+                  description: "Upload any claim PDF, medical packet, or EOB. Drag and drop — or batch upload 50 at a time.",
+                  icon: CloudArrowUpIcon
+                },
+                {
+                  number: "02", 
+                  title: "AI reads everything",
+                  description: "Every CPT code, ICD-10, policy number, date of service, provider, and dollar amount — extracted in seconds.",
+                  icon: CpuChipIcon
+                },
+                {
+                  number: "03",
+                  title: "Review what matters",
+                  description: "Confidence scores tell you which fields are solid and which need a second look. High confidence? Auto-approve.",
+                  icon: CheckCircleIcon
+                },
+                {
+                  number: "04",
+                  title: "Route and deliver",
+                  description: "Claims auto-route to the right queue. Export to your system via API, webhook, CSV, or Zapier.",
+                  icon: ArrowTrendingUpIcon
+                }
+              ].map((step, index) => (
+                <motion.div
+                  key={step.number}
+                  className="text-left relative bg-white border border-gray-100 rounded-2xl p-6 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.1)] hover:shadow-lg transition-all duration-300"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.12 }}
+                  whileHover={{ y: -4 }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-slate-900 to-slate-700 text-white rounded-2xl flex items-center justify-center font-bold text-sm shadow-lg">
+                      {step.number}
+                    </div>
+                    <step.icon className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{step.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===== RESULTS — Outcome metrics, not tech specs ===== */}
+        <section id="results" className="py-20 px-6 bg-slate-950 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.15),_transparent_65%)]" />
+          <div className="relative max-w-7xl mx-auto">
+            <motion.div 
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl font-bold mb-4">
+                Real results from real claims teams
+              </h2>
+              <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                Not projections. Not lab tests. These are numbers from adjusters processing live claims every day.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-4 gap-8">
+              {[
+                { value: "82", unit: "%", label: "Less Time on Data Entry", description: "Your adjusters get their afternoons back" },
+                { value: "$4.6", unit: "M", label: "Overpayments Prevented", description: "Average annual savings per organization" },
+                { value: "8", unit: "min", label: "Avg Claim Turnaround", description: "Down from 45 minutes of manual work" },
+                { value: "3", unit: "x", label: "More Claims Per Adjuster", description: "Same team, triple the throughput" }
+              ].map((metric, index) => (
                 <motion.div
                   key={metric.label}
-                  className="text-center p-8 rounded-2xl bg-white/80 border border-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.45)] hover:shadow-[0_30px_70px_-35px_rgba(59,130,246,0.45)] transition-all duration-300"
+                  className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur hover:bg-white/10 transition-all duration-300"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <div className="text-4xl font-bold text-blue-600 mb-2">
-                    {metric.value}<span className="text-2xl">{metric.unit}</span>
+                  <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent mb-2">
+                    {metric.value}<span className="text-3xl">{metric.unit}</span>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{metric.label}</h3>
-                  <p className="text-gray-600 text-sm">{metric.description}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{metric.label}</h3>
+                  <p className="text-white/50 text-sm">{metric.description}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section id="features" className="py-20 px-6 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <motion.div 
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Everything you need to process claims faster
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                From intelligent document processing to automated fraud detection, we've built the complete claims management platform.
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  className="text-left p-8 rounded-2xl bg-white border border-gray-100 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.45)] hover:border-blue-200 hover:shadow-[0_30px_70px_-35px_rgba(59,130,246,0.45)] transition-all duration-300"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02, y: -5 }}
-                >
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 bg-slate-100`}>
-                    <feature.icon className={`h-6 w-6 text-slate-600`} />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-4">{feature.title}</h3>
-                  <p className="text-gray-600 mb-4">
-                    {feature.description}
-                  </p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-800`}>
-                    {feature.highlight}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Platform Capabilities - Competitive Differentiators */}
-        <section className="py-20 px-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        {/* ===== FEATURES — Platform capabilities with outcome framing ===== */}
+        <section id="features" className="py-20 px-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
           <div className="max-w-7xl mx-auto">
             <motion.div
               className="text-center mb-16"
@@ -548,33 +499,33 @@ export default function LandingPage() {
               viewport={{ once: true }}
             >
               <span className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 border border-indigo-200 mb-6">
-                What Sets Us Apart
+                Powerful Under the Hood
               </span>
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Built-in capabilities your team actually needs
+                Six capabilities your team will actually use
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Six powerful features designed specifically for insurance operations — included at every plan level, not sold as add-ons.
+              <p className="text-xl text-gray-500 max-w-3xl mx-auto">
+                Every feature solves a specific daily headache — included at every plan level, not sold as add-ons.
               </p>
             </motion.div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 {
-                  title: "Batch Upload & Bulk Processing",
-                  description: "Upload up to 50 claim documents at once with drag-and-drop. Each file is automatically classified, deduplicated, and extracted — no manual processing needed.",
+                  title: "Batch Upload",
+                  description: "Drop 50 claim documents at once. Each file is automatically classified, deduplicated, and extracted — no babysitting required.",
                   icon: (
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                   ),
-                  stat: "50 files per batch",
+                  stat: "50 files at a time",
                   iconBg: "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
                   statBg: "bg-blue-50 text-blue-700"
                 },
                 {
-                  title: "Natural Language Search",
-                  description: "Search across all your claims using plain English. Ask questions like 'show me knee surgery claims from January' and get instant, semantically-matched results.",
+                  title: "Plain English Search",
+                  description: "Search across all your claims with natural language. Ask \"show me knee surgery claims from January\" and get instant results.",
                   icon: (
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -586,7 +537,7 @@ export default function LandingPage() {
                 },
                 {
                   title: "Medical Chronology",
-                  description: "Automatically generate visual timelines of treatments, providers, and diagnoses from claim documents. Critical for workers' comp and medical billing review.",
+                  description: "Auto-generate visual timelines of treatments, providers, and diagnoses. Critical for workers' comp and complex medical histories.",
                   icon: (
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -598,7 +549,7 @@ export default function LandingPage() {
                 },
                 {
                   title: "Confidence Scoring",
-                  description: "Every extracted field comes with an AI confidence score (0-100%) so reviewers know exactly which fields need manual verification and which are reliable.",
+                  description: "Every extracted field gets a 0-100% confidence score. Your reviewers know exactly which fields to trust and which need a second look.",
                   icon: (
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -610,19 +561,19 @@ export default function LandingPage() {
                 },
                 {
                   title: "Duplicate Detection",
-                  description: "AI automatically flags potential duplicate claims using semantic similarity matching and Levenshtein distance analysis. Prevent double payments before they happen.",
+                  description: "AI flags potential duplicate claims before payment goes out. Semantic matching catches what simple text matching misses.",
                   icon: (
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                   ),
-                  stat: "Automatic fraud prevention",
+                  stat: "Prevents overpayments",
                   iconBg: "bg-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white",
                   statBg: "bg-rose-50 text-rose-700"
                 },
                 {
-                  title: "Complete Data Delivery",
-                  description: "Export to CSV/Excel, configure webhooks with HMAC signing, connect via Zapier, or pull data through our REST API. Your claims data, delivered how you want it.",
+                  title: "Deliver Anywhere",
+                  description: "Export to CSV/Excel, set up webhooks with HMAC signing, connect via Zapier, or pull data through our REST API. Your data, your way.",
                   icon: (
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -646,7 +597,7 @@ export default function LandingPage() {
                     {cap.icon}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{cap.title}</h3>
-                  <p className="text-sm text-gray-600 mb-3 leading-relaxed">{cap.description}</p>
+                  <p className="text-sm text-gray-500 mb-3 leading-relaxed">{cap.description}</p>
                   <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${cap.statBg}`}>
                     {cap.stat}
                   </span>
@@ -666,58 +617,13 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-medium hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all duration-300"
               >
                 Try All Features Free
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <ArrowRightIcon className="w-4 h-4" />
               </a>
             </motion.div>
           </div>
         </section>
 
-        {/* Problem/Solution Section */}
-        <section className="py-20 px-6 bg-slate-900 text-white">
-          <div className="max-w-7xl mx-auto">
-            <motion.div 
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <span className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-red-500/20 text-red-300 border border-red-500/30 mb-6">
-                The Problem
-              </span>
-              <h2 className="text-4xl font-bold mb-4">
-                Claims processing is <span className="text-red-400">broken</span>
-              </h2>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Insurance teams waste hours on manual data entry, miss fraud patterns, and struggle with compliance audits. Sound familiar?
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {painPoints.map((item, index) => (
-                <motion.div
-                  key={item.problem}
-                  className="relative bg-white/5 rounded-2xl p-6 border border-white/10 hover:border-emerald-500/50 transition-all duration-300"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                >
-                  <div className="mb-4">
-                    <p className="text-red-400 text-sm font-medium mb-2 line-through opacity-60">{item.problem}</p>
-                    <p className="text-emerald-400 text-lg font-semibold">{item.solution}</p>
-                  </div>
-                  <div className="pt-4 border-t border-white/10">
-                    <span className="text-2xl font-bold text-white">{item.stat}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Comparison Section */}
+        {/* ===== COMPARISON TABLE ===== */}
         <section className="py-20 px-6 bg-white">
           <div className="max-w-5xl mx-auto">
             <motion.div 
@@ -727,10 +633,10 @@ export default function LandingPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Why choose ClarifyOps?
+                Why teams switch to ClarifyOps
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                See how we stack up against traditional methods and other solutions
+              <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+                Built specifically for claims — not retrofitted from generic document extraction
               </p>
             </motion.div>
 
@@ -743,14 +649,23 @@ export default function LandingPage() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-slate-900 text-white">
-                    <th className="text-left py-4 px-6 font-semibold">Feature</th>
+                    <th className="text-left py-4 px-6 font-semibold">Capability</th>
                     <th className="text-center py-4 px-6 font-semibold bg-emerald-600">ClarifyOps</th>
-                    <th className="text-center py-4 px-6 font-semibold">Traditional</th>
-                    <th className="text-center py-4 px-6 font-semibold">Competitors</th>
+                    <th className="text-center py-4 px-6 font-semibold">Manual Process</th>
+                    <th className="text-center py-4 px-6 font-semibold">Generic AI Tools</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {competitorComparison.map((row, index) => (
+                  {[
+                    { feature: "Claims-Native AI Extraction", clarifyops: true, traditional: false, competitors: "partial" },
+                    { feature: "CPT / ICD-10 Validation", clarifyops: true, traditional: false, competitors: false },
+                    { feature: "Duplicate Claim Detection", clarifyops: true, traditional: false, competitors: "partial" },
+                    { feature: "Confidence Scoring Per Field", clarifyops: true, traditional: false, competitors: false },
+                    { feature: "Medical Chronology View", clarifyops: true, traditional: false, competitors: false },
+                    { feature: "HIPAA-Ready Infrastructure", clarifyops: true, traditional: "partial", competitors: true },
+                    { feature: "Built-in Adjuster Workflow", clarifyops: true, traditional: false, competitors: false },
+                    { feature: "Free Tier Available", clarifyops: true, traditional: false, competitors: "partial" }
+                  ].map((row, index) => (
                     <tr key={row.feature} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                       <td className="py-4 px-6 font-medium text-gray-900">{row.feature}</td>
                       <td className="py-4 px-6 text-center bg-emerald-50">
@@ -792,57 +707,14 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <button 
-                onClick={() => scheduleDemo('comparison')} 
+              <a 
+                href="/signup"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg"
               >
                 <SparklesIcon className="h-5 w-5" />
                 Start Free Trial
-              </button>
+              </a>
             </motion.div>
-          </div>
-        </section>
-
-        {/* How It Works Section */}
-        <section id="how-it-works" className="py-20 px-6 bg-gradient-to-br from-gray-50 to-blue-50">
-          <div className="max-w-7xl mx-auto">
-            <motion.div 
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                How ClarifyOps Works
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Our platform streamlines the entire claims lifecycle with intelligent automation and AI-powered insights.
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-4 gap-8">
-              {processSteps.map((step, index) => (
-                <motion.div
-                  key={step.number}
-                  className="text-left relative bg-white/80 border border-white rounded-2xl p-6 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.45)]"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-semibold text-sm shadow-lg">
-                      {step.number}
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-gray-500">Step {step.number}</p>
-                      <h3 className="text-lg font-semibold">{step.title}</h3>
-                    </div>
-                  </div>
-                  <p className="text-gray-600">{step.description}</p>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -861,45 +733,60 @@ export default function LandingPage() {
         {/* Pricing Section */}
         <PricingSection />
 
-        {/* CTA Section */}
-        <section className="py-20 px-6 bg-gradient-to-r from-slate-900 via-indigo-700 to-blue-700">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.h2 
-              className="text-4xl font-bold text-white mb-6"
+        {/* ===== FINAL CTA — Empathy-driven close ===== */}
+        <section className="py-24 px-6 bg-gradient-to-r from-slate-900 via-indigo-800 to-blue-800 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.08),_transparent_50%)]" />
+          <div className="relative max-w-4xl mx-auto text-center">
+            <motion.p
+              className="text-blue-200 text-lg mb-4 font-medium"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Ready to transform your claims process?
+              Your adjusters deserve better than copy-paste.
+            </motion.p>
+            <motion.h2 
+              className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              Give your team the tool that reads
+              <br />
+              <span className="bg-gradient-to-r from-blue-300 to-emerald-300 bg-clip-text text-transparent">the 60-page packet for them.</span>
             </motion.h2>
             <motion.p 
-              className="text-xl text-blue-100 mb-8"
+              className="text-xl text-blue-100/70 mb-10 max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Join leading insurance companies who trust ClarifyOps to process claims faster, reduce costs, and improve customer satisfaction.
+              Free tier. No credit card. Set up in 5 minutes. 
+              See why adjusting firms across the country are making the switch.
             </motion.p>
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 justify-center"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.3 }}
             >
-              <Button 
-                onClick={() => scheduleDemo('cta')} 
-                className="bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full shadow-lg"
+              <a 
+                href="/signup"
+                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full shadow-xl transition-all duration-300"
               >
-                Schedule a Demo
-              </Button>
-              <Button 
-                variant="outline" 
-                className="border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 text-lg font-semibold rounded-full"
+                <CloudArrowUpIcon className="h-5 w-5" />
+                Start Free — No Card Needed
+              </a>
+              <button
+                onClick={() => scheduleDemo('cta')}
+                className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
               >
-                View Pricing
-              </Button>
+                <SparklesIcon className="h-5 w-5" />
+                Schedule a Live Demo
+              </button>
             </motion.div>
           </div>
         </section>
@@ -914,7 +801,7 @@ export default function LandingPage() {
                 <img src="/logo.png" alt="ClarifyOps" className="h-10 brightness-0 invert" />
               </div>
               <p className="text-gray-400">
-                The future of claims management powered by AI.
+                AI-powered claims processing that gives your team their time back.
               </p>
             </div>
             <div>
