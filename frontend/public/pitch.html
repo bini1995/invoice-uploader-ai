@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClarifyOps — Proposal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; color: #1e293b; background: white; }
+  .page {
+    width: 8.5in; min-height: 11in; margin: 0 auto; padding: 0.55in 0.6in;
+    display: flex; flex-direction: column; position: relative; overflow: hidden;
+  }
+  @media print { .page { padding: 0.5in 0.55in; } .no-print { display: none; } }
+
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3in; }
+  .logo { font-size: 22px; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; }
+  .logo span { color: #4f46e5; }
+  .tagline { font-size: 11px; color: #64748b; font-weight: 500; }
+
+  .hero { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border-radius: 16px; padding: 28px 32px; margin-bottom: 0.25in; color: white; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -40%; right: -10%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.3), transparent 70%); }
+  .hero h1 { font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; position: relative; }
+  .hero h1 em { font-style: normal; color: #818cf8; }
+  .hero p { font-size: 13px; color: rgba(255,255,255,0.75); max-width: 500px; line-height: 1.5; position: relative; }
+
+  .problem-solution { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 0.2in; }
+  .card { border-radius: 12px; padding: 18px 20px; }
+  .card-problem { background: #fef2f2; border: 1px solid #fecaca; }
+  .card-solution { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .card h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .card-problem h3 { color: #dc2626; }
+  .card-solution h3 { color: #16a34a; }
+  .card ul { list-style: none; font-size: 12.5px; line-height: 1.7; }
+  .card ul li { padding-left: 18px; position: relative; }
+  .card ul li::before { position: absolute; left: 0; }
+  .card-problem ul li::before { content: '✕'; color: #dc2626; font-weight: 700; font-size: 11px; }
+  .card-solution ul li::before { content: '✓'; color: #16a34a; font-weight: 700; }
+
+  .how-section { margin-bottom: 0.2in; }
+  .how-section h2 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #1e293b; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .step { text-align: center; padding: 14px 10px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+  .step-title { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
+  .step-desc { font-size: 10.5px; color: #64748b; line-height: 1.4; }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 0.2in; }
+  .metric { text-align: center; padding: 14px 8px; border-radius: 12px; background: linear-gradient(135deg, #eef2ff, #e0e7ff); border: 1px solid #c7d2fe; }
+  .metric-value { font-size: 24px; font-weight: 800; color: #4f46e5; }
+  .metric-label { font-size: 10.5px; color: #475569; margin-top: 2px; font-weight: 500; }
+
+  .bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: auto; }
+  .pricing-box { border-radius: 12px; padding: 18px 20px; background: #f8fafc; border: 1px solid #e2e8f0; }
+  .pricing-box h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #1e293b; }
+  .price-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+  .price-row:last-child { border: none; }
+  .price-name { font-weight: 600; color: #334155; }
+  .price-val { font-weight: 700; color: #4f46e5; }
+  .price-note { font-size: 10px; color: #94a3b8; margin-top: 6px; }
+
+  .cta-box { border-radius: 12px; padding: 18px 20px; background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; display: flex; flex-direction: column; justify-content: center; }
+  .cta-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .cta-box p { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.5; margin-bottom: 12px; }
+  .cta-items { font-size: 11.5px; line-height: 1.8; }
+  .cta-items span { color: #818cf8; font-weight: 600; }
+
+  .footer { text-align: center; margin-top: 14px; font-size: 10px; color: #94a3b8; }
+  .print-btn { position: fixed; top: 20px; right: 20px; background: #4f46e5; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .print-btn:hover { background: #4338ca; }
+</style>
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">Save as PDF</button>
+<div class="page">
+  <div class="header">
+    <div>
+      <div class="logo">Clarify<span>Ops</span></div>
+      <div class="tagline">AI-Powered Claims Processing for Adjusting Firms</div>
+    </div>
+    <div style="text-align:right; font-size:11px; color:#64748b;">
+      <div style="font-weight:600; color:#1e293b;">clarifyops.com</div>
+      <div>bini@clarifyops.com</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>Stop spending hours on paperwork.<br>Let AI handle the <em>data entry</em>.</h1>
+    <p>ClarifyOps reads your claim documents, extracts every field, validates CPT and ICD-10 codes, and routes claims to the right team — in minutes, not hours.</p>
+  </div>
+
+  <div class="problem-solution">
+    <div class="card card-problem">
+      <h3>The Problem</h3>
+      <ul>
+        <li>Adjusters spend 45+ min manually reading each claim packet</li>
+        <li>Data entry errors cause denials and rework</li>
+        <li>CPT/ICD code mismatches slip through unnoticed</li>
+        <li>No easy way to catch duplicate or fraudulent claims</li>
+        <li>Growing caseloads with the same size team</li>
+      </ul>
+    </div>
+    <div class="card card-solution">
+      <h3>The ClarifyOps Solution</h3>
+      <ul>
+        <li>AI reads PDFs, Word docs, and images in seconds</li>
+        <li>Extracts policy #, dates, amounts, codes automatically</li>
+        <li>Validates CPT & ICD-10 codes against CMS databases</li>
+        <li>Flags duplicates and anomalies before they cost you</li>
+        <li>Routes claims to the right adjuster automatically</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="how-section">
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Upload</div>
+        <div class="step-desc">Drop your claim docs — PDFs, Word, images, or batch CSV</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Extract</div>
+        <div class="step-desc">AI pulls every field: names, dates, codes, amounts, injuries</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Validate</div>
+        <div class="step-desc">Codes checked, duplicates flagged, readiness score assigned</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Route</div>
+        <div class="step-desc">Claims sent to the right team with full audit trail</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-value">8 min</div>
+      <div class="metric-label">Avg. processing time<br>(down from 45 min)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">97%</div>
+      <div class="metric-label">Field extraction<br>accuracy</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">82%</div>
+      <div class="metric-label">Less time on<br>data entry</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">90 days</div>
+      <div class="metric-label">Average time<br>to ROI</div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="pricing-box">
+      <h3>Beta Pilot Pricing</h3>
+      <div class="price-row"><span class="price-name">Starter</span><span class="price-val">$249/mo</span></div>
+      <div class="price-row"><span class="price-name">Professional</span><span class="price-val">$499/mo</span></div>
+      <div class="price-row"><span class="price-name">Enterprise</span><span class="price-val">$999/mo</span></div>
+      <div class="price-note">Beta rates locked in — prices increase to $599–$2,999 after launch. Free tier available (50 claims/mo).</div>
+    </div>
+    <div class="cta-box">
+      <h3>Ready to See It in Action?</h3>
+      <p>Upload a real claim document and watch ClarifyOps extract every field in seconds.</p>
+      <div class="cta-items">
+        <span>→</span> Free pilot — no credit card required<br>
+        <span>→</span> HIPAA-ready, SOC 2 in progress<br>
+        <span>→</span> Works with your existing workflow<br>
+        <span>→</span> Dedicated onboarding support
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">ClarifyOps &copy; 2025 &nbsp;|&nbsp; clarifyops.com &nbsp;|&nbsp; bini@clarifyops.com &nbsp;|&nbsp; HIPAA Ready &bull; SOC 2 In Progress</div>
+</div>
+</body>
+</html>

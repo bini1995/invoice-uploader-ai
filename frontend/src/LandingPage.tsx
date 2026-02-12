@@ -164,9 +164,9 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Another 60-page packet
+                AI that reads your claims
                 <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent block mt-1">
-                  just hit your inbox.
+                  so your adjusters don't have to.
                 </span>
               </motion.h1>
               
@@ -176,8 +176,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                We read it, pull every field, validate the codes, and route it — 
-                <strong className="text-white"> before your coffee gets cold.</strong>
+                Upload any claim document. Our AI extracts every field, validates the codes, and routes it to the right person — <strong className="text-white">in minutes, not hours.</strong>
               </motion.p>
 
               <motion.p 
@@ -186,7 +185,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.45 }}
               >
-                ClarifyOps uses AI to extract CPT codes, ICD-10, policy details, injury data, and payment amounts from claim documents — so your adjusters can focus on the work that actually matters.
+                Built for adjusting firms that process casualty, property, and workers comp claims. ClarifyOps pulls policy numbers, CPT codes, ICD-10, dates, and dollar amounts from PDFs, Word docs, and images automatically.
               </motion.p>
 
               <motion.div 
