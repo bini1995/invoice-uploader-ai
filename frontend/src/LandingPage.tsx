@@ -251,7 +251,7 @@ export default function LandingPage() {
               Beta Pilot
             </span>
             <span className="font-medium">
-              Join our Beta Pilot — <strong>Free tier available</strong> (50 claims/mo) | Paid plans from <strong>$99/mo</strong> (normally $499)
+              Join our Beta Pilot — <strong>Free tier available</strong> (50 claims/mo) | Paid plans from <strong>$249/mo</strong> (normally $599)
             </span>
             <a 
               href="#pricing" 

@@ -3,24 +3,24 @@ import { getUncachableStripeClient } from './stripeClient.js';
 const PLANS = [
   {
     name: 'Starter',
-    description: 'Perfect for small agencies and independent adjusters. Process up to 200 claims/month with core AI extraction, confidence scoring, and basic exports.',
-    metadata: { sort_order: '1', tier: 'starter', claims_limit: '200' },
-    monthlyPrice: 9900,
-    yearlyPrice: 95000,
+    description: 'For small TPAs and independent adjusters. Up to 500 claims/month with AI extraction, confidence scoring, CSV/Excel exports, and email support.',
+    metadata: { sort_order: '1', tier: 'starter', claims_limit: '500' },
+    monthlyPrice: 24900,
+    yearlyPrice: 238800,
   },
   {
     name: 'Professional',
-    description: 'For growing teams. Up to 1,000 claims/month with advanced features: duplicate detection, semantic search, medical chronology, webhook delivery, and priority support.',
-    metadata: { sort_order: '2', tier: 'professional', claims_limit: '1000' },
-    monthlyPrice: 19900,
-    yearlyPrice: 191000,
+    description: 'For operations teams ready to scale. Up to 2,500 claims/month with duplicate detection, semantic search, medical chronology, webhooks, API access, and priority support.',
+    metadata: { sort_order: '2', tier: 'professional', claims_limit: '2500' },
+    monthlyPrice: 49900,
+    yearlyPrice: 479000,
   },
   {
     name: 'Enterprise',
-    description: 'Unlimited claims with full platform access: custom integrations, API access, dedicated account manager, SLA guarantees, and HIPAA BAA.',
-    metadata: { sort_order: '3', tier: 'enterprise', claims_limit: 'unlimited' },
-    monthlyPrice: 29900,
-    yearlyPrice: 287000,
+    description: 'For carriers and large TPAs. Up to 10,000 claims/month with custom workflows, dedicated onboarding, custom AI tuning, SLA guarantees, and HIPAA BAA.',
+    metadata: { sort_order: '3', tier: 'enterprise', claims_limit: '10000' },
+    monthlyPrice: 99900,
+    yearlyPrice: 959000,
   },
 ];
 

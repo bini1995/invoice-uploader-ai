@@ -12,7 +12,7 @@ Key facts about ClarifyOps:
 - Claim Readiness Score (0-100%) shows claim completeness
 - HIPAA compliant with 256-bit encryption and audit logging
 - Integrates with Guidewire, Duck Creek, Salesforce, ServiceNow
-- Pricing: Free (50 claims/mo), Pro ($299/mo for 500 claims), Enterprise (custom)
+- Pricing: Free (50 claims/mo), Starter ($249/mo for 500 claims), Pro ($499/mo for 2,500 claims), Enterprise ($999/mo for 10,000 claims). Post-beta: $599, $1,499, $2,999/mo respectively.
 - OpsClaim for workflow automation and routing
 - AuditFlow for fraud detection and risk scoring
 

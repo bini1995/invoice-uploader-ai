@@ -58,7 +58,7 @@ const caseStudies = [
       author: 'Operations Director',
       company: 'Regional TPA (name withheld for privacy)'
     },
-    methodology: 'Based on ROI calculator projections using: 2,500 claims/month, $35/hr processor rate, 45-min avg manual processing, 6.2% error rate. Results represent projected annual savings with ClarifyOps Beta Pro plan at $199/month.'
+    methodology: 'Based on ROI calculator projections using: 2,500 claims/month, $35/hr processor rate, 45-min avg manual processing, 6.2% error rate. Results represent projected annual savings with ClarifyOps Beta Pro plan at $499/month.'
   },
   {
     id: 'medical-billing',
@@ -102,7 +102,7 @@ const caseStudies = [
       author: 'Practice Administrator',
       company: 'Multi-Provider NYC Medical Practice'
     },
-    methodology: 'Based on ROI calculator projections using: 800 claims/month, $42/hr billing specialist rate, 30-min avg processing, 23% baseline denial rate. Results represent projected improvements with ClarifyOps Beta Starter plan at $99/month.'
+    methodology: 'Based on ROI calculator projections using: 800 claims/month, $42/hr billing specialist rate, 30-min avg processing, 23% baseline denial rate. Results represent projected improvements with ClarifyOps Beta Starter plan at $249/month.'
   },
   {
     id: 'independent-adjuster',
@@ -146,7 +146,7 @@ const caseStudies = [
       author: 'Senior Independent Adjuster',
       company: 'Independent Adjusting Firm (3 adjusters)'
     },
-    methodology: 'Based on ROI calculator projections using: 80 baseline claims/month growing to 240, $45/hr adjuster rate, 2.5 hrs admin time per claim. Results represent projected revenue gains with ClarifyOps Free Starter + Beta Starter plan at $99/month.'
+    methodology: 'Based on ROI calculator projections using: 80 baseline claims/month growing to 240, $45/hr adjuster rate, 2.5 hrs admin time per claim. Results represent projected revenue gains with ClarifyOps Free Starter + Beta Starter plan at $249/month.'
   }
 ];
 

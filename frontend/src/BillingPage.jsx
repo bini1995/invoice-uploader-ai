@@ -8,30 +8,33 @@ import {
 
 const PLAN_FEATURES = {
   starter: [
-    'Up to 200 claims/month',
-    'AI field extraction',
+    'Up to 500 claims/month',
+    'AI field extraction (CPT, ICD-10, policy)',
     'Confidence scoring',
     'CSV & Excel exports',
     'Email support',
+    'HIPAA-ready infrastructure',
   ],
   professional: [
-    'Up to 1,000 claims/month',
+    'Up to 2,500 claims/month',
     'Everything in Starter, plus:',
     'Duplicate detection',
     'Semantic search',
     'Medical chronology',
-    'Webhook delivery',
-    'Zapier integration',
+    'Webhook delivery & Zapier',
+    'API access',
     'Priority support',
+    'AuditFlow fraud scoring',
   ],
   enterprise: [
-    'Unlimited claims',
+    'Up to 10,000 claims/month',
     'Everything in Professional, plus:',
-    'Public API access',
-    'Custom integrations',
-    'Dedicated account manager',
+    'Custom workflow rules',
+    'Dedicated onboarding',
+    'Custom AI model tuning',
     'SLA guarantees',
     'HIPAA BAA included',
+    'Multi-tenant setup',
   ],
 };
 

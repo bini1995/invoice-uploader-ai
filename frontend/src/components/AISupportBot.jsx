@@ -12,7 +12,7 @@ const KNOWLEDGE_BASE = {
   general: [
     { q: 'what is clarifyops', a: 'ClarifyOps is an AI-powered claims data extraction platform built specifically for insurance operations. We help TPAs, carriers, and brokers automate document processing, validate CPT/ICD codes, and route claims intelligently.' },
     { q: 'how does it work', a: 'Upload any claim document (PDF, image, Word) and our AI extracts key fields like policy numbers, claim amounts, CPT/ICD codes, dates, and patient info. Documents are validated, scored for completeness, and routed to the right workflow automatically.' },
-    { q: 'pricing', a: 'We offer flexible pricing: Free tier (50 claims/month), Pro ($299/month for 500 claims), and Enterprise (volume-based pricing). Contact us for a custom quote at clarifyops.com.' },
+    { q: 'pricing', a: 'We offer flexible pricing: Free tier (50 claims/month), Starter ($249/month for 500 claims), Pro ($499/month for 2,500 claims), and Enterprise ($999/month for 10,000 claims). Beta pricing — post-launch rates will be $599, $1,499, and $2,999 respectively. Contact us for a custom quote at clarifyops.com.' },
     { q: 'hipaa compliant', a: 'Yes! ClarifyOps is fully HIPAA compliant with 256-bit encryption, audit logging, PHI redaction, and we sign Business Associate Agreements (BAAs) with all customers.' },
     { q: 'integrations', a: 'We integrate with Guidewire ClaimCenter, Duck Creek, Salesforce, ServiceNow, and offer REST APIs and Zapier webhooks for custom integrations. Visit /integrations to learn more.' },
     { q: 'support', a: 'We offer email support for all tiers, priority support for Pro users, and dedicated account managers for Enterprise customers. You can also schedule a demo at calendly.com/clarifyops-demo.' },

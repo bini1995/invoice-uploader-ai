@@ -25,8 +25,8 @@ export default function PricingSection() {
     },
     {
       name: "Beta Starter",
-      betaPrice: "$99",
-      regularPrice: "$499",
+      betaPrice: "$249",
+      regularPrice: "$599",
       period: "/month",
       description: "For small TPAs and independent adjusters starting with AI",
       features: [
@@ -40,13 +40,13 @@ export default function PricingSection() {
       ],
       cta: "Start Beta Pilot",
       highlight: false,
-      badge: "Save 80%",
+      badge: "Save 58%",
       color: "blue"
     },
     {
       name: "Beta Pro",
-      betaPrice: "$199",
-      regularPrice: "$2,000",
+      betaPrice: "$499",
+      regularPrice: "$1,499",
       period: "/month",
       description: "For operations teams ready to scale claim processing",
       features: [
@@ -66,8 +66,8 @@ export default function PricingSection() {
     },
     {
       name: "Beta Enterprise",
-      betaPrice: "$299",
-      regularPrice: "Custom",
+      betaPrice: "$999",
+      regularPrice: "$2,999",
       period: "/month",
       description: "For carriers and large TPAs needing full capabilities",
       features: [
@@ -82,7 +82,7 @@ export default function PricingSection() {
       ],
       cta: "Contact Us",
       highlight: false,
-      badge: "Save 85%+",
+      badge: "Save 67%",
       color: "indigo"
     }
   ];
