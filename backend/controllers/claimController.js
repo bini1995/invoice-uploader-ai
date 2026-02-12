@@ -115,6 +115,9 @@ export const listDocuments = async (req, res) => {
 
 export const getDocument = async (req, res) => {
   const { id } = req.params;
+  if (!/^\d+$/.test(id)) {
+    return res.status(400).json({ message: 'Invalid document ID' });
+  }
   try {
     const { rows } = await pool.query(
       `SELECT d.*, 

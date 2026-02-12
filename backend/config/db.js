@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 import { AsyncLocalStorage } from 'async_hooks';
 import 'dotenv/config';
 import logger from '../utils/logger.js';
-logger.info('🔎 Using DATABASE_URL:', process.env.DATABASE_URL);
+logger.info('🔎 DATABASE_URL is ' + (process.env.DATABASE_URL ? 'set' : 'not set'));
 
 const defaultDbHost = process.env.DB_HOST || process.env.PGHOST || 'localhost';
 const defaultDbPort = process.env.DB_PORT || process.env.PGPORT || '5432';
@@ -49,8 +49,7 @@ if (!process.env.DATABASE_URL) {
   logger.info('DATABASE_URL not set, using individual DB_* env vars');
 }
 
-console.log('🔎 Final dbConfig:', dbConfig);
-logger.info('Postgres config:', dbConfig);
+logger.info(`Postgres config: host=${dbConfig.host} port=${dbConfig.port} database=${dbConfig.database} user=${dbConfig.user} ssl=${dbConfig.ssl}`);
 
 const pool = new Pool(dbConfig);
 
@@ -136,9 +135,12 @@ pool.query = (text, params, callback) => {
   return executeQuery();
 };
 
-// Log when it connects
+let connLogCount = 0;
 pool.on('connect', () => {
-  logger.info('🟢 Connected to PostgreSQL');
+  connLogCount++;
+  if (connLogCount <= 1) {
+    logger.info('🟢 Connected to PostgreSQL');
+  }
 });
 
 pool.als = als;

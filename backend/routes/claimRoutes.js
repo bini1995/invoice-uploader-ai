@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import pool from '../config/db.js';
 import { authMiddleware, authorizeRoles } from '../controllers/userController.js';
 import fileSizeLimit from '../middleware/fileSizeLimit.js';
 import { uploadLimiter } from '../middleware/rateLimit.js';
@@ -106,6 +107,103 @@ router.post('/fnol/transcribe', authMiddleware, audioUpload.single('audio'), tra
 router.get('/upload-heatmap', authMiddleware, getUploadHeatmap);
 router.get('/top-vendors', authMiddleware, getTopVendors);
 router.get('/', authMiddleware, listDocuments);
+router.get('/totals-by-entity', authMiddleware, getEntityTotals);
+router.get('/search', authMiddleware, searchDocuments);
+router.get('/review-queue', authMiddleware, getReviewQueue);
+router.get('/explain', authMiddleware, authorizeRoles('admin', 'internal_ops'), getAnomalyExplainability);
+router.get('/duplicates/overview', authMiddleware, getDuplicateOverview);
+router.get(
+  '/metrics',
+  authMiddleware,
+  authorizeRoles('admin', 'internal_ops'),
+  getClaimMetrics
+);
+router.get('/report/pdf', authMiddleware, exportSummaryPDF);
+router.post('/export', authMiddleware, exportClaims);
+router.post(
+  '/escalate',
+  authMiddleware,
+  authorizeRoles('admin', 'internal_ops', 'adjuster'),
+  escalateClaim
+);
+router.post('/edi-hl7/parse', authMiddleware, integrationUpload.single('file'), parseEdiHl7);
+router.post('/ingest', authMiddleware, integrationUpload.single('file'), ingestClaimIntegration);
+router.delete(
+  '/purge-demo',
+  authMiddleware,
+  authorizeRoles('admin', 'internal_ops'),
+  purgeDemoDocuments
+);
+
+router.get('/quick-stats', authMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT 
+        COUNT(*) as total_claims,
+        COUNT(*) FILTER (WHERE status = 'pending') as pending_claims,
+        COUNT(*) FILTER (WHERE status = 'approved') as approved_claims,
+        COUNT(*) FILTER (WHERE status = 'denied' OR status = 'rejected') as denied_claims,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') as claims_this_month,
+        ROUND(AVG(CASE WHEN overall_confidence IS NOT NULL THEN overall_confidence ELSE NULL END)::numeric, 1) as avg_confidence
+      FROM documents d
+      LEFT JOIN claim_fields cf ON cf.document_id = d.id
+      WHERE d.tenant_id = $1`,
+      [req.tenantId]
+    );
+    res.json(rows[0] || {});
+  } catch (err) {
+    console.error('Quick stats error:', err);
+    res.status(500).json({ message: 'Failed to fetch quick stats' });
+  }
+});
+
+router.get('/monthly-insights', authMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT 
+        TO_CHAR(DATE_TRUNC('month', created_at), 'YYYY-MM') as month,
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'approved') as approved,
+        COUNT(*) FILTER (WHERE status = 'denied' OR status = 'rejected') as denied
+      FROM documents
+      WHERE tenant_id = $1 AND created_at >= NOW() - INTERVAL '12 months'
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY month DESC
+      LIMIT 12`,
+      [req.tenantId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Monthly insights error:', err);
+    res.status(500).json({ message: 'Failed to fetch monthly insights' });
+  }
+});
+
+router.get('/vendor-scorecards', authMiddleware, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT 
+        COALESCE(fields->>'provider_name', fields->>'vendor', 'Unknown') as vendor_name,
+        COUNT(*) as total_claims,
+        COUNT(*) FILTER (WHERE status = 'approved') as approved,
+        COUNT(*) FILTER (WHERE status = 'denied' OR status = 'rejected') as denied,
+        ROUND(AVG(CASE WHEN cf.overall_confidence IS NOT NULL THEN cf.overall_confidence ELSE NULL END)::numeric, 1) as avg_confidence
+      FROM documents d
+      LEFT JOIN claim_fields cf ON cf.document_id = d.id
+      WHERE d.tenant_id = $1
+      GROUP BY COALESCE(fields->>'provider_name', fields->>'vendor', 'Unknown')
+      ORDER BY total_claims DESC
+      LIMIT 20`,
+      [req.tenantId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('Vendor scorecards error:', err);
+    res.status(500).json({ message: 'Failed to fetch vendor scorecards' });
+  }
+});
+
+router.get('/:id', authMiddleware, getDocument);
 router.post('/:id/extract', authMiddleware, extractDocument);
 router.post('/:id/extract-fields', authMiddleware, extractClaimFields);
 router.post('/:id/corrections', authMiddleware, saveCorrections);
@@ -115,37 +213,9 @@ router.post('/:id/versions/:versionId/restore', authMiddleware, restoreDocumentV
 router.post('/:id/version', uploadLimiter, authMiddleware, upload.single('file'), uploadDocumentVersion);
 router.put('/:id/lifecycle', authMiddleware, updateLifecycle);
 router.post('/:id/compliance', authMiddleware, checkCompliance);
-router.get('/totals-by-entity', authMiddleware, getEntityTotals);
-router.get('/search', authMiddleware, searchDocuments);
-router.get('/review-queue', authMiddleware, getReviewQueue);
-router.post(
-  '/escalate',
-  authMiddleware,
-  authorizeRoles('admin', 'internal_ops', 'adjuster'),
-  escalateClaim
-);
-router.post('/edi-hl7/parse', authMiddleware, integrationUpload.single('file'), parseEdiHl7);
-router.post('/ingest', authMiddleware, integrationUpload.single('file'), ingestClaimIntegration);
-router.get(
-  '/metrics',
-  authMiddleware,
-  authorizeRoles('admin', 'internal_ops'),
-  getClaimMetrics
-);
-router.get('/report/pdf', authMiddleware, exportSummaryPDF);
-router.post('/export', authMiddleware, exportClaims);
-router.delete(
-  '/purge-demo',
-  authMiddleware,
-  authorizeRoles('admin', 'internal_ops'),
-  purgeDemoDocuments
-);
 router.patch('/:id/status', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster', 'viewer', 'broker'), updateStatus);
 router.get('/:id/cpt-explain', authMiddleware, getCptExplainability);
 router.get('/:id/audit', authMiddleware, authorizeRoles('admin', 'internal_ops', 'auditor'), getClaimAuditTrail);
-router.get('/explain', authMiddleware, authorizeRoles('admin', 'internal_ops'), getAnomalyExplainability);
-router.get('/duplicates/overview', authMiddleware, getDuplicateOverview);
-router.get('/:id', authMiddleware, getDocument);
 router.get('/:id/confidence', authMiddleware, getClaimConfidence);
 router.get('/:id/duplicates', authMiddleware, getClaimDuplicates);
 router.post('/:id/duplicates/:flagId/resolve', authMiddleware, authorizeRoles('admin', 'internal_ops', 'adjuster', 'viewer', 'broker'), resolveClaimDuplicate);
