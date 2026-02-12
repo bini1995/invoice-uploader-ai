@@ -13,11 +13,13 @@ export default defineConfig({
       algorithm: 'gzip',
       ext: '.gz',
       threshold: 10240,
+      deleteOriginFile: false,
     }),
     compression({
       algorithm: 'brotliCompress',
       ext: '.br',
       threshold: 10240,
+      deleteOriginFile: false,
     }),
   ],
   resolve: {
@@ -57,6 +59,16 @@ export default defineConfig({
   build: {
     outDir: 'build',
     reportCompressedSize: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-charts': ['recharts'],
+          'vendor-swr': ['swr'],
+        },
+      },
+    },
   },
   test: {
     environment: 'jsdom',

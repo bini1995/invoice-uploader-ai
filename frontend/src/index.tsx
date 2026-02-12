@@ -1,50 +1,6 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
-import ClaimsPage from './Claims';
-import OperationsDashboard from './OperationsDashboard';
-import AdaptiveDashboard from './AdaptiveDashboard';
-import SharedDashboard from './SharedDashboard';
-import DashboardBuilder from './DashboardBuilder';
-import ExportTemplateBuilder from './ExportTemplateBuilder';
-import AISpendAnalyticsHub from './AISpendAnalyticsHub';
-import AuditFlow from './AuditFlow';
-import FraudReport from './FraudReport';
-import HumanReview from './HumanReview';
-import Archive from './Archive';
-import TeamManagement from './TeamManagement';
-import VendorManagement from './VendorManagement';
-import WorkflowPage from './WorkflowPage';
-import WorkflowBuilderPage from './WorkflowBuilderPage';
-import Board from './Board';
-import KanbanDashboard from './KanbanDashboard';
-import NotFound from './NotFound';
-import ResultsViewer from './ResultsViewer';
 import ErrorBoundary from './ErrorBoundary';
-import LandingPage from './LandingPage';
-import SecurityPage from './SecurityPage';
-import OnboardingWizard from './OnboardingWizard';
-import MultiUploadWizard from './MultiUploadWizard';
-import BatchUpload from './BatchUpload';
-import ClaimSearch from './ClaimSearch';
-import DemoSandbox from './DemoSandbox';
-import InstantTrial from './InstantTrial';
-import LoginPage from './LoginPage';
-import ForgotPassword from './ForgotPassword';
-import SignUp from './SignUp';
-import Profile from './Profile';
-import SSOCallback from './SSOCallback';
-import DocsPage from './DocsPage';
-import ClarifyClaims from './ClarifyClaims';
-import ClaimsBrandingPreview from './ClaimsBrandingPreview';
-import DeliverySettings from './DeliverySettings';
-import ComparisonPage from './ComparisonPage.jsx';
-import IntegrationsPage from './IntegrationsPage.jsx';
-import UseCasesPage from './UseCasesPage.jsx';
-import TrustCenter from './TrustCenter';
-import PrivacyPolicy from './PrivacyPolicy';
-import TermsOfService from './TermsOfService';
-import CaseStudies from './CaseStudies';
-import BillingPage from './BillingPage';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './index.css';
@@ -53,6 +9,51 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { API_BASE } from './api';
 import { getRequestId } from './lib/analytics';
 import { queueOfflineRequest, startOfflineSync } from './lib/offlineSync';
+
+const LandingPage = lazy(() => import('./LandingPage'));
+const ClaimsPage = lazy(() => import('./Claims'));
+const OperationsDashboard = lazy(() => import('./OperationsDashboard'));
+const AdaptiveDashboard = lazy(() => import('./AdaptiveDashboard'));
+const SharedDashboard = lazy(() => import('./SharedDashboard'));
+const DashboardBuilder = lazy(() => import('./DashboardBuilder'));
+const ExportTemplateBuilder = lazy(() => import('./ExportTemplateBuilder'));
+const AISpendAnalyticsHub = lazy(() => import('./AISpendAnalyticsHub'));
+const AuditFlow = lazy(() => import('./AuditFlow'));
+const FraudReport = lazy(() => import('./FraudReport'));
+const HumanReview = lazy(() => import('./HumanReview'));
+const Archive = lazy(() => import('./Archive'));
+const TeamManagement = lazy(() => import('./TeamManagement'));
+const VendorManagement = lazy(() => import('./VendorManagement'));
+const WorkflowPage = lazy(() => import('./WorkflowPage'));
+const WorkflowBuilderPage = lazy(() => import('./WorkflowBuilderPage'));
+const Board = lazy(() => import('./Board'));
+const KanbanDashboard = lazy(() => import('./KanbanDashboard'));
+const NotFound = lazy(() => import('./NotFound'));
+const ResultsViewer = lazy(() => import('./ResultsViewer'));
+const SecurityPage = lazy(() => import('./SecurityPage'));
+const OnboardingWizard = lazy(() => import('./OnboardingWizard'));
+const MultiUploadWizard = lazy(() => import('./MultiUploadWizard'));
+const BatchUpload = lazy(() => import('./BatchUpload'));
+const ClaimSearch = lazy(() => import('./ClaimSearch'));
+const DemoSandbox = lazy(() => import('./DemoSandbox'));
+const InstantTrial = lazy(() => import('./InstantTrial'));
+const LoginPage = lazy(() => import('./LoginPage'));
+const ForgotPassword = lazy(() => import('./ForgotPassword'));
+const SignUp = lazy(() => import('./SignUp'));
+const Profile = lazy(() => import('./Profile'));
+const SSOCallback = lazy(() => import('./SSOCallback'));
+const DocsPage = lazy(() => import('./DocsPage'));
+const ClarifyClaims = lazy(() => import('./ClarifyClaims'));
+const ClaimsBrandingPreview = lazy(() => import('./ClaimsBrandingPreview'));
+const DeliverySettings = lazy(() => import('./DeliverySettings'));
+const ComparisonPage = lazy(() => import('./ComparisonPage.jsx'));
+const IntegrationsPage = lazy(() => import('./IntegrationsPage.jsx'));
+const UseCasesPage = lazy(() => import('./UseCasesPage.jsx'));
+const TrustCenter = lazy(() => import('./TrustCenter'));
+const PrivacyPolicy = lazy(() => import('./PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./TermsOfService'));
+const CaseStudies = lazy(() => import('./CaseStudies'));
+const BillingPage = lazy(() => import('./BillingPage'));
 
 /**
  * Global fetch wrapper to route API requests to configured backend.
@@ -103,7 +104,6 @@ window.fetch = async (url, options = {}) => {
 
   const res = await originalFetch(finalUrl, options);
   
-  // Only handle 401 for non-login requests
   const finalUrlStr = String(finalUrl);
   const isLoginRequest = finalUrlStr.includes('/login') || finalUrlStr.includes('/api/auth/login');
   if (res.status === 401 && !isLoginRequest) {
@@ -112,7 +112,6 @@ window.fetch = async (url, options = {}) => {
     localStorage.setItem('sessionExpired', '1');
     window.location.href = `/login?next=${next}`;
   } else if (res.status === 403 && !isLoginRequest) {
-    // alert(`No access to tenant ${tenant}`);
     console.warn(`No access to tenant ${tenant}`);
   }
   return res;
@@ -148,8 +147,6 @@ const savedFont = localStorage.getItem(`fontFamily_${currentTenant}`);
 if (savedFont) document.documentElement.style.setProperty('--font-ui', savedFont);
 
 if (API_BASE) {
-  // Hit the health endpoint instead of /api/claims since the
-  // claims listing route may not exist in some deployments.
   fetch(`${API_BASE}/api/health`).catch((err) => {
     console.error('API connection failed', err);
   });
@@ -157,6 +154,18 @@ if (API_BASE) {
 const container = document.getElementById('root');
 if (!container) {
   throw new Error('Root container is missing.');
+}
+
+function LoadingFallback() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#0f172a' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ width: 40, height: 40, border: '3px solid rgba(99,102,241,0.3)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
+        <p style={{ color: '#94a3b8', fontSize: 14 }}>Loading...</p>
+      </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 }
 
 function PageWrapper({ children }) {
@@ -232,7 +241,9 @@ function AnimatedRoutes() {
   const app = (
     <BrowserRouter>
       <ErrorBoundary>
-        <AnimatedRoutes />
+        <Suspense fallback={<LoadingFallback />}>
+          <AnimatedRoutes />
+        </Suspense>
       </ErrorBoundary>
     </BrowserRouter>
   );
@@ -246,8 +257,3 @@ function AnimatedRoutes() {
 serviceWorkerRegistration.unregister();
 
 startOfflineSync();
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-//reportWebVitals();
