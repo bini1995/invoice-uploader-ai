@@ -140,11 +140,11 @@ router.get('/quick-stats', authMiddleware, async (req, res) => {
     const { rows } = await pool.query(
       `SELECT 
         COUNT(*) as total_claims,
-        COUNT(*) FILTER (WHERE status = 'pending') as pending_claims,
-        COUNT(*) FILTER (WHERE status = 'approved') as approved_claims,
-        COUNT(*) FILTER (WHERE status = 'denied' OR status = 'rejected') as denied_claims,
-        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') as claims_this_month,
-        ROUND(AVG(CASE WHEN overall_confidence IS NOT NULL THEN overall_confidence ELSE NULL END)::numeric, 1) as avg_confidence
+        COUNT(*) FILTER (WHERE d.status = 'pending') as pending_claims,
+        COUNT(*) FILTER (WHERE d.status = 'approved') as approved_claims,
+        COUNT(*) FILTER (WHERE d.status = 'denied' OR d.status = 'rejected') as denied_claims,
+        COUNT(*) FILTER (WHERE d.created_at >= NOW() - INTERVAL '30 days') as claims_this_month,
+        ROUND(AVG(CASE WHEN cf.overall_confidence IS NOT NULL THEN cf.overall_confidence ELSE NULL END)::numeric, 1) as avg_confidence
       FROM documents d
       LEFT JOIN claim_fields cf ON cf.document_id = d.id
       WHERE d.tenant_id = $1`,
@@ -183,15 +183,15 @@ router.get('/vendor-scorecards', authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT 
-        COALESCE(fields->>'provider_name', fields->>'vendor', 'Unknown') as vendor_name,
+        COALESCE(d.fields->>'provider_name', d.fields->>'vendor', 'Unknown') as vendor_name,
         COUNT(*) as total_claims,
-        COUNT(*) FILTER (WHERE status = 'approved') as approved,
-        COUNT(*) FILTER (WHERE status = 'denied' OR status = 'rejected') as denied,
+        COUNT(*) FILTER (WHERE d.status = 'approved') as approved,
+        COUNT(*) FILTER (WHERE d.status = 'denied' OR d.status = 'rejected') as denied,
         ROUND(AVG(CASE WHEN cf.overall_confidence IS NOT NULL THEN cf.overall_confidence ELSE NULL END)::numeric, 1) as avg_confidence
       FROM documents d
       LEFT JOIN claim_fields cf ON cf.document_id = d.id
       WHERE d.tenant_id = $1
-      GROUP BY COALESCE(fields->>'provider_name', fields->>'vendor', 'Unknown')
+      GROUP BY COALESCE(d.fields->>'provider_name', d.fields->>'vendor', 'Unknown')
       ORDER BY total_claims DESC
       LIMIT 20`,
       [req.tenantId]

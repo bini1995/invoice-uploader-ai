@@ -10,7 +10,7 @@ const countryRisk = {
   medium: ['Mexico', 'Brazil', 'India'],
 };
 
-export const listVendors = async (_req, res) => {
+export const listVendors = async (req, res) => {
   try {
     const invoiceRes = await pool.query(
       'SELECT vendor, MAX(date) AS last_invoice, SUM(amount) AS total_spend FROM invoices GROUP BY vendor'
