@@ -5,15 +5,12 @@ import {
   CheckCircleIcon, 
   ShieldCheckIcon, 
   SparklesIcon,
-  CpuChipIcon,
   CloudArrowUpIcon,
   DocumentCheckIcon,
   ClockIcon,
-  CurrencyDollarIcon,
-  ArrowTrendingUpIcon,
-  InboxIcon,
-  ExclamationTriangleIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  DocumentTextIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 import LoginLink from './components/LoginLink';
 import PricingSection from './components/PricingSection';
@@ -25,13 +22,13 @@ import { logEvent, getRequestId } from './lib/analytics';
 import { Link } from 'react-router-dom';
 
 const DEMO_URL = 'https://calendly.com/clarifyops-demo';
-const HEADER_HEIGHT = 72;
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [sampleStep, setSampleStep] = useState(0);
 
-  const scheduleDemo = source => {
+  const scheduleDemo = (source) => {
     logEvent('demo_click', { source, request_id: getRequestId() });
     window.open(DEMO_URL, '_blank', 'noopener');
   };
@@ -59,8 +56,8 @@ export default function LandingPage() {
           
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-700">
             <a href="#how-it-works" className="hover:text-blue-600 transition-colors">How it Works</a>
-            <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-            <a href="#results" className="hover:text-blue-600 transition-colors">Results</a>
+            <a href="#what-you-get" className="hover:text-blue-600 transition-colors">What You Get</a>
+            <a href="#who-its-for" className="hover:text-blue-600 transition-colors">Who It's For</a>
             <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
             {token ? (
               <a
@@ -76,7 +73,7 @@ export default function LandingPage() {
               </LoginLink>
             )}
             <a href="/signup" className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
-              Get Started Free
+              Start Free
             </a>
           </div>
 
@@ -92,8 +89,8 @@ export default function LandingPage() {
           <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
             <div className="px-6 py-4 space-y-4">
               <a href="#how-it-works" className="block hover:text-blue-600 transition-colors">How it Works</a>
-              <a href="#features" className="block hover:text-blue-600 transition-colors">Features</a>
-              <a href="#results" className="block hover:text-blue-600 transition-colors">Results</a>
+              <a href="#what-you-get" className="block hover:text-blue-600 transition-colors">What You Get</a>
+              <a href="#who-its-for" className="block hover:text-blue-600 transition-colors">Who It's For</a>
               <a href="#pricing" className="block hover:text-blue-600 transition-colors">Pricing</a>
               {token ? (
                 <a
@@ -109,7 +106,7 @@ export default function LandingPage() {
                 </LoginLink>
               )}
               <a href="/signup" className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
-                Get Started Free
+                Start Free
               </a>
             </div>
           </div>
@@ -117,32 +114,31 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        {/* Beta Pilot Announcement Banner */}
-        <div className="bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-600 text-white py-3 px-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,_rgba(255,255,255,0.1),_transparent_60%)]" />
-          <div className="relative flex flex-wrap items-center justify-center gap-3 text-sm">
-            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-white/20 rounded-full text-xs font-bold uppercase tracking-wide backdrop-blur">
-              Beta Pilot
+        {/* Pilot Banner */}
+        <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white py-3 px-6 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
+            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-emerald-500/20 rounded-full text-xs font-bold uppercase tracking-wide text-emerald-300 border border-emerald-500/30">
+              Early Pilot
             </span>
             <span className="font-medium">
-              Join our Beta Pilot — <strong>Free tier available</strong> (50 claims/mo) | Paid plans from <strong>$249/mo</strong> (normally $599)
+              We're running design pilots with adjusting firms — <strong>free to try on your own files</strong>
             </span>
             <a 
-              href="#pricing" 
-              className="inline-flex items-center gap-1 px-4 py-1 bg-white text-indigo-700 rounded-full text-xs font-bold hover:bg-indigo-50 transition-colors"
+              href="#pilot" 
+              className="inline-flex items-center gap-1 px-4 py-1 bg-white text-slate-800 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors"
             >
-              View Beta Pricing
+              Run a Pilot
             </a>
           </div>
         </div>
 
-        {/* ===== HERO SECTION — Pain-First Messaging ===== */}
-        <section className="relative bg-slate-950 text-white py-24 px-6 overflow-hidden">
+        {/* ===== HERO — Helper Positioning ===== */}
+        <section className="relative bg-slate-950 text-white py-20 md:py-28 px-6 overflow-hidden">
           <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.25),_transparent_55%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(99,102,241,0.2),_transparent_55%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.2),_transparent_55%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(99,102,241,0.15),_transparent_55%)]" />
           </div>
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           <div className="relative max-w-7xl mx-auto grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -150,42 +146,25 @@ export default function LandingPage() {
               transition={{ duration: 0.8 }}
               className="text-left"
             >
-              <motion.span 
-                className="inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-6 backdrop-blur"
-                whileHover={{ scale: 1.05 }}
-              >
-                <CheckCircleIcon className="h-4 w-4 mr-2" />
-                HIPAA Ready &bull; SOC 2 In Progress &bull; Enterprise Grade
-              </motion.span>
-              
               <motion.h1 
-                className="text-5xl md:text-6xl font-bold mb-6 leading-[1.1] tracking-tight"
+                className="text-4xl md:text-[3.5rem] font-bold mb-6 leading-[1.12] tracking-tight"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                AI that reads your claims
-                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent block mt-1">
-                  so your adjusters don't have to.
-                </span>
+                Your adjusters start at the
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> review stage</span>,
+                <br className="hidden md:block" />
+                not the typing stage.
               </motion.h1>
               
               <motion.p 
-                className="text-xl md:text-2xl text-white/80 max-w-xl mb-4 leading-relaxed"
+                className="text-lg md:text-xl text-white/75 max-w-xl mb-8 leading-relaxed"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                Upload any claim document. Our AI extracts every field, validates the codes, and routes it to the right person — <strong className="text-white">in minutes, not hours.</strong>
-              </motion.p>
-
-              <motion.p 
-                className="text-base text-white/50 max-w-lg mb-8"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.45 }}
-              >
-                Built for adjusting firms, TPAs, and carriers across every line of business — casualty, property, workers comp, medical, auto, liability, and more. ClarifyOps pulls policy numbers, CPT codes, ICD-10, dates, dollar amounts, and injury details from any document format automatically.
+                ClarifyOps prepares incoming claim files — extracts key details, builds the first summary, and flags issues — <strong className="text-white">before your team touches the documents.</strong>
               </motion.p>
 
               <motion.div 
@@ -194,17 +173,17 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                <div className="flex items-center gap-2 text-white/80">
-                  <ClockIcon className="h-5 w-5 text-emerald-400" />
-                  <span>45 min → 8 min per claim</span>
+                <div className="flex items-center gap-2 text-white/70">
+                  <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                  <span>Works alongside your existing systems</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/80">
-                  <ShieldCheckIcon className="h-5 w-5 text-emerald-400" />
-                  <span>97% extraction accuracy</span>
+                <div className="flex items-center gap-2 text-white/70">
+                  <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                  <span>No integrations required to start</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/80">
-                  <CurrencyDollarIcon className="h-5 w-5 text-emerald-400" />
-                  <span>Pays for itself in 90 days</span>
+                <div className="flex items-center gap-2 text-white/70">
+                  <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                  <span>HIPAA-ready infrastructure</span>
                 </div>
               </motion.div>
 
@@ -215,23 +194,24 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
                 <a 
-                  href="/signup"
+                  href="#sample-claim"
+                  onClick={() => logEvent('cta_sample_claim', { source: 'hero' })}
                   className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
                 >
-                  <CloudArrowUpIcon className="h-5 w-5" />
-                  Try It Free — No Card Needed
+                  <EyeIcon className="h-5 w-5" />
+                  See a Sample Processed Claim
                 </a>
-                <button 
-                  onClick={() => scheduleDemo('hero-schedule')} 
+                <a 
+                  href="/signup"
                   className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
                 >
-                  <SparklesIcon className="h-5 w-5" />
-                  See a Live Demo
-                </button>
+                  Try It Free
+                  <ArrowRightIcon className="h-5 w-5" />
+                </a>
               </motion.div>
             </motion.div>
 
-            {/* Live Extraction Preview Card — the impressive tech */}
+            {/* Prepared Claim Preview — shows the OUTPUT, not the tech */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -242,39 +222,43 @@ export default function LandingPage() {
               <div className="relative rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/50">Live Extraction Preview</p>
-                    <h3 className="text-lg font-semibold text-white">Medical Claim #CLM-2847</h3>
+                    <p className="text-xs uppercase tracking-widest text-white/40">Prepared Claim File</p>
+                    <h3 className="text-lg font-semibold text-white">Ready for adjuster review</h3>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/10 text-emerald-200 text-xs px-3 py-1 border border-emerald-300/20">
                     <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
-                    Extracted
+                    Review-Ready
                   </span>
                 </div>
                 <div className="space-y-3">
                   <div className="rounded-xl bg-white/10 p-3 border border-white/10">
+                    <p className="text-white/40 text-xs mb-2 font-medium">First-Pass Summary</p>
+                    <p className="text-white/90 text-sm leading-relaxed">Casualty claim for lumbar sprain following MVA on 11/15/2024. Claimant treated at Midwest Ortho, 3 visits. Total billed $12,450. CPT 99213, 99214 validated. No duplicate flags. Claim readiness: high.</p>
+                  </div>
+                  <div className="rounded-xl bg-white/10 p-3 border border-white/10">
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <p className="text-white/50 text-xs">Policy Number</p>
+                        <p className="text-white/40 text-xs">Policy</p>
                         <p className="font-medium text-white">POL-2024-847291</p>
                       </div>
                       <div>
-                        <p className="text-white/50 text-xs">Claim Amount</p>
+                        <p className="text-white/40 text-xs">Billed Amount</p>
                         <p className="font-medium text-emerald-300">$12,450.00</p>
                       </div>
                       <div>
-                        <p className="text-white/50 text-xs">CPT Code</p>
-                        <p className="font-medium text-white">99213, 99214</p>
+                        <p className="text-white/40 text-xs">CPT Codes</p>
+                        <p className="font-medium text-white">99213, 99214 <span className="text-emerald-400 text-xs">valid</span></p>
                       </div>
                       <div>
-                        <p className="text-white/50 text-xs">ICD-10</p>
+                        <p className="text-white/40 text-xs">ICD-10</p>
                         <p className="font-medium text-white">M54.5, S39.012A</p>
                       </div>
                     </div>
                   </div>
                   <div className="rounded-xl bg-white/10 p-3 border border-white/10">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-white/50 text-xs">Claim Readiness Score</p>
-                      <span className="text-emerald-300 font-semibold">94%</span>
+                      <p className="text-white/40 text-xs">Claim Readiness</p>
+                      <span className="text-emerald-300 font-semibold text-sm">94%</span>
                     </div>
                     <div className="w-full bg-white/20 rounded-full h-2">
                       <div className="bg-gradient-to-r from-emerald-400 to-emerald-300 h-2 rounded-full" style={{width: '94%'}}></div>
@@ -282,13 +266,13 @@ export default function LandingPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="rounded-lg bg-emerald-500/20 p-2 text-center border border-emerald-500/30">
-                      <p className="text-xs text-emerald-300">Auto-Route</p>
+                      <p className="text-xs text-emerald-300">No Duplicates</p>
                     </div>
                     <div className="rounded-lg bg-blue-500/20 p-2 text-center border border-blue-500/30">
-                      <p className="text-xs text-blue-300">Low Risk</p>
+                      <p className="text-xs text-blue-300">Codes Valid</p>
                     </div>
                     <div className="rounded-lg bg-white/10 p-2 text-center border border-white/20">
-                      <p className="text-xs text-white/70">Complete</p>
+                      <p className="text-xs text-white/70">Ready to Route</p>
                     </div>
                   </div>
                 </div>
@@ -297,309 +281,365 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ===== "WE GET IT" — Empathy Section ===== */}
-        <section className="py-20 px-6 bg-white">
-          <div className="max-w-7xl mx-auto">
+        {/* ===== SECTION 2 — THE DAILY PROBLEM ===== */}
+        <section id="how-it-works" className="py-20 px-6 bg-white">
+          <div className="max-w-5xl mx-auto">
             <motion.div 
               className="text-center mb-16"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-red-50 text-red-700 border border-red-200 mb-6">
-                <ExclamationTriangleIcon className="h-4 w-4" />
-                Sound familiar?
-              </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Your team is drowning. <span className="text-red-500">We know.</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                What happens after a claim hits the inbox
               </h2>
-              <p className="text-xl text-gray-500 max-w-3xl mx-auto">
-                Every adjuster in America deals with the same grind. We built ClarifyOps because we watched it happen — and knew AI could fix it.
+              <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+                Every adjuster knows this routine. ClarifyOps handles the prep work so your team can skip to what matters.
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+              {/* Without ClarifyOps */}
+              <motion.div 
+                className="rounded-2xl border-2 border-red-100 bg-red-50/30 p-8"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+                    <ClockIcon className="h-5 w-5 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-red-900">Today (45+ min per claim)</h3>
+                </div>
+                <ol className="space-y-4">
+                  {[
+                    "Download attachments from email",
+                    "Open each document, read through pages",
+                    "Manually pull dates, providers, codes",
+                    "Type up initial summary",
+                    "Check for coding errors",
+                    "Only then begin actual adjusting"
+                  ].map((step, i) => (
+                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+                      <span className="text-sm leading-relaxed">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </motion.div>
+
+              {/* With ClarifyOps */}
+              <motion.div 
+                className="rounded-2xl border-2 border-emerald-100 bg-emerald-50/30 p-8"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                    <CheckCircleIcon className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-emerald-900">With ClarifyOps (under 8 min)</h3>
+                </div>
+                <ol className="space-y-4">
+                  {[
+                    { step: "Upload the claim file", detail: "PDF, Word, image, or batch upload" },
+                    { step: "Review the prepared summary", detail: "Key fields already extracted and organized" },
+                    { step: "Start adjusting", detail: "Your adjuster picks up where ClarifyOps leaves off" }
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900 block">{item.step}</span>
+                        <span className="text-sm text-gray-500">{item.detail}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                <div className="mt-8 pt-6 border-t border-emerald-200">
+                  <p className="text-sm text-emerald-800 font-medium">Your team still makes every decision. ClarifyOps just makes sure the file is ready when they open it.</p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===== SECTION 3 — WHAT THEY ACTUALLY RECEIVE (Output Artifacts) ===== */}
+        <section id="what-you-get" className="py-20 px-6 bg-gradient-to-br from-slate-50 to-blue-50/50">
+          <div className="max-w-6xl mx-auto">
+            <motion.div 
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                What your adjusters actually receive
+              </h2>
+              <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+                Not a dashboard to learn. Not a platform to configure. These are the outputs waiting in your queue every morning.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-6">
               {[
                 {
-                  pain: "60-page medical packets hit your inbox at 8 AM",
-                  relief: "Summarized and extracted before your first meeting",
-                  icon: InboxIcon,
-                  stat: "45 min → 8 min",
-                  iconBg: "bg-blue-100 group-hover:bg-blue-600",
-                  iconColor: "text-blue-600 group-hover:text-white"
+                  title: "Prepared Claim Summary",
+                  description: "Every key field extracted and organized: policy numbers, claimant info, dates of service, providers, billed amounts, and injury details. Your adjuster opens a ready-made brief, not a stack of papers.",
+                  detail: "Includes per-field confidence scores so reviewers know exactly what to trust and what to double-check.",
+                  icon: DocumentTextIcon,
+                  iconBg: "bg-blue-100 text-blue-600",
                 },
                 {
-                  pain: "Keying in CPT codes, policy numbers, dates by hand",
-                  relief: "AI pulls every field — you just review and approve",
-                  icon: DocumentCheckIcon,
-                  stat: "97% accuracy",
-                  iconBg: "bg-emerald-100 group-hover:bg-emerald-600",
-                  iconColor: "text-emerald-600 group-hover:text-white"
+                  title: "Medical Chronology",
+                  description: "A clean timeline of treatments, providers, and diagnoses built automatically from claim documents. Essential for complex cases, workers' comp, and litigation support.",
+                  detail: "Interactive visualization — click any event to see the source document.",
+                  icon: ClockIcon,
+                  iconBg: "bg-purple-100 text-purple-600",
                 },
                 {
-                  pain: "Duplicate claims slip through and cost you thousands",
-                  relief: "Flagged automatically before payment goes out",
-                  icon: ExclamationTriangleIcon,
-                  stat: "$380K saved avg",
-                  iconBg: "bg-amber-100 group-hover:bg-amber-600",
-                  iconColor: "text-amber-600 group-hover:text-white"
-                },
-                {
-                  pain: "Compliance audits keep you up at night",
-                  relief: "Every action logged, every field traceable, always",
+                  title: "Duplicate & Billing Flags",
+                  description: "Potential duplicate claims and CPT/ICD-10 code issues flagged before anyone reviews the file. Catches what simple text matching misses using semantic analysis.",
+                  detail: "Average savings: prevents overpayments before they happen.",
                   icon: ShieldCheckIcon,
-                  stat: "100% audit trail",
-                  iconBg: "bg-purple-100 group-hover:bg-purple-600",
-                  iconColor: "text-purple-600 group-hover:text-white"
-                }
+                  iconBg: "bg-amber-100 text-amber-600",
+                },
+                {
+                  title: "Structured Export",
+                  description: "Pull prepared data into your existing system however you want — CSV, Excel, webhook, API, or Zapier. ClarifyOps fits into your workflow, not the other way around.",
+                  detail: "No migration required. Use it alongside what you have today.",
+                  icon: CloudArrowUpIcon,
+                  iconBg: "bg-emerald-100 text-emerald-600",
+                },
               ].map((item, index) => (
                 <motion.div
-                  key={item.pain}
-                  className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_50px_-15px_rgba(59,130,246,0.25)] transition-all duration-500 group"
+                  key={item.title}
+                  className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300 ${item.iconBg}`}>
-                    <item.icon className={`h-5 w-5 transition-colors duration-300 ${item.iconColor}`} />
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${item.iconBg}`}>
+                    <item.icon className="h-6 w-6" />
                   </div>
-                  <p className="text-red-400 text-sm font-medium mb-2 line-through decoration-red-300/60">{item.pain}</p>
-                  <p className="text-gray-900 font-semibold text-base mb-4">{item.relief}</p>
-                  <div className="pt-3 border-t border-gray-100">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{item.stat}</span>
-                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed mb-3">{item.description}</p>
+                  <p className="text-gray-400 text-xs leading-relaxed italic">{item.detail}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ===== HOW IT WORKS — Framed as relief steps ===== */}
-        <section id="how-it-works" className="py-20 px-6 bg-gradient-to-br from-slate-50 to-blue-50/50">
-          <div className="max-w-7xl mx-auto">
+        {/* ===== INTERACTIVE SAMPLE PROCESSED CLAIM ===== */}
+        <section id="sample-claim" className="py-20 px-6 bg-white">
+          <div className="max-w-5xl mx-auto">
             <motion.div 
-              className="text-center mb-16"
+              className="text-center mb-12"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                From inbox chaos to done — in 4 steps
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                See what a processed claim looks like
               </h2>
-              <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-                No training needed. No complex setup. Upload a claim and watch it work.
+              <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+                This is what your adjuster sees when they open a claim that ClarifyOps has already prepared. Click through each tab.
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-4 gap-8">
-              {[
-                {
-                  number: "01",
-                  title: "Drop the document",
-                  description: "Upload any claim PDF, medical packet, or EOB. Drag and drop — or batch upload 50 at a time.",
-                  icon: CloudArrowUpIcon
-                },
-                {
-                  number: "02", 
-                  title: "AI reads everything",
-                  description: "Every CPT code, ICD-10, policy number, date of service, provider, and dollar amount — extracted in seconds.",
-                  icon: CpuChipIcon
-                },
-                {
-                  number: "03",
-                  title: "Review what matters",
-                  description: "Confidence scores tell you which fields are solid and which need a second look. High confidence? Auto-approve.",
-                  icon: CheckCircleIcon
-                },
-                {
-                  number: "04",
-                  title: "Route and deliver",
-                  description: "Claims auto-route to the right queue. Export to your system via API, webhook, CSV, or Zapier.",
-                  icon: ArrowTrendingUpIcon
-                }
-              ].map((step, index) => (
-                <motion.div
-                  key={step.number}
-                  className="text-left relative bg-white border border-gray-100 rounded-2xl p-6 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.1)] hover:shadow-lg transition-all duration-300"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.12 }}
-                  whileHover={{ y: -4 }}
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-slate-900 to-slate-700 text-white rounded-2xl flex items-center justify-center font-bold text-sm shadow-lg">
-                      {step.number}
+            <motion.div
+              className="rounded-2xl border border-gray-200 shadow-xl overflow-hidden bg-white"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              {/* Tab bar */}
+              <div className="flex border-b border-gray-200 bg-gray-50">
+                {["Summary", "Extracted Fields", "Medical Timeline", "Flags"].map((tab, i) => (
+                  <button
+                    key={tab}
+                    onClick={() => setSampleStep(i)}
+                    className={`flex-1 py-3.5 px-4 text-sm font-medium transition-colors ${
+                      sampleStep === i 
+                        ? 'bg-white text-blue-600 border-b-2 border-blue-600 shadow-sm' 
+                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab content */}
+              <div className="p-8 min-h-[320px]">
+                {sampleStep === 0 && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-bold text-gray-900">Claim #CLM-2024-0847</h3>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        94% Ready
+                      </span>
                     </div>
-                    <step.icon className="h-5 w-5 text-blue-500" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{step.description}</p>
-                </motion.div>
-              ))}
-            </div>
+                    <div className="bg-blue-50 rounded-xl p-5 border border-blue-100">
+                      <p className="text-sm text-gray-700 leading-relaxed">
+                        <strong>Auto-generated summary:</strong> Casualty claim filed by Maria Rodriguez following motor vehicle accident on 11/15/2024 in Cook County, IL. Claimant treated at Midwest Orthopedic Associates for lumbar sprain (ICD-10: M54.5) and abdominal contusion (S39.012A). Three office visits billed under CPT 99213 and 99214. Total billed amount: $12,450.00. Policy POL-2024-384291 is active. No duplicate claims detected. All CPT/ICD codes validated against CMS database.
+                      </p>
+                    </div>
+                    <p className="text-xs text-gray-400">This summary was generated automatically from a 42-page claim packet. Your adjuster reviews and adjusts — no typing required.</p>
+                  </motion.div>
+                )}
+
+                {sampleStep === 1 && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {[
+                        { label: "Claimant", value: "Maria Rodriguez", confidence: 99 },
+                        { label: "Policy Number", value: "POL-2024-384291", confidence: 98 },
+                        { label: "Date of Loss", value: "11/15/2024", confidence: 97 },
+                        { label: "Claim Type", value: "Casualty", confidence: 95 },
+                        { label: "Billed Amount", value: "$12,450.00", confidence: 96 },
+                        { label: "Provider", value: "Midwest Orthopedic Associates", confidence: 92 },
+                        { label: "CPT Codes", value: "99213, 99214", confidence: 97 },
+                        { label: "ICD-10", value: "M54.5, S39.012A", confidence: 98 },
+                        { label: "Jurisdiction", value: "Cook County, IL", confidence: 88 },
+                      ].map(field => (
+                        <div key={field.label} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                          <p className="text-xs text-gray-400 mb-1">{field.label}</p>
+                          <p className="text-sm font-semibold text-gray-900">{field.value}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                              <div 
+                                className={`h-1.5 rounded-full ${field.confidence >= 95 ? 'bg-emerald-500' : field.confidence >= 90 ? 'bg-blue-500' : 'bg-amber-500'}`}
+                                style={{ width: `${field.confidence}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-gray-500">{field.confidence}%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-4">Each field includes a confidence score. Green = high confidence (auto-approve). Amber = worth a second look.</p>
+                  </motion.div>
+                )}
+
+                {sampleStep === 2 && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-0">
+                    <p className="text-sm text-gray-500 mb-6">Auto-generated medical chronology from claim documents:</p>
+                    {[
+                      { date: "11/15/2024", event: "Motor vehicle accident — Cook County, IL", type: "Incident" },
+                      { date: "11/16/2024", event: "ER visit — lumbar pain, abdominal tenderness. X-ray ordered.", type: "Emergency" },
+                      { date: "11/22/2024", event: "Office visit — Midwest Ortho. Dx: lumbar sprain (M54.5). CPT 99213.", type: "Office Visit" },
+                      { date: "12/06/2024", event: "Follow-up — improvement noted, PT recommended. CPT 99213.", type: "Office Visit" },
+                      { date: "12/20/2024", event: "Final evaluation — cleared for normal activity. CPT 99214.", type: "Office Visit" },
+                    ].map((entry, i) => (
+                      <div key={i} className="flex gap-4 items-start">
+                        <div className="flex flex-col items-center">
+                          <div className={`w-3 h-3 rounded-full flex-shrink-0 mt-1.5 ${
+                            entry.type === 'Incident' ? 'bg-red-500' : entry.type === 'Emergency' ? 'bg-amber-500' : 'bg-blue-500'
+                          }`} />
+                          {i < 4 && <div className="w-0.5 h-12 bg-gray-200 mt-1" />}
+                        </div>
+                        <div className="pb-6">
+                          <p className="text-xs font-semibold text-gray-400">{entry.date} <span className={`ml-2 px-2 py-0.5 rounded text-xs ${
+                            entry.type === 'Incident' ? 'bg-red-50 text-red-600' : entry.type === 'Emergency' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
+                          }`}>{entry.type}</span></p>
+                          <p className="text-sm text-gray-700 mt-1">{entry.event}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {sampleStep === 3 && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                    <div className="rounded-xl bg-emerald-50 p-5 border border-emerald-200">
+                      <div className="flex items-start gap-3">
+                        <CheckCircleIcon className="h-6 w-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-emerald-800">No duplicate claims found</p>
+                          <p className="text-sm text-emerald-700 mt-1">Checked against 2,847 claims in your database using semantic matching.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-xl bg-emerald-50 p-5 border border-emerald-200">
+                      <div className="flex items-start gap-3">
+                        <CheckCircleIcon className="h-6 w-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-emerald-800">All CPT codes validated</p>
+                          <p className="text-sm text-emerald-700 mt-1">99213 (Office visit, est. patient, low complexity) and 99214 (Office visit, est. patient, moderate complexity) confirmed against CMS database.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-xl bg-emerald-50 p-5 border border-emerald-200">
+                      <div className="flex items-start gap-3">
+                        <CheckCircleIcon className="h-6 w-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-emerald-800">ICD-10 codes valid and consistent</p>
+                          <p className="text-sm text-emerald-700 mt-1">M54.5 (Low back pain) and S39.012A (Contusion of abdominal wall) match reported injuries and treatment.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-400">All checks run automatically when the claim file is uploaded. Your adjuster sees these results immediately.</p>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* ===== RESULTS — Outcome metrics, not tech specs ===== */}
-        <section id="results" className="py-20 px-6 bg-slate-950 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.15),_transparent_65%)]" />
-          <div className="relative max-w-7xl mx-auto">
+        {/* ===== SECTION 4 — LOW RISK ADOPTION ===== */}
+        <section className="py-20 px-6 bg-slate-950 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.12),_transparent_65%)]" />
+          <div className="relative max-w-5xl mx-auto">
             <motion.div 
               className="text-center mb-16"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl font-bold mb-4">
-                Real results from real claims teams
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                No integrations required
               </h2>
-              <p className="text-xl text-white/60 max-w-2xl mx-auto">
-                Not projections. Not lab tests. These are numbers from adjusters processing live claims every day.
+              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+                Use ClarifyOps alongside your existing system. Export results or push them automatically when you're ready. Nothing to replace — just less manual work.
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-3 gap-8">
               {[
-                { value: "82", unit: "%", label: "Less Time on Data Entry", description: "Your adjusters get their afternoons back" },
-                { value: "$4.6", unit: "M", label: "Overpayments Prevented", description: "Average annual savings per organization" },
-                { value: "8", unit: "min", label: "Avg Claim Turnaround", description: "Down from 45 minutes of manual work" },
-                { value: "3", unit: "x", label: "More Claims Per Adjuster", description: "Same team, triple the throughput" }
-              ].map((metric, index) => (
+                { 
+                  title: "Upload anything", 
+                  description: "PDFs, Word docs, images, scanned files. Drop them individually or batch upload 50 at a time.", 
+                  icon: CloudArrowUpIcon 
+                },
+                { 
+                  title: "Review prepared files", 
+                  description: "Your team opens claim files that are already organized with extracted data, summaries, and flags.", 
+                  icon: DocumentCheckIcon 
+                },
+                { 
+                  title: "Export your way", 
+                  description: "CSV, Excel, API, webhook, or Zapier. Pull data into whatever system you already use. No migration needed.", 
+                  icon: ArrowRightIcon 
+                },
+              ].map((item, index) => (
                 <motion.div
-                  key={metric.label}
+                  key={item.title}
                   className="text-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur hover:bg-white/10 transition-all duration-300"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent mb-2">
-                    {metric.value}<span className="text-3xl">{metric.unit}</span>
+                  <div className="w-14 h-14 rounded-2xl bg-blue-500/20 flex items-center justify-center mx-auto mb-5">
+                    <item.icon className="h-7 w-7 text-blue-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{metric.label}</h3>
-                  <p className="text-white/50 text-sm">{metric.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ===== FEATURES — Platform capabilities with outcome framing ===== */}
-        <section id="features" className="py-20 px-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <span className="inline-block px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 border border-indigo-200 mb-6">
-                Powerful Under the Hood
-              </span>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Six capabilities your team will actually use
-              </h2>
-              <p className="text-xl text-gray-500 max-w-3xl mx-auto">
-                Every feature solves a specific daily headache — included at every plan level, not sold as add-ons.
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "Batch Upload",
-                  description: "Drop 50 claim documents at once. Each file is automatically classified, deduplicated, and extracted — no babysitting required.",
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                  ),
-                  stat: "50 files at a time",
-                  iconBg: "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
-                  statBg: "bg-blue-50 text-blue-700"
-                },
-                {
-                  title: "Plain English Search",
-                  description: "Search across all your claims with natural language. Ask \"show me knee surgery claims from January\" and get instant results.",
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  ),
-                  stat: "AI-powered semantic matching",
-                  iconBg: "bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white",
-                  statBg: "bg-purple-50 text-purple-700"
-                },
-                {
-                  title: "Medical Chronology",
-                  description: "Auto-generate visual timelines of treatments, providers, and diagnoses. Critical for workers' comp and complex medical histories.",
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  ),
-                  stat: "Auto-generated timelines",
-                  iconBg: "bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white",
-                  statBg: "bg-emerald-50 text-emerald-700"
-                },
-                {
-                  title: "Confidence Scoring",
-                  description: "Every extracted field gets a 0-100% confidence score. Your reviewers know exactly which fields to trust and which need a second look.",
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  ),
-                  stat: "Per-field accuracy scores",
-                  iconBg: "bg-amber-100 text-amber-600 group-hover:bg-amber-600 group-hover:text-white",
-                  statBg: "bg-amber-50 text-amber-700"
-                },
-                {
-                  title: "Duplicate Detection",
-                  description: "AI flags potential duplicate claims before payment goes out. Semantic matching catches what simple text matching misses.",
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  ),
-                  stat: "Prevents overpayments",
-                  iconBg: "bg-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white",
-                  statBg: "bg-rose-50 text-rose-700"
-                },
-                {
-                  title: "Deliver Anywhere",
-                  description: "Export to CSV/Excel, set up webhooks with HMAC signing, connect via Zapier, or pull data through our REST API. Your data, your way.",
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                  ),
-                  stat: "4 delivery pathways",
-                  iconBg: "bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white",
-                  statBg: "bg-indigo-50 text-indigo-700"
-                }
-              ].map((cap, index) => (
-                <motion.div
-                  key={cap.title}
-                  className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all duration-300 group"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.08 }}
-                  whileHover={{ y: -4 }}
-                >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300 ${cap.iconBg}`}>
-                    {cap.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{cap.title}</h3>
-                  <p className="text-sm text-gray-500 mb-3 leading-relaxed">{cap.description}</p>
-                  <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${cap.statBg}`}>
-                    {cap.stat}
-                  </span>
+                  <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
+                  <p className="text-white/60 text-sm leading-relaxed">{item.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -609,21 +649,20 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
             >
-              <a
+              <a 
                 href="/signup"
-                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-medium hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/25 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg"
               >
-                Try All Features Free
+                Try It on Your Own Claims — Free
                 <ArrowRightIcon className="w-4 h-4" />
               </a>
             </motion.div>
           </div>
         </section>
 
-        {/* ===== COMPARISON TABLE ===== */}
-        <section className="py-20 px-6 bg-white">
+        {/* ===== SECTION 5 — WHO IT'S FOR ===== */}
+        <section id="who-its-for" className="py-20 px-6 bg-white">
           <div className="max-w-5xl mx-auto">
             <motion.div 
               className="text-center mb-16"
@@ -631,160 +670,155 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Why teams switch to ClarifyOps
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Built for teams that handle document-heavy claims
               </h2>
-              <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-                Built specifically for claims — not retrofitted from generic document extraction
+              <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+                If your people spend more time typing than adjusting, ClarifyOps was built for you.
               </p>
             </motion.div>
 
-            <motion.div 
-              className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg"
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Independent Adjusting Firms",
+                  description: "Your adjusters handle high volumes across casualty, property, workers' comp, and more. ClarifyOps prepares each file so they can get to the actual adjusting faster.",
+                  cta: "Perfect for firms with 5-100 adjusters"
+                },
+                {
+                  title: "Legal Demand & Medical Record Review",
+                  description: "Build medical chronologies and structured summaries from hundreds of pages of records. Save hours on demand package preparation and case review.",
+                  cta: "Ideal for PI firms and review services"
+                },
+                {
+                  title: "Claims Service Providers",
+                  description: "Handle intake and triage for multiple clients. ClarifyOps creates a consistent, review-ready output regardless of how documents arrive.",
+                  cta: "Scale intake without scaling headcount"
+                },
+              ].map((item, index) => (
+                <motion.div
+                  key={item.title}
+                  className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4">{item.description}</p>
+                  <p className="text-blue-600 text-xs font-semibold">{item.cta}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===== SECTION 6 — EARLY PILOT SOCIAL PROOF ===== */}
+        <section id="pilot" className="py-20 px-6 bg-gradient-to-br from-indigo-50 via-white to-blue-50">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-slate-900 text-white">
-                    <th className="text-left py-4 px-6 font-semibold">Capability</th>
-                    <th className="text-center py-4 px-6 font-semibold bg-emerald-600">ClarifyOps</th>
-                    <th className="text-center py-4 px-6 font-semibold">Manual Process</th>
-                    <th className="text-center py-4 px-6 font-semibold">Generic AI Tools</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { feature: "Claims-Native AI Extraction", clarifyops: true, traditional: false, competitors: "partial" },
-                    { feature: "CPT / ICD-10 Validation", clarifyops: true, traditional: false, competitors: false },
-                    { feature: "Duplicate Claim Detection", clarifyops: true, traditional: false, competitors: "partial" },
-                    { feature: "Confidence Scoring Per Field", clarifyops: true, traditional: false, competitors: false },
-                    { feature: "Medical Chronology View", clarifyops: true, traditional: false, competitors: false },
-                    { feature: "HIPAA-Ready Infrastructure", clarifyops: true, traditional: "partial", competitors: true },
-                    { feature: "Built-in Adjuster Workflow", clarifyops: true, traditional: false, competitors: false },
-                    { feature: "Free Tier Available", clarifyops: true, traditional: false, competitors: "partial" }
-                  ].map((row, index) => (
-                    <tr key={row.feature} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                      <td className="py-4 px-6 font-medium text-gray-900">{row.feature}</td>
-                      <td className="py-4 px-6 text-center bg-emerald-50">
-                        {row.clarifyops === true ? (
-                          <CheckCircleIcon className="h-6 w-6 text-emerald-600 mx-auto" />
-                        ) : row.clarifyops === 'partial' ? (
-                          <span className="text-yellow-600">Partial</span>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </td>
-                      <td className="py-4 px-6 text-center">
-                        {row.traditional === true ? (
-                          <CheckCircleIcon className="h-6 w-6 text-emerald-600 mx-auto" />
-                        ) : row.traditional === 'partial' ? (
-                          <span className="text-yellow-600">Partial</span>
-                        ) : (
-                          <span className="text-red-400">-</span>
-                        )}
-                      </td>
-                      <td className="py-4 px-6 text-center">
-                        {row.competitors === true ? (
-                          <CheckCircleIcon className="h-6 w-6 text-emerald-600 mx-auto" />
-                        ) : row.competitors === 'partial' ? (
-                          <span className="text-yellow-600">Partial</span>
-                        ) : (
-                          <span className="text-red-400">-</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </motion.div>
-
-            <motion.div 
-              className="text-center mt-8"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <a 
-                href="/signup"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg"
-              >
-                <SparklesIcon className="h-5 w-5" />
-                Start Free Trial
-              </a>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700 border border-indigo-200 mb-6">
+                <SparklesIcon className="h-4 w-4" />
+                Early Design Pilots
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                We measure real handling-time reduction using your own files
+              </h2>
+              <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-8">
+                We're working with a small number of adjusting firms to measure exactly how much time ClarifyOps saves per claim. No commitment — just upload some files and see the results.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-6 mb-10 text-left">
+                {[
+                  { title: "Upload 20 claims", detail: "Use real files or anonymized ones. We process them and show you exactly what your team would receive." },
+                  { title: "Compare handling time", detail: "We measure prep time before and after — you'll see the difference on your own documents." },
+                  { title: "Keep everything", detail: "All extracted data, summaries, and chronologies are yours. Export them however you want." },
+                ].map((step, i) => (
+                  <div key={i} className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 font-bold text-sm flex items-center justify-center mb-3">{i + 1}</div>
+                    <h4 className="font-semibold text-gray-900 mb-2">{step.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{step.detail}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a 
+                  href="/signup"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-semibold shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300"
+                >
+                  Run a Pilot — Free
+                  <ArrowRightIcon className="h-5 w-5" />
+                </a>
+                <button 
+                  onClick={() => scheduleDemo('pilot-section')} 
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-all duration-300"
+                >
+                  Talk to Us First
+                </button>
+              </div>
             </motion.div>
           </div>
         </section>
 
-        {/* Try Document Demo Section */}
+        {/* Try Document Demo Section — KEPT */}
         <TryDocumentDemo />
 
-        {/* ROI Calculator Section */}
+        {/* ROI Calculator Section — KEPT */}
         <ROICalculator />
 
-        {/* Compliance Badges Section */}
+        {/* Compliance Badges Section — KEPT */}
         <ComplianceBadges />
 
-        {/* Testimonials Section */}
+        {/* Testimonials Section — KEPT */}
         <TestimonialsSection />
 
-        {/* Pricing Section */}
+        {/* Pricing Section — KEPT */}
         <PricingSection />
 
-        {/* ===== FINAL CTA — Empathy-driven close ===== */}
-        <section className="py-24 px-6 bg-gradient-to-r from-slate-900 via-indigo-800 to-blue-800 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.08),_transparent_50%)]" />
+        {/* ===== FINAL CTA — Helper close ===== */}
+        <section className="py-24 px-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.05),_transparent_50%)]" />
           <div className="relative max-w-4xl mx-auto text-center">
-            <motion.p
-              className="text-blue-200 text-lg mb-4 font-medium"
+            <motion.h2 
+              className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Your adjusters deserve better than copy-paste.
-            </motion.p>
-            <motion.h2 
-              className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight"
+              Tomorrow morning, your adjusters could open
+              <br />
+              <span className="bg-gradient-to-r from-blue-300 to-emerald-300 bg-clip-text text-transparent">claim files that are already prepared.</span>
+            </motion.h2>
+            <motion.p 
+              className="text-lg text-white/60 mb-10 max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              Give your team the tool that reads
-              <br />
-              <span className="bg-gradient-to-r from-blue-300 to-emerald-300 bg-clip-text text-transparent">the 60-page packet for them.</span>
-            </motion.h2>
-            <motion.p 
-              className="text-xl text-blue-100/70 mb-10 max-w-2xl mx-auto"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              Free tier. No credit card. Set up in 5 minutes. 
-              See why adjusting firms across the country are making the switch.
+              Free to try. No credit card. No integration needed. Upload a few claims and see what your team gets back.
             </motion.p>
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 justify-center"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.2 }}
             >
               <a 
                 href="/signup"
                 className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full shadow-xl transition-all duration-300"
               >
-                <CloudArrowUpIcon className="h-5 w-5" />
                 Start Free — No Card Needed
               </a>
               <button
                 onClick={() => scheduleDemo('cta')}
                 className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
               >
-                <SparklesIcon className="h-5 w-5" />
-                Schedule a Live Demo
+                Schedule a Walkthrough
               </button>
             </motion.div>
           </div>
@@ -800,13 +834,13 @@ export default function LandingPage() {
                 <img src="/logo.png" alt="ClarifyOps" className="h-10 brightness-0 invert" />
               </div>
               <p className="text-gray-400">
-                AI-powered claims processing that gives your team their time back.
+                Claim files prepared before your team opens them.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                <li><a href="#what-you-get" className="hover:text-white transition-colors">What You Get</a></li>
                 <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
                 <li><Link to="/compare" className="hover:text-white transition-colors">Compare</Link></li>
                 <li><Link to="/integrations" className="hover:text-white transition-colors">Integrations</Link></li>
@@ -815,7 +849,7 @@ export default function LandingPage() {
             <div>
               <h3 className="font-semibold mb-4">Use Cases</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/use-cases/workers-comp" className="hover:text-white transition-colors">Workers Comp</Link></li>
+                <li><Link to="/use-cases/workers-comp" className="hover:text-white transition-colors">Workers' Comp</Link></li>
                 <li><Link to="/use-cases/auto-fnol" className="hover:text-white transition-colors">Auto FNOL</Link></li>
                 <li><Link to="/use-cases/medical-billing" className="hover:text-white transition-colors">Medical Billing</Link></li>
               </ul>
@@ -823,10 +857,10 @@ export default function LandingPage() {
             <div>
               <h3 className="font-semibold mb-4">Resources</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/case-studies" className="hover:text-white transition-colors">Case Studies</Link></li>
+                <li><a href="#pilot" className="hover:text-white transition-colors">Run a Pilot</a></li>
                 <li><a href="#roi-calculator" className="hover:text-white transition-colors">ROI Calculator</a></li>
                 <li><Link to="/trust" className="hover:text-white transition-colors">Trust Center</Link></li>
-                <li><a href={supportHref} className="hover:text-white transition-colors">Contact Support</a></li>
+                <li><a href={supportHref} className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
           </div>
