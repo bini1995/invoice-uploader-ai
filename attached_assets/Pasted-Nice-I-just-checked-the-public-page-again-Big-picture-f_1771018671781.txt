@@ -1,0 +1,172 @@
+Nice — I just checked the public page again.
+
+Big picture first:
+
+You are much closer to the right positioning now.
+The site no longer screams “generic AI extractor SaaS”.
+
+But it still has one remaining problem:
+
+It explains what the software does before proving why the buyer cares.
+
+Right now a visitor still needs to think a little.
+Your goal is zero-thinking, instant recognition:
+
+“oh — this saves my adjusters prep time”
+
+Below is a very honest breakdown.
+
+⸻
+
+What improved (this is good)
+
+You successfully shifted away from:
+technical AI language → workflow language
+
+That matters a lot.
+
+A visitor can now understand:
+	•	this touches incoming documents
+	•	this helps before review
+	•	this is not a full claims system replacement
+
+So your earlier risk — “looks like migration software” — is mostly gone.
+
+Good move.
+
+⸻
+
+The remaining friction (why demos may still be low)
+
+Your page still reads like a product description instead of a moment of pain.
+
+An adjuster or ops manager lands and subconsciously asks:
+
+“Where in my day does this help me?”
+
+But the page answers:
+
+“Here is what our AI platform does”
+
+That small mismatch costs replies.
+
+People don’t buy processing tools.
+They buy relief from a specific moment.
+
+⸻
+
+The single most important fix
+
+Your hero section should reference a literal moment in their workday.
+
+Right now it feels conceptual.
+
+You want them picturing their inbox at 9:07am.
+
+⸻
+
+What your top section should feel like
+
+Not:
+AI prepares claims
+
+But:
+When a 60-page file arrives, your adjuster doesn’t start from scratch
+
+That difference dramatically changes response rate.
+
+⸻
+
+Suggested hero rewrite
+
+Headline:
+Your adjuster opens a prepared claim file — not a pile of documents
+
+Subtext:
+ClarifyOps reads incoming claim packets, builds the first summary, and flags issues before review begins.
+
+CTA:
+See what a processed claim looks like
+
+Why:
+Executives visualize workflow moments, not technology capabilities.
+
+⸻
+
+Next section should show BEFORE vs AFTER
+
+Right now you explain features too early.
+
+Instead show contrast:
+
+Before ClarifyOps
+Open every PDF
+Pull details manually
+Write first summary
+Then start adjusting
+
+After ClarifyOps
+Open prepared file
+Review
+Decide
+
+This is the section that converts adjusters.
+
+⸻
+
+Where your site is still slightly dangerous
+
+Anywhere it implies:
+platform
+analytics
+fraud detection
+automation
+
+These trigger procurement brain.
+
+Early customers should feel:
+helper tool
+
+Later customers can feel:
+platform
+
+You’ll earn the right to say “platform” after pilots.
+
+⸻
+
+What will happen if you keep it as is
+
+You will get:
+curious engineers
+few operations replies
+
+After adjustment:
+you’ll get ops replies and pilot calls
+
+You are very close — this is now mostly wording psychology, not product gaps.
+
+⸻
+
+Quick scoring
+
+Clarity to engineer: 9/10
+Clarity to adjuster: 6/10
+Clarity to COO: 7/10
+
+Goal:
+Adjuster & COO both 9/10 in under 5 seconds
+
+⸻
+
+One more small but powerful change
+
+Add a CTA that is NOT “book demo”
+
+Use:
+“Send us one anonymized file — we’ll process it”
+
+This dramatically increases response for early-stage tools because it feels like testing, not committing.
+
+⸻
+
+If you want, next I’ll write the exact above-the-fold + first two sections verbatim so you can paste them in and immediately test response rate.

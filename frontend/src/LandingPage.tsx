@@ -121,18 +121,18 @@ export default function LandingPage() {
               Early Pilot
             </span>
             <span className="font-medium">
-              We're running design pilots with adjusting firms — <strong>free to try on your own files</strong>
+              Send us one anonymized claim file — <strong>we'll process it and send back the results</strong>
             </span>
             <a 
-              href="#pilot" 
+              href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
               className="inline-flex items-center gap-1 px-4 py-1 bg-white text-slate-800 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors"
             >
-              Run a Pilot
+              Send a File
             </a>
           </div>
         </div>
 
-        {/* ===== HERO — Helper Positioning ===== */}
+        {/* ===== HERO — Literal workday moment ===== */}
         <section className="relative bg-slate-950 text-white py-20 md:py-28 px-6 overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.2),_transparent_55%)]" />
@@ -152,10 +152,10 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Your adjusters start at the
-                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> review stage</span>,
+                Your adjuster opens a
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> prepared claim file</span> —
                 <br className="hidden md:block" />
-                not the typing stage.
+                not a pile of documents.
               </motion.h1>
               
               <motion.p 
@@ -164,7 +164,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                ClarifyOps prepares incoming claim files — extracts key details, builds the first summary, and flags issues — <strong className="text-white">before your team touches the documents.</strong>
+                ClarifyOps reads incoming claim packets, builds the first summary, and flags issues <strong className="text-white">before review begins.</strong>
               </motion.p>
 
               <motion.div 
@@ -199,13 +199,14 @@ export default function LandingPage() {
                   className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
                 >
                   <EyeIcon className="h-5 w-5" />
-                  See a Sample Processed Claim
+                  See What a Processed Claim Looks Like
                 </a>
                 <a 
-                  href="/signup"
+                  href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
+                  onClick={() => logEvent('cta_send_file', { source: 'hero' })}
                   className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
                 >
-                  Try It Free
+                  Send Us a File — We'll Process It
                   <ArrowRightIcon className="h-5 w-5" />
                 </a>
               </motion.div>
@@ -281,7 +282,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ===== SECTION 2 — THE DAILY PROBLEM ===== */}
+        {/* ===== SECTION 2 — BEFORE vs AFTER (visceral, not explanatory) ===== */}
         <section id="how-it-works" className="py-20 px-6 bg-white">
           <div className="max-w-5xl mx-auto">
             <motion.div 
@@ -291,75 +292,54 @@ export default function LandingPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                What happens after a claim hits the inbox
+                A 60-page claim file lands in the inbox. Then what?
               </h2>
-              <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-                Every adjuster knows this routine. ClarifyOps handles the prep work so your team can skip to what matters.
-              </p>
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-              {/* Without ClarifyOps */}
               <motion.div 
                 className="rounded-2xl border-2 border-red-100 bg-red-50/30 p-8"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
-                    <ClockIcon className="h-5 w-5 text-red-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-red-900">Today (45+ min per claim)</h3>
-                </div>
-                <ol className="space-y-4">
+                <h3 className="text-lg font-bold text-red-900 mb-6">Before ClarifyOps</h3>
+                <ol className="space-y-5">
                   {[
-                    "Download attachments from email",
-                    "Open each document, read through pages",
-                    "Manually pull dates, providers, codes",
-                    "Type up initial summary",
-                    "Check for coding errors",
-                    "Only then begin actual adjusting"
+                    "Open every PDF",
+                    "Pull details manually",
+                    "Write the first summary",
+                    "Then start adjusting"
                   ].map((step, i) => (
-                    <li key={i} className="flex items-start gap-3 text-gray-700">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
-                      <span className="text-sm leading-relaxed">{step}</span>
+                    <li key={i} className="flex items-center gap-3 text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                      <span className="text-base">{step}</span>
                     </li>
                   ))}
                 </ol>
+                <p className="text-sm text-red-800/60 mt-6 pt-4 border-t border-red-200">45+ minutes before the real work begins</p>
               </motion.div>
 
-              {/* With ClarifyOps */}
               <motion.div 
                 className="rounded-2xl border-2 border-emerald-100 bg-emerald-50/30 p-8"
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                    <CheckCircleIcon className="h-5 w-5 text-emerald-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-emerald-900">With ClarifyOps (under 8 min)</h3>
-                </div>
-                <ol className="space-y-4">
+                <h3 className="text-lg font-bold text-emerald-900 mb-6">After ClarifyOps</h3>
+                <ol className="space-y-5">
                   {[
-                    { step: "Upload the claim file", detail: "PDF, Word, image, or batch upload" },
-                    { step: "Review the prepared summary", detail: "Key fields already extracted and organized" },
-                    { step: "Start adjusting", detail: "Your adjuster picks up where ClarifyOps leaves off" }
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-gray-700">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
-                      <div>
-                        <span className="text-sm font-semibold text-gray-900 block">{item.step}</span>
-                        <span className="text-sm text-gray-500">{item.detail}</span>
-                      </div>
+                    "Open prepared file",
+                    "Review",
+                    "Decide"
+                  ].map((step, i) => (
+                    <li key={i} className="flex items-center gap-3 text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                      <span className="text-base font-medium">{step}</span>
                     </li>
                   ))}
                 </ol>
-                <div className="mt-8 pt-6 border-t border-emerald-200">
-                  <p className="text-sm text-emerald-800 font-medium">Your team still makes every decision. ClarifyOps just makes sure the file is ready when they open it.</p>
-                </div>
+                <p className="text-sm text-emerald-800 font-medium mt-6 pt-4 border-t border-emerald-200">Your adjuster still makes every decision.</p>
               </motion.div>
             </div>
           </div>
@@ -378,7 +358,7 @@ export default function LandingPage() {
                 What your adjusters actually receive
               </h2>
               <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-                Not a dashboard to learn. Not a platform to configure. These are the outputs waiting in your queue every morning.
+                Not a dashboard to learn. Not a system to configure. These are the outputs waiting in your queue every morning.
               </p>
             </motion.div>
 
@@ -393,15 +373,15 @@ export default function LandingPage() {
                 },
                 {
                   title: "Medical Chronology",
-                  description: "A clean timeline of treatments, providers, and diagnoses built automatically from claim documents. Essential for complex cases, workers' comp, and litigation support.",
+                  description: "A clean timeline of treatments, providers, and diagnoses pulled directly from claim documents. Essential for complex cases, workers' comp, and litigation support.",
                   detail: "Interactive visualization — click any event to see the source document.",
                   icon: ClockIcon,
                   iconBg: "bg-purple-100 text-purple-600",
                 },
                 {
                   title: "Duplicate & Billing Flags",
-                  description: "Potential duplicate claims and CPT/ICD-10 code issues flagged before anyone reviews the file. Catches what simple text matching misses using semantic analysis.",
-                  detail: "Average savings: prevents overpayments before they happen.",
+                  description: "Potential duplicate claims and CPT/ICD-10 code issues flagged before anyone reviews the file. Catches what simple text matching misses.",
+                  detail: "Helps your team spot issues early — before they become expensive.",
                   icon: ShieldCheckIcon,
                   iconBg: "bg-amber-100 text-amber-600",
                 },
@@ -486,10 +466,10 @@ export default function LandingPage() {
                     </div>
                     <div className="bg-blue-50 rounded-xl p-5 border border-blue-100">
                       <p className="text-sm text-gray-700 leading-relaxed">
-                        <strong>Auto-generated summary:</strong> Casualty claim filed by Maria Rodriguez following motor vehicle accident on 11/15/2024 in Cook County, IL. Claimant treated at Midwest Orthopedic Associates for lumbar sprain (ICD-10: M54.5) and abdominal contusion (S39.012A). Three office visits billed under CPT 99213 and 99214. Total billed amount: $12,450.00. Policy POL-2024-384291 is active. No duplicate claims detected. All CPT/ICD codes validated against CMS database.
+                        <strong>Prepared summary:</strong> Casualty claim filed by Maria Rodriguez following motor vehicle accident on 11/15/2024 in Cook County, IL. Claimant treated at Midwest Orthopedic Associates for lumbar sprain (ICD-10: M54.5) and abdominal contusion (S39.012A). Three office visits billed under CPT 99213 and 99214. Total billed amount: $12,450.00. Policy POL-2024-384291 is active. No duplicate claims detected. All CPT/ICD codes validated against CMS database.
                       </p>
                     </div>
-                    <p className="text-xs text-gray-400">This summary was generated automatically from a 42-page claim packet. Your adjuster reviews and adjusts — no typing required.</p>
+                    <p className="text-xs text-gray-400">This summary was built from a 42-page claim packet. Your adjuster reviews and adjusts — no typing required.</p>
                   </motion.div>
                 )}
 
@@ -528,7 +508,7 @@ export default function LandingPage() {
 
                 {sampleStep === 2 && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-0">
-                    <p className="text-sm text-gray-500 mb-6">Auto-generated medical chronology from claim documents:</p>
+                    <p className="text-sm text-gray-500 mb-6">Medical chronology built from claim documents:</p>
                     {[
                       { date: "11/15/2024", event: "Motor vehicle accident — Cook County, IL", type: "Incident" },
                       { date: "11/16/2024", event: "ER visit — lumbar pain, abdominal tenderness. X-ray ordered.", type: "Emergency" },
@@ -561,7 +541,7 @@ export default function LandingPage() {
                         <CheckCircleIcon className="h-6 w-6 text-emerald-600 flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="font-semibold text-emerald-800">No duplicate claims found</p>
-                          <p className="text-sm text-emerald-700 mt-1">Checked against 2,847 claims in your database using semantic matching.</p>
+                          <p className="text-sm text-emerald-700 mt-1">Checked against 2,847 claims in your database — not just exact matches, but similar claims too.</p>
                         </div>
                       </div>
                     </div>
@@ -583,7 +563,7 @@ export default function LandingPage() {
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400">All checks run automatically when the claim file is uploaded. Your adjuster sees these results immediately.</p>
+                    <p className="text-xs text-gray-400">All checks run when the claim file is uploaded. Your adjuster sees these results right away.</p>
                   </motion.div>
                 )}
               </div>
@@ -605,7 +585,7 @@ export default function LandingPage() {
                 No integrations required
               </h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
-                Use ClarifyOps alongside your existing system. Export results or push them automatically when you're ready. Nothing to replace — just less manual work.
+                Use ClarifyOps alongside what you already have. Export results however you want, whenever you're ready. Nothing to replace — just less prep work.
               </p>
             </motion.div>
 
@@ -746,18 +726,19 @@ export default function LandingPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="/signup"
+                  href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
+                  onClick={() => logEvent('cta_send_file', { source: 'pilot_section' })}
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-semibold shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300"
                 >
-                  Run a Pilot — Free
+                  Send Us a File — We'll Process It
                   <ArrowRightIcon className="h-5 w-5" />
                 </a>
-                <button 
-                  onClick={() => scheduleDemo('pilot-section')} 
+                <a 
+                  href="/signup"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:bg-gray-50 transition-all duration-300"
                 >
-                  Talk to Us First
-                </button>
+                  Or Sign Up Free
+                </a>
               </div>
             </motion.div>
           </div>
@@ -778,7 +759,7 @@ export default function LandingPage() {
         {/* Pricing Section — KEPT */}
         <PricingSection />
 
-        {/* ===== FINAL CTA — Helper close ===== */}
+        {/* ===== FINAL CTA — Low-commitment close ===== */}
         <section className="py-24 px-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.05),_transparent_50%)]" />
           <div className="relative max-w-4xl mx-auto text-center">
@@ -799,7 +780,7 @@ export default function LandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              Free to try. No credit card. No integration needed. Upload a few claims and see what your team gets back.
+              Send us one anonymized file. We'll process it and send back the results. No account needed, no commitment.
             </motion.p>
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -809,17 +790,19 @@ export default function LandingPage() {
               transition={{ delay: 0.2 }}
             >
               <a 
-                href="/signup"
+                href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
+                onClick={() => logEvent('cta_send_file', { source: 'final_cta' })}
                 className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full shadow-xl transition-all duration-300"
               >
-                Start Free — No Card Needed
+                Send Us a File — We'll Process It
               </a>
-              <button
-                onClick={() => scheduleDemo('cta')}
+              <a 
+                href="/signup"
                 className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
               >
-                Schedule a Walkthrough
-              </button>
+                Or Try It Yourself — Free
+                <ArrowRightIcon className="h-5 w-5" />
+              </a>
             </motion.div>
           </div>
         </section>
@@ -834,7 +817,7 @@ export default function LandingPage() {
                 <img src="/logo.png" alt="ClarifyOps" className="h-10 brightness-0 invert" />
               </div>
               <p className="text-gray-400">
-                Claim files prepared before your team opens them.
+                Your adjuster opens a prepared file — not a pile of documents.
               </p>
             </div>
             <div>
