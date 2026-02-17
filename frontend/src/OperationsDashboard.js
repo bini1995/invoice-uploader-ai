@@ -535,6 +535,53 @@ function OperationsDashboard() {
             })}
           </div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mb-6"
+          >
+            <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-slate-700">
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1">Here's what a prepared file looks like</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">This is the output your adjusters see after ClarifyOps processes a claim packet.</p>
+            </div>
+            <div className="p-4 sm:p-5 bg-blue-50/50 dark:bg-blue-900/10 border-b border-gray-100 dark:border-slate-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">First-Pass Summary</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Casualty claim for lumbar sprain following MVA on 11/15/2024. Claimant treated at Midwest Ortho, 3 visits. Total billed $12,450. CPT 99213, 99214 validated. No duplicate flags. Claim readiness: high.</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-gray-100 dark:divide-slate-700 border-b border-gray-100 dark:border-slate-700">
+              <div className="p-3 sm:p-4">
+                <p className="text-xs text-gray-400">Policy</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">POL-2024-384291</p>
+              </div>
+              <div className="p-3 sm:p-4">
+                <p className="text-xs text-gray-400">Billed</p>
+                <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">$12,450</p>
+              </div>
+              <div className="p-3 sm:p-4">
+                <p className="text-xs text-gray-400">CPT</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">99213, 99214 <span className="text-xs text-green-600">valid</span></p>
+              </div>
+              <div className="p-3 sm:p-4">
+                <p className="text-xs text-gray-400">Readiness</p>
+                <p className="text-sm font-semibold text-green-600 dark:text-green-400">94%</p>
+              </div>
+            </div>
+            <div className="p-4 sm:p-5 flex items-center justify-between">
+              <div className="flex flex-wrap gap-2">
+                {['No Duplicates', 'Codes Valid', 'Ready to Route'].map(tag => (
+                  <span key={tag} className="px-2.5 py-1 rounded-lg text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">{tag}</span>
+                ))}
+              </div>
+              <button
+                onClick={() => navigate('/sandbox')}
+                className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline hidden sm:block"
+              >
+                Try interactive demo
+              </button>
+            </div>
+          </motion.div>
+
           <div className="bg-gray-50 dark:bg-slate-800/50 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 sm:p-6">
             <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1.5">

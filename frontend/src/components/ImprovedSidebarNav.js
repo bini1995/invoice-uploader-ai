@@ -26,6 +26,7 @@ import {
 export default function ImprovedSidebarNav({ notifications = [], collapsed = false, mobileOpen = false, onMobileClose }) {
   const location = useLocation();
   const [desktopOpen, setDesktopOpen] = useState(!collapsed);
+  const [claimCount, setClaimCount] = useState(null);
   
   useEffect(() => {
     if (collapsed) setDesktopOpen(false);
@@ -39,6 +40,24 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
     }
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    import('../api').then(({ API_BASE }) => {
+      fetch(`${API_BASE}/api/claims/quick-stats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data) {
+            const total = (data.totalInvoicedThisMonth || 0) + (data.invoicesPending || 0) + (data.anomaliesCount || 0);
+            setClaimCount(total);
+          }
+        })
+        .catch(() => {});
+    });
+  }, []);
   
   const unread = notifications.filter(n => !n.read).length;
   const role = localStorage.getItem('role') || '';
@@ -60,11 +79,13 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
 
   const [moreOpen, setMoreOpen] = useState(false);
 
+  const showSearch = claimCount === null || claimCount >= 3 || location.pathname === '/search';
+
   const primaryItems = [
     { to: '/operations', icon: Home, label: 'Home', description: 'Dashboard and overview' },
     { to: '/batch-upload', icon: Upload, label: 'Upload', description: 'Upload claim files' },
     { to: '/claims', icon: FileText, label: 'Claims', description: 'View and review processed claims' },
-    { to: '/search', icon: Search, label: 'Search', description: 'Natural language claim search' },
+    ...(showSearch ? [{ to: '/search', icon: Search, label: 'Search', description: 'Natural language claim search' }] : []),
     { to: '/delivery', icon: Send, label: 'Export', description: 'Download, export, and deliver results' },
   ];
 

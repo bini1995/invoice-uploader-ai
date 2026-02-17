@@ -151,6 +151,11 @@ export default function BatchUpload() {
     setResults({ total: allResults.length, uploaded, duplicates, errors, items: allResults });
     setUploadPhase('');
     setUploading(false);
+
+    if (uploaded === 1 && allResults.length === 1 && allResults[0].id) {
+      navigate(`/claim/${allResults[0].id}`);
+      return;
+    }
   };
 
   const validCount = files.filter(f => f.status === 'ready').length;
@@ -216,6 +221,9 @@ export default function BatchUpload() {
                   </p>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                     Max {MAX_FILES} files, {formatFileSize(MAX_FILE_SIZE)} each
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    Typical processing time: ~20–40 seconds
                   </p>
                 </div>
               </div>
@@ -394,10 +402,17 @@ export default function BatchUpload() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => navigate('/claims')}
+                onClick={() => {
+                  const firstUploaded = results.items.find(r => r.status === 'uploaded' && r.id);
+                  if (firstUploaded) {
+                    navigate(`/claim/${firstUploaded.id}`);
+                  } else {
+                    navigate('/claims');
+                  }
+                }}
                 className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
               >
-                View All Claims
+                {results.items.some(r => r.status === 'uploaded' && r.id) ? 'View Prepared Claim' : 'View All Claims'}
               </button>
               <button
                 onClick={clearAll}

@@ -36,6 +36,7 @@ const MultiUploadWizard = lazy(() => import('./MultiUploadWizard'));
 const BatchUpload = lazy(() => import('./BatchUpload'));
 const ClaimSearch = lazy(() => import('./ClaimSearch'));
 const DemoSandbox = lazy(() => import('./DemoSandbox'));
+const PreparedClaimReport = lazy(() => import('./PreparedClaimReport'));
 const InstantTrial = lazy(() => import('./InstantTrial'));
 const LoginPage = lazy(() => import('./LoginPage'));
 const ForgotPassword = lazy(() => import('./ForgotPassword'));
@@ -213,6 +214,7 @@ function AnimatedRoutes() {
         <Route path="/sandbox" element={<PageWrapper><DemoSandbox /></PageWrapper>} />
         <Route path="/free-trial" element={<PageWrapper><InstantTrial /></PageWrapper>} />
         <Route path="/claims/summary" element={<PageWrapper><ClarifyClaims /></PageWrapper>} />
+        <Route path="/claim/:id" element={<PageWrapper><PreparedClaimReport /></PageWrapper>} />
         <Route path="/results/:id" element={<PageWrapper><ResultsViewer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><SignUp onLogin={() => {}} addToast={(msg) => console.log(msg)} /></PageWrapper>} />

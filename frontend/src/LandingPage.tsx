@@ -152,10 +152,8 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Your adjuster opens a
-                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> prepared claim file</span> —
-                <br className="hidden md:block" />
-                not a pile of documents.
+                When a claim packet arrives, your adjuster
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> starts halfway through the job.</span>
               </motion.h1>
               
               <motion.p 
@@ -164,7 +162,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                ClarifyOps reads incoming claim packets, builds the first summary, and flags issues <strong className="text-white">before review begins.</strong>
+                ClarifyOps reads claim packets, pulls the key details, validates codes, and prepares a summary — <strong className="text-white">so your adjuster reviews, not rebuilds.</strong>
               </motion.p>
 
               <motion.div 
@@ -194,20 +192,20 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
                 <a 
-                  href="#sample-claim"
-                  onClick={() => logEvent('cta_sample_claim', { source: 'hero' })}
+                  href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20claim%20file%20for%20processing."
+                  onClick={() => logEvent('cta_send_file', { source: 'hero' })}
                   className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
                 >
-                  <EyeIcon className="h-5 w-5" />
-                  See What a Processed Claim Looks Like
+                  Send Us One Anonymized Claim — We'll Prepare It
+                  <ArrowRightIcon className="h-5 w-5" />
                 </a>
                 <a 
-                  href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
-                  onClick={() => logEvent('cta_send_file', { source: 'hero' })}
+                  href="#sample-claim"
+                  onClick={() => logEvent('cta_sample_claim', { source: 'hero' })}
                   className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
                 >
-                  Send Us a File — We'll Process It
-                  <ArrowRightIcon className="h-5 w-5" />
+                  <EyeIcon className="h-5 w-5" />
+                  See a Sample Result
                 </a>
               </motion.div>
             </motion.div>

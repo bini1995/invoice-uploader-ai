@@ -49,7 +49,19 @@ function HumanReview() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="5" className="p-4">Loading...</td>
+                <td colSpan="7" className="p-4">Loading...</td>
+              </tr>
+            ) : docs.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="p-8 text-center">
+                  <div className="text-gray-400 dark:text-gray-500 space-y-2">
+                    <p className="text-base font-medium text-gray-500 dark:text-gray-400">No files need review yet</p>
+                    <p className="text-sm">Upload a claim to generate a prepared report</p>
+                    <Link to="/batch-upload" className="inline-flex items-center gap-1.5 mt-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                      Upload a Claim
+                    </Link>
+                  </div>
+                </td>
               </tr>
             ) : (
               docs.map(d => (

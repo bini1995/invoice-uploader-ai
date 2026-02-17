@@ -1,0 +1,250 @@
+This update is a huge improvement — now the product finally communicates a workflow instead of a dashboard.
+
+You basically moved from:
+admin console → guided tool
+
+That alone will increase successful pilots.
+
+But you’re now at the stage where small UX decisions will determine whether someone says:
+
+“cool demo”
+or
+“I need this”
+
+Below is a brutally honest product + landing page review.
+
+⸻
+
+PART 1 — In-App UX Audit (what a real adjuster experiences)
+
+I’m going to simulate a first-time pilot user.
+
+They clicked your email.
+They logged in.
+They want to test ONE claim.
+
+⸻
+
+1) Home Screen — Much Better, Still Missing Urgency
+
+You now show:
+
+Upload → Review → Export
+
+Good. This removes confusion.
+
+But psychologically it still feels like instructions, not value.
+
+Problem
+
+You describe actions before showing proof.
+
+Users trust visual output more than steps.
+
+Fix (very important)
+
+Under the “Upload a claim file” card, add a real preview snippet:
+
+“Here’s what a prepared file looks like”
+
+Even a blurred example dramatically increases uploads.
+
+Right now they must believe you.
+You want them to see you.
+
+⸻
+
+2) Upload Screen — Very Strong
+
+This is your strongest screen now.
+
+Good signals:
+	•	no integration required
+	•	export after review
+	•	private data
+
+You removed the biggest adoption fear.
+
+One improvement
+
+Add one line:
+
+“Typical processing time: ~20–40 seconds”
+
+People hesitate less when they know they won’t wait forever.
+
+⸻
+
+3) Claims List Page — Still a Friction Point
+
+Current experience:
+Upload → land on a blank management table
+
+Emotion:
+“Did it work?”
+
+You unintentionally reintroduced enterprise-software anxiety.
+
+What should happen instead
+
+After upload completes → automatically open the prepared claim
+
+Never send them to a list.
+
+Lists are for power users.
+Pilots need a moment of payoff.
+
+⸻
+
+4) Search Page — Hide During Pilot
+
+This is powerful later but confusing early.
+
+A first-time user thinks:
+“Am I supposed to index all my claims here?”
+
+That triggers adoption resistance.
+
+Recommendation:
+Hide Search until ≥ 3 claims processed
+
+⸻
+
+5) Export / Delivery / Webhooks
+
+Great for future customers.
+Bad for first-impression.
+
+These screens communicate:
+system integration platform
+
+Your current goal:
+pre-processing assistant
+
+Keep them — but visually de-emphasize until after first success.
+
+⸻
+
+6) Review Queue
+
+This will be strong once populated.
+
+Right now empty tables weaken trust.
+Empty tables = unfinished product in users’ minds.
+
+Add placeholder:
+
+“No files need review yet — upload a claim to generate a prepared report”
+
+⸻
+
+The Biggest Missing Moment (Critical)
+
+Your product still lacks a WOW screen.
+
+You have the engine.
+You don’t have the reveal.
+
+After upload, the user should see:
+
+Prepared Claim File
+
+Summary
+Key Details
+Flags
+Ready for review
+
+Not a table.
+Not metadata.
+Not navigation.
+
+A document replacement.
+
+That single screen determines conversion.
+
+⸻
+
+PART 2 — Landing Page Audit (after seeing product)
+
+Now that I understand the real workflow, the homepage needs one adjustment:
+
+Right now your site explains a capability.
+Your app demonstrates a shortcut.
+
+Your site should promise the shortcut.
+
+⸻
+
+What the landing page should emphasize
+
+Not:
+AI processes claims
+
+But:
+Your adjuster starts halfway through the job
+
+Because that is literally what the product does.
+
+⸻
+
+Required landing page changes
+
+Hero should reference time loss moment
+
+Instead of conceptual messaging, anchor to the moment:
+
+“When a claim packet arrives, your adjuster shouldn’t start from scratch.”
+
+This matches exactly what they experience in the app.
+
+⸻
+
+Add visual proof section
+
+Before features, show:
+
+Original packet → Prepared file
+
+This aligns expectations with the UI.
+
+⸻
+
+Change primary CTA
+
+Right now (likely):
+Book demo
+
+Should be:
+Send us one anonymized claim — we’ll prepare it
+
+This matches your actual best onboarding path.
+
+⸻
+
+What Will Happen After These Changes
+
+Today:
+Users explore → think → maybe reply later
+
+After adjustments:
+Users upload → see replacement work → ask pricing
+
+That is the transition from interesting software to operational tool.
+
+⸻
+
+Final Honest Assessment
+
+You don’t have a product gap anymore.
+
+You have a reveal gap.
+
+The system works like a prep assistant
+but still introduces itself like a platform
+
+Once the first processed claim is shown as the center of the experience,
+your pilots will convert at a much higher rate.
+
+⸻
+
+If you want next, I’ll design the exact “prepared claim report” layout (what should appear immediately after upload) — that screen matters more than any other part of the product right now.
