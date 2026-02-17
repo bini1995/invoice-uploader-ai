@@ -58,20 +58,30 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
     window.location.href = '/login';
   };
 
-  const navItems = [
-    { to: '/operations', icon: Home, label: 'Operations', description: 'Dashboard and overview' },
-    { to: '/claims', icon: FileText, label: 'Claims', description: 'Upload, validate, and summarize claims' },
-    { to: '/batch-upload', icon: Upload, label: 'Batch Upload', description: 'Upload multiple claims at once' },
-    { to: '/search', icon: Search, label: 'Search Claims', description: 'Natural language claim search' },
-    { to: '/analytics', icon: BarChart2, label: 'AI Spend Analytics', description: 'Analytics and insights' },
-    { to: '/vendors', icon: Users, label: 'Vendors', description: 'Vendor management' },
-    { to: '/auditflow', icon: Flag, label: 'AuditFlow', description: 'Risk and audit review' },
-    { to: '/review', icon: FileSearch, label: 'Review', description: 'Human review queue' },
-    { to: '/archive', icon: Archive, label: 'Archive', description: 'Archived documents' },
-    { to: '/delivery', icon: Send, label: 'Delivery', description: 'Webhooks, exports, and integrations' },
-    { to: '/billing', icon: CreditCard, label: 'Billing', description: 'Plans and payments' },
-    { to: '/settings', icon: Settings, label: 'Settings', description: 'Account and preferences' }
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  const primaryItems = [
+    { to: '/operations', icon: Home, label: 'Home', description: 'Dashboard and overview' },
+    { to: '/batch-upload', icon: Upload, label: 'Upload', description: 'Upload claim files' },
+    { to: '/claims', icon: FileText, label: 'Claims', description: 'View and review processed claims' },
+    { to: '/search', icon: Search, label: 'Search', description: 'Natural language claim search' },
+    { to: '/delivery', icon: Send, label: 'Export', description: 'Download, export, and deliver results' },
   ];
+
+  const secondaryItems = [
+    { to: '/review', icon: FileSearch, label: 'Review Queue', description: 'Human review queue' },
+    { to: '/analytics', icon: BarChart2, label: 'Analytics', description: 'Analytics and insights' },
+    { to: '/auditflow', icon: Flag, label: 'AuditFlow', description: 'Risk and audit review' },
+    { to: '/vendors', icon: Users, label: 'Vendors', description: 'Vendor management' },
+    { to: '/archive', icon: Archive, label: 'Archive', description: 'Archived documents' },
+    { to: '/billing', icon: CreditCard, label: 'Billing', description: 'Plans and payments' },
+    { to: '/settings', icon: Settings, label: 'Settings', description: 'Account and preferences' },
+  ];
+
+  const isOnSecondaryPage = secondaryItems.some(item => location.pathname === item.to);
+  const showSecondary = moreOpen || isOnSecondaryPage;
+
+  const navItems = [...primaryItems, ...(showSecondary ? secondaryItems : [])];
 
   const handleNavClick = () => {
     if (onMobileClose) onMobileClose();
@@ -101,10 +111,9 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
       </div>
 
       <nav className="space-y-1 flex-1 overflow-y-auto">
-        {navItems.map((item) => {
+        {primaryItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.to;
-          
           return (
             <Link
               key={item.to}
@@ -124,6 +133,44 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
             </Link>
           );
         })}
+
+        <button
+          onClick={() => setMoreOpen(!showSecondary)}
+          className="w-full group flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-400 hover:bg-slate-700/50 hover:text-white"
+          title={isOpen ? undefined : 'More options'}
+        >
+          <LayoutGrid className={`w-5 h-5 flex-shrink-0 ${isOpen ? 'mr-3' : ''}`} />
+          {isOpen && (
+            <span className="text-sm font-medium truncate">{showSecondary ? 'Less' : 'More'}</span>
+          )}
+        </button>
+
+        {showSecondary && (
+          <div className="space-y-1 pt-1 border-t border-slate-700/40">
+            {secondaryItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.to;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={handleNavClick}
+                  className={`group flex items-center px-3 py-2 rounded-xl transition-all duration-200 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25'
+                      : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                  }`}
+                  title={isOpen ? undefined : item.description}
+                >
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${isOpen ? 'mr-3' : ''}`} />
+                  {isOpen && (
+                    <span className="text-xs font-medium truncate">{item.label}</span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </nav>
 
       {unread > 0 && (

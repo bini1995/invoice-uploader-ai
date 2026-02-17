@@ -50,6 +50,8 @@ Preferred communication style: Simple, everyday language.
 - **AI Assistant "Clari"**: Renamed AI bot with expanded knowledge base.
 - **Compliance Features**: HIPAA, SOC 2, and GDPR considerations with documentation and trust center page.
 - **Competitive Advantage Features**: Self-Service Demo Mode, ROI Calculator, Compliance Badges, Benchmark Comparison, Integration Showcase, and Use Case Pages.
+- **First-Run Guided Onboarding**: Empty dashboard replaced with 3-step guided flow (Upload → Review → Export) for new users. Sidebar simplified to 5 primary items with advanced features behind "More" toggle. Demo sandbox shows visual prepared claim report instead of CSV.
+- **Mobile Responsiveness**: Full mobile layout with slide-in sidebar drawer, bottom navigation, hamburger toggle, consistent `md:` breakpoints across all layout components.
 
 ## External Dependencies
 

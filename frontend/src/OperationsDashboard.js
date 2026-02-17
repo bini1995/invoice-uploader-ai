@@ -125,6 +125,13 @@ function OperationsDashboard() {
   });
   const [customizeOpen, setCustomizeOpen] = useState(false);
 
+  const hasData = !loading && (
+    (stats?.totalInvoicedThisMonth > 0) ||
+    (stats?.invoicesPending > 0) ||
+    vendors.length > 0 ||
+    cashFlow.length > 0
+  );
+
   useEffect(() => {
     localStorage.setItem('dashboardCashFlowInterval', cashFlowInterval);
   }, [cashFlowInterval]);
@@ -421,8 +428,140 @@ function OperationsDashboard() {
     []
   );
 
+  if (!token) {
+    return (
+      <ImprovedMainLayout title="ClarifyOps">
+        <p className="text-center text-gray-600">Please log in from the main app.</p>
+      </ImprovedMainLayout>
+    );
+  }
+
+  if (loading) {
+    return (
+      <ImprovedMainLayout title="ClarifyOps">
+        <div className="max-w-3xl mx-auto py-16 space-y-6">
+          <Skeleton rows={3} className="h-32" />
+        </div>
+      </ImprovedMainLayout>
+    );
+  }
+
+  if (!hasData) {
+    return (
+      <ImprovedMainLayout title="ClarifyOps">
+        <div className="max-w-3xl mx-auto py-8 sm:py-16">
+          <div className="text-center mb-10">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+              Welcome to ClarifyOps
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg max-w-xl mx-auto">
+              Upload a claim file and get a prepared, review-ready summary in minutes — not hours.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:gap-6 mb-10">
+            {[
+              {
+                step: '1',
+                title: 'Upload a claim file',
+                description: 'Drop a PDF, DOCX, or image. We read it and pull out the key details.',
+                icon: DocumentArrowUpIcon,
+                action: () => navigate('/batch-upload'),
+                actionLabel: 'Upload Now',
+                active: true,
+              },
+              {
+                step: '2',
+                title: 'Review the prepared file',
+                description: 'See a structured summary with CPT/ICD codes, billed amounts, dates, and flags — ready for your adjuster.',
+                icon: InboxIcon,
+                actionLabel: 'After upload',
+                active: false,
+              },
+              {
+                step: '3',
+                title: 'Export or send to your system',
+                description: 'Download the results, export to CSV/PDF, or send via webhook. No migration needed.',
+                icon: ArrowDownTrayIcon,
+                actionLabel: 'After review',
+                active: false,
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.step}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Number(item.step) * 0.15 }}
+                  className={`flex items-start gap-4 sm:gap-5 p-5 sm:p-6 rounded-2xl border transition-all ${
+                    item.active
+                      ? 'bg-white dark:bg-slate-800 border-blue-200 dark:border-blue-700 shadow-lg shadow-blue-100 dark:shadow-blue-900/20'
+                      : 'bg-gray-50 dark:bg-slate-800/50 border-gray-100 dark:border-slate-700 opacity-70'
+                  }`}
+                >
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                    item.active
+                      ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md'
+                      : 'bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-slate-400'
+                  }`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        item.active
+                          ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                          : 'bg-gray-200 text-gray-500 dark:bg-slate-700 dark:text-slate-400'
+                      }`}>Step {item.step}</span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1">{item.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.description}</p>
+                    {item.active && item.action && (
+                      <button
+                        onClick={item.action}
+                        className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium text-sm shadow-md hover:from-blue-500 hover:to-indigo-500 transition-all"
+                      >
+                        {item.actionLabel}
+                        <ArrowTrendingUpIcon className="w-4 h-4" />
+                      </button>
+                    )}
+                    {!item.active && (
+                      <span className="mt-2 inline-block text-xs text-gray-400 dark:text-slate-500 font-medium">{item.actionLabel}</span>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="bg-gray-50 dark:bg-slate-800/50 rounded-2xl border border-gray-100 dark:border-slate-700 p-5 sm:p-6">
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                No integration required
+              </span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                Works alongside your existing systems
+              </span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                Export results when ready
+              </span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                HIPAA-ready infrastructure
+              </span>
+            </div>
+          </div>
+        </div>
+      </ImprovedMainLayout>
+    );
+  }
+
   return (
-    <ImprovedMainLayout title="AI Dashboard">
+    <ImprovedMainLayout title="ClarifyOps">
       <div className="mb-4 flex justify-end gap-2">
         <Tippy content="Export PDF" placement="bottom">
           <Button onClick={handleExportPDF} size="icon" variant="outline">
@@ -480,9 +619,7 @@ function OperationsDashboard() {
           <p className="text-xs text-gray-500">Drag metric cards to reorder</p>
         </div>
       )}
-      {!token ? (
-        <p className="text-center text-gray-600">Please log in from the main app.</p>
-      ) : (
+
         <div className="space-y-8">
           <DndContext onDragEnd={handleDragEnd}>
             <SortableContext
@@ -490,10 +627,7 @@ function OperationsDashboard() {
               strategy={rectSortingStrategy}
             >
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {loading ? (
-                  <Skeleton rows={1} className="h-20 col-span-2 md:col-span-4" />
-                ) : (
-                  metricsOrder.map((m) =>
+                  {metricsOrder.map((m) =>
                     hiddenMetrics.has(m) ? null : (
                       <MetricTile key={m} metricId={m} disabled={!customizeOpen}>
                         {m === 'total' && (
@@ -543,24 +677,14 @@ function OperationsDashboard() {
                         )}
                       </MetricTile>
                     )
-                  )
-                )}
+                  )}
               </div>
             </SortableContext>
           </DndContext>
           {approvalStats && (
             <div className="text-center text-sm text-gray-700 dark:text-gray-300">
-              🎉 You've approved {approvalStats.total} invoices this week! Streak: {approvalStats.streak} days
+              You've approved {approvalStats.total} invoices this week! Streak: {approvalStats.streak} days
             </div>
-          )}
-          {vendors.length === 0 && !loading && (
-            <EmptyState
-              icon={<DocumentArrowUpIcon className="w-16 h-16 text-gray-400" />}
-              headline="Let's get started!"
-              description="Upload your first document to begin tracking spend, surfacing anomalies, and unlocking AI insights."
-              cta="Upload Document"
-              onCta={() => navigate('/upload-wizard')}
-            />
           )}
           <div className="h-64">
             {loading ? (
@@ -906,7 +1030,6 @@ function OperationsDashboard() {
         </div>
         <VendorProfilePanel vendor={selectedVendor} open={!!selectedVendor} onClose={() => setSelectedVendor(null)} token={token} />
       </div>
-    )}
     <FloatingButton onClick={() => navigate('/upload-wizard')} />
     </ImprovedMainLayout>
   );

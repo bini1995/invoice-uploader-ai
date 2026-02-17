@@ -160,10 +160,24 @@ export default function BatchUpload() {
     <ImprovedMainLayout title="Batch Upload">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Batch Upload</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Upload Claim Files</h1>
           <p className="text-gray-600 dark:text-gray-400">
             Upload up to {MAX_FILES} claim documents at once. AI extraction runs automatically on each file.
           </p>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              No system integration required
+            </span>
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Export results after review
+            </span>
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Your data stays private
+            </span>
+          </div>
         </div>
 
         {!results && (
