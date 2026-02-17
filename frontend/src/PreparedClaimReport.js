@@ -87,11 +87,11 @@ export default function PreparedClaimReport() {
 
   if (loading) {
     return (
-      <ImprovedMainLayout title="Prepared Claim">
+      <ImprovedMainLayout title="Adjuster-Ready Packet">
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-3">
             <div className="w-10 h-10 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto" />
-            <p className="text-gray-500 dark:text-gray-400">Loading prepared claim...</p>
+            <p className="text-gray-500 dark:text-gray-400">Preparing adjuster-ready packet...</p>
           </div>
         </div>
       </ImprovedMainLayout>
@@ -100,7 +100,7 @@ export default function PreparedClaimReport() {
 
   if (!claim) {
     return (
-      <ImprovedMainLayout title="Prepared Claim">
+      <ImprovedMainLayout title="Adjuster-Ready Packet">
         <div className="text-center py-20 space-y-4">
           <p className="text-gray-500 dark:text-gray-400">Claim not found</p>
           <button onClick={() => navigate('/claims')} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">
@@ -133,12 +133,12 @@ export default function PreparedClaimReport() {
   const st = statusMap[status] || statusMap.pending;
 
   return (
-    <ImprovedMainLayout title="Prepared Claim">
+    <ImprovedMainLayout title="Adjuster-Ready Packet">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
           <div className="p-5 md:p-6 border-b border-gray-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Prepared Claim File</p>
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Adjuster-Ready Claim Packet</p>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white mt-1">
                 {claimNumber}
               </h1>

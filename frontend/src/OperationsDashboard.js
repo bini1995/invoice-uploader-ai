@@ -463,25 +463,25 @@ function OperationsDashboard() {
             {[
               {
                 step: '1',
-                title: 'Drop a claim file',
-                description: 'Forward the assignment email or drop the packet here. We prepare it for the adjuster.',
+                title: 'Upload the assignment',
+                description: 'Forward the assignment email or drop the claim packet. We prepare the adjuster-ready packet.',
                 icon: DocumentArrowUpIcon,
                 action: () => navigate('/batch-upload'),
-                actionLabel: 'Drop a File',
+                actionLabel: 'Upload Assignment',
                 active: true,
               },
               {
                 step: '2',
-                title: 'Review the prepared report',
-                description: 'See a structured summary with CPT/ICD codes, billed amounts, dates, and flags — ready for your adjuster.',
+                title: 'Review the ready packet',
+                description: 'See an adjuster-ready packet with CPT/ICD codes, billed amounts, dates, and flags — no transcription needed.',
                 icon: InboxIcon,
                 actionLabel: 'After upload',
                 active: false,
               },
               {
                 step: '3',
-                title: 'Send to adjuster',
-                description: 'Download the results, export to CSV/PDF, or send via webhook. No migration needed.',
+                title: 'Deliver to carrier',
+                description: 'Download the packet, export to CSV/PDF, or send via webhook. No migration needed.',
                 icon: ArrowDownTrayIcon,
                 actionLabel: 'After review',
                 active: false,
@@ -538,12 +538,37 @@ function OperationsDashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55 }}
+            className="text-center mb-6"
+          >
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Not ready to upload your own files yet?</p>
+            <button
+              onClick={async () => {
+                try {
+                  const resp = await fetch(`${API_BASE}/api/claims/load-example`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                  });
+                  const data = await resp.json();
+                  if (data.id) navigate(`/claim/${data.id}`);
+                } catch (e) { console.error('Failed to load example', e); }
+              }}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold text-sm shadow-md transition-all"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" /></svg>
+              Try a Real Example Claim
+            </button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden mb-6"
           >
             <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-slate-700">
-              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1">Here's what a prepared file looks like</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">This is the output your adjusters see after ClarifyOps processes a claim packet.</p>
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1">Here's what an adjuster-ready packet looks like</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">This is what your adjuster opens instead of a 60-page claim packet.</p>
             </div>
             <div className="p-4 sm:p-5 bg-blue-50/50 dark:bg-blue-900/10 border-b border-gray-100 dark:border-slate-700">
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">First-Pass Summary</p>

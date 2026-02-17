@@ -135,6 +135,91 @@ router.delete(
   purgeDemoDocuments
 );
 
+router.post('/load-example', authMiddleware, async (req, res) => {
+  try {
+    const existing = await pool.query(
+      "SELECT id FROM documents WHERE tenant_id = $1 AND metadata->>'is_demo' = 'true' LIMIT 1",
+      [req.tenantId]
+    );
+    if (existing.rows.length > 0) {
+      return res.json({ id: existing.rows[0].id, message: 'Example claim already loaded' });
+    }
+
+    const demoFields = {
+      claim_number: 'CLM-2024-EX-001',
+      policyholder_name: 'Sarah Mitchell',
+      policy_number: 'POL-2024-847291',
+      date_of_loss: '11/15/2024',
+      loss_type: 'Motor Vehicle Accident',
+      claimant_name: 'Sarah Mitchell',
+      provider_name: 'Midwest Orthopedic Associates',
+      estimated_value: '$12,450.00',
+      icd_codes: 'M54.5 (Low back pain), S39.012A (Contusion of abdominal wall)',
+      cpt_codes: '99213 (Office visit, est. patient, low complexity), 99214 (Office visit, est. patient, moderate complexity)',
+      date_of_service: '11/16/2024 - 12/20/2024',
+      diagnosis: 'Lumbar sprain following motor vehicle accident',
+      treatment_summary: '3 office visits at Midwest Ortho. Initial ER visit for lumbar pain and abdominal tenderness. Follow-up with improvement noted. Cleared for normal activity 12/20/2024.',
+      adjuster_assigned: 'Unassigned',
+      status_notes: 'All CPT/ICD codes validated. No duplicate flags. Ready for adjuster review.'
+    };
+
+    const demoSummary = 'Casualty claim for lumbar sprain following MVA on 11/15/2024. Claimant Sarah Mitchell treated at Midwest Orthopedic Associates, 3 visits over 5 weeks. Total billed $12,450. CPT codes 99213 and 99214 validated against CMS database. ICD-10 codes M54.5 and S39.012A consistent with reported injuries. No duplicate claims found in system. No billing anomalies detected. Claim readiness: HIGH.';
+
+    const rawText = `CLAIM FILE — CLM-2024-EX-001\n\nPolicy: POL-2024-847291\nClaimant: Sarah Mitchell\nDate of Loss: November 15, 2024\nType: Motor Vehicle Accident — Cook County, IL\n\nProvider: Midwest Orthopedic Associates\nDiagnosis: Lumbar sprain (M54.5), Abdominal contusion (S39.012A)\n\nVisit 1 — 11/16/2024: ER visit. Lumbar pain, abdominal tenderness. X-ray ordered. CPT 99213.\nVisit 2 — 11/22/2024: Office visit. Dx: lumbar sprain. PT recommended. CPT 99213.\nVisit 3 — 12/06/2024: Follow-up. Improvement noted. CPT 99213.\nVisit 4 — 12/20/2024: Final eval. Cleared for normal activity. CPT 99214.\n\nTotal Billed: $12,450.00\n\nAll codes validated. No duplicates detected.`;
+
+    const { rows } = await pool.query(
+      `INSERT INTO documents (tenant_id, file_name, doc_type, document_type, path, status, version, metadata, type, doc_title, file_type, raw_text, fields)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
+      [
+        req.tenantId,
+        'Example_Claim_MVA_Mitchell.pdf',
+        'claim_invoice',
+        'claim_invoice',
+        '',
+        'processed',
+        1,
+        JSON.stringify({ is_demo: 'true' }),
+        'claim_invoice',
+        'CLM-2024-EX-001 — Mitchell MVA',
+        'application/pdf',
+        rawText,
+        JSON.stringify(demoFields)
+      ]
+    );
+
+    const docId = rows[0].id;
+
+    const fieldEntries = Object.entries(demoFields).map(([key, value]) => ({
+      field_name: key,
+      field_value: value,
+      confidence: key === 'adjuster_assigned' ? 0.5 : (0.88 + Math.random() * 0.11)
+    }));
+
+    await pool.query(
+      `INSERT INTO claim_fields (document_id, fields, overall_confidence, model_version)
+       VALUES ($1, $2, $3, $4) ON CONFLICT (document_id) DO UPDATE SET fields = $2, overall_confidence = $3`,
+      [docId, JSON.stringify(fieldEntries), 94.2, 'gpt-4o-mini']
+    );
+
+    await pool.query(
+      `INSERT INTO claim_chronology (document_id, tenant_id, events, model_version, generated_at)
+       VALUES ($1, $2, $3, $4, NOW()) ON CONFLICT DO NOTHING`,
+      [docId, req.tenantId, JSON.stringify([
+        { date: '2024-11-15', event: 'Motor vehicle accident — Cook County, IL', type: 'Incident', source: 'FNOL Report' },
+        { date: '2024-11-16', event: 'ER visit — lumbar pain, abdominal tenderness. X-ray ordered.', type: 'Emergency', source: 'Medical Records', cpt: '99213' },
+        { date: '2024-11-22', event: 'Office visit — Midwest Ortho. Dx: lumbar sprain (M54.5). PT recommended.', type: 'Office Visit', source: 'Medical Records', cpt: '99213' },
+        { date: '2024-12-06', event: 'Follow-up — improvement noted, continued PT.', type: 'Office Visit', source: 'Medical Records', cpt: '99213' },
+        { date: '2024-12-20', event: 'Final evaluation — cleared for normal activity.', type: 'Office Visit', source: 'Medical Records', cpt: '99214' }
+      ]), 'gpt-4o-mini']
+    );
+
+    res.json({ id: docId, message: 'Example claim loaded successfully' });
+  } catch (err) {
+    console.error('Load example claim error:', err);
+    res.status(500).json({ message: 'Failed to load example claim' });
+  }
+});
+
 router.get('/quick-stats', authMiddleware, async (req, res) => {
   try {
     const { rows } = await pool.query(

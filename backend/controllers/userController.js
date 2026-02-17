@@ -55,7 +55,12 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const tenantId = user.tenant_id || user.tenantId || 'default';
+    let tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'default') {
+      tenantId = `tenant_${user.id}`;
+      await pool.query('UPDATE users SET tenant_id = $1 WHERE id = $2', [tenantId, user.id]);
+      await pool.query('INSERT INTO tenants (tenant_id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING', [tenantId, user.name || user.email]);
+    }
     const token = jwt.sign(
       { userId: user.id, role: user.role, username: user.username, name: user.name, tenantId },
       JWT_SECRET,
@@ -97,7 +102,12 @@ export const refreshToken = async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.userId]);
     const user = rows[0];
     if (!user) return res.status(401).json({ message: 'Invalid user' });
-    const tenantId = user.tenant_id || user.tenantId || 'default';
+    let tenantId = user.tenant_id;
+    if (!tenantId || tenantId === 'default') {
+      tenantId = `tenant_${user.id}`;
+      await pool.query('UPDATE users SET tenant_id = $1 WHERE id = $2', [tenantId, user.id]);
+      await pool.query('INSERT INTO tenants (tenant_id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING', [tenantId, user.name || user.email]);
+    }
     const token = jwt.sign(
       { userId: user.id, role: user.role, username: user.username, tenantId },
       JWT_SECRET,
@@ -307,13 +317,18 @@ export const register = async (req, res) => {
     }
     
     const passwordHash = await bcrypt.hash(password, 10);
+    const tenantId = `tenant_${crypto.randomUUID().split('-')[0]}`;
     const { rows } = await pool.query(
-      'INSERT INTO users (username, email, name, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email, name, role',
-      [email, email, name, passwordHash, 'viewer']
+      'INSERT INTO users (username, email, name, password_hash, role, tenant_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, email, name, role, tenant_id',
+      [email, email, name, passwordHash, 'viewer', tenantId]
     );
     
     const user = rows[0];
-    const tenantId = 'default';
+
+    await pool.query(
+      'INSERT INTO tenants (tenant_id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      [tenantId, name || email]
+    );
     
     const token = jwt.sign(
       { userId: user.id, role: user.role, username: user.username, name: user.name, tenantId },

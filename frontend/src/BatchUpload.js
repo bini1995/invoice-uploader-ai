@@ -165,9 +165,9 @@ export default function BatchUpload() {
     <ImprovedMainLayout title="Batch Upload">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Drop Files</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Upload Assignment</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Forward the assignment email or drop the claim packet here — we prepare it for the adjuster.
+            Forward the assignment email or drop the claim packet — we prepare the adjuster-ready packet automatically.
           </p>
           <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
             <span className="flex items-center gap-1">
@@ -214,7 +214,7 @@ export default function BatchUpload() {
                 </div>
                 <div>
                   <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                    {dragActive ? 'Drop files here' : 'Drop the assignment email or medical packet here'}
+                    {dragActive ? 'Drop files here' : 'Drop the assignment email or claim packet here'}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     or click to browse. Supports PDF, DOCX, PNG, JPG, TXT, CSV, EML

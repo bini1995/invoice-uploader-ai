@@ -218,6 +218,38 @@ export default function PricingSection() {
           All plans include HIPAA-ready infrastructure and BAA available on request. Beta pricing locked for first 3 months.
         </motion.p>
 
+        <motion.div
+          className="mt-12 p-8 bg-white rounded-2xl border border-gray-200 shadow-sm"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+        >
+          <h3 className="text-2xl font-bold text-gray-900 mb-2 text-center">
+            The Real Math: Cost Per Claim
+          </h3>
+          <p className="text-gray-500 text-center mb-8 text-sm">This is not a software expense. This is labor replacement.</p>
+          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <div className="rounded-xl border-2 border-red-100 bg-red-50/30 p-6">
+              <h4 className="text-lg font-bold text-red-900 mb-4">Manual Prep (current)</h4>
+              <div className="space-y-3 text-sm text-gray-700">
+                <div className="flex justify-between"><span>Average prep time per claim</span><span className="font-semibold">18-35 min</span></div>
+                <div className="flex justify-between"><span>Adjuster hourly cost</span><span className="font-semibold">$35-$70/hr</span></div>
+                <div className="flex justify-between border-t border-red-200 pt-3"><span className="font-bold">Cost per prepared claim</span><span className="font-bold text-red-600">$10-$40</span></div>
+              </div>
+            </div>
+            <div className="rounded-xl border-2 border-emerald-100 bg-emerald-50/30 p-6">
+              <h4 className="text-lg font-bold text-emerald-900 mb-4">ClarifyOps</h4>
+              <div className="space-y-3 text-sm text-gray-700">
+                <div className="flex justify-between"><span>Processing time</span><span className="font-semibold">~2 min</span></div>
+                <div className="flex justify-between"><span>No human labor needed</span><span className="font-semibold">Automated</span></div>
+                <div className="flex justify-between border-t border-emerald-200 pt-3"><span className="font-bold">Cost per prepared claim</span><span className="font-bold text-emerald-600">$0.20-$0.80</span></div>
+              </div>
+            </div>
+          </div>
+          <p className="text-center text-sm text-gray-500 mt-6">At 100 claims/month, that's $1,000-$4,000 in prep labor replaced.</p>
+        </motion.div>
+
         <motion.div 
           className="text-center mt-12 p-8 bg-white rounded-xl border border-gray-200"
           initial={{ opacity: 0, y: 30 }}

@@ -56,13 +56,18 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           user.name = user.name || name;
         }
       } else {
+        const newTenantId = `tenant_${Date.now().toString(36)}`;
         const result = await pool.query(
-          `INSERT INTO users (username, email, name, google_id, password_hash, role)
-           VALUES ($1, $2, $3, $4, '', 'viewer')
+          `INSERT INTO users (username, email, name, google_id, password_hash, role, tenant_id)
+           VALUES ($1, $2, $3, $4, '', 'viewer', $5)
            RETURNING *`,
-          [email, email, name, googleId]
+          [email, email, name, googleId, newTenantId]
         );
         user = result.rows[0];
+        await pool.query(
+          'INSERT INTO tenants (tenant_id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+          [newTenantId, name || email]
+        );
       }
 
       return done(null, user);
@@ -86,12 +91,13 @@ passport.deserializeUser(async (id, done) => {
 });
 
 export function generateTokensForUser(user) {
+  const tenantId = user.tenant_id || `tenant_${user.id}`;
   const token = jwt.sign({
     userId: user.id,
     role: user.role,
     username: user.email || user.username,
     name: user.name,
-    tenantId: user.tenant_id || 'default'
+    tenantId
   }, SECRET, { expiresIn: '24h' });
 
   const refreshToken = jwt.sign({

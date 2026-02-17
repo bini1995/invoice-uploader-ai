@@ -2,7 +2,14 @@
 
 ## Overview
 
-ClarifyOps is a full-stack AI-powered platform designed to automate medical and insurance claim intake, validation, and routing with audit-ready accuracy. It streamlines insurance workflows through AI-powered document parsing, CPT/ICD code validation, workflow triage (OpsClaim), and fraud detection (AuditFlow). The platform aims to provide significant savings and revenue recovery for various insurance industry stakeholders by automating complex, manual processes.
+ClarifyOps is a full-stack AI-powered platform that automates medical and insurance claim intake, validation, and routing. Positioned as a "helper, not replacement" for adjusters, it transforms 60-page claim packets into adjuster-ready packets with CPT/ICD validation, confidence scores, and medical chronology. The platform uses per-user tenant isolation for data security.
+
+## Recent Changes (Feb 2026)
+- **Multi-tenancy fix**: Added `tenant_id` column to users table, each user gets unique tenant on registration/SSO (was sharing 'default' tenant)
+- **UI language update**: "Prepared report" renamed to "adjuster-ready claim packet" throughout the application
+- **Navigation rename**: Drop Files→Upload Assignment, Prepared Reports→Ready Packets, Send to Adjuster→Deliver to Carrier, AuditFlow→Billing Error Detection
+- **Demo claim feature**: "Try a Real Example Claim" button on empty inbox loads realistic demo data into user's own tenant
+- **Pricing page**: Added cost-per-claim comparison section (manual $10-40 vs ClarifyOps $0.20-0.80)
 
 ## User Preferences
 

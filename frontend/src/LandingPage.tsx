@@ -162,7 +162,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                Send the file. Get a prepared adjuster-ready report in ~2 minutes.
+                Send the file. Get an adjuster-ready claim packet in ~2 minutes.
               </motion.p>
 
               <motion.div 
@@ -225,8 +225,8 @@ export default function LandingPage() {
               <div className="relative rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/40">Prepared Claim File</p>
-                    <h3 className="text-lg font-semibold text-white">Ready for adjuster review</h3>
+                    <p className="text-xs uppercase tracking-widest text-white/40">Adjuster-Ready Claim Packet</p>
+                    <h3 className="text-lg font-semibold text-white">Ready to send</h3>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/10 text-emerald-200 text-xs px-3 py-1 border border-emerald-300/20">
                     <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />

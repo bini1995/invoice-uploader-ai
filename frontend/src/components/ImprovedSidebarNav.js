@@ -85,18 +85,18 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
 
   const primaryItems = [
     { to: '/operations', icon: Inbox, label: 'Inbox', description: 'Incoming claims and overview' },
-    { to: '/batch-upload', icon: Upload, label: 'Drop Files', description: 'Drop assignment emails or claim packets' },
-    { to: '/claims', icon: FileText, label: 'Prepared Reports', description: 'View prepared adjuster-ready reports' },
-    ...(showSearch ? [{ to: '/search', icon: Search, label: 'Search', description: 'Search across prepared reports' }] : []),
-    { to: '/delivery', icon: Send, label: 'Send to Adjuster', description: 'Export and deliver to adjusters' },
+    { to: '/batch-upload', icon: Upload, label: 'Upload Assignment', description: 'Upload assignment emails or claim packets' },
+    { to: '/claims', icon: FileText, label: 'Ready Packets', description: 'Adjuster-ready claim packets' },
+    ...(showSearch ? [{ to: '/search', icon: Search, label: 'Search', description: 'Search across claim packets' }] : []),
+    { to: '/delivery', icon: Send, label: 'Deliver to Carrier', description: 'Export and deliver to carrier or adjuster' },
   ];
 
   const secondaryItems = [
     { to: '/review', icon: AlertTriangle, label: 'Flagged Issues', description: 'Items needing human review' },
-    { to: '/archive', icon: Clock, label: 'History', description: 'Past reports and archived documents' },
+    { to: '/archive', icon: Clock, label: 'History', description: 'Past packets and archived documents' },
     { to: '/settings', icon: Settings, label: 'Settings', description: 'Account and preferences' },
     { to: '/analytics', icon: BarChart2, label: 'Analytics', description: 'Analytics and insights' },
-    { to: '/auditflow', icon: Flag, label: 'Audit Review', description: 'Risk and audit review' },
+    { to: '/auditflow', icon: Flag, label: 'Billing Error Detection', description: 'Detect billing errors and anomalies' },
     { to: '/vendors', icon: Users, label: 'Integrations', description: 'Connected systems and vendors' },
     { to: '/billing', icon: CreditCard, label: 'Billing', description: 'Plans and payments' },
   ];
