@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Home,
+  Inbox,
   FileText,
   Users,
   BarChart2,
@@ -20,6 +20,8 @@ import {
   Upload,
   Search,
   CreditCard,
+  AlertTriangle,
+  Clock,
   X,
 } from 'lucide-react';
 
@@ -82,21 +84,21 @@ export default function ImprovedSidebarNav({ notifications = [], collapsed = fal
   const showSearch = claimCount === null || claimCount >= 3 || location.pathname === '/search';
 
   const primaryItems = [
-    { to: '/operations', icon: Home, label: 'Home', description: 'Dashboard and overview' },
-    { to: '/batch-upload', icon: Upload, label: 'Upload', description: 'Upload claim files' },
-    { to: '/claims', icon: FileText, label: 'Claims', description: 'View and review processed claims' },
-    ...(showSearch ? [{ to: '/search', icon: Search, label: 'Search', description: 'Natural language claim search' }] : []),
-    { to: '/delivery', icon: Send, label: 'Export', description: 'Download, export, and deliver results' },
+    { to: '/operations', icon: Inbox, label: 'Inbox', description: 'Incoming claims and overview' },
+    { to: '/batch-upload', icon: Upload, label: 'Drop Files', description: 'Drop assignment emails or claim packets' },
+    { to: '/claims', icon: FileText, label: 'Prepared Reports', description: 'View prepared adjuster-ready reports' },
+    ...(showSearch ? [{ to: '/search', icon: Search, label: 'Search', description: 'Search across prepared reports' }] : []),
+    { to: '/delivery', icon: Send, label: 'Send to Adjuster', description: 'Export and deliver to adjusters' },
   ];
 
   const secondaryItems = [
-    { to: '/review', icon: FileSearch, label: 'Review Queue', description: 'Human review queue' },
-    { to: '/analytics', icon: BarChart2, label: 'Analytics', description: 'Analytics and insights' },
-    { to: '/auditflow', icon: Flag, label: 'AuditFlow', description: 'Risk and audit review' },
-    { to: '/vendors', icon: Users, label: 'Vendors', description: 'Vendor management' },
-    { to: '/archive', icon: Archive, label: 'Archive', description: 'Archived documents' },
-    { to: '/billing', icon: CreditCard, label: 'Billing', description: 'Plans and payments' },
+    { to: '/review', icon: AlertTriangle, label: 'Flagged Issues', description: 'Items needing human review' },
+    { to: '/archive', icon: Clock, label: 'History', description: 'Past reports and archived documents' },
     { to: '/settings', icon: Settings, label: 'Settings', description: 'Account and preferences' },
+    { to: '/analytics', icon: BarChart2, label: 'Analytics', description: 'Analytics and insights' },
+    { to: '/auditflow', icon: Flag, label: 'Audit Review', description: 'Risk and audit review' },
+    { to: '/vendors', icon: Users, label: 'Integrations', description: 'Connected systems and vendors' },
+    { to: '/billing', icon: CreditCard, label: 'Billing', description: 'Plans and payments' },
   ];
 
   const isOnSecondaryPage = secondaryItems.some(item => location.pathname === item.to);

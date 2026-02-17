@@ -452,7 +452,7 @@ function OperationsDashboard() {
         <div className="max-w-3xl mx-auto py-8 sm:py-16">
           <div className="text-center mb-10">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
-              Welcome to ClarifyOps
+              Your Inbox is Empty
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg max-w-xl mx-auto">
               Upload a claim file and get a prepared, review-ready summary in minutes — not hours.
@@ -463,16 +463,16 @@ function OperationsDashboard() {
             {[
               {
                 step: '1',
-                title: 'Upload a claim file',
-                description: 'Drop a PDF, DOCX, or image. We read it and pull out the key details.',
+                title: 'Drop a claim file',
+                description: 'Forward the assignment email or drop the packet here. We prepare it for the adjuster.',
                 icon: DocumentArrowUpIcon,
                 action: () => navigate('/batch-upload'),
-                actionLabel: 'Upload Now',
+                actionLabel: 'Drop a File',
                 active: true,
               },
               {
                 step: '2',
-                title: 'Review the prepared file',
+                title: 'Review the prepared report',
                 description: 'See a structured summary with CPT/ICD codes, billed amounts, dates, and flags — ready for your adjuster.',
                 icon: InboxIcon,
                 actionLabel: 'After upload',
@@ -480,7 +480,7 @@ function OperationsDashboard() {
               },
               {
                 step: '3',
-                title: 'Export or send to your system',
+                title: 'Send to adjuster',
                 description: 'Download the results, export to CSV/PDF, or send via webhook. No migration needed.',
                 icon: ArrowDownTrayIcon,
                 actionLabel: 'After review',

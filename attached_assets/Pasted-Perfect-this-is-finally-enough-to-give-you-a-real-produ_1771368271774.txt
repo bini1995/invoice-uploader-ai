@@ -1,0 +1,300 @@
+Perfect — this is finally enough to give you a real product critique, not startup-theory advice.
+
+I’m going to be very direct and objective because you said you want customers immediately.
+
+Right now:
+Your engineering is ahead of your sales story.
+The product looks like a platform.
+Your buyers want a worker.
+
+You did a lot right technically — but the UI + landing page currently signal
+“insurance software company”
+instead of
+“instant staff productivity multiplier”
+
+That difference alone determines whether a COO replies to your email.
+
+⸻
+
+First — What the product actually feels like to a buyer
+
+I’m putting myself in the head of a claims director opening this.
+
+They log in → they see:
+
+Home → Upload → Claims → Search → Export → Analytics → AuditFlow → Vendors → Billing
+
+Their brain reaction:
+
+“This is a system I have to implement”
+
+And that is death for early sales.
+
+They don’t want another system.
+They want relief from packets.
+
+Your product is a co-pilot intake worker, but the UI presents it as a claims management platform.
+
+So they assume:
+migration
+training
+workflow changes
+IT approval
+compliance review
+
+You unintentionally triggered enterprise friction.
+
+⸻
+
+The core mismatch
+
+What you built:
+A pre-adjusting document preparation engine
+
+What it currently looks like:
+A replacement claims handling system
+
+Your emails promise small change.
+Your UI implies operational overhaul.
+
+That breaks trust subconsciously.
+
+⸻
+
+Immediate UI Fixes (highest ROI changes)
+
+These are not cosmetic. These directly affect conversion.
+
+1. Rename the entire navigation
+
+Right now navigation = software modules
+You need navigation = human workflow steps
+
+Replace this:
+
+Home
+Upload
+Claims
+Search
+Export
+Analytics
+AuditFlow
+Vendors
+
+With this:
+
+Inbox
+Prepared Reports
+Flagged Issues
+History
+Send to Adjuster
+Integrations
+Settings
+
+Why:
+They immediately understand: this assists their workflow, not replaces it.
+
+⸻
+
+2. Remove the empty analytics + vendors + billing for now
+
+Empty dashboards create risk perception.
+
+A COO sees zeroes → assumes immature product → no pilot.
+
+Hide behind feature flags until real customer data exists.
+
+Right now it hurts credibility more than it helps differentiation.
+
+⸻
+
+3. The upload screen needs to feel like email intake
+
+Your current upload page feels like a document processor.
+
+You need it to feel like:
+
+“Forward us the assignment email or drop the packet here.”
+
+Add above dropzone:
+
+“Drop the assignment email or medical packet here — we prepare it for the adjuster”
+
+That single sentence dramatically increases understanding.
+
+⸻
+
+4. The first post-upload screen must be the hero
+
+Right now the product’s magic moment (the prepared report) is hidden in a workflow.
+
+Your product should revolve around ONE screen:
+
+The prepared claim summary
+
+Everything else secondary.
+
+You are selling:
+prepared files
+not file processing
+
+⸻
+
+Landing Page Critique
+
+I reviewed the page — and here’s the honest issue:
+
+It reads like an AI company explaining capabilities.
+But buyers scan for:
+“what problem disappears tomorrow morning?”
+
+You need operational specificity.
+
+⸻
+
+Your new hero section (use this structure)
+
+Replace your hero with this
+
+Headline:
+Stop reading 60-page claim packets.
+
+Subheadline:
+Send the file. Get a prepared adjuster-ready report in ~2 minutes.
+
+Bullets:
+Policy, claimant, and loss details extracted
+CPT/ICD validated automatically
+Duplicate & billing issues flagged
+Adjuster reviews instead of transcribes
+
+CTA:
+Send a sample claim → we return the prepared report
+
+Why this works:
+It removes all AI language and focuses on their daily pain.
+
+⸻
+
+Add a Proof Section (critical)
+
+You currently ask them to imagine value.
+
+Instead show the workflow they already live:
+
+Assignment email received → adjuster opens packet → scans pages → types summary → begins adjusting
+
+Then:
+
+Assignment email received → drop into ClarifyOps → prepared report returned → adjuster starts adjusting
+
+Executives buy workflow delta, not technology.
+
+⸻
+
+Who this product is PERFECT for
+
+You are strongest where:
+claims volume high
+packet size large
+humans do intake manually
+
+Tier 1 Ideal Customers (contact immediately)
+
+Independent Adjusting Firms (50-400 adjusters)
+They manually prepare files every day
+
+Great targets:
+	•	Sedgwick independent contractor groups
+	•	Crawford affiliates
+	•	Pilot Catastrophe Services contractors
+	•	Ryze Claims Solutions
+	•	Eberl Claims Service
+	•	Wardlaw Claims Service
+	•	Alacrity Solutions
+	•	Patriot Claims
+	•	Mills Mehr & Associates
+	•	CENCO Claims
+
+How to contact:
+LinkedIn → Director of Operations or Claims Manager
+NOT CTO
+NOT Innovation
+
+Subject line:
+Quick test — we prepared one of your claim packets
+
+⸻
+
+Tier 2 Strong Customers
+
+TPAs (Third Party Administrators)
+They process medical documentation constantly
+
+Targets:
+	•	Gallagher Bassett
+	•	Broadspire
+	•	CorVel
+	•	Sedgwick TPA divisions
+	•	ESIS (Chubb)
+	•	Helmsman Management
+
+Pitch angle:
+reduce file setup time before examiner assignment
+
+⸻
+
+Tier 3 Niche but high win rate
+
+Workers comp defense law firms
+
+They read massive medical records daily.
+They will instantly understand value.
+
+⸻
+
+Who it is BAD for
+
+Important so you don’t waste outreach:
+
+Bad fits:
+Carriers with heavy Guidewire automation
+Small IA shops (<5 adjusters)
+Fully structured FNOL intake shops
+Fraud analytics teams (different buyer)
+
+They don’t have the manual preparation bottleneck.
+
+⸻
+
+Biggest Strategic Recommendation
+
+Right now ClarifyOps is positioned as software.
+
+You should temporarily position it as:
+
+A preparation service powered by software.
+
+Meaning:
+offer to prepare 10 files for them first
+
+Not demo
+Not trial
+Not login
+
+Prepared output sells itself.
+
+⸻
+
+What to change THIS WEEK for conversions
+	1.	Rewrite hero to packet → prepared report
+	2.	Rename navigation to workflow terms
+	3.	Hide empty analytics + vendors
+	4.	Add “send us a claim” CTA
+	5.	Outreach offering prepared sample instead of demo
+
+Do those and reply rates will materially increase.
+
+⸻
+
+If you want, next I can help you craft the outreach message specifically for IA firms — that will matter more than almost anything else right now.

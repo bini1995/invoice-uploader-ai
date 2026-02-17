@@ -152,8 +152,8 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                When a claim packet arrives, your adjuster
-                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> starts halfway through the job.</span>
+                Stop reading
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> 60-page claim packets.</span>
               </motion.h1>
               
               <motion.p 
@@ -162,26 +162,30 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                ClarifyOps reads claim packets, pulls the key details, validates codes, and prepares a summary — <strong className="text-white">so your adjuster reviews, not rebuilds.</strong>
+                Send the file. Get a prepared adjuster-ready report in ~2 minutes.
               </motion.p>
 
               <motion.div 
-                className="flex flex-wrap gap-x-6 gap-y-3 mb-8 text-sm"
+                className="flex flex-col gap-3 mb-8 text-[15px]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                <div className="flex items-center gap-2 text-white/70">
+                <div className="flex items-center gap-2.5 text-white/80">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                  <span>Works alongside your existing systems</span>
+                  <span>Policy, claimant, and loss details extracted</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/70">
+                <div className="flex items-center gap-2.5 text-white/80">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                  <span>No integrations required to start</span>
+                  <span>CPT/ICD validated automatically</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/70">
+                <div className="flex items-center gap-2.5 text-white/80">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                  <span>HIPAA-ready infrastructure</span>
+                  <span>Duplicate & billing issues flagged</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-white/80">
+                  <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                  <span>Adjuster reviews instead of transcribes</span>
                 </div>
               </motion.div>
 
@@ -192,11 +196,11 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
                 <a 
-                  href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20claim%20file%20for%20processing."
+                  href="mailto:bini@clarifyops.com?subject=Sample%20Claim&body=I%27d%20like%20to%20send%20a%20sample%20claim%20file%20—%20please%20return%20the%20prepared%20report."
                   onClick={() => logEvent('cta_send_file', { source: 'hero' })}
                   className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
                 >
-                  Send Us One Anonymized Claim — We'll Prepare It
+                  Send a Sample Claim
                   <ArrowRightIcon className="h-5 w-5" />
                 </a>
                 <a 
@@ -301,16 +305,17 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
               >
-                <h3 className="text-lg font-bold text-red-900 mb-6">Before ClarifyOps</h3>
+                <h3 className="text-lg font-bold text-red-900 mb-6">Without ClarifyOps</h3>
                 <ol className="space-y-5">
                   {[
-                    "Open every PDF",
-                    "Pull details manually",
-                    "Write the first summary",
-                    "Then start adjusting"
+                    "Assignment email received",
+                    "Adjuster opens 60-page packet",
+                    "Scans pages, pulls details by hand",
+                    "Types the first summary",
+                    "Then begins adjusting"
                   ].map((step, i) => (
-                    <li key={i} className="flex items-center gap-3 text-gray-700">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
                       <span className="text-base">{step}</span>
                     </li>
                   ))}
@@ -324,20 +329,21 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
               >
-                <h3 className="text-lg font-bold text-emerald-900 mb-6">After ClarifyOps</h3>
+                <h3 className="text-lg font-bold text-emerald-900 mb-6">With ClarifyOps</h3>
                 <ol className="space-y-5">
                   {[
-                    "Open prepared file",
-                    "Review",
-                    "Decide"
+                    "Assignment email received",
+                    "Drop into ClarifyOps",
+                    "Prepared report returned",
+                    "Adjuster starts adjusting"
                   ].map((step, i) => (
-                    <li key={i} className="flex items-center gap-3 text-gray-700">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
                       <span className="text-base font-medium">{step}</span>
                     </li>
                   ))}
                 </ol>
-                <p className="text-sm text-emerald-800 font-medium mt-6 pt-4 border-t border-emerald-200">Your adjuster still makes every decision.</p>
+                <p className="text-sm text-emerald-800 font-medium mt-6 pt-4 border-t border-emerald-200">Your adjuster still makes every decision. ClarifyOps just does the prep.</p>
               </motion.div>
             </div>
           </div>
