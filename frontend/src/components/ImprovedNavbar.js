@@ -41,6 +41,7 @@ export default function ImprovedNavbar({
   onSmartSearch,
   onStartTour,
   activeFilterCount = 0,
+  onMobileMenuToggle,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -216,56 +217,19 @@ export default function ImprovedNavbar({
             </div>
           )}
 
-          {/* Mobile menu button */}
-          <button
-            ref={menuRef}
-            className="lg:hidden p-2 text-indigo-200 hover:text-white transition-colors flex-shrink-0"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <Bars3Icon className="h-5 w-5" />
-          </button>
+          {/* Mobile sidebar toggle */}
+          {onMobileMenuToggle && (
+            <button
+              className="md:hidden p-2 text-indigo-200 hover:text-white transition-colors flex-shrink-0"
+              onClick={onMobileMenuToggle}
+              aria-label="Open navigation menu"
+            >
+              <Bars3Icon className="h-6 w-6" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 absolute top-full left-0 right-0 z-50">
-          <div className="px-4 py-2 space-y-2">
-            <Link
-              to="/operations"
-              className="flex items-center px-2 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              onClick={() => setMenuOpen(false)}
-            >
-              <HomeIcon className="h-4 w-4 mr-2" />
-              Operations
-            </Link>
-            <Link
-              to="/claims"
-              className="flex items-center px-2 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              onClick={() => setMenuOpen(false)}
-            >
-              <DocumentChartBarIcon className="h-4 w-4 mr-2" />
-              Claims
-            </Link>
-            <Link
-              to="/analytics"
-              className="flex items-center px-2 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              onClick={() => setMenuOpen(false)}
-            >
-              <FlagIcon className="h-4 w-4 mr-2" />
-              Analytics
-            </Link>
-            <Link
-              to="/vendors"
-              className="flex items-center px-2 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              onClick={() => setMenuOpen(false)}
-            >
-              <UsersIcon className="h-4 w-4 mr-2" />
-              Vendors
-            </Link>
-          </div>
-        </div>
-      )}
     </nav>
   );
 } 

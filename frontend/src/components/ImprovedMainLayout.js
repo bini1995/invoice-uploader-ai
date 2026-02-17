@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ImprovedSidebarNav from './ImprovedSidebarNav';
 import ImprovedNavbar from './ImprovedNavbar';
 import BottomNav from './BottomNav';
@@ -10,17 +10,20 @@ export default function ImprovedMainLayout({ title, helpTopic, children, collaps
     return saved ? JSON.parse(saved) : [];
   });
   const [tenant, setTenant] = React.useState(() => localStorage.getItem('tenant') || 'default');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const token = localStorage.getItem('token') || '';
   const role = localStorage.getItem('role') || '';
   
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar - now positioned absolutely to extend to top */}
-      <ImprovedSidebarNav notifications={notifications} collapsed={collapseSidebar} />
+      <ImprovedSidebarNav 
+        notifications={notifications} 
+        collapsed={collapseSidebar}
+        mobileOpen={mobileMenuOpen}
+        onMobileClose={() => setMobileMenuOpen(false)}
+      />
       
-      {/* Main content area - positioned relative to sidebar */}
-      <div className="flex-1 flex flex-col overflow-hidden ml-64 min-w-0">
-        {/* Header - now inside the main content area with proper containment */}
+      <div className="flex-1 flex flex-col overflow-hidden md:ml-64 min-w-0">
         <div className="flex-shrink-0">
           <ImprovedNavbar
             tenant={tenant}
@@ -33,12 +36,12 @@ export default function ImprovedMainLayout({ title, helpTopic, children, collaps
               localStorage.removeItem('role');
               window.location.href = '/login';
             }}
+            onMobileMenuToggle={() => setMobileMenuOpen(prev => !prev)}
           />
         </div>
         
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto min-w-0">
-          <div className="max-w-7xl mx-auto px-4 py-6">
+        <main className="flex-1 overflow-y-auto min-w-0 pb-16 md:pb-0">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
             {children}
           </div>
         </main>
@@ -47,4 +50,4 @@ export default function ImprovedMainLayout({ title, helpTopic, children, collaps
       {token && <AISupportBot />}
     </div>
   );
-} 
+}
