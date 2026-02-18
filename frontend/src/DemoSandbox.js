@@ -37,7 +37,7 @@ export default function DemoSandbox() {
     <div className="min-h-screen p-4 sm:p-6 flex flex-col items-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 text-gray-900 dark:text-gray-100">
       <div className="max-w-2xl w-full space-y-6">
         <div className="text-center">
-          <PageHeader title="ClarifyOps" subtitle="See What a Prepared Claim Looks Like" />
+          <PageHeader title="ClarifyOps" subtitle="See What an Adjuster-Ready Packet Looks Like" />
         </div>
 
         {step === 1 && (
@@ -82,8 +82,8 @@ export default function DemoSandbox() {
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Prepared Claim File</p>
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Ready for adjuster review</h2>
+                  <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Adjuster-Ready Claim Packet</p>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Ready to send</h2>
                 </div>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>

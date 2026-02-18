@@ -196,9 +196,9 @@ router.post('/load-example', authMiddleware, async (req, res) => {
     }));
 
     await pool.query(
-      `INSERT INTO claim_fields (document_id, fields, overall_confidence, model_version)
-       VALUES ($1, $2, $3, $4) ON CONFLICT (document_id) DO UPDATE SET fields = $2, overall_confidence = $3`,
-      [docId, JSON.stringify(fieldEntries), 94.2, 'gpt-4o-mini']
+      `INSERT INTO claim_fields (document_id, fields, overall_confidence)
+       VALUES ($1, $2, $3) ON CONFLICT (document_id) DO UPDATE SET fields = $2, overall_confidence = $3`,
+      [docId, JSON.stringify(fieldEntries), 94.2]
     );
 
     await pool.query(

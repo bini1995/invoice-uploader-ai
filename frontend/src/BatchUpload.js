@@ -412,7 +412,7 @@ export default function BatchUpload() {
                 }}
                 className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
               >
-                {results.items.some(r => r.status === 'uploaded' && r.id) ? 'View Prepared Claim' : 'View All Claims'}
+                {results.items.some(r => r.status === 'uploaded' && r.id) ? 'View Ready Packet' : 'View All Claims'}
               </button>
               <button
                 onClick={clearAll}

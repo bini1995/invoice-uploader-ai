@@ -334,7 +334,7 @@ export default function LandingPage() {
                   {[
                     "Assignment email received",
                     "Drop into ClarifyOps",
-                    "Prepared report returned",
+                    "Adjuster-ready packet returned",
                     "Adjuster starts adjusting"
                   ].map((step, i) => (
                     <li key={i} className="flex items-start gap-3 text-gray-700">
@@ -369,7 +369,7 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-2 gap-6">
               {[
                 {
-                  title: "Prepared Claim Summary",
+                  title: "Adjuster-Ready Claim Packet",
                   description: "Every key field extracted and organized: policy numbers, claimant info, dates of service, providers, billed amounts, and injury details. Your adjuster opens a ready-made brief, not a stack of papers.",
                   detail: "Includes per-field confidence scores so reviewers know exactly what to trust and what to double-check.",
                   icon: DocumentTextIcon,

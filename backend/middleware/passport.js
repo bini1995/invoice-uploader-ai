@@ -5,16 +5,14 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import pool from '../config/db.js';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  console.warn('WARNING: JWT_SECRET not set. Using fallback for development only.');
+function getJwtSecret() {
+  return process.env.JWT_SECRET || 'dev-only-insecure-key';
 }
-const SECRET = JWT_SECRET || 'dev-only-insecure-key-' + Date.now();
 
 const jwtStrategy = new JwtStrategy(
   {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKeyProvider: (_req, _rawToken, done) => done(null, SECRET),
+    secretOrKeyProvider: (_req, _rawToken, done) => done(null, getJwtSecret()),
   },
   (payload, done) => done(null, payload)
 );
@@ -98,12 +96,12 @@ export function generateTokensForUser(user) {
     username: user.email || user.username,
     name: user.name,
     tenantId
-  }, SECRET, { expiresIn: '24h' });
+  }, getJwtSecret(), { expiresIn: '24h' });
 
   const refreshToken = jwt.sign({
     userId: user.id,
     tokenId: crypto.randomUUID()
-  }, SECRET, { expiresIn: '7d' });
+  }, getJwtSecret(), { expiresIn: '7d' });
 
   return { token, refreshToken };
 }

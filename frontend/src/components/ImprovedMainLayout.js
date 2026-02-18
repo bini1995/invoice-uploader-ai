@@ -23,7 +23,7 @@ export default function ImprovedMainLayout({ title, helpTopic, children, collaps
         onMobileClose={() => setMobileMenuOpen(false)}
       />
       
-      <div className="flex-1 flex flex-col overflow-hidden md:ml-64 min-w-0">
+      <div className="flex-1 flex flex-col min-h-0 md:ml-64 min-w-0">
         <div className="flex-shrink-0">
           <ImprovedNavbar
             tenant={tenant}

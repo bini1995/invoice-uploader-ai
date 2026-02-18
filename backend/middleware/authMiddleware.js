@@ -8,11 +8,11 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({ error: 'Invalid token' });
     }
     const tokenTenantId = user.tenantId || user.tenant_id;
-    const requestedTenantId = req.headers['x-tenant-id'] || req.tenantId || 'default';
     if (!tokenTenantId) {
       return res.status(403).json({ error: 'Tenant not found in token' });
     }
-    if (requestedTenantId && tokenTenantId !== requestedTenantId) {
+    const requestedTenantId = req.headers['x-tenant-id'];
+    if (requestedTenantId && requestedTenantId !== tokenTenantId) {
       return res.status(403).json({ error: 'Tenant access forbidden' });
     }
     req.user = user;
