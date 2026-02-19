@@ -1,50 +1,52 @@
 
-// General API rate limiter
 import rateLimit from 'express-rate-limit';
+
+function jsonHandler(msg) {
+  return (_req, res) => {
+    res.status(429).json({ status: 429, message: msg });
+  };
+}
+
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // limit each IP to 300 requests per windowMs
-  message: { status: 429, message: 'Too many requests from this IP, please try again later.' },
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  handler: jsonHandler('Too many requests from this IP, please try again later.'),
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => req.path.startsWith('/api/health') || req.path.startsWith('/metrics'),
 });
 
-// Upload rate limiter - more restrictive
 const uploadLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 200,
-  message: { status: 429, message: 'Too many uploads from this IP, please try again later.' },
+  handler: jsonHandler('Too many uploads from this IP, please try again later.'),
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: false,
 });
 
-// AI operations rate limiter - very restrictive due to cost
 const aiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
+  windowMs: 60 * 1000,
   max: 60,
-  message: 'Too many AI requests, please slow down.',
+  handler: jsonHandler('Too many AI requests, please slow down.'),
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: false,
 });
 
-// Authentication rate limiter - prevent brute force
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per 15 minutes
-  message: 'Too many login attempts, please try again later.',
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  handler: jsonHandler('Too many login attempts, please try again later.'),
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true,
 });
 
-// Export rate limiter - prevent abuse
 const exportLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 10,
-  message: 'Too many export requests, please try again later.',
+  handler: jsonHandler('Too many export requests, please try again later.'),
   standardHeaders: true,
   legacyHeaders: false,
 });
