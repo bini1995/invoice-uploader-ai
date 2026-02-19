@@ -15,12 +15,8 @@ let JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 function ensureSecret(current, name) {
   if (current && current.length >= 32) return current;
-  if (process.env.NODE_ENV === 'production') {
-    logger.error(`${name} is missing or too short. Must be at least 32 characters.`);
-    process.exit(1);
-  }
   const generated = crypto.randomBytes(32).toString('hex');
-  logger.warn(`${name} is missing or too short. Generated a development secret.`);
+  logger.warn(`${name} is missing or too short. Generated a fallback secret. Set ${name} in environment for persistent tokens.`);
   return generated;
 }
 

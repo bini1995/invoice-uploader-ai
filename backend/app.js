@@ -192,7 +192,14 @@ app.use('/api/health', healthRoutes);
 app.use('/metrics', metricsRoutes);
 
 // Auth routes (must be early to avoid middleware conflicts)
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', (req, res, next) => {
+  logger.info(`Auth route hit: ${req.method} ${req.path}`, { 
+    hasBody: !!req.body, 
+    contentType: req.headers['content-type'],
+    hasSession: !!req.session 
+  });
+  next();
+}, authRoutes);
 
 // Simple test route
 app.get('/api/test', (req, res) => {
