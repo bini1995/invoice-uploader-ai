@@ -6,86 +6,32 @@ import {
   ExternalLink, AlertCircle, CheckCircle, Loader2
 } from 'lucide-react';
 
-const PLAN_FEATURES = {
-  starter: [
-    'Up to 500 claims/month',
-    'AI field extraction (CPT, ICD-10, policy)',
-    'Confidence scoring',
-    'CSV & Excel exports',
-    'Email support',
-    'HIPAA-ready infrastructure',
-  ],
-  professional: [
-    'Up to 2,500 claims/month',
-    'Everything in Starter, plus:',
-    'Duplicate detection',
-    'Semantic search',
-    'Medical chronology',
-    'Webhook delivery & Zapier',
-    'API access',
-    'Priority support',
-    'AuditFlow fraud scoring',
-  ],
-  enterprise: [
-    'Up to 10,000 claims/month',
-    'Everything in Professional, plus:',
-    'Custom workflow rules',
-    'Dedicated onboarding',
-    'Custom AI model tuning',
-    'SLA guarantees',
-    'HIPAA BAA included',
-    'Multi-tenant setup',
-  ],
-};
+const FEATURES = [
+  'AI field extraction (CPT, ICD-10, policy)',
+  'Confidence scoring',
+  'Duplicate detection',
+  'Semantic search',
+  'Medical chronology',
+  'Webhook delivery & Zapier',
+  'API access',
+  'AuditFlow fraud scoring',
+  'CSV & Excel exports',
+  'HIPAA-ready infrastructure',
+];
 
-const PLAN_ICONS = {
-  Starter: Zap,
-  Professional: Shield,
-  Enterprise: Building2,
-};
-
-const FALLBACK_PRODUCTS = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    description: 'For small teams getting started with AI claims processing.',
-    metadata: { tier: 'starter' },
-    prices: [
-      { id: 'starter_monthly', unit_amount: 24900, currency: 'usd', recurring: { interval: 'month' }, active: true },
-      { id: 'starter_yearly', unit_amount: 239000, currency: 'usd', recurring: { interval: 'year' }, active: true },
-    ]
-  },
-  {
-    id: 'professional',
-    name: 'Professional',
-    description: 'For growing teams that need advanced analytics and integrations.',
-    metadata: { tier: 'professional' },
-    prices: [
-      { id: 'pro_monthly', unit_amount: 49900, currency: 'usd', recurring: { interval: 'month' }, active: true },
-      { id: 'pro_yearly', unit_amount: 479000, currency: 'usd', recurring: { interval: 'year' }, active: true },
-    ]
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    description: 'For large organizations with custom needs and compliance requirements.',
-    metadata: { tier: 'enterprise' },
-    prices: [
-      { id: 'ent_monthly', unit_amount: 99900, currency: 'usd', recurring: { interval: 'month' }, active: true },
-      { id: 'ent_yearly', unit_amount: 959000, currency: 'usd', recurring: { interval: 'year' }, active: true },
-    ]
-  }
+const VOLUME_DISCOUNTS = [
+  { range: '1–25 claims/mo', price: 'Free', note: 'No credit card required' },
+  { range: '26–499 claims/mo', price: '$4/claim', note: 'Pay only for what you use' },
+  { range: '500–2,499 claims/mo', price: '$3.50/claim', note: 'Volume discount' },
+  { range: '2,500+ claims/mo', price: 'Custom', note: 'Contact us for pricing' },
 ];
 
 export default function BillingPage() {
-  const [products, setProducts] = useState([]);
   const [subscription, setSubscription] = useState(null);
   const [currentPlan, setCurrentPlan] = useState('free');
   const [loading, setLoading] = useState(true);
-  const [checkoutLoading, setCheckoutLoading] = useState(null);
-  const [billingPeriod, setBillingPeriod] = useState('monthly');
   const [statusMsg, setStatusMsg] = useState(null);
-  const [useFallback, setUseFallback] = useState(false);
+  const [estimatedClaims, setEstimatedClaims] = useState(100);
   const token = localStorage.getItem('token');
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -94,7 +40,7 @@ export default function BillingPage() {
 
   useEffect(() => {
     if (successParam === 'true') {
-      setStatusMsg({ type: 'success', text: 'Payment successful! Your subscription is now active.' });
+      setStatusMsg({ type: 'success', text: 'Payment successful! Your account is now active.' });
       window.history.replaceState({}, '', '/billing');
     } else if (canceledParam === 'true') {
       setStatusMsg({ type: 'info', text: 'Checkout was canceled. No charges were made.' });
@@ -109,30 +55,9 @@ export default function BillingPage() {
   async function loadData() {
     setLoading(true);
     try {
-      const [productsRes, subRes] = await Promise.all([
-        fetch(`${API_BASE}/api/stripe/products`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch(`${API_BASE}/api/stripe/subscription`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-      ]);
-
-      let loadedProducts = [];
-      let isFallback = false;
-      if (productsRes.ok) {
-        const pd = await productsRes.json();
-        loadedProducts = pd.data || [];
-        isFallback = pd.fallback === true;
-      }
-
-      if (loadedProducts.length === 0) {
-        setProducts(FALLBACK_PRODUCTS);
-        setUseFallback(true);
-      } else {
-        setProducts(loadedProducts);
-        setUseFallback(isFallback);
-      }
+      const subRes = await fetch(`${API_BASE}/api/stripe/subscription`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       if (subRes.ok) {
         const sd = await subRes.json();
@@ -141,38 +66,8 @@ export default function BillingPage() {
       }
     } catch (err) {
       console.error('Failed to load billing data:', err);
-      setProducts(FALLBACK_PRODUCTS);
-      setUseFallback(true);
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleCheckout(priceId) {
-    if (useFallback) {
-      window.location.href = 'mailto:sales@clarifyops.com?subject=ClarifyOps%20Subscription%20Inquiry';
-      return;
-    }
-    setCheckoutLoading(priceId);
-    try {
-      const res = await fetch(`${API_BASE}/api/stripe/checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ priceId })
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        setStatusMsg({ type: 'error', text: data.error || 'Failed to start checkout' });
-      }
-    } catch (err) {
-      setStatusMsg({ type: 'error', text: 'Failed to start checkout. Please try again.' });
-    } finally {
-      setCheckoutLoading(null);
     }
   }
 
@@ -194,21 +89,14 @@ export default function BillingPage() {
     }
   }
 
-  function getPrice(product, period) {
-    const prices = product.prices || [];
-    return prices.find(p => {
-      const rec = p.recurring;
-      if (!rec) return false;
-      const interval = typeof rec === 'string' ? JSON.parse(rec)?.interval : rec?.interval;
-      return period === 'yearly' ? interval === 'year' : interval === 'month';
-    });
+  function calculateMonthlyCost(claims) {
+    if (claims <= 25) return 0;
+    const billable = claims - 25;
+    if (claims < 500) return billable * 4;
+    return billable * 3.5;
   }
 
-  function formatAmount(cents) {
-    return `$${(cents / 100).toFixed(0)}`;
-  }
-
-  const tier = (product) => (product.metadata?.tier || product.name?.toLowerCase() || '');
+  const monthlyCost = calculateMonthlyCost(estimatedClaims);
 
   if (loading) {
     return (
@@ -222,7 +110,7 @@ export default function BillingPage() {
   }
 
   return (
-    <ImprovedMainLayout title="Billing & Subscription">
+    <ImprovedMainLayout title="Billing & Usage">
       <div className="max-w-5xl mx-auto space-y-8">
         {statusMsg && (
           <div className={`p-4 rounded-lg flex items-center gap-3 ${
@@ -241,7 +129,7 @@ export default function BillingPage() {
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Current Subscription</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Current Account</h2>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">
                   <span className="font-medium text-indigo-600 dark:text-indigo-400">{subscription.plan}</span>
                   {' '}&mdash;{' '}
@@ -252,13 +140,6 @@ export default function BillingPage() {
                     {subscription.status}
                   </span>
                 </p>
-                {subscription.current_period_end && (
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                    {subscription.cancel_at_period_end
-                      ? `Cancels on ${new Date(subscription.current_period_end * 1000).toLocaleDateString()}`
-                      : `Renews on ${new Date(subscription.current_period_end * 1000).toLocaleDateString()}`}
-                  </p>
-                )}
               </div>
               <button
                 onClick={handleManageBilling}
@@ -275,159 +156,102 @@ export default function BillingPage() {
         <div>
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {subscription ? 'Change Your Plan' : 'Choose Your Plan'}
+              Simple Per-Claim Pricing
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Select the plan that fits your claims processing needs
+              We handle the annoying prep work. You only pay for what you use &mdash; no subscriptions, no seat licenses, no annual contracts.
             </p>
-            <div className="mt-4 inline-flex items-center bg-gray-100 dark:bg-gray-800 rounded-full p-1">
-              <button
-                onClick={() => setBillingPeriod('monthly')}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  billingPeriod === 'monthly'
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400'
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBillingPeriod('yearly')}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  billingPeriod === 'yearly'
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400'
-                }`}
-              >
-                Yearly <span className="text-green-600 dark:text-green-400 text-xs ml-1">Save 20%</span>
-              </button>
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {products.map((product) => {
-              const t = tier(product);
-              const price = getPrice(product, billingPeriod);
-              const Icon = PLAN_ICONS[product.name] || Zap;
-              const features = PLAN_FEATURES[t] || [];
-              const isCurrentPlan = currentPlan === t;
-              const isPopular = t === 'professional';
+          <div className="bg-white dark:bg-gray-800 rounded-xl border-2 border-indigo-500 dark:border-indigo-400 shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20 p-8 text-center mb-8">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-semibold mb-4">
+              Pay As You Go
+            </div>
+            <div className="flex items-baseline justify-center gap-1 mb-2">
+              <span className="text-5xl font-bold text-gray-900 dark:text-white">$4</span>
+              <span className="text-gray-500 dark:text-gray-400 text-lg">/claim</span>
+            </div>
+            <p className="text-emerald-600 dark:text-emerald-400 font-medium mb-1">First 25 claims free every month</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Volume discounts available for 500+ claims/month</p>
 
-              return (
-                <div
-                  key={product.id}
-                  className={`relative bg-white dark:bg-gray-800 rounded-xl border-2 p-6 flex flex-col ${
-                    isPopular
-                      ? 'border-indigo-500 dark:border-indigo-400 shadow-lg shadow-indigo-100 dark:shadow-indigo-900/20'
-                      : 'border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  {isPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-indigo-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
+            <div className="max-w-md mx-auto mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Estimate your monthly cost</label>
+                <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">{estimatedClaims.toLocaleString()} claims</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="2500"
+                step="25"
+                value={estimatedClaims}
+                onChange={(e) => setEstimatedClaims(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+              />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>0</span>
+                <span>2,500</span>
+              </div>
+              <div className="mt-3 text-2xl font-bold text-gray-900 dark:text-white">
+                {monthlyCost === 0 ? 'Free' : `$${monthlyCost.toLocaleString()}/mo`}
+              </div>
+              {estimatedClaims <= 25 && estimatedClaims > 0 && (
+                <p className="text-xs text-emerald-600 mt-1">Covered by your free monthly allowance</p>
+              )}
+            </div>
 
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`p-2 rounded-lg ${
-                      isPopular ? 'bg-indigo-100 dark:bg-indigo-900/30' : 'bg-gray-100 dark:bg-gray-700'
-                    }`}>
-                      <Icon className={`w-5 h-5 ${
-                        isPopular ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400'
-                      }`} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{product.name}</h3>
-                  </div>
-
-                  <div className="mb-4">
-                    {price ? (
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                          {formatAmount(price.unit_amount)}
-                        </span>
-                        <span className="text-gray-500 dark:text-gray-400 text-sm">
-                          /{billingPeriod === 'yearly' ? 'year' : 'month'}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-gray-500">Contact us for pricing</span>
-                    )}
-                    {billingPeriod === 'yearly' && price && (
-                      <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                        {formatAmount(Math.round(price.unit_amount / 12))}/mo billed annually
-                      </p>
-                    )}
-                  </div>
-
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                    {product.description}
-                  </p>
-
-                  <ul className="space-y-2 mb-6 flex-grow">
-                    {features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
-                        <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700 dark:text-gray-300">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {isCurrentPlan ? (
-                    <button
-                      disabled
-                      className="w-full py-2.5 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                    >
-                      Current Plan
-                    </button>
-                  ) : price ? (
-                    <button
-                      onClick={() => handleCheckout(price.id)}
-                      disabled={checkoutLoading === price.id}
-                      className={`w-full py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
-                        isPopular
-                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                          : 'bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900'
-                      } disabled:opacity-50`}
-                    >
-                      {checkoutLoading === price.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <>
-                          {subscription ? 'Switch Plan' : 'Get Started'}
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => window.location.href = 'mailto:sales@clarifyops.com'}
-                      className="w-full py-2.5 rounded-lg text-sm font-medium bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 transition-colors"
-                    >
-                      Contact Sales
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+            <a
+              href="/signup"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
+            >
+              Start Free &mdash; No Credit Card Required
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
 
-          {products.length === 0 && (
-            <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 dark:text-gray-400">Plans are being configured. Please check back shortly.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-indigo-500" />
+                Volume Pricing
+              </h3>
+              <div className="space-y-3">
+                {VOLUME_DISCOUNTS.map((tier, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                    <div>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{tier.range}</span>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{tier.note}</p>
+                    </div>
+                    <span className="text-sm font-bold text-gray-900 dark:text-white">{tier.price}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-500" />
+                Everything Included
+              </h3>
+              <ul className="space-y-2">
+                {FEATURES.map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Frequently Asked Questions</h3>
           <div className="space-y-4 text-sm">
             <div>
-              <p className="font-medium text-gray-800 dark:text-gray-200">Can I change plans anytime?</p>
+              <p className="font-medium text-gray-800 dark:text-gray-200">How does per-claim billing work?</p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Yes! You can upgrade or downgrade at any time. Changes take effect immediately, and we'll prorate any difference.
+                You get 25 free claims every month. After that, each claim costs $4. If you process 500+ claims/month, volume discounts apply automatically. No subscriptions, no contracts.
               </p>
             </div>
             <div>
@@ -439,13 +263,13 @@ export default function BillingPage() {
             <div>
               <p className="font-medium text-gray-800 dark:text-gray-200">Is there a free trial?</p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Yes! You can try ClarifyOps free with up to 50 claims/month. No credit card required to get started.
+                Yes! Your first 25 claims every month are free, forever. No credit card required to get started.
               </p>
             </div>
             <div>
-              <p className="font-medium text-gray-800 dark:text-gray-200">How do I cancel?</p>
+              <p className="font-medium text-gray-800 dark:text-gray-200">Are there any contracts or commitments?</p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                You can cancel anytime from the billing portal. Your access continues until the end of your current billing period.
+                No. Pay-as-you-go means exactly that. Use it when you need it, stop when you don't. No annual contracts, no cancellation fees.
               </p>
             </div>
           </div>

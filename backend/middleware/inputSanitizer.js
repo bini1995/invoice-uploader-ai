@@ -1,15 +1,15 @@
 const SQL_INJECTION_PATTERNS = [
-  /(\b(select|insert|update|delete|drop|create|alter|exec|execute|xp_|sp_|0x)\b)/gi,
   /(union\s+(all\s+)?select)/gi,
-  /(--|\#|\/\*|\*\/)/g,
-  /(\bor\b\s*\d+\s*=\s*\d+)/gi,
-  /(\band\b\s*\d+\s*=\s*\d+)/gi,
+  /(\bexec\s*\(|xp_|sp_cmdshell)/gi,
+  /(;\s*(drop|alter|truncate)\s+)/gi,
+  /('\s*(or|and)\s+\d+\s*=\s*\d+)/gi,
+  /(0x[0-9a-f]{8,})/gi,
 ];
 
 const XSS_PATTERNS = [
   /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-  /javascript:/gi,
-  /on\w+\s*=/gi,
+  /javascript\s*:/gi,
+  /on(error|load|click|mouseover|focus|blur)\s*=/gi,
   /<iframe/gi,
   /<object/gi,
   /<embed/gi,
@@ -19,6 +19,7 @@ function containsMaliciousPatterns(value) {
   if (typeof value !== 'string') return false;
   
   for (const pattern of [...SQL_INJECTION_PATTERNS, ...XSS_PATTERNS]) {
+    pattern.lastIndex = 0;
     if (pattern.test(value)) {
       return true;
     }
@@ -26,7 +27,8 @@ function containsMaliciousPatterns(value) {
   return false;
 }
 
-function scanObject(obj, path = '') {
+function scanObject(obj, path = '', depth = 0) {
+  if (depth > 10) return null;
   if (!obj || typeof obj !== 'object') {
     if (containsMaliciousPatterns(obj)) {
       return path || 'value';
@@ -42,7 +44,7 @@ function scanObject(obj, path = '') {
         return currentPath;
       }
     } else if (typeof value === 'object' && value !== null) {
-      const result = scanObject(value, currentPath);
+      const result = scanObject(value, currentPath, depth + 1);
       if (result) return result;
     }
   }

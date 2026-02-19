@@ -6,7 +6,7 @@ const buildSequelizeConfig = () => {
   const host = process.env.DB_HOST || 'db';
   const port = parseInt(process.env.DB_PORT || '5432', 10);
   const user = process.env.DB_USER || 'postgres';
-  const password = process.env.DB_PASSWORD || 'TATA1tata1';
+  const password = process.env.DB_PASSWORD || process.env.PGPASSWORD || '';
   const database = process.env.DB_NAME || 'invoices_db';
 
   if (process.env.DATABASE_URL) {

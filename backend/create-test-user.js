@@ -21,10 +21,7 @@ async function createTestUser() {
       [username, passwordHash, role]
     );
     
-    console.log('Test user created:', rows[0]);
-    console.log('Login credentials:');
-    console.log('Username:', username);
-    console.log('Password:', password);
+    console.log('Test user created:', rows[0].id, rows[0].username, rows[0].role);
   } catch (err) {
     console.error('Error creating test user:', err);
   } finally {

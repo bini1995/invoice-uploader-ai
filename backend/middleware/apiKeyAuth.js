@@ -2,13 +2,13 @@ import pool from '../config/db.js';
 import crypto from 'crypto';
 
 export async function validateApiKey(req, res, next) {
-  const apiKey = req.headers['x-api-key'] || req.query.api_key;
+  const apiKey = req.headers['x-api-key'];
 
   if (!apiKey) {
     return res.status(401).json({
       success: false,
       error: 'API key required',
-      message: 'Please provide an API key via X-API-Key header or api_key query parameter'
+      message: 'Please provide an API key via the X-API-Key header'
     });
   }
 

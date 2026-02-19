@@ -26,10 +26,11 @@ export default function ROICalculator() {
     const aiMonthlyCost = aiMonthlyHours * hourlyRate;
     const aiAnnualCost = aiMonthlyCost * 12;
     
-    const subscriptionCost = claimsPerMonth <= 500 ? 499 : 
-                             claimsPerMonth <= 2000 ? 2000 : 
-                             Math.ceil(claimsPerMonth / 1000) * 1500;
-    const annualSubscription = subscriptionCost * 12;
+    const freeClaims = 25;
+    const billableClaims = Math.max(0, claimsPerMonth - freeClaims);
+    const perClaimRate = claimsPerMonth >= 500 ? 3.5 : 4;
+    const clarifyOpsMonthlyCost = billableClaims * perClaimRate;
+    const annualSubscription = clarifyOpsMonthlyCost * 12;
     
     const timeSavedHours = currentMonthlyHours - aiMonthlyHours;
     const timeSavedPercent = Math.round((timeSavedHours / currentMonthlyHours) * 100);

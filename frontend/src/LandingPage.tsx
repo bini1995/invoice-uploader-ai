@@ -72,8 +72,8 @@ export default function LandingPage() {
                 Log in
               </LoginLink>
             )}
-            <a href="/signup" className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
-              Start Free
+            <a href="mailto:claims@clarifyops.com?subject=Sample%20Claim&body=Hi%20—%20I%27d%20like%20to%20send%20a%20sample%20claim%20file." className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
+              Send a Sample Claim
             </a>
           </div>
 
@@ -105,8 +105,8 @@ export default function LandingPage() {
                   Log in
                 </LoginLink>
               )}
-              <a href="/signup" className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
-                Start Free
+              <a href="mailto:claims@clarifyops.com?subject=Sample%20Claim&body=Hi%20—%20I%27d%20like%20to%20send%20a%20sample%20claim%20file." className="w-full inline-flex items-center justify-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20 font-medium">
+                Send a Sample Claim
               </a>
             </div>
           </div>
@@ -118,13 +118,13 @@ export default function LandingPage() {
         <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white py-3 px-6 text-center">
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-emerald-500/20 rounded-full text-xs font-bold uppercase tracking-wide text-emerald-300 border border-emerald-500/30">
-              Early Pilot
+              First 25 Claims Free
             </span>
             <span className="font-medium">
-              Send us one anonymized claim file — <strong>we'll process it and send back the results</strong>
+              Forward a claim file — <strong>we'll prepare the summary and send it back</strong>
             </span>
             <a 
-              href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
+              href="mailto:claims@clarifyops.com?subject=Sample%20Claim&body=Hi%20—%20I%27d%20like%20to%20send%20a%20claim%20file%20for%20processing."
               className="inline-flex items-center gap-1 px-4 py-1 bg-white text-slate-800 rounded-full text-xs font-bold hover:bg-gray-100 transition-colors"
             >
               Send a File
@@ -132,7 +132,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* ===== HERO — Literal workday moment ===== */}
+        {/* ===== HERO — Labor replacement, not AI platform ===== */}
         <section className="relative bg-slate-950 text-white py-20 md:py-28 px-6 overflow-hidden">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.2),_transparent_55%)]" />
@@ -152,8 +152,8 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Stop reading
-                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> 60-page claim packets.</span>
+                Your adjusters shouldn't spend 45 minutes reading
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent"> every claim file.</span>
               </motion.h1>
               
               <motion.p 
@@ -162,7 +162,7 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                Send the file. Get an adjuster-ready claim packet in ~2 minutes.
+                Forward the assignment email — we prepare the claim summary, codes, and timeline before they open it.
               </motion.p>
 
               <motion.div 
@@ -173,19 +173,19 @@ export default function LandingPage() {
               >
                 <div className="flex items-center gap-2.5 text-white/80">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                  <span>Policy, claimant, and loss details extracted</span>
+                  <span>Claim summary, codes, and timeline — ready in minutes</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-white/80">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                  <span>CPT/ICD validated automatically</span>
+                  <span>Your adjuster reviews instead of transcribes</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-white/80">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                  <span>Duplicate & billing issues flagged</span>
+                  <span>$4 per claim — no subscription, no commitment</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-white/80">
                   <CheckCircleIcon className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                  <span>Adjuster reviews instead of transcribes</span>
+                  <span>First 25 claims free so you can measure the time saved</span>
                 </div>
               </motion.div>
 
@@ -196,11 +196,11 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
               >
                 <a 
-                  href="mailto:bini@clarifyops.com?subject=Sample%20Claim&body=I%27d%20like%20to%20send%20a%20sample%20claim%20file%20—%20please%20return%20the%20prepared%20report."
+                  href="mailto:claims@clarifyops.com?subject=Sample%20Claim&body=Hi%20—%20I%27d%20like%20to%20send%20a%20sample%20claim%20file.%20Please%20prepare%20it%20and%20send%20back%20the%20results."
                   onClick={() => logEvent('cta_send_file', { source: 'hero' })}
                   className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-full shadow-xl shadow-blue-500/20 transition-all duration-300"
                 >
-                  Send a Sample Claim
+                  Send Us a Sample Claim
                   <ArrowRightIcon className="h-5 w-5" />
                 </a>
                 <a 
@@ -730,7 +730,7 @@ export default function LandingPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
+                  href="mailto:claims@clarifyops.com?subject=Sample%20Claim&body=Hi%20—%20I%27d%20like%20to%20send%20a%20few%20claim%20files%20for%20processing."
                   onClick={() => logEvent('cta_send_file', { source: 'pilot_section' })}
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-semibold shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300"
                 >
@@ -794,7 +794,7 @@ export default function LandingPage() {
               transition={{ delay: 0.2 }}
             >
               <a 
-                href="mailto:bini@clarifyops.com?subject=Pilot%20File&body=I%27d%20like%20to%20send%20an%20anonymized%20file%20for%20processing."
+                href="mailto:claims@clarifyops.com?subject=Sample%20Claim&body=Hi%20—%20I%27d%20like%20to%20send%20a%20claim%20file%20for%20processing."
                 onClick={() => logEvent('cta_send_file', { source: 'final_cta' })}
                 className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full shadow-xl transition-all duration-300"
               >

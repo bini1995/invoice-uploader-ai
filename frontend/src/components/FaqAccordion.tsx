@@ -17,8 +17,8 @@ const faqs = [
     a: 'Yes! We offer API integrations, webhooks, and export options to connect with your existing claims processing workflow and databases.',
   },
   {
-    q: 'What happens after the free trial?',
-    a: 'You can choose a paid plan based on your claims volume, or continue with a limited free tier for testing and small-scale processing.',
+    q: 'How much does it cost?',
+    a: 'ClarifyOps is $4 per claim with your first 25 claims free every month. No subscriptions, no seat licenses, no annual contracts. Volume discounts are available for 500+ claims/month. You only pay for what you use.',
   },
   {
     q: 'Do you offer fraud detection features?',
@@ -33,8 +33,8 @@ const faqs = [
     a: 'We\'re SOC 2 compliant with end-to-end encryption. All data is processed securely and we maintain strict compliance with insurance industry regulations.',
   },
   {
-    q: 'Can I cancel or change plans anytime?',
-    a: 'Absolutely. You can upgrade, downgrade, or cancel your subscription at any time from your account settings.',
+    q: 'Are there any contracts or commitments?',
+    a: 'No. ClarifyOps is pay-as-you-go at $4/claim. There are no subscriptions, no tiers, and no annual contracts. Use it when you need it, stop when you don\'t.',
   },
 ];
 

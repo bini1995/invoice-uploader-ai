@@ -2,14 +2,18 @@
 
 ## Overview
 
-ClarifyOps is a full-stack AI-powered platform that automates medical and insurance claim intake, validation, and routing. Positioned as a "helper, not replacement" for adjusters, it transforms 60-page claim packets into adjuster-ready packets with CPT/ICD validation, confidence scores, and medical chronology. The platform uses per-user tenant isolation for data security.
+ClarifyOps is a claims prep service that handles the annoying paperwork before adjusters open a file. Positioned as labor replacement (not an AI platform), it transforms 60-page claim packets into adjuster-ready summaries with CPT/ICD validation, confidence scores, and medical chronology. Priced at $4/claim (first 25 free) targeting independent adjusting firms (5-50 adjusters). Per-user tenant isolation for data security.
 
 ## Recent Changes (Feb 2026)
+- **Positioning pivot**: Changed from "AI claims platform" to "labor replacement service" — messaging focuses on time saved for adjusters
+- **Hero rewrite**: "Your adjusters shouldn't spend 45 minutes reading every claim file" with CTA "Send Us a Sample Claim"
+- **Pricing model**: Replaced subscription tiers ($249/$499/$999/mo) with $4/claim pay-per-use model. First 25 claims free. Updated across PricingSection, BillingPage, ROICalculator, PriceCalculator, FaqAccordion, AISupportBot, CaseStudies
+- **Security audit (OWASP)**: Fixed code injection in automationEngine.js, false-positive input sanitizer blocking claim text, API key exposure via query strings, hardcoded DB password, credential logging
 - **Multi-tenancy fix**: Added `tenant_id` column to users table, each user gets unique tenant on registration/SSO (was sharing 'default' tenant)
 - **UI language update**: "Prepared report" renamed to "adjuster-ready claim packet" throughout the application
 - **Navigation rename**: Drop Files→Upload Assignment, Prepared Reports→Ready Packets, Send to Adjuster→Deliver to Carrier, AuditFlow→Billing Error Detection
 - **Demo claim feature**: "Try a Real Example Claim" button on empty inbox loads realistic demo data into user's own tenant
-- **Pricing page**: Added cost-per-claim comparison section (manual $10-40 vs ClarifyOps $0.20-0.80)
+- **Email standardization**: All CTAs now point to claims@clarifyops.com
 
 ## User Preferences
 
