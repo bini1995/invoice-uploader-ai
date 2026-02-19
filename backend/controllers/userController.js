@@ -72,14 +72,7 @@ export const login = async (req, res) => {
       JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
-    if (req.session) {
-      req.session.userId = user.id;
-      req.session.refreshTokenId = refreshTokenId;
-      req.session.username = user.username;
-      await new Promise((resolve, reject) => {
-        req.session.save((err) => (err ? reject(err) : resolve()));
-      });
-    }
+    await pool.query('UPDATE users SET refresh_token_id = $1 WHERE id = $2', [refreshTokenId, user.id]);
     activeUsersGauge.inc();
     logger.info('User logged in', { userId: user.id });
     res.json({ token, refreshToken, role: user.role, username: user.username, name: user.name, email: user.email });
@@ -91,17 +84,17 @@ export const login = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
-  if (!refreshToken || !req.session?.refreshTokenId) {
+  if (!refreshToken) {
     return res.status(401).json({ message: 'Invalid refresh token' });
   }
   try {
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
-    if (decoded.tokenId !== req.session.refreshTokenId || decoded.userId !== req.session.userId) {
-      return res.status(401).json({ message: 'Invalid refresh token' });
-    }
     const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.userId]);
     const user = rows[0];
     if (!user) return res.status(401).json({ message: 'Invalid user' });
+    if (user.refresh_token_id && decoded.tokenId !== user.refresh_token_id) {
+      return res.status(401).json({ message: 'Refresh token revoked' });
+    }
     let tenantId = user.tenant_id;
     if (!tenantId || tenantId === 'default') {
       tenantId = `tenant_${user.id}`;
@@ -119,10 +112,7 @@ export const refreshToken = async (req, res) => {
       JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
-    req.session.refreshTokenId = newRefreshTokenId;
-    await new Promise((resolve, reject) => {
-      req.session.save((err) => (err ? reject(err) : resolve()));
-    });
+    await pool.query('UPDATE users SET refresh_token_id = $1 WHERE id = $2', [newRefreshTokenId, user.id]);
     res.json({ token, refreshToken: newRefreshToken, role: user.role, username: user.username });
   } catch (err) {
     res.status(401).json({ message: 'Invalid refresh token' });
@@ -132,10 +122,13 @@ export const refreshToken = async (req, res) => {
 export const logout = async (req, res) => {
   activeUsersGauge.dec();
   logger.info('User logged out');
+  if (req.user?.userId) {
+    await pool.query('UPDATE users SET refresh_token_id = NULL WHERE id = $1', [req.user.userId]).catch(() => {});
+  }
   if (req.session) {
     await new Promise((resolve) => {
       req.session.destroy(() => resolve());
-    });
+    }).catch(() => {});
   }
   res.json({ message: 'Logged out' });
 };
@@ -343,14 +336,7 @@ export const register = async (req, res) => {
       { expiresIn: '7d' }
     );
     
-    if (req.session) {
-      req.session.userId = user.id;
-      req.session.refreshTokenId = refreshTokenId;
-      req.session.username = user.username;
-      await new Promise((resolve, reject) => {
-        req.session.save((err) => (err ? reject(err) : resolve()));
-      });
-    }
+    await pool.query('UPDATE users SET refresh_token_id = $1 WHERE id = $2', [refreshTokenId, user.id]);
     
     activeUsersGauge.inc();
     logger.info('User registered', { userId: user.id, email: user.email });

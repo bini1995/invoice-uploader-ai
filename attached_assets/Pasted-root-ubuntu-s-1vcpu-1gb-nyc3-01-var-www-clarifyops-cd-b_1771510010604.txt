@@ -1,0 +1,38 @@
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# cd backend/
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# curl http://localhost:3000/api/health
+{"ok":true,"service":"clarifyops-api","time":"2026-02-19T14:03:06.378Z"}root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# curl http://localhost:3000/api/auth/sso/status                                                curl http://localhost:3000/api/auth/sso/status
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# curl -X POST http://localhost:3000/api/auth/login \POST http://localhost:3000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"YOUR_PASSWORD_HERE"}'
+{"message":"Invalid credentials"}root@ubuntu-s-1vcpu-1gb-nyc3curl -X POST http://localhost:3000/api/auth/register \ocalhost:3000/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Test User","email":"test@example.com","password":"TestPass123!"}'
+{"message":"Failed to create account"}root@ubuntu-s-1vcpu-1gbcurl -X POST http://localhost:3000/api/auth/login \http://localhost:3000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"test@example.com","password":"TestPass123!"}'
+{"message":"Invalid credentials"}root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# cd ..
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# frontend/
+-bash: frontend/: Is a directory
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# cd frontend/
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/
+000root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontencurl http://localhost:5000/api/healthlth
+curl: (7) Failed to connect to localhost port 5000 after 0 ms: Couldn't connect to server
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/login
+000root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontenpsql $DATABASE_URL -c "SELECT id, username, email, role, tenant_id FROM users LIMIT 10;"0;"
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "root" does not exist
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/frontend# cd ..
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# psql $DATABASE_URL -c "SELECT id, username, email, role, tenant_id FROM users LIMIT 10;"
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "root" does not exist
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# psql $DATABASE_URL -c "SELECT * FROM tenants LIMIT 10;"
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "root" does not exist
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# for i in {1..5}; do
+  echo "Attempt $i: $(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:3000/api/auth/login -H 'Content-Type: application/json' -d '{"username":"fake@test.com","password":"wrong"}')"
+done
+Attempt 1: 401
+Attempt 2: 401
+Attempt 3: 401
+Attempt 4: 401
+Attempt 5: 401
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops# TOKEN="paste_token_here"
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/claims
+{"error":"Invalid token"}root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops#
