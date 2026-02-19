@@ -1,0 +1,162 @@
+root@ubuntu-s-1vcpu-1gb-nyc3-01:/var/www/clarifyops/backend# pm2 logs --lines 50
+[TAILING] Tailing last 50 lines for [all] processes (change the value with --lines option)
+/root/.pm2/pm2.log last 50 lines:
+PM2        | 2026-02-17T00:25:30: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-17T00:25:30: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-17T06:46:06: PM2 log: App [clarifyops-backend:0] exited with code [1] via signal [SIGINT]
+PM2        | 2026-02-17T06:46:06: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-17T06:46:06: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-17T21:36:30: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-17T21:36:30: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-17T21:36:30: PM2 log: pid=453785 msg=process killed
+PM2        | 2026-02-17T21:36:30: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-17T21:36:30: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-17T22:15:25: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-17T22:15:25: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-17T22:15:25: PM2 log: pid=470602 msg=process killed
+PM2        | 2026-02-17T22:15:25: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-17T22:15:25: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-17T22:55:11: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-17T22:55:11: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-17T22:55:11: PM2 log: pid=471453 msg=process killed
+PM2        | 2026-02-17T22:55:11: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-17T22:55:11: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-18T00:43:48: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-18T00:43:48: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-18T00:43:48: PM2 log: pid=472215 msg=process killed
+PM2        | 2026-02-18T00:43:48: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-18T00:43:48: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-19T13:44:11: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-19T13:44:11: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-19T13:44:11: PM2 log: pid=474291 msg=process killed
+PM2        | 2026-02-19T13:44:11: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-19T13:44:11: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-19T14:01:39: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-19T14:01:39: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-19T14:01:39: PM2 log: pid=516948 msg=process killed
+PM2        | 2026-02-19T14:01:39: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-19T14:01:39: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-19T14:22:35: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-19T14:22:35: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-19T14:22:35: PM2 log: pid=517384 msg=process killed
+PM2        | 2026-02-19T14:22:35: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-19T14:22:35: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-19T14:35:31: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-19T14:35:31: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-19T14:35:31: PM2 log: pid=517961 msg=process killed
+PM2        | 2026-02-19T14:35:31: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-19T14:35:31: PM2 log: App [clarifyops-backend:0] online
+PM2        | 2026-02-19T14:50:26: PM2 log: Stopping app:clarifyops-backend id:0
+PM2        | 2026-02-19T14:50:26: PM2 log: App [clarifyops-backend:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-02-19T14:50:26: PM2 log: pid=518346 msg=process killed
+PM2        | 2026-02-19T14:50:26: PM2 log: App [clarifyops-backend:0] starting in -fork mode-
+PM2        | 2026-02-19T14:50:26: PM2 log: App [clarifyops-backend:0] online
+
+/root/.pm2/logs/clarifyops-backend-error.log last 50 lines:
+0|clarifyo |   detail: undefined,
+0|clarifyo |   hint: undefined,
+0|clarifyo |   position: '45',
+0|clarifyo |   internalPosition: undefined,
+0|clarifyo |   internalQuery: undefined,
+0|clarifyo |   where: undefined,
+0|clarifyo |   schema: undefined,
+0|clarifyo |   table: undefined,
+0|clarifyo |   column: undefined,
+0|clarifyo |   dataType: undefined,
+0|clarifyo |   constraint: undefined,
+0|clarifyo |   file: 'parse_relation.c',
+0|clarifyo |   line: '1449',
+0|clarifyo |   routine: 'parserOpenTable'
+0|clarifyo | }
+0|clarifyo | Get comments error: error: relation "claim_comments" does not exist
+0|clarifyo |     at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17
+0|clarifyo |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+0|clarifyo |     at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)
+0|clarifyo |     at async getComments (file:///var/www/clarifyops/backend/controllers/claimController.js:1178:22) {
+0|clarifyo |   length: 113,
+0|clarifyo |   severity: 'ERROR',
+0|clarifyo |   code: '42P01',
+0|clarifyo |   detail: undefined,
+0|clarifyo |   hint: undefined,
+0|clarifyo |   position: '45',
+0|clarifyo |   internalPosition: undefined,
+0|clarifyo |   internalQuery: undefined,
+0|clarifyo |   where: undefined,
+0|clarifyo |   schema: undefined,
+0|clarifyo |   table: undefined,
+0|clarifyo |   column: undefined,
+0|clarifyo |   dataType: undefined,
+0|clarifyo |   constraint: undefined,
+0|clarifyo |   file: 'parse_relation.c',
+0|clarifyo |   line: '1449',
+0|clarifyo |   routine: 'parserOpenTable'
+0|clarifyo | }
+0|clarifyo | EMAIL_USER or EMAIL_PASS not configured. Emails will not be sent.
+0|clarifyo | EMAIL_USER or EMAIL_PASS not configured. Emails will not be sent.
+0|clarifyo | (node:516948) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:517384) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:517961) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:518346) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+0|clarifyo | (node:518719) V8: file:///var/www/clarifyops/backend/swagger.js:3 'assert' is deprecated in import statements and support will be removed in a future version; use 'with' instead
+0|clarifyo | (Use `node --trace-warnings ...` to show where the warning was created)
+
+/root/.pm2/logs/clarifyops-backend-out.log last 50 lines:
+0|clarifyo | ition":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:01:54.038Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:02:18.311Z"}
+0|clarifyo | error: Registration error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"parse_target.c","length":127,"line":"1066","name":"error","position":"64","routine":"checkInsertTargets","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async register (file:///var/www/clarifyops/backend/controllers/userController.js:321:22)","timestamp":"2026-02-19T14:03:48.262Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:07:01.168Z"}
+0|clarifyo | info: 🔎 DATABASE_URL is set {"timestamp":"2026-02-19T14:22:38.042Z"}
+0|clarifyo | info: Postgres config: host=localhost port=5432 database=clarifyops_db user=clarifyops ssl=false {"timestamp":"2026-02-19T14:22:38.047Z"}
+0|clarifyo | 🔧 AI Controller loaded
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-19T14:22:40.178Z"}
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-19T14:22:40.191Z"}
+0|clarifyo | info: 🟡 Starting server... {"timestamp":"2026-02-19T14:22:41.318Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-19T14:22:41.374Z"}
+0|clarifyo | info: ✅ Database initialized {"timestamp":"2026-02-19T14:22:41.885Z"}
+0|clarifyo | info: ✅ Stripe schema ready (migrations skipped — non-Replit environment) {"timestamp":"2026-02-19T14:22:41.886Z"}
+0|clarifyo | info: ✅ Stripe data synced {"timestamp":"2026-02-19T14:22:41.887Z"}
+0|clarifyo | info: 🟢 Application initialized successfully {"timestamp":"2026-02-19T14:22:41.905Z"}
+0|clarifyo | info: 🚀 Server running on http://0.0.0.0:3000 {"timestamp":"2026-02-19T14:22:41.913Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:22:47.692Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:22:49.563Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:23:05.701Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:23:14.893Z"}
+0|clarifyo | info: 🔎 DATABASE_URL is set {"timestamp":"2026-02-19T14:35:34.343Z"}
+0|clarifyo | info: Postgres config: host=localhost port=5432 database=clarifyops_db user=clarifyops ssl=false {"timestamp":"2026-02-19T14:35:34.350Z"}
+0|clarifyo | 🔧 AI Controller loaded
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-19T14:35:36.552Z"}
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-19T14:35:36.564Z"}
+0|clarifyo | info: 🟡 Starting server... {"timestamp":"2026-02-19T14:35:37.489Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-19T14:35:37.549Z"}
+0|clarifyo | info: ✅ Database initialized {"timestamp":"2026-02-19T14:35:38.085Z"}
+0|clarifyo | info: ✅ Stripe schema ready (migrations skipped — non-Replit environment) {"timestamp":"2026-02-19T14:35:38.087Z"}
+0|clarifyo | info: ✅ Stripe data synced {"timestamp":"2026-02-19T14:35:38.089Z"}
+0|clarifyo | info: 🟢 Application initialized successfully {"timestamp":"2026-02-19T14:35:38.107Z"}
+0|clarifyo | info: 🚀 Server running on http://0.0.0.0:3000 {"timestamp":"2026-02-19T14:35:38.114Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:36:39.095Z"}
+0|clarifyo | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:61:7)","timestamp":"2026-02-19T14:39:38.177Z"}
+0|clarifyo | info: 🔎 DATABASE_URL is set {"timestamp":"2026-02-19T14:50:29.457Z"}
+0|clarifyo | info: Postgres config: host=localhost port=5432 database=clarifyops_db user=clarifyops ssl=false {"timestamp":"2026-02-19T14:50:29.463Z"}
+0|clarifyo | 🔧 AI Controller loaded
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-19T14:50:31.499Z"}
+0|clarifyo | warn: Redis not configured; async queues disabled {"timestamp":"2026-02-19T14:50:31.511Z"}
+0|clarifyo | info: 🟡 Starting server... {"timestamp":"2026-02-19T14:50:32.703Z"}
+0|clarifyo | info: 🟢 Connected to PostgreSQL {"timestamp":"2026-02-19T14:50:32.763Z"}
+0|clarifyo | info: ✅ Database initialized {"timestamp":"2026-02-19T14:50:33.305Z"}
+0|clarifyo | info: ✅ Stripe schema ready (migrations skipped — non-Replit environment) {"timestamp":"2026-02-19T14:50:33.306Z"}
+0|clarifyo | info: ✅ Stripe data synced {"timestamp":"2026-02-19T14:50:33.308Z"}
+0|clarifyo | info: 🟢 Application initialized successfully {"timestamp":"2026-02-19T14:50:33.327Z"}
+0|clarifyo | info: 🚀 Server running on http://0.0.0.0:3000 {"timestamp":"2026-02-19T14:50:33.334Z"}
+
+0|clarifyops-backend  | info: Auth route hit: GET /sso/status {"hasBody":false,"hasSession":true,"timestamp":"2026-02-19T14:50:54.733Z"}
+0|clarifyops-backend  | info: Auth route hit: GET /sso/status {"hasBody":false,"hasSession":true,"timestamp":"2026-02-19T14:51:04.364Z"}
+0|clarifyops-backend  | info: Auth route hit: POST /login {"contentType":"application/json","hasBody":true,"hasSession":true,"timestamp":"2026-02-19T14:51:06.849Z"}
+0|clarifyops-backend  | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:57:7)","timestamp":"2026-02-19T14:51:07.031Z"}
+0|clarifyops-backend  | info: Auth route hit: POST /login {"contentType":"application/json","hasBody":true,"hasSession":true,"timestamp":"2026-02-19T14:51:17.613Z"}
+0|clarifyops-backend  | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:57:7)","timestamp":"2026-02-19T14:51:17.792Z"}
+0|clarifyops-backend  | info: Auth route hit: POST /login {"contentType":"application/json","hasBody":true,"hasSession":true,"timestamp":"2026-02-19T14:51:26.833Z"}
+0|clarifyops-backend  | error: Login error: column "tenant_id" of relation "users" does not exist {"code":"42703","file":"analyze.c","length":129,"line":"2527","name":"error","position":"18","routine":"transformUpdateTargetList","severity":"ERROR","stack":"error: column \"tenant_id\" of relation \"users\" does not exist\n    at /var/www/clarifyops/backend/node_modules/pg/lib/client.js:545:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async executeQuery (file:///var/www/clarifyops/backend/config/db.js:122:14)\n    at async login (file:///var/www/clarifyops/backend/controllers/userController.js:57:7)","timestamp":"2026-02-19T14:51:26.999Z"}
