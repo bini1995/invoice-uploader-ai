@@ -131,6 +131,10 @@ Sample webhook payload:
 }
 ```
 
+## Dashboard Strategy
+See [docs/dashboard-goals.md](docs/dashboard-goals.md) for the strategic goals guiding the AI Dashboard.
+
+
 ## Setup Instructions
 
 ### Backend
