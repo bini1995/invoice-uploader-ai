@@ -131,6 +131,17 @@ Sample webhook payload:
 }
 ```
 
+## Missing or Weak Functionality
+
+- No quick summary cards/KPIs (e.g., "Invoices this Month", "Top Vendor").
+- No onboarding for new users.
+- No status indicators or visual feedback for actions (upload, approve, archive).
+- AI/chat barely feels integrated—just an input box.
+- Upload action is unclear (what happens after upload? success? error? spinner?).
+- Settings/account/profile management missing.
+- Search bar is weak—doesn’t feel AI-enhanced.
+- Mobile/responsive experience not obvious (likely broken).
+
 ## Setup Instructions
 
 ### Backend
